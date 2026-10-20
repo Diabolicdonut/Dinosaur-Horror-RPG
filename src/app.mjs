@@ -3,6 +3,7 @@ import { newGame, step, view, isValidSave, parseAction } from './engine.mjs';
 
 const $ = id => document.getElementById(id);
 const SAVE_KEY = 'dinosaur-horror-rpg-isla-nublar-v1';
+const WORKER_BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
 let state = newGame();
 let busy = false;
 
@@ -104,12 +105,25 @@ function render() {
   for (const button of document.querySelectorAll('.quick-actions button')) button.disabled = done || busy;
 }
 async function aiRequest(mode, payload) {
-  const response = await fetch('./api/director', {
-    method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ mode, payload }),
-    signal: AbortSignal.timeout(12000)
+  // The token is entered at runtime and never written to game saves, URLs or logs.
+  const token = $('game-token').value.trim();
+  if (!token) throw new Error('Enter your GAME_TOKEN in the engine controls.');
+  const endpoint = mode === 'interpret' ? 'turn' : mode === 'narrate' ? 'narrate' : null;
+  if (!endpoint) throw new Error('Unsupported AI operation.');
+  const response = await fetch(WORKER_BASE + '/v1/gm/' + endpoint, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+    body: JSON.stringify({ payload }),
+    signal: AbortSignal.timeout(28000),
+    cache: 'no-store'
   });
-  if (!response.ok) throw new Error('AI service unavailable (' + response.status + ')');
+  if (!response.ok) {
+    if (response.status === 401) throw new Error('GAME_TOKEN was rejected. Check the secret in Cloudflare and your entry here.');
+    if (response.status === 429) throw new Error('AI request rate limit reached. Try again shortly.');
+    if (response.status === 503) throw new Error('Cloudflare Worker is not configured or deployed yet.');
+    if (response.status === 404) throw new Error('Worker endpoints not deployed yet.');
+    throw new Error('AI gateway returned HTTP ' + response.status);
+  }
   return response.json();
 }
 async function execute(command) {
@@ -117,7 +131,8 @@ async function execute(command) {
   busy = true; render();
   try {
     let input = command;
-    if ($('ai').checked) {
+    // Fast path: known commands are parsed locally; novel prose uses the AI interpreter.
+    if ($('ai').checked && !parseAction(command).kind) {
       try {
         const response = await aiRequest('interpret', {
           input: command, location: view(state).roomName,
@@ -126,11 +141,15 @@ async function execute(command) {
           items: view(state).items.map(x => x.id),
           inventory: state.player.inventory
         });
+        if (response?.action === 'clarify') {
+          addLog(response.clarification || 'That action is not yet covered by the deterministic rules.', 'info', state.turn, 'AI GM');
+          return;
+        }
         if (response?.action && typeof response.action === 'string') {
           input = { action: response.action, target: response.target || '', push: Boolean(response.push) };
         }
       } catch (error) {
-        addLog('AI unavailable. Falling back to local deterministic commands: ' + error.message, 'info', state.turn, 'SYSTEM');
+        addLog('AI parsing unavailable; local engine will attempt the command. ' + error.message, 'info', state.turn, 'SYSTEM');
       }
     }
     const result = step(state, input);
@@ -140,7 +159,7 @@ async function execute(command) {
       try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
       catch { /* Storage disabled or quota reached; manual export remains available. */ }
     }
-    if ($('ai').checked && result.accepted) {
+    if ($('ai').checked && result.accepted && $('game-token').value.trim()) {
       try {
         const response = await aiRequest('narrate', {
           location: view(state).roomName,
@@ -207,8 +226,8 @@ $('clearlog').addEventListener('click', () => {
 });
 $('ai').addEventListener('change', () => {
   $('aihint').textContent = $('ai').checked
-    ? 'AI mode uses a separate /api/director backend and may incur API charges. No AI response can change dice results or world state.'
-    : 'Offline rules engine is always authoritative. AI requires a local server with an API key.';
+    ? 'OpenAI GM uses the Cloudflare Worker. Enter your GAME_TOKEN below; neither secret is stored in the game save. AI can interpret and narrate, but cannot override dice or world state.'
+    : 'Local deterministic mode: no Worker or API key required. Enable AI and enter your token for natural-language interpretation and narration.';
 });
 addLog('1993. The storm has knocked out the park network. Auxiliary power and radio communications are down. Find the access card and restore contact with the outside world.', 'scene');
 addLog(view(state).description, 'scene');
