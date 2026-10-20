@@ -19,3 +19,5 @@ jobs:
           node --check src/app.mjs
           node --check src/scenario.mjs
           node --check server.mjs
+          node --check worker/index.mjs
+          node --check tests/worker.test.mjs
