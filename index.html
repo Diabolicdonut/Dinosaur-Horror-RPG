@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="theme-color" content="#09130f"/>
+  <meta name="description" content="Dinosaur Horror RPG: a deterministic Jurassic Park survival-horror browser prototype."/>
+  <title>Containment Lost — Dinosaur Horror RPG</title>
+  <link rel="stylesheet" href="./src/style.css"/>
+</head>
+<body>
+  <div class="app">
+    <header class="masthead">
+      <div class="brand">
+        <span class="brand-sigil" aria-hidden="true">JP</span>
+        <div><p class="overline">FIELD INCIDENT TERMINAL / 1993</p><h1>CONTAINMENT <strong>LOST</strong></h1><p class="subtitle">A Dinosaur Horror RPG proof of concept</p></div>
+      </div>
+      <div class="system-label"><span class="blink" aria-hidden="true"></span>ISLA NUBLAR <small>SIMULATION ONLINE</small></div>
+    </header>
+    <main class="dashboard">
+      <aside class="panel sidebar">
+        <p class="panel-label">PERSONNEL VITALS</p>
+        <div class="value-pair"><span>HEALTH</span><b id="health">4 / 4</b></div>
+        <div class="bar"><span id="healthbar" class="healthbar"></span></div>
+        <div class="value-pair"><span>STRESS</span><b id="stress">0 / 10</b></div>
+        <div class="bar"><span id="stressbar" class="stressbar"></span></div>
+        <div class="value-pair"><span>TIME</span><b id="turn">TURN 000</b></div>
+        <p class="panel-label top">RESTORE / EXTRACT</p>
+        <div id="objectives" class="objectives"></div>
+        <p class="panel-label top">FIELD INVENTORY</p>
+        <div id="inventory" class="inventory"></div>
+        <p class="panel-label top">INCIDENT STATUS</p>
+        <div id="outcome" class="outcome">CONTAINMENT BREACH / ACTIVE</div>
+      </aside>
+      <section class="center">
+        <div class="panel location-panel">
+          <div class="location-top"><p class="panel-label">LIVE SECTOR FEED</p><p class="panel-label" id="zoneid">SECTOR 01</p></div>
+          <h2 id="roomname">Visitor Center Control Room</h2>
+          <p id="roomdescription">Emergency lighting flickers.</p>
+          <div class="divider"></div>
+          <div id="visible" class="visible"></div>
+          <p class="panel-label top">TRAVEL / ACTIONS</p>
+          <div id="exits" class="quick-actions"></div>
+          <div id="actions" class="quick-actions"></div>
+        </div>
+        <div class="panel feed">
+          <div class="feed-header"><p class="panel-label">INCIDENT LOG / AUTHORITATIVE ENGINE</p><button type="button" id="clearlog" class="small-btn">CLEAR DISPLAY</button></div>
+          <div id="events" class="events" role="log" aria-live="polite" aria-relevant="additions"></div>
+        </div>
+        <form id="commandform" class="command" autocomplete="off">
+          <label for="command" class="panel-label">DIRECTIVE INPUT — NATURAL LANGUAGE / COMMANDS</label>
+          <div class="command-row">
+            <span aria-hidden="true">&gt;</span>
+            <input id="command" type="text" maxlength="400" placeholder="e.g. sneak to the service corridor" required autocomplete="off"/>
+            <button type="submit" id="submit">EXECUTE</button>
+          </div>
+          <p class="command-hint">Try: <code>look</code> · <code>move lobby</code> · <code>take keycard</code> · <code>use generator</code> · <code>push use radio</code></p>
+        </form>
+      </section>
+      <aside class="panel map-panel">
+        <p class="panel-label">ISLAND SECURITY MAP / LOCAL</p>
+        <svg id="map" viewBox="0 0 310 365" role="img" aria-label="Map of seven interconnected locations"></svg>
+        <p class="map-note">Only your current position is tracked here. Creature positions remain hidden unless observed.</p>
+        <div class="divider"></div>
+        <p class="panel-label">ENGINE CONTROLS</p>
+        <label class="input-label" for="seed">REPLAY SEED</label>
+        <input id="seed" inputmode="numeric" type="number" min="0" max="4294967295" value="1993"/>
+        <div class="controls"><button id="newgame" type="button">NEW INCIDENT</button><button id="save" type="button">SAVE</button><button id="load" type="button">LOAD</button><button id="export" type="button">EXPORT JSON</button></div>
+        <label class="toggle"><input id="ai" type="checkbox"/> <span>OPTIONAL AI DIRECTOR</span></label>
+        <p id="aihint" class="map-note">Offline rules engine is always authoritative. AI requires a local server with an API key.</p>
+        <p class="footer-note">PROTOTYPE RULES V1 · SEED-REPLAYABLE · PERSONAL STUDY BUILD</p>
+      </aside>
+    </main>
+  </div>
+  <script type="module" src="./src/app.mjs"></script>
+</body>
+</html>
