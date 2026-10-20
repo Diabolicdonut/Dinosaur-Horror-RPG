@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.1.0",
-  "checkpoint": "001",
-  "state": "prototype_implemented",
+  "version": "0.2.0",
+  "checkpoint": "002",
+  "state": "worker_source_and_browser_gateway_committed__awaiting_cloudflare_deployment",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,18 +13,35 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 10,
+  "automated_tests": 21,
   "api_status": "optional backend implemented; cannot live-test without a server-side API key",
   "next_actions": [
-    "Browser smoke test",
-    "Manual Alien stress/panic mechanics comparison",
-    "Add sight/sound/scent predator perception",
-    "Validate full incident completion rates"
+    "User: Connect Cloudflare existing dinosaur-rpg Worker to GitHub repo with root directory worker/ and deploy",
+    "User: Enable GitHub Pages main /root",
+    "Verify deployed /health and a token-authenticated intent request",
+    "Add engine-validated open-ended GM proposal and NPC dialogue persistence",
+    "Browser smoke and exact Alien stress/panic source comparison"
   ],
   "acceptance_criteria": [
     "node --test passes",
     "node --check succeeds for all JavaScript modules",
     "No AI state mutation",
-    "Deterministic replay across identical action streams"
-  ]
+    "Deterministic replay across identical action streams",
+    "Worker mock tests pass for authorization, origin, throttling, schemas and provider failures",
+    "Worker source deploys only with Cloudflare secrets and rate-limit binding",
+    "No GAME_TOKEN committed or stored in save"
+  ],
+  "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
+  "worker_source": "worker/index.mjs",
+  "worker_config": "worker/wrangler.jsonc",
+  "browser_ai_gateway": "src/app.mjs",
+  "worker_authentication": "GAME_TOKEN Bearer required",
+  "worker_secret_names": [
+    "OPENAI_API_KEY",
+    "GAME_TOKEN"
+  ],
+  "worker_rate_limit": "Cloudflare GM_LIMITER binding; 30 requests per 60s",
+  "worker_deployment": "NOT VERIFIED: user must connect existing Worker to GitHub repo (root worker/) or use Wrangler",
+  "pages_deployment": "NOT VERIFIED: GitHub Pages setup remains user action",
+  "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented"
 }
