@@ -1,0 +1,30 @@
+{
+  "project": "Dinosaur Horror RPG",
+  "version": "0.1.0",
+  "checkpoint": "001",
+  "state": "prototype_implemented",
+  "branch": "main",
+  "canonical_rules": "docs/RULES-BASELINE.md",
+  "canonical_scenario": "src/scenario.mjs",
+  "canonical_engine": "src/engine.mjs",
+  "executable": "index.html",
+  "runtime": "server.mjs",
+  "original_rulebook_reference": "User private Library: Alien RPG - The Role Playing Game.pdf",
+  "secondary_reference": "User private Library: Year Zero Mini.pdf",
+  "locations": 7,
+  "persistent_dinosaurs": 1,
+  "automated_tests": 10,
+  "api_status": "optional backend implemented; cannot live-test without a server-side API key",
+  "next_actions": [
+    "Browser smoke test",
+    "Manual Alien stress/panic mechanics comparison",
+    "Add sight/sound/scent predator perception",
+    "Validate full incident completion rates"
+  ],
+  "acceptance_criteria": [
+    "node --test passes",
+    "node --check succeeds for all JavaScript modules",
+    "No AI state mutation",
+    "Deterministic replay across identical action streams"
+  ]
+}
