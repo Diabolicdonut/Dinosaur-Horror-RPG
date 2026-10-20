@@ -66,8 +66,10 @@
         <label class="input-label" for="seed">REPLAY SEED</label>
         <input id="seed" inputmode="numeric" type="number" min="0" max="4294967295" value="1993"/>
         <div class="controls"><button id="newgame" type="button">NEW INCIDENT</button><button id="save" type="button">SAVE</button><button id="load" type="button">LOAD</button><button id="export" type="button">EXPORT JSON</button></div>
-        <label class="toggle"><input id="ai" type="checkbox"/> <span>OPTIONAL AI DIRECTOR</span></label>
-        <p id="aihint" class="map-note">Offline rules engine is always authoritative. AI requires a local server with an API key.</p>
+        <label class="toggle"><input id="ai" type="checkbox"/> <span>AI GAME MASTER (BETA)</span></label>
+        <label class="input-label" for="game-token">GAME_TOKEN (private — not stored)</label>
+        <input id="game-token" type="password" autocomplete="new-password" spellcheck="false" placeholder="Your Cloudflare GAME_TOKEN"/>
+        <p id="aihint" class="map-note">Offline rules engine is always authoritative. Enable AI to connect to the Cloudflare Worker.</p>
         <p class="footer-note">PROTOTYPE RULES V1 · SEED-REPLAYABLE · PERSONAL STUDY BUILD</p>
       </aside>
     </main>
