@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Initial proof of concept. This is not a complete implementation of the *Alien RPG* rules.
+**Status:** Checkpoint 002 — deterministic browser proof of concept plus Cloudflare Worker AI integration prepared. Cloudflare deployment and GitHub Pages publication still require account-side setup. This is not a complete implementation of *Alien RPG* rules.
 
 ## Design contract
 
@@ -14,9 +14,13 @@ A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initia
 
 ## Getting started
 
-After the prototype files land, run `node --test` for engine tests, then `node server.mjs` and open `http://localhost:8787`. No dependencies or build step are required. For optional AI, provide `OPENAI_API_KEY` and (optionally) `OPENAI_MODEL` as environment variables and enable the AI Director in-game.
+Run `node --test` for engine and Worker mock tests, then `node server.mjs` and open `http://localhost:8787`. No dependencies or build step are required for local browser play. The browser client now points at the separately deployed Cloudflare Worker rather than the legacy local `/api/director` endpoint.
 
-GitHub Pages can host the static offline game, but requires a separately hosted backend for AI calls. Never put an API key into browser code or this public repository.
+To use AI: deploy the `worker/` project to the existing Cloudflare Worker `dinosaur-rpg`; configure Cloudflare secrets `OPENAI_API_KEY` and `GAME_TOKEN`; enable **AI GAME MASTER (BETA)** and enter the token in the password field at runtime. The token is not persisted in the game save. Cloudflare hosting and OpenAI API usage may incur costs. The Worker uses a 30/min rate-limiting binding; that is not a monthly spend cap.
+
+See **[Deployment instructions](docs/DEPLOYMENT.md)** and **[AI GM architecture](docs/ARCHITECTURE-AI-GM.md)** for setup and security. GitHub Pages hosts the frontend once enabled; the Worker performs AI calls. Never put either secret into browser source or this public repository.
+
+**Current AI milestone:** interprets nonstandard commands into supported engine actions and narrates committed events. Complex exceptions and improvisations are explicitly marked unsupported until validated capabilities are added; full NPC state and AI-generated rule adjudication remain future work.
 
 ## Development priorities
 
