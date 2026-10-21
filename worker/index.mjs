@@ -11,7 +11,7 @@ const RULE_IDS = Object.freeze([
   'observation', 'movement', 'stealth', 'interaction',
   'inventory', 'rest', 'status', 'unknown'
 ]);
-const ROUTES = Object.freeze(['/v1/gm/turn', '/v1/gm/narrate', '/v1/gm/dialogue']);
+const ROUTES = Object.freeze(['/v1/gm/turn', '/v1/gm/narrate', '/v1/gm/dialogue', '/v1/gm/status']);
 const ALLOWED_ORIGINS = Object.freeze([
   'https://diabolicdonut.github.io',
   'http://localhost:8787',
@@ -189,7 +189,8 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   if (!ROUTES.includes(path)) return jsonResponse({ error: 'not_found' }, 404, headers);
   if (!trustedOrigin) return jsonResponse({ error: 'origin_forbidden' }, 403, headers);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
-  if (request.method !== 'POST') return jsonResponse({ error: 'method_not_allowed' }, 405, headers);
+  if (request.method !== 'POST' && !(path === '/v1/gm/status' && request.method === 'GET'))
+    return jsonResponse({ error: 'method_not_allowed' }, 405, headers);
 
   if (!env.GAME_TOKEN || !env.OPENAI_API_KEY)
     return jsonResponse({ error: 'service_not_configured' }, 503, headers);
@@ -197,6 +198,14 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   if (!authorization.startsWith('Bearer ') ||
       !tokenMatches(authorization.slice('Bearer '.length), env.GAME_TOKEN))
     return jsonResponse({ error: 'unauthorized' }, 401, headers);
+
+  // Authenticated, zero-cost readiness probe. A valid token and configured key do not
+  // guarantee that an OpenAI inference will succeed; the browser tracks that separately.
+  if (path === '/v1/gm/status' && request.method === 'GET')
+    return jsonResponse({ service: 'dinosaur-rpg', version: '004', authenticated: true,
+      openai_configured: true, model_call_verified: false,
+      models: { intent: modelFor('turn', env).model, narration: modelFor('narrate', env).model,
+        dialogue: modelFor('dialogue', env).model } }, 200, headers);
 
   const type = request.headers.get('Content-Type') || '';
   if (!type.toLowerCase().startsWith('application/json'))
