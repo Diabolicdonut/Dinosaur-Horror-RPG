@@ -7,7 +7,8 @@
   "vars": {
     "GM_MODEL_TURN": "gpt-6-luna",
     "GM_MODEL_NARRATE": "gpt-6.1-sol",
-    "GM_MODEL_DIALOGUE": "gpt-6.1-sol"
+    "GM_MODEL_DIALOGUE": "gpt-6.1-sol",
+    "GM_MODEL_ADJUDICATE": "gpt-6.1-sol"
   },
   "secrets": {
     "required": ["OPENAI_API_KEY", "GAME_TOKEN"]
