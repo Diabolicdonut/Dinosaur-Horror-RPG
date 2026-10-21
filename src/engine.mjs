@@ -87,6 +87,7 @@ export function newGame(seed = 1993) {
     },
     rooms: Object.fromEntries(Object.entries(SCENARIO.rooms).map(([id, room]) => [id, { items: [...room.items] }])),
     flags: { power: false, distress: false, beacon: false },
+    improvisation: { usedProps: [], barricades: {} },
     dinosaurs: [{ ...SCENARIO.initialDinosaur }],
     history: []
   };
@@ -122,7 +123,12 @@ export function view(s) {
     location: s.player.location, roomName: room.name, description: room.description,
     exits: room.exits.map(id => ({ id, name: SCENARIO.rooms[id].name })),
     items: s.rooms[s.player.location].items.map(id => ({ id, name: SCENARIO.itemNames[id] })),
-    features: room.features.slice(), inspectables: (room.observations || []).map(o => o.id), visibleDinos,
+    features: room.features.slice(), inspectables: (room.observations || []).map(o => o.id),
+    affordances: (room.affordances || []).filter(o => !((s.improvisation?.usedProps || []).includes(s.player.location + ':' + o.id)))
+      .map(o => ({ id: o.id, label: o.label, uses: [...o.uses] })),
+    barricades: room.exits.filter(id => (s.improvisation?.barricades || {})[[s.player.location, id].sort().join('|')] > 0)
+      .map(id => ({ exit: id, durability: s.improvisation.barricades[[s.player.location, id].sort().join('|')] })),
+    visibleDinos,
     inventory: s.player.inventory.map(id => ({ id, name: SCENARIO.itemNames[id] })),
     health: s.player.health, stress: s.player.stress,
     hidden: s.player.hidden, flashlightOn: s.player.flashlightOn,
@@ -159,16 +165,24 @@ function check(s, attr, skill, push, events, label) {
   return { ok: successes > 0 && panicSeverity < 9, successes, panicSeverity, pushed, noise: panicSeverity >= 6 ? 2 : 0 };
 }
 
-function predatorTurn(s, actionNoise, events) {
+function predatorTurn(s, actionNoise, events, noiseOrigin = s.player.location) {
   const dino = s.dinosaurs[0];
-  const proximity = distance(dino.location, s.player.location);
+  const proximity = distance(dino.location, noiseOrigin);
   const hearing = actionNoise >= 3 ? 2 : actionNoise >= 2 ? 1 : 0;
   if (proximity <= hearing && actionNoise > 0) {
-    dino.goal = s.player.location;
+    dino.goal = noiseOrigin;
     dino.alert = 3;
   }
   if (dino.alert > 0 && dino.goal) {
-    dino.location = nextToward(dino.location, dino.goal);
+    const next = nextToward(dino.location, dino.goal);
+    const barricadeKey = [dino.location, next].sort().join('|');
+    if ((s.improvisation?.barricades?.[barricadeKey] || 0) > 0) {
+      s.improvisation.barricades[barricadeKey]--;
+      dino.alert = Math.max(dino.alert, 1);
+      event(events, 'danger', 'Something powerful slams into a makeshift barrier nearby.');
+      if (s.improvisation.barricades[barricadeKey] === 0)
+        event(events, 'danger', 'Wood and metal tear free as the barricade gives way.');
+    } else dino.location = next;
     dino.alert--;
     if (dino.location === dino.goal) { dino.goal = null; dino.alert = 0; }
   } else if (d6(s) === 6) {
@@ -197,6 +211,124 @@ function predatorTurn(s, actionNoise, events) {
       event(events, 'end', 'You collapse in the ruined park. The island claims another victim.');
     }
   }
+}
+
+/** Canonical, extensible but tightly validated AI referee capabilities.
+ * All world changes occur here. The model may choose among known targets only.
+ * Return accepted=false without touching state when invalid or stale.
+ */
+export const REFEREE_KINDS = Object.freeze(['investigate', 'distract', 'barricade', 'conceal', 'clarify']);
+const REFEREE_RULES = Object.freeze({
+  investigate: { rule: 'observation', attribute: 'wits', skill: 'observation' },
+  distract: { rule: 'mobility', attribute: 'agility', skill: 'mobility' },
+  barricade: { rule: 'mobility', attribute: 'strength', skill: 'mobility' },
+  conceal: { rule: 'stealth', attribute: 'agility', skill: 'mobility' }
+});
+function rejectProposal(previous, message) {
+  return { state: structuredClone(previous), accepted: false, narratable: false,
+    events: [{ type: 'info', text: message }], rejected: true };
+}
+export function applyRefereeProposal(previous, proposal, playerInput = '') {
+  if (!isValidSave(previous)) throw new Error('Invalid or incompatible save state.');
+  if (previous.outcome !== 'playing') return rejectProposal(previous, 'This expedition has ended.');
+  if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal))
+    return rejectProposal(previous, 'The Game Master did not return a valid ruling.');
+  const { kind, target_id: target, resource_id: resource, rule_id: rule,
+    expected_turn: expectedTurn, expected_location: expectedLocation,
+    rationale, clarification } = proposal;
+  if (!REFEREE_KINDS.includes(kind) || typeof target !== 'string' || typeof resource !== 'string'
+    || target.length > 80 || resource.length > 80 || typeof rule !== 'string'
+    || typeof rationale !== 'string' || rationale.length > 300
+    || typeof clarification !== 'string' || clarification.length > 500)
+    return rejectProposal(previous, 'The Game Master ruling was malformed.');
+  if (expectedTurn !== previous.turn || expectedLocation !== previous.player.location)
+    return rejectProposal(previous, 'The situation changed before the ruling could be applied. Please try again.');
+  if (kind === 'clarify') {
+    return rejectProposal(previous, clarification || 'That improvised action needs further clarification.');
+  }
+  if (rule !== REFEREE_RULES[kind].rule)
+    return rejectProposal(previous, 'The proposed ruling used an incompatible rule.');
+  const roomId = previous.player.location;
+  const room = SCENARIO.rooms[roomId];
+  const used = previous.improvisation?.usedProps || [];
+  const props = (room.affordances || []).filter(p => !used.includes(roomId + ':' + p.id));
+  const prop = props.find(p => p.id === resource);
+  const targetProp = props.find(p => p.id === target);
+  const knownObservation = (room.observations || []).find(o => o.id === target);
+  if (kind === 'investigate' &&
+    !(knownObservation || targetProp || room.features.includes(target)
+      || previous.rooms[roomId].items.includes(target)) )
+    return rejectProposal(previous, 'That detail is not currently observable in this location.');
+  if (kind === 'investigate' && resource !== '')
+    return rejectProposal(previous, 'An investigation cannot expend an unrelated resource.');
+  if (kind === 'distract' &&
+    (!room.exits.includes(target) ||
+      !(prop?.uses.includes('distract') || (previous.player.inventory.includes(resource) && resource !== 'keycard'))))
+    return rejectProposal(previous, 'The proposed distraction needs a real nearby exit and a throwable resource.');
+  if (kind === 'barricade' &&
+    (!room.exits.includes(target) || !prop?.uses.includes('barricade') ||
+      (previous.improvisation?.barricades?.[[roomId, target].sort().join('|')] || 0) > 0))
+    return rejectProposal(previous, 'A barricade needs usable local cover and an unobstructed adjacent exit.');
+  if (kind === 'conceal' && (!targetProp?.uses.includes('cover') || resource !== ''))
+    return rejectProposal(previous, 'That is not an available place to take cover.');
+
+  const s = structuredClone(previous);
+  if (!s.improvisation) s.improvisation = { usedProps: [], barricades: {} };
+  const events = [];
+  const chosen = REFEREE_RULES[kind];
+  event(events, 'info', `GM ruling: ${kind} (${chosen.attribute} + ${chosen.skill}; ${rule}).`);
+  const result = check(s, chosen.attribute, chosen.skill, false, events, 'Improvised ' + kind);
+  let noise = result.noise;
+  let noiseOrigin = roomId;
+  if (kind === 'investigate') {
+    noise = Math.max(noise, 1);
+    if (result.ok) {
+      const description = knownObservation?.description ||
+        (targetProp ? `You examine ${targetProp.label} for signs of recent disturbance.` :
+          `You study the ${target} carefully, but uncover no additional confirmed details.`);
+      event(events, 'success', description);
+    } else event(events, 'info', 'The details remain unclear; the search takes precious time.');
+  } else if (kind === 'conceal') {
+    s.player.hidden = result.ok;
+    noise = Math.max(noise, result.ok ? 0 : 2);
+    event(events, result.ok ? 'success' : 'danger', result.ok
+      ? `You settle behind ${targetProp.label}, using it for cover.`
+      : `You cannot find effective concealment behind ${targetProp.label}.`);
+  } else if (kind === 'distract') {
+    if (prop) s.improvisation.usedProps.push(roomId + ':' + resource);
+    else s.player.inventory = s.player.inventory.filter(id => id !== resource);
+    noise = Math.max(noise, result.ok ? 3 : 2);
+    if (result.ok) noiseOrigin = target;
+    event(events, result.ok ? 'success' : 'danger', result.ok
+      ? `The thrown ${prop?.label || SCENARIO.itemNames[resource] || resource} clatters toward ${SCENARIO.rooms[target].name}, drawing attention away from your position.`
+      : `The thrown ${prop?.label || SCENARIO.itemNames[resource] || resource} strikes nearby; the sound gives away your own position.`);
+  } else if (kind === 'barricade') {
+    if (prop) s.improvisation.usedProps.push(roomId + ':' + resource);
+    noise = Math.max(noise, 2);
+    if (result.ok) {
+      const key = [roomId, target].sort().join('|');
+      s.improvisation.barricades[key] = Math.min(2, Math.max(1, result.successes));
+      event(events, 'success', `You wedge ${prop.label} across the passage to ${SCENARIO.rooms[target].name}. The obstacle may delay a pursuer.`);
+    } else event(events, 'danger', `You struggle to place ${prop.label}, but it will not hold against a determined animal.`);
+  }
+  s.turn++;
+  if (s.outcome === 'playing') predatorTurn(s, noise, events, noiseOrigin);
+  if (s.player.stress >= RULESET.stressMax && s.outcome === 'playing') {
+    s.outcome = 'dead';
+    event(events, 'end', 'Overwhelmed by terror, you can no longer continue the evacuation.');
+  }
+  s.history.push({
+    turn: s.turn,
+    command: String(playerInput || 'improvised ' + kind).slice(0, 400),
+    adjudication: { kind, target_id: target, resource_id: resource,
+      rule_id: rule, expected_turn: expectedTurn, expected_location: expectedLocation,
+      rationale: rationale.slice(0, 300) },
+    events: structuredClone(events), rng: s.rng,
+    position: s.player.location, dinosaurPosition: s.dinosaurs[0].location,
+    health: s.player.health, stress: s.player.stress
+  });
+  if (s.history.length > MAX_HISTORY) s.history.shift();
+  return { state: s, events, accepted: true, narratable: true, adjudicated: true };
 }
 
 export function step(previous, command) {
