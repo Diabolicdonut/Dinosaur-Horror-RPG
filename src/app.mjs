@@ -179,6 +179,7 @@ function render() {
   for (const exit of v.exits) actionButton($('exits'), '→ ' + exit.name, 'move ' + exit.id, 'move');
   for (const item of v.items) actionButton($('actions'), 'TAKE ' + item.name, 'take ' + item.id, 'action');
   for (const feature of v.features) actionButton($('actions'), 'USE ' + feature.toUpperCase(), 'use ' + feature, 'action');
+  for (const point of v.inspectables) actionButton($('actions'), 'INSPECT ' + point.toUpperCase(), 'look ' + point, 'action');
   actionButton($('actions'), 'HIDE', 'hide');
   actionButton($('actions'), 'WAIT', 'wait');
   drawMap();
@@ -248,6 +249,7 @@ async function execute(command) {
           input: command, location: view(state).roomName,
           exits: view(state).exits.map(x => x.id),
           features: view(state).features,
+          inspectables: view(state).inspectables,
           items: view(state).items.map(x => x.id),
           inventory: state.player.inventory
         });
@@ -265,13 +267,15 @@ async function execute(command) {
     const result = step(state, input);
     state = result.state;
     record('engine_step', { submittedCommand: sanitize(command), parsedAction: sanitize(input),
-      accepted: result.accepted, turn: state.turn, location: state.player.location,
+      accepted: result.accepted, narratable: Boolean(result.narratable),
+      turn: state.turn, location: state.player.location,
       outcome: state.outcome, events: sanitize(result.events) });
     displayEvents(result.events);
     if (result.accepted) {
       storageWrite(SAVE_KEY, JSON.stringify(state));
     }
-    if ($('ai').checked && result.accepted && $('game-token').value.trim()) {
+    // Successful time-free observations are narratable even though they do not advance the simulation.
+    if ($('ai').checked && (result.accepted || result.narratable) && secret()) {
       try {
         const response = await aiRequest('narrate', {
           location: view(state).roomName,
