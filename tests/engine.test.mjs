@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { SCENARIO } from '../src/scenario.mjs';
-import { newGame, step, view, parseAction, isValidSave, applyRefereeProposal, REFEREE_KINDS } from '../src/engine.mjs';
+import { newGame, step, view, parseAction, isValidSave, applyRefereeProposal, REFEREE_KINDS, repairLegacyBarricadeSave } from '../src/engine.mjs';
 
 test('new incidents have canonical initial state and valid schema', () => {
   const s = newGame(1993);
@@ -262,7 +262,8 @@ test('legacy checkpoint 005 saves remain compatible and upgrade on next improvis
   assert.equal(isValidSave(old),true);
   const applied = applyRefereeProposal(old,referee('barricade','utility','rolling_cabinet'));
   assert.equal(applied.accepted,true);
-  assert(applied.state.improvisation.usedProps.includes('control:rolling_cabinet'));
+  const succeeded = applied.events.some(e => e.type === 'success' && e.text.includes('wedge'));
+  assert.equal(applied.state.improvisation.usedProps.includes('control:rolling_cabinet'), succeeded);
 });
 
 test('referee rejects arbitrary world patches even if an allowed action is included', () => {
@@ -300,4 +301,92 @@ test('scene prop inspections are available without consuming objects or turns', 
   assert.equal(r.narratable,true);
   assert.equal(r.state.turn,0);
   assert.deepEqual(r.state,s);
+});
+
+test('real checkpoint 006 seed-1993 sequence preserves cabinet after failed barricade', () => {
+  const distraction = applyRefereeProposal(newGame(1993),
+    referee('distract','utility','paperweight'),'I throw the metal paperweight into the service corridor to distract anything nearby.');
+  assert.equal(distraction.accepted,true);
+  assert(distraction.events.some(e=>e.text.includes('clatters toward')));
+  assert(!distraction.events.some(e=>e.text.includes('drawing attention away')));
+  const barricade = applyRefereeProposal(distraction.state,
+    referee('barricade','utility','rolling_cabinet','control',1),
+    'I wedge the rolling cabinet across the passage to the service corridor.');
+  assert.equal(barricade.accepted,true,'failed roll still costs a turn');
+  assert(barricade.events.some(e=>e.text.includes('cannot secure')));
+  assert(!barricade.state.improvisation.usedProps.includes('control:rolling_cabinet'));
+  assert(view(barricade.state).affordances.some(p=>p.id==='rolling_cabinet'));
+  const conceal = applyRefereeProposal(barricade.state,
+    referee('conceal','rolling_cabinet','','control',2),
+    'I hide behind the rolling cabinet.');
+  assert.equal(conceal.accepted,true, 'cover is still available even after failure');
+  assert.equal(conceal.state.turn,3);
+  assert(conceal.events.some(e=>e.type==='roll'));
+});
+test('checkpoint 006 affected saved session is repaired in place without any RNG or time changes', () => {
+  const throwResult = applyRefereeProposal(newGame(1993),
+    referee('distract','utility','paperweight'));
+  const bad = applyRefereeProposal(throwResult.state,
+    referee('barricade','utility','rolling_cabinet','control',1)).state;
+  // Simulate v006 previous bug, as recorded in the user's debug export.
+  bad.improvisation.usedProps.push('control:rolling_cabinet');
+  delete bad.improvisation.placedProps;
+  const frozen = structuredClone(bad);
+  const repaired = repairLegacyBarricadeSave(bad);
+  assert.deepEqual(bad, frozen, 'migration must not mutate original saved game');
+  assert(repaired.repaired.some(x=>x.includes('rolling_cabinet')));
+  assert(!repaired.state.improvisation.usedProps.includes('control:rolling_cabinet'));
+  assert.equal(repaired.state.turn, bad.turn);
+  assert.equal(repaired.state.rng, bad.rng);
+  assert.deepEqual(repaired.state.dinosaurs,bad.dinosaurs);
+  assert.deepEqual(repaired.state.history,bad.history);
+  assert.equal(repairLegacyBarricadeSave(repaired.state).repaired.length,0,
+    'repaired save must stay repaired on subsequent reloads');
+  const used = applyRefereeProposal(repaired.state,
+    referee('conceal','rolling_cabinet','','control',2));
+  assert.equal(used.accepted,true);
+});
+test('a successfully installed barricade is still physical cover, but not a free reusable barricading prop', () => {
+  let built;
+  for(let seed=1;seed<150;seed++){
+    const attempt=applyRefereeProposal(newGame(seed),referee('barricade','utility','rolling_cabinet'));
+    if(attempt.events.some(e=>e.type==='success' && e.text.includes('wedge'))) { built=attempt;break; }
+  }
+  assert(built);
+  assert(built.state.improvisation.usedProps.includes('control:rolling_cabinet'));
+  assert.equal(built.state.improvisation.placedProps['control|utility'],'rolling_cabinet');
+  const cover=view(built.state).affordances.find(p=>p.id==='rolling_cabinet');
+  assert(cover);
+  assert(cover.uses.includes('cover'));
+  assert(!cover.uses.includes('barricade'));
+  const conceal=applyRefereeProposal(built.state,referee('conceal','rolling_cabinet','','control',1));
+  assert.equal(conceal.accepted,true);
+  const repeat=applyRefereeProposal(built.state,referee('barricade','lobby','rolling_cabinet','control',1));
+  assert.equal(repeat.accepted,false,'one installed cabinet cannot obstruct two doors');
+});
+test('successful barricade save migration reconstructs installed cover without reroll', () => {
+  let pre;
+  for(let seed=1;seed<150;seed++){
+    const a=applyRefereeProposal(newGame(seed),referee('barricade','utility','rolling_cabinet'));
+    if(a.state.improvisation.barricades['control|utility']>0){pre=a.state;break;}
+  }
+  assert(pre);
+  delete pre.improvisation.placedProps;
+  const migrated=repairLegacyBarricadeSave(pre);
+  assert(migrated.repaired.some(x=>x.includes('cover metadata')));
+  assert.equal(migrated.state.improvisation.placedProps['control|utility'],'rolling_cabinet');
+  assert(view(migrated.state).affordances.find(p=>p.id==='rolling_cabinet')?.uses.includes('cover'));
+});
+test('successful investigation about tampering yields distinct evidence, not generic room introduction', () => {
+  let result=null;
+  for(let seed=1;seed<200;seed++){
+    const a=applyRefereeProposal(newGame(seed),referee('investigate','consoles',''));
+    if(a.events.some(e=>e.type==='success')){result=a;break;}
+  }
+  assert(result);
+  const text=result.events.find(e=>e.type==='success').text;
+  assert(text.includes('pried panels'));
+  assert(text.includes('cannot tell you whether'));
+  assert.notEqual(text,SCENARIO.rooms.control.observations.find(o=>o.id==='consoles').description);
+  assert(!text.includes('Velociraptor'));
 });
