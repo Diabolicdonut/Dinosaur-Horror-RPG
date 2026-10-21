@@ -22,3 +22,12 @@ test('browser has a token persistence opt-in, working status, test, and debug ex
   assert(app.includes("storageWrite(TOKEN_KEY, secret())"));
   assert(app.includes("initialize();"));
 });
+
+test('client routes improvised actions through typed Sol referee instead of treating them as generic use', () => {
+  assert(app.includes("applyRefereeProposal("));
+  assert(app.includes("aiRequest('adjudicate'"));
+  assert(app.includes("const IMPROVISED_WORDS"));
+  assert(app.includes("expected_turn") === false, 'client must not supply model-selected mechanical results');
+  assert(app.includes('parsedAction: result.adjudicated'));
+  assert(app.includes("Worker v"));
+});
