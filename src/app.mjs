@@ -69,6 +69,12 @@ async function checkConnection() {
     const response = await result.json();
     if (response.authenticated !== true || response.openai_configured !== true)
       throw new Error('Gateway is reachable but its credentials are not fully configured.');
+    if (Number(response.version) < 6 || !response.models?.adjudicate) {
+      setConnection('error', 'UPDATE WORKER',
+        'Worker v' + String(response.version || '?') + ' lacks the new AI referee. Paste and deploy worker/index.mjs.',
+        { version: response.version || null, modelVerified: false, lastHttpStatus: result.status });
+      return false;
+    }
     setConnection('ready', 'GATEWAY READY',
       'Worker v' + String(response.version || '?') + ': token accepted; OpenAI model call not yet verified.', {
       version: response.version || null, modelVerified: false,
