@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint 004 — browser game with AI readiness test, optional locally remembered GAME_TOKEN, auto-resume and diagnostic export. User has reported manually deploying the Worker; the new checkpoint 004 Worker source must be pasted again for its authenticated status endpoint. GitHub Pages deployment is not independently verified. This is not a complete implementation of *Alien RPG* rules.
+**Status:** Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Design contract
 
@@ -51,3 +51,13 @@ The AI can interpret an inspection such as *“Check outside the window”* as a
 Targeted inspections are **free**: they do not advance turn count, roll RNG, move the predator, or change survival state. Their resolved events can still be narratively enriched by the existing Cloudflare AI narration endpoint. Unknown inspection targets return a concrete "cannot get a clear look" message and suggest available inspectables rather than claiming an imaginary observation.
 
 Inspect buttons show available authored targets alongside existing travel/action controls. New engine regression tests cover the specific debug-report reproduction and prevent inadvertent revelation of remote dinosaur locations. **Only GitHub Pages source changed; no new Worker code needs deploying.** See [Checkpoint audit](audit.md) for the root cause and validation.
+
+## Checkpoint 006: AI referee with deterministic consequences
+
+The game now supports several improvised natural-language actions. `gpt-6.1-sol` returns a **typed proposal** through `POST /v1/gm/adjudicate`; the deterministic engine independently verifies that the requested prop, adjacent exit, skill and world state are valid before it resolves dice and effects. Action history preserves the accepted proposal and resulting dice for replay and debug reports.
+
+Try **"I throw the paperweight into the service corridor"**, **"I wedge the rolling cabinet across the passage to the corridor"**, **"I hide behind the cabinet"**, or **"I investigate the control consoles"** while in the Visitor Center Control Room. Each of the seven prototype areas contains a small set of grounded environment affordances. Barricades can delay the raptor, thrown objects can divert noise, and used objects persist in saves. The engine continues to control hidden predator locations, RNG, stress, injuries, turn costs and NPC/world state.
+
+This is an intentionally **bounded first referee layer**, not the ability to create arbitrary items, chain many actions in one turn, or improvise complete combat rules. Unsupported compound actions are refused with clarification rather than invented outcomes. See **[Referee contract and examples](docs/REFEREE-CONTRACT.md)**.
+
+**Deployment:** GitHub Pages receives updated frontend files through `main` publishing; **Cloudflare does not auto-sync**. Copy the [latest Worker source](https://raw.githubusercontent.com/Diabolicdonut/Dinosaur-Horror-RPG/main/worker/index.mjs) into the existing `dinosaur-rpg` Worker, then deploy. **TEST AI CONNECTION** should report Worker version **006**; the existing `OPENAI_API_KEY` and `GAME_TOKEN` secrets remain unchanged. Live end-to-end model adjudication still needs player verification.
