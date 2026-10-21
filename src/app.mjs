@@ -1,5 +1,5 @@
 import { SCENARIO } from './scenario.mjs';
-import { newGame, step, view, isValidSave, parseAction } from './engine.mjs';
+import { newGame, step, view, isValidSave, parseAction, RULESET, ENGINE_VERSION } from './engine.mjs';
 import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs';
 
 const $ = id => document.getElementById(id);
@@ -342,7 +342,8 @@ $('export').addEventListener('click', () => {
 $('export-debug').addEventListener('click', () => {
   record('debug_export', { turn: state.turn, connectionStatus: connection.status });
   const report = makeDebugReport({
-    state: structuredClone(state), scenario: SCENARIO, transcript: structuredClone(transcript),
+    state: structuredClone(state), scenario: SCENARIO,
+    rules: { version: ENGINE_VERSION, config: RULESET }, transcript: structuredClone(transcript),
     diagnostic: trace.snapshot(secret()), aiStatus: structuredClone(connection),
     token: secret(), tokenRemembered: $('remember-token').checked,
     aiEnabled: $('ai').checked, savedGameAvailable: Boolean(storageRead(SAVE_KEY)),
