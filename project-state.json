@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.3.0",
-  "checkpoint": "003",
-  "state": "model_routing_implemented_worker_source_committed_awaiting_manual_cloudflare_deployment",
+  "version": "0.4.0",
+  "checkpoint": "004",
+  "state": "ai_connectivity_diagnostics_autoresume_committed__requires_manual_worker_refresh",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,22 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 25,
-  "api_status": "Worker sources and tests implemented, not yet live-verified against Cloudflare or OpenAI",
+  "automated_tests": 34,
+  "api_status": "User reports Cloudflare Worker deployed at earlier revision; new authenticated /v1/gm/status endpoint is not verified live and requires repasting the latest Worker source",
   "next_actions": [
-    "User: Paste current worker/index.mjs into existing Cloudflare dinosaur-rpg dashboard and deploy; secrets OPENAI_API_KEY and GAME_TOKEN already established",
-    "User: Enable GitHub Pages from main/(root)",
-    "Verify /health and token-authenticated test; confirm GPT-6 models available under OpenAI API account",
-    "Implement engine-validated GM adjudication as typed rule proposals with Sol medium/high reasoning",
-    "Add NPC scene simulation and per-importance dialogue routing",
-    "Browser smoke and exact Alien stress/panic source comparison"
+    "User: Re-paste current worker/index.mjs in existing Cloudflare dinosaur-rpg Worker to enable GET /v1/gm/status; deploy",
+    "User: Reload published browser game and enable AI, then click TEST AI CONNECTION using GAME_TOKEN",
+    "User: Try movement, unusual prose, and export debug JSON if repeated intro or AI error recurs",
+    "Developer: Verify actual Pages/Worker end-to-end, API model availability, and mobile browser UX",
+    "Developer: Expand engine-validated AI GM rules adjudication and NPC state persistence"
   ],
   "acceptance_criteria": [
-    "node --test passes",
-    "node --check succeeds for all JavaScript modules",
-    "No AI state mutation",
-    "Deterministic replay across identical action streams",
-    "Worker mock tests pass for authorization, origin, throttling, schemas and provider failures",
-    "No GAME_TOKEN committed or stored in save",
-    "Every live AI route selects a server-approved model and reasoning effort; AI output cannot select Astra or mutate deterministic state"
+    "GitHub Actions validates 34 engine, Worker, redaction, and UI contract tests",
+    "AI indicator distinguishes gateway-authenticated from successful OpenAI inference",
+    "Token persists only when explicitly opted-in via browser localStorage; never in public HTML, game save or diagnostic file",
+    "Debug export includes full game state, scenario, rules version, RNG, history, client/runtime errors and AI request/response metadata",
+    "Reload restores a valid autosaved session instead of replaying initial scenario prompt",
+    "No AI request may directly mutate deterministic world state"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,8 +40,8 @@
     "GAME_TOKEN"
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
-  "worker_deployment": "NOT VERIFIED: user manually pastes worker/index.mjs into Cloudflare dinosaur-rpg Worker and deploys; Git-connected or Wrangler optional",
-  "pages_deployment": "NOT VERIFIED: GitHub Pages setup remains user action",
+  "worker_deployment": "USER REPORTED earlier manual Cloudflare deployment; new checkpoint 004 worker/index.mjs update NOT YET CONFIRMED deployed",
+  "pages_deployment": "GitHub Pages availability has not been verified in this session",
   "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -61,5 +59,15 @@
     },
     "rule_adjudication": "gpt-6.1-sol medium/high PLANNED not implemented",
     "escalation": "gpt-6-astra opt-in only NOT implemented"
-  }
+  },
+  "browser_controls": [
+    "AI connection indicator",
+    "TEST AI CONNECTION authenticated readiness",
+    "Remember GAME_TOKEN in localStorage opt-in",
+    "Forget GAME_TOKEN",
+    "Automatic save-game restore on page load",
+    "EXPORT SAVE",
+    "EXPORT DEBUG full state and sanitized trace"
+  ],
+  "canonical_debugging": "docs/DEBUGGING.md"
 }
