@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#09130f"/>
   <meta name="description" content="Dinosaur Horror RPG: a deterministic Jurassic Park survival-horror browser prototype."/>
   <title>Containment Lost — Dinosaur Horror RPG</title>
-  <link rel="stylesheet" href="./src/style.css"/>
+  <link rel="stylesheet" href="./src/style.css?v=006.2"/>
 </head>
 <body>
   <div class="app">
@@ -74,10 +74,11 @@
         <label class="toggle remember-token"><input id="remember-token" type="checkbox"/> <span>REMEMBER TOKEN ON THIS DEVICE</span></label>
         <button id="forget-token" type="button" class="forget-token">FORGET SAVED TOKEN</button>
         <p id="aihint" class="map-note">The token can be saved in this browser only, never in public HTML or debug exports. Use on a trusted device.</p>
-        <p class="footer-note">PROTOTYPE RULES V1 · SEED-REPLAYABLE · PERSONAL STUDY BUILD</p>
+        <p class="footer-note">PROTOTYPE RULES V1 · SEED-REPLAYABLE · <strong id="client-build">BUILD 006.2 · LOADING</strong></p>
+        <button type="button" id="refresh-code" class="small-btn" title="Reload latest deployed game files without clearing your local save or token">GET LATEST GAME CODE</button>
       </aside>
     </main>
   </div>
-  <script type="module" src="./src/app.mjs"></script>
+  <script type="module" src="./src/app.mjs?v=006.2"></script>
 </body>
 </html>
