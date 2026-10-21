@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint 006.1 — live adjudication verified; cover persistence and saved-state recovery repaired. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Design contract
 
@@ -61,3 +61,15 @@ Try **"I throw the paperweight into the service corridor"**, **"I wedge the roll
 This is an intentionally **bounded first referee layer**, not the ability to create arbitrary items, chain many actions in one turn, or improvise complete combat rules. Unsupported compound actions are refused with clarification rather than invented outcomes. See **[Referee contract and examples](docs/REFEREE-CONTRACT.md)**.
 
 **Deployment:** GitHub Pages receives updated frontend files through `main` publishing; **Cloudflare does not auto-sync**. Copy the [latest Worker source](https://raw.githubusercontent.com/Diabolicdonut/Dinosaur-Horror-RPG/main/worker/index.mjs) into the existing `dinosaur-rpg` Worker, then deploy. **TEST AI CONNECTION** should report Worker version **006**; the existing `OPENAI_API_KEY` and `GAME_TOKEN` secrets remain unchanged. Live end-to-end model adjudication still needs player verification.
+
+## Checkpoint 006.1 — Verified live AI test and repaired barricade behavior
+
+The first user-supplied **live** Cloudflare v006 report demonstrated correctly authenticated Sol adjudication and narration for distraction, barricade and investigation. It also exposed a deterministic bug: **failing to barricade an exit removed the heavy cabinet entirely**, so the player's next attempt to hide behind it was rejected.
+
+This is fixed on GitHub Pages. Failed barricades keep the original cover available; a successful installed barricade remains available to hide behind (but not to reuse at a second exit). **Previously saved games are automatically repaired from their recorded action history when the browser reloads**, preserving all rolls, turns, resources and dinosaur positions.
+
+Also improved: distraction narration no longer presumes a dinosaur has heard it, and a successful console tampering search offers specific, bounded findings instead of repeating the generic room description.
+
+**No Cloudflare Worker update is necessary** for Checkpoint 006.1. Refresh the GitHub Pages website (Ctrl+Shift+R), then retry hiding behind the rolling cabinet. Use **EXPORT DEBUG** if any inconsistency remains. Reconciliation is conservative for truncated action journals and will not invent missing history.
+
+See [audit](audit.md) for the full observed turn-by-turn results and follow-up.
