@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { handleRequest, SCHEMAS } from '../worker/index.mjs';
+import { handleRequest, SCHEMAS, MODEL_ROUTING, modelFor } from '../worker/index.mjs';
 
 const BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
 const ORIGIN = 'https://diabolicdonut.github.io';
@@ -35,6 +35,7 @@ const fakeUpstream = (object) => async (url, options) => {
   assert.equal(url, 'https://api.openai.com/v1/responses');
   assert.equal(options.headers.Authorization, 'Bearer ' + ENV.OPENAI_API_KEY);
   const req = JSON.parse(options.body);
+  assert(['gpt-6-luna', 'gpt-6.1-sol', 'gpt-6-astra'].includes(req.model));
   assert.equal(req.store, false);
   assert.equal(req.text.format.strict, true);
   assert.equal(req.text.format.type, 'json_schema');
@@ -126,4 +127,47 @@ test('upstream failure exposes no provider error or secret', async () => {
 test('unsupported routes never forward requests to OpenAI', async () => {
   const r = await handleRequest(mkRequest('/v1/gm/evil'), ENV, async () => { throw Error('unreachable'); });
   assert.equal(r.status, 404);
+});
+
+test('all existing GM routes choose deliberate defaults, not legacy single-model setting', () => {
+  assert.deepEqual(modelFor('turn'), { model: 'gpt-6-luna', effort: 'none', max_output_tokens: 500 });
+  assert.deepEqual(modelFor('narrate'), { model: 'gpt-6.1-sol', effort: 'low', max_output_tokens: 850 });
+  assert.deepEqual(modelFor('dialogue'), { model: 'gpt-6.1-sol', effort: 'medium', max_output_tokens: 1600 });
+  assert.equal(MODEL_ROUTING.turn.model, 'gpt-6-luna');
+  assert.equal(modelFor('turn', { OPENAI_MODEL: 'gpt-6-astra' }).model, 'gpt-6-luna');
+});
+test('explicit Sol/Astra override cannot send unsupported none reasoning', () => {
+  assert.deepEqual(modelFor('turn', { GM_MODEL_TURN: 'gpt-6.1-sol' }), { model: 'gpt-6.1-sol', effort: 'low', max_output_tokens: 500 });
+  assert.equal(modelFor('turn', { GM_MODEL_TURN: 'gpt-6-astra' }).effort, 'low');
+  assert.throws(() => modelFor('turn', { GM_MODEL_TURN: 'unbounded-client-value' }));
+  assert.throws(() => modelFor('not_a_route'));
+});
+test('live Request body uses the selected model and effort for each route', async () => {
+  const cases = [
+    ['/v1/gm/turn', { payload: turn }, intent, 'gpt-6-luna', 'none'],
+    ['/v1/gm/narrate', { payload: { events: ['A generator starts.'], location: 'shed' } }, { text: 'The generator rattles to life.' }, 'gpt-6.1-sol', 'low'],
+    ['/v1/gm/dialogue', { payload: { npc: 'InGen field medic', input: 'Can you help?' } }, { text: 'Maybe.', proposed_fact: '' }, 'gpt-6.1-sol', 'medium']
+  ];
+  for (const [path, payload, output, model, effort] of cases) {
+    const upstream = async (url, options) => {
+      const req = JSON.parse(options.body);
+      assert.equal(req.model, model);
+      assert.equal(req.reasoning.effort, effort);
+      assert(req.max_output_tokens > 0);
+      return new Response(JSON.stringify({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(output) }] }] }), { status: 200 });
+    };
+    const response = await handleRequest(mkRequest(path, payload), ENV, upstream);
+    assert.equal(response.status, 200, path);
+  }
+});
+test('player input cannot select an expensive GM model directly', async () => {
+  const requested = { ...turn, model: 'gpt-6-astra', reasoning: { effort: 'max' } };
+  const upstream = async (_, options) => {
+    const req = JSON.parse(options.body);
+    assert.equal(req.model, 'gpt-6-luna');
+    assert.equal(req.reasoning.effort, 'none');
+    return new Response(JSON.stringify({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(intent) }] }] }), { status: 200 });
+  };
+  const res = await handleRequest(mkRequest('/v1/gm/turn', { payload: requested }), ENV, upstream);
+  assert.equal(res.status, 200);
 });
