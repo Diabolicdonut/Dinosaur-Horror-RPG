@@ -233,6 +233,10 @@ export function applyRefereeProposal(previous, proposal, playerInput = '') {
   if (previous.outcome !== 'playing') return rejectProposal(previous, 'This expedition has ended.');
   if (!proposal || typeof proposal !== 'object' || Array.isArray(proposal))
     return rejectProposal(previous, 'The Game Master did not return a valid ruling.');
+  const proposalKeys = new Set(['kind', 'target_id', 'resource_id', 'rule_id',
+    'expected_turn', 'expected_location', 'rationale', 'clarification']);
+  if (Object.keys(proposal).some(key => !proposalKeys.has(key)) || Object.keys(proposal).length !== proposalKeys.size)
+    return rejectProposal(previous, 'The referee proposal attempted an unsupported state operation.');
   const { kind, target_id: target, resource_id: resource, rule_id: rule,
     expected_turn: expectedTurn, expected_location: expectedLocation,
     rationale, clarification } = proposal;
@@ -505,7 +509,16 @@ export function step(previous, command) {
 }
 
 export function isValidSave(s) {
-  return !!(s && s.version === ENGINE_VERSION && s.scenario === SCENARIO.id &&
+  const i = s?.improvisation;
+  const improvOk = i === undefined || (
+    i && typeof i === 'object' && !Array.isArray(i) &&
+    Array.isArray(i.usedProps) && i.usedProps.length <= 100 &&
+    i.usedProps.every(x => typeof x === 'string' && x.length <= 100) &&
+    i.barricades && typeof i.barricades === 'object' && !Array.isArray(i.barricades) &&
+    Object.entries(i.barricades).length <= 50 &&
+    Object.entries(i.barricades).every(([k,v]) =>
+      k.length <= 100 && Number.isInteger(v) && v >= 0 && v <= 2));
+  return !!(improvOk && s && s.version === ENGINE_VERSION && s.scenario === SCENARIO.id &&
     s.player && SCENARIO.rooms[s.player.location] && Array.isArray(s.player.inventory) &&
     Number.isInteger(s.rng) && s.rng >= 0 && s.rng <= 4294967295 &&
     Number.isInteger(s.turn) && s.turn >= 0 && s.turn <= 1000000 &&
