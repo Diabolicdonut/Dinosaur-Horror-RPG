@@ -94,11 +94,17 @@ test('dialogue responds with a proposal, never a committed new fact', async () =
   assert.equal(res.status, 200);
   assert.equal((await res.json()).proposed_fact, '');
 });
-test('missing or failing rate limiter blocks API calls', async () => {
+test('dashboard paste mode works with the two secrets and no rate-limiter binding', async () => {
+  const env = { OPENAI_API_KEY: ENV.OPENAI_API_KEY, GAME_TOKEN: ENV.GAME_TOKEN };
+  const r = await handleRequest(mkRequest('/v1/gm/turn'), env, fakeUpstream(intent));
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), intent);
+});
+test('configured rate limiter rejects excessive requests or failures', async () => {
   for (const env of [
-    { ...ENV, GM_LIMITER: undefined },
     { ...ENV, GM_LIMITER: { async limit() { return { success: false }; } } },
-    { ...ENV, GM_LIMITER: { async limit() { throw Error('service down'); } } }
+    { ...ENV, GM_LIMITER: { async limit() { throw Error('service down'); } } },
+    { ...ENV, GM_LIMITER: {} }
   ]) {
     const r = await handleRequest(mkRequest('/v1/gm/turn'), env);
     assert([429, 503].includes(r.status));
