@@ -94,3 +94,58 @@ test('parser accepts standard command phrases and push prefix', () => {
   assert.deepEqual(parseAction('push use generator'), { kind: 'use', target: 'generator', push: true });
   assert.deepEqual(parseAction('sneak to jungle'), { kind: 'sneak', target: 'jungle', push: false });
 });
+
+test('reported window inspection is resolved with fresh scene facts and no time or RNG change', () => {
+  const initial = newGame(1993);
+  const check = step(initial, { action: 'look', target: 'window', push: false });
+  assert.equal(check.accepted, false, 'a free observation should not consume a turn');
+  assert.equal(check.narratable, true, 'a resolved observation should be narratable');
+  assert.equal(check.state.turn, 0);
+  assert.equal(check.state.rng, initial.rng);
+  assert.deepEqual(check.state, initial, 'inspection must not mutate world or predator');
+  assert(check.events.some(e => e.text.includes('rain-streaked reinforced glass')));
+  assert(!check.events.some(e => e.text === SCENARIO.rooms.control.description));
+});
+test('natural inspection commands work offline without requiring an AI call', () => {
+  const phrases = [
+    'Check outside the window.',
+    'look outside the window',
+    'look through the window',
+    'look out the window',
+    'inspect the window',
+    'peer through the glass'
+  ];
+  const state = newGame(11);
+  for (const phrase of phrases) {
+    const parsed = parseAction(phrase);
+    assert.equal(parsed.kind, 'look', phrase);
+    const result = step(state, phrase);
+    assert.equal(result.narratable, true, phrase);
+    assert(result.events[0].text.includes('forecourt'), phrase);
+    assert.deepEqual(result.state, state, phrase);
+  }
+});
+test('targeted observations are grounded, discoverable, and cannot reveal remote dinosaur positions', () => {
+  const state = newGame(12);
+  assert(view(state).inspectables.includes('window'));
+  assert(!('dinosaurs' in view(state)));
+  assert(!('rng' in view(state)));
+  const unknown = step(state, 'look hidden dinosaur beyond the trees');
+  assert.equal(unknown.narratable, false);
+  assert(unknown.events[0].text.includes('cannot get a clear look'));
+  assert(!JSON.stringify(unknown.events).includes('paddock'));
+});
+test('room-local feature inspection and taken items use current authoritative state', () => {
+  const state = newGame(13);
+  const terminal = step(state, { action: 'look', target: 'terminal' });
+  assert.equal(terminal.narratable, true);
+  assert(terminal.events[0].text.includes('dark monitors'));
+  let lobby = step(state, 'move lobby').state;
+  const before = step(lobby, 'look reception');
+  assert(before.events.some(x => x.text.includes('staff access card')));
+  lobby = step(lobby, 'take keycard').state;
+  const after = step(lobby, 'look reception');
+  assert(!after.events.some(x => x.text.includes('staff access card')));
+  assert.equal(after.narratable, true);
+  assert.equal(after.state.turn, lobby.turn);
+});
