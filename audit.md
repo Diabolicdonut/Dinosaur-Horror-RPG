@@ -1,5 +1,36 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 005 — 2026-10-21
+
+**Report:** User typed “Check outside the window” in the control room. Opening-room description repeated, no apparent response. User supplied a full redacted checkpoint 004 diagnostic file.
+
+### Root cause proven by the diagnostic file
+
+- Game was at seed 1993, turn 0, room `control`.
+- Worker was **online and authenticated** (v004 status request HTTP 200); OpenAI was **actually responding**.
+- Intent parsing HTTP 200 (~2255 ms): `{"action":"look","target":"window","push":false,"rule_id":"observation"}`.
+- Engine emitted only `SCENARIO.rooms.control.description`, with `accepted:false`, unchanged turn/RNG.
+- Browser narrator gated on `result.accepted` and therefore never attempted narration.
+- Failure was an **unimplemented targeted observation and overly narrow narrative eligibility condition**, not an OpenAI/Cloudflare configuration problem.
+
+### Changes
+
+- `src/scenario.mjs`: authored location-specific static observations for each of the 7 rooms (rain-streaked control-room window, consoles, radio, reception, exhibits, maintenance door, generator, jungle, gate, beacon, etc.). No unseen predator positions or unsupported plot facts exposed.
+- `src/engine.mjs`: support `look <target>` and close English variants without AI, resolve target against visible authored `observations`, suggest local inspectable targets on unknown requests, and return `narratable:true` for resolved free observations. **`accepted` remains false for free actions by design**; no time, dice, inventory, stress or dinosaur movement changes.
+- `src/app.mjs`: send available inspection IDs to AI for intent resolution, display **INSPECT** quick actions, and trigger AI narration when either a time-consuming action was accepted or a free observation was resolved.
+- `tests/engine.test.mjs`: four additional regression tests (exact AI window object, natural inspection phrases, no remote predator leakage, and receipt of item state after pickup), total suite expected **38 tests**.
+- README and state controller updated; no Cloudflare Worker code touched in this checkpoint.
+
+### Validation / boundaries
+
+- Automated GitHub Actions run for regression tests completed successfully at commit `02ddb8c030c22fe9c5eada63938beedc1dd1c32e`.
+- GitHub Pages auto-publication and live post-fix AI narration have **not** been independently browser verified.
+- This is a focused fix, **not** a generic arbitrary-action GM adjudicator: only authored observation targets resolve; unknown targets receive a safe clarification rather than fabricated outcomes.
+- Because the existing Worker already returned the correct `look/window` action, **no fresh manual Cloudflare paste is required**.
+
+**Next:** `confirm-in-browser-window-observation-and-expand-perception-contract`.
+
+
 ## Checkpoint 004 — 2026-10-21
 
 **User request:** Display AI connectivity/active-state, optionally remember GAME_TOKEN across future site visits, and export complete diagnostics to investigate game anomalies, including an earlier report that the introductory prompt repeated.
