@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.2.0",
-  "checkpoint": "002",
-  "state": "worker_source_and_browser_gateway_committed__awaiting_cloudflare_deployment",
+  "version": "0.3.0",
+  "checkpoint": "003",
+  "state": "model_routing_implemented_worker_source_committed_awaiting_manual_cloudflare_deployment",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,13 +13,14 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 21,
-  "api_status": "optional backend implemented; cannot live-test without a server-side API key",
+  "automated_tests": 25,
+  "api_status": "Worker sources and tests implemented, not yet live-verified against Cloudflare or OpenAI",
   "next_actions": [
-    "User: Connect Cloudflare existing dinosaur-rpg Worker to GitHub repo with root directory worker/ and deploy",
-    "User: Enable GitHub Pages main /root",
-    "Verify deployed /health and a token-authenticated intent request",
-    "Add engine-validated open-ended GM proposal and NPC dialogue persistence",
+    "User: Paste current worker/index.mjs into existing Cloudflare dinosaur-rpg dashboard and deploy; secrets OPENAI_API_KEY and GAME_TOKEN already established",
+    "User: Enable GitHub Pages from main/(root)",
+    "Verify /health and token-authenticated test; confirm GPT-6 models available under OpenAI API account",
+    "Implement engine-validated GM adjudication as typed rule proposals with Sol medium/high reasoning",
+    "Add NPC scene simulation and per-importance dialogue routing",
     "Browser smoke and exact Alien stress/panic source comparison"
   ],
   "acceptance_criteria": [
@@ -28,8 +29,8 @@
     "No AI state mutation",
     "Deterministic replay across identical action streams",
     "Worker mock tests pass for authorization, origin, throttling, schemas and provider failures",
-    "Worker source deploys only with Cloudflare secrets and rate-limit binding",
-    "No GAME_TOKEN committed or stored in save"
+    "No GAME_TOKEN committed or stored in save",
+    "Every live AI route selects a server-approved model and reasoning effort; AI output cannot select Astra or mutate deterministic state"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,8 +41,25 @@
     "OPENAI_API_KEY",
     "GAME_TOKEN"
   ],
-  "worker_rate_limit": "Cloudflare GM_LIMITER binding; 30 requests per 60s",
-  "worker_deployment": "NOT VERIFIED: user must connect existing Worker to GitHub repo (root worker/) or use Wrangler",
+  "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
+  "worker_deployment": "NOT VERIFIED: user manually pastes worker/index.mjs into Cloudflare dinosaur-rpg Worker and deploys; Git-connected or Wrangler optional",
   "pages_deployment": "NOT VERIFIED: GitHub Pages setup remains user action",
-  "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented"
+  "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented",
+  "canonical_model_routing": "docs/MODEL-ROUTING.md",
+  "worker_models": {
+    "turn": {
+      "model": "gpt-6-luna",
+      "effort": "none"
+    },
+    "narrate": {
+      "model": "gpt-6.1-sol",
+      "effort": "low"
+    },
+    "dialogue": {
+      "model": "gpt-6.1-sol",
+      "effort": "medium"
+    },
+    "rule_adjudication": "gpt-6.1-sol medium/high PLANNED not implemented",
+    "escalation": "gpt-6-astra opt-in only NOT implemented"
+  }
 }
