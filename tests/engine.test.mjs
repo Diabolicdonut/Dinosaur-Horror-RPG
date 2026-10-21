@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { SCENARIO } from '../src/scenario.mjs';
-import { newGame, step, view, parseAction, isValidSave } from '../src/engine.mjs';
+import { newGame, step, view, parseAction, isValidSave, applyRefereeProposal, REFEREE_KINDS } from '../src/engine.mjs';
 
 test('new incidents have canonical initial state and valid schema', () => {
   const s = newGame(1993);
@@ -148,4 +148,119 @@ test('room-local feature inspection and taken items use current authoritative st
   assert(!after.events.some(x => x.text.includes('staff access card')));
   assert.equal(after.narratable, true);
   assert.equal(after.state.turn, lobby.turn);
+});
+
+const referee = (kind, target_id, resource_id, location = 'control', turn = 0) => ({
+  kind, target_id, resource_id, expected_turn: turn, expected_location: location,
+  rule_id: { investigate: 'observation', distract: 'mobility', barricade: 'mobility',
+    conceal: 'stealth', clarify: 'unknown' }[kind],
+  rationale: 'Bounded ruling based on visible scene objects.',
+  clarification: ''
+});
+
+test('adjudication catalog only lists explicitly implemented capabilities', () => {
+  assert.deepEqual(REFEREE_KINDS, ['investigate','distract','barricade','conceal','clarify']);
+  assert(!REFEREE_KINDS.includes('spawn_dinosaur'));
+});
+test('untrusted referee cannot invent objects, relocate player, or change dinosaur state', () => {
+  const prior = newGame(123);
+  for (const proposal of [
+    referee('distract', 'helipad', 'magical_rock'),
+    referee('distract', 'utility', 'magical_rock'),
+    referee('barricade', 'utility', 'imaginary_crate'),
+    referee('barricade', 'helipad', 'rolling_cabinet'),
+    referee('conceal', 'nonexistent_cover', ''),
+    referee('investigate', 'raptor-1', ''),
+    { ...referee('distract','utility','paperweight'), rule_id:'teleport' },
+    { ...referee('barricade','utility','rolling_cabinet'), expected_turn: 99 },
+    { ...referee('conceal','rolling_cabinet',''), expected_location: 'jungle' }
+  ]) {
+    const r = applyRefereeProposal(prior, proposal, 'test rejected proposal');
+    assert.equal(r.accepted, false, JSON.stringify(proposal));
+    assert.equal(r.rejected, true);
+    assert.deepEqual(r.state, prior, JSON.stringify(proposal));
+  }
+});
+test('referee clarification is not a committed action and never advances time', () => {
+  const prior = newGame(12);
+  const r = applyRefereeProposal(prior, {
+    ...referee('clarify','',''), clarification:'Please split this into two actions.'
+  });
+  assert.equal(r.accepted, false);
+  assert.equal(r.state.turn, 0);
+  assert(r.events[0].text.includes('split'));
+  assert.deepEqual(r.state, prior);
+});
+test('investigation rolls actual observation dice and commits a persistent adjudication', () => {
+  const before = newGame(1993);
+  const r = applyRefereeProposal(before, referee('investigate', 'window',''), 'study the window glass');
+  assert.equal(r.accepted, true);
+  assert.equal(r.adjudicated, true);
+  assert.equal(r.state.turn, 1);
+  assert.notEqual(r.state.rng, before.rng);
+  assert.equal(r.state.history[0].adjudication.kind, 'investigate');
+  assert.equal(r.state.history[0].adjudication.target_id, 'window');
+  assert(r.events.some(x => x.type === 'roll'));
+});
+test('one-use resource is expended by a distraction, including if the check fails', () => {
+  const a = applyRefereeProposal(newGame(1993),
+    referee('distract', 'utility', 'paperweight'), 'throw paperweight to corridor');
+  assert.equal(a.accepted, true);
+  assert(a.state.improvisation.usedProps.includes('control:paperweight'));
+  assert(!view(a.state).affordances.some(p => p.id === 'paperweight'));
+  const b = applyRefereeProposal(a.state,
+    referee('distract', 'utility', 'paperweight', 'control', a.state.turn));
+  assert.equal(b.accepted, false);
+  assert.deepEqual(b.state, a.state);
+});
+test('AI cannot consume mission-critical keycard through a distraction', () => {
+  let initial = newGame(2022);
+  initial.player.location = 'lobby';
+  initial.player.inventory.push('keycard');
+  const out = applyRefereeProposal(initial,referee('distract','control','keycard','lobby'));
+  assert.equal(out.accepted,false);
+  assert(out.state.player.inventory.includes('keycard'));
+});
+test('barricades have limited durability and can obstruct a pursuing dinosaur', () => {
+  const initial = newGame(25);
+  initial.dinosaurs[0].location='utility';
+  initial.dinosaurs[0].goal='control';
+  initial.dinosaurs[0].alert=3;
+  const r = applyRefereeProposal(initial,referee('barricade','utility','rolling_cabinet'),
+    'wedge cabinet across corridor passage');
+  assert.equal(r.accepted,true);
+  const barrier = r.state.improvisation.barricades['control|utility'] || 0;
+  const worked = r.events.some(x=>x.type==='success' && x.text.includes('wedge'));
+  if (worked) {
+    assert(r.state.dinosaurs[0].location === 'utility' || barrier === 0);
+    assert.equal(view(r.state).affordances.some(p=>p.id==='rolling_cabinet'),false);
+  }
+  assert.equal(r.state.turn,1);
+  assert.equal(isValidSave(JSON.parse(JSON.stringify(r.state))),true);
+});
+test('cover changes hidden state only through actual engine check', () => {
+  const before = newGame(2024);
+  const out = applyRefereeProposal(before,referee('conceal','rolling_cabinet',''), 'hide behind the cabinet');
+  assert.equal(out.accepted,true);
+  assert(out.events.some(x => x.type === 'roll'));
+  assert.equal(typeof out.state.player.hidden,'boolean');
+  assert.equal(before.player.hidden,false);
+  assert.equal(out.state.turn,1);
+});
+test('identical proposals and seeds replay the exact same consequences', () => {
+  const run = () => {
+    const init = newGame(31337);
+    let s = applyRefereeProposal(init,referee('distract','utility','paperweight')).state;
+    s = applyRefereeProposal(s,referee('conceal','rolling_cabinet','','control',s.turn)).state;
+    return s;
+  };
+  assert.deepEqual(run(),run());
+});
+test('legacy checkpoint 005 saves remain compatible and upgrade on next improvised action', () => {
+  const old = newGame(8);
+  delete old.improvisation;
+  assert.equal(isValidSave(old),true);
+  const applied = applyRefereeProposal(old,referee('barricade','utility','rolling_cabinet'));
+  assert.equal(applied.accepted,true);
+  assert(applied.state.improvisation.usedProps.includes('control:rolling_cabinet'));
 });
