@@ -186,13 +186,18 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   if (Number(request.headers.get('Content-Length')) > MAX_BYTES)
     return jsonResponse({ error: 'request_too_large' }, 413, headers);
 
-  if (!env.GM_LIMITER || typeof env.GM_LIMITER.limit !== 'function')
-    return jsonResponse({ error: 'rate_limiter_not_configured' }, 503, headers);
-  try {
-    const { success } = await env.GM_LIMITER.limit({ key: 'single-player-ai-gateway' });
-    if (!success) return jsonResponse({ error: 'rate_limited' }, 429, { ...headers, 'Retry-After': '60' });
-  } catch {
-    return jsonResponse({ error: 'rate_limiter_failed' }, 503, headers);
+  // Optional bound rate limiter: dashboard-paste installation requires only two secrets.
+  // The GAME_TOKEN remains mandatory. Without a limiter, use OpenAI spend limits/alerts
+  // and optionally add Cloudflare account-side rate limiting for stronger cost protection.
+  if (env.GM_LIMITER) {
+    if (typeof env.GM_LIMITER.limit !== 'function')
+      return jsonResponse({ error: 'rate_limiter_misconfigured' }, 503, headers);
+    try {
+      const { success } = await env.GM_LIMITER.limit({ key: 'single-player-ai-gateway' });
+      if (!success) return jsonResponse({ error: 'rate_limited' }, 429, { ...headers, 'Retry-After': '60' });
+    } catch {
+      return jsonResponse({ error: 'rate_limiter_failed' }, 503, headers);
+    }
   }
 
   let body = '';
