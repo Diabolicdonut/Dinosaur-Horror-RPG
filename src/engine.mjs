@@ -65,6 +65,14 @@ function featureMatch(text, features) {
   return features.find(id => id === query || id.includes(query) && query.length >= 3) || null;
 }
 
+/** Targeted inspections reveal only authored, player-perceivable room details. */
+function inspectionMatch(text, observations = []) {
+  const query = clean(text).replace(/^(?:look\s+|peer\s+)?(?:out(?:side)?|through|from|beyond|past|over)\s+(?:of\s+)?(?:the\s+)?/, '')
+    .replace(/^(?:the|a|an)\s+/, '').trim();
+  if (!query) return null;
+  return observations.find(o => [o.id, ...(o.aliases || [])].some(alias => clean(alias) === query)) || null;
+}
+
 export function newGame(seed = 1993) {
   const n = Number(seed);
   const saneSeed = Number.isSafeInteger(n) && n >= 0 && n <= 4294967295 ? n >>> 0 : 1993;
@@ -95,6 +103,8 @@ export function parseAction(input) {
     i: 'inventory', inventory: 'inventory', bag: 'inventory', map: 'map',
     help: 'help', '?': 'help', hide: 'hide', wait: 'wait', listen: 'look' };
   if (simple[phrase]) return { kind: simple[phrase], target: '', push };
+  const inspect = phrase.match(/^(?:look|inspect|examine|observe|peer|check)\s+(.+)$/);
+  if (inspect) return { kind: 'look', target: inspect[1], push: false };
   const match = phrase.match(/^(go|move|walk|head|run|sprint|sneak|creep|take|grab|pick up|use|activate|repair|switch on|turn on|heal|throw)\s+(.+)$/);
   if (!match) return { kind: '', target: '', push };
   const aliases = { go:'move', move:'move', walk:'move', head:'move', run:'run',
@@ -112,7 +122,7 @@ export function view(s) {
     location: s.player.location, roomName: room.name, description: room.description,
     exits: room.exits.map(id => ({ id, name: SCENARIO.rooms[id].name })),
     items: s.rooms[s.player.location].items.map(id => ({ id, name: SCENARIO.itemNames[id] })),
-    features: room.features.slice(), visibleDinos,
+    features: room.features.slice(), inspectables: (room.observations || []).map(o => o.id), visibleDinos,
     inventory: s.player.inventory.map(id => ({ id, name: SCENARIO.itemNames[id] })),
     health: s.player.health, stress: s.player.stress,
     hidden: s.player.hidden, flashlightOn: s.player.flashlightOn,
@@ -195,6 +205,7 @@ export function step(previous, command) {
   const action = parseAction(command);
   const events = [];
   let advance = false;
+  let observationResolved = false;
   let noise = 0;
   if (s.outcome !== 'playing') {
     event(events, 'info', 'This expedition has ended. Start a new incident to play again.');
@@ -203,11 +214,38 @@ export function step(previous, command) {
   const room = SCENARIO.rooms[s.player.location];
   const target = clean(action.target);
   switch (action.kind) {
-    case 'look':
-      event(events, 'scene', room.description);
-      if (s.dinosaurs.some(d => d.location === s.player.location)) event(events, 'danger', 'A Velociraptor is in the area!');
-      if (s.rooms[s.player.location].items.length) event(events, 'info', `Visible items: ${s.rooms[s.player.location].items.map(id => SCENARIO.itemNames[id]).join(', ')}.`);
+    case 'look': {
+      if (target) {
+        const observation = inspectionMatch(target, room.observations);
+        if (observation) {
+          observationResolved = true;
+          event(events, 'scene', observation.description);
+          if (observation.id === 'reception' && s.rooms.lobby.items.includes('keycard'))
+            event(events, 'info', 'A staff access card is still lying behind the reception desk.');
+          if (s.dinosaurs.some(d => d.location === s.player.location))
+            event(events, 'danger', 'A Velociraptor is in this area!');
+        } else {
+          const item = itemMatch(target, s.rooms[s.player.location].items);
+          const feature = featureMatch(target, room.features);
+          if (item || feature) {
+            observationResolved = true;
+            event(events, 'info', item
+              ? `You examine ${SCENARIO.itemNames[item]}. It is visible and within reach.`
+              : `You examine the ${feature}. ${room.description}`);
+          } else {
+            const available = (room.observations || []).map(o => o.id).join(', ');
+            event(events, 'info', `You cannot get a clear look at "${target}" from here.${available ? ' Nearby details you can examine: ' + available + '.' : ''}`);
+          }
+        }
+      } else {
+        event(events, 'scene', room.description);
+        if (s.dinosaurs.some(d => d.location === s.player.location))
+          event(events, 'danger', 'A Velociraptor is in the area!');
+        if (s.rooms[s.player.location].items.length)
+          event(events, 'info', `Visible items: ${s.rooms[s.player.location].items.map(id => SCENARIO.itemNames[id]).join(', ')}.`);
+      }
       break;
+    }
     case 'inventory':
       event(events, 'info', `Inventory: ${s.player.inventory.map(id => SCENARIO.itemNames[id]).join(', ') || 'empty'}.`);
       break;
@@ -321,7 +359,7 @@ export function step(previous, command) {
     });
     if (s.history.length > MAX_HISTORY) s.history.shift();
   }
-  return { state: s, events, accepted: advance };
+  return { state: s, events, accepted: advance, narratable: observationResolved };
 }
 
 export function isValidSave(s) {
