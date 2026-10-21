@@ -1,13 +1,13 @@
-import { SCENARIO } from './scenario.mjs';
-import { newGame, step, view, isValidSave, parseAction, applyRefereeProposal, repairLegacyBarricadeSave, RULESET, ENGINE_VERSION } from './engine.mjs';
-import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs';
+import { SCENARIO } from './scenario.mjs?v=006.2';
+import { newGame, step, view, isValidSave, parseAction, applyRefereeProposal, repairLegacyBarricadeSave, RULESET, ENGINE_VERSION } from './engine.mjs?v=006.2';
+import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs?v=006.2';
 
 const $ = id => document.getElementById(id);
 const SAVE_KEY = 'dinosaur-horror-rpg-isla-nublar-v1';
 const WORKER_BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
 const TOKEN_KEY = 'dinosaur-horror-rpg-remembered-token-v1';
 const AI_PREF_KEY = 'dinosaur-horror-rpg-ai-enabled-v1';
-const CLIENT_BUILD = '006.1';
+const CLIENT_BUILD = '006.2';
 const trace = createDiagnostics(500);
 const transcript = [];
 let state = newGame();
@@ -459,6 +459,14 @@ $('forget-token').addEventListener('click', () => {
   addLog('Stored GAME_TOKEN has been cleared from this browser.', 'info', state.turn, 'SYSTEM');
 });
 $('test-ai').addEventListener('click', () => { void checkConnection(); });
+$('refresh-code').addEventListener('click', () => {
+  // Browser-only cache bust: preserve all localStorage keys, saves, and GAME_TOKEN.
+  record('requested_code_refresh', { build: CLIENT_BUILD });
+  const u = new URL(location.href);
+  u.searchParams.set('revision', CLIENT_BUILD + '-' + Date.now());
+  location.assign(u.href);
+});
+
 window.addEventListener('error', e => {
   record('browser_exception', { message: sanitize(e.message), filename: e.filename,
     line: e.lineno, column: e.colno, stack: sanitize(e.error?.stack || '') });
@@ -469,6 +477,7 @@ window.addEventListener('unhandledrejection', e => {
 });
 
 function initialize() {
+  $('client-build').textContent = 'BUILD ' + CLIENT_BUILD + ' · READY';
   const savedToken = storageRead(TOKEN_KEY);
   if (savedToken) {
     $('game-token').value = savedToken;
