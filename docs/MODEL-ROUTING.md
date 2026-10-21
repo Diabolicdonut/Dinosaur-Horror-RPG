@@ -1,8 +1,8 @@
 # Model Routing Contract — Dinosaur Horror RPG
 
-**Checkpoint:** 003
+**Checkpoint:** 006
 **Date:** 2026-10-20
-**Status:** Primary model routing implemented for existing Worker routes; expanded AI Game Master roles remain design targets.
+**Status:** Primary model routing implemented; Checkpoint 006 adds Sol medium-reasoning adjudication for four validated improvised-action types. Additional complex rules remain future work.
 **Authoritative runtime implementation:** `worker/index.mjs`, `MODEL_ROUTING`. Do not place secrets in this document.
 
 ## Intent
@@ -15,7 +15,7 @@ Use the smallest model that reliably performs a task while reserving excellent n
 | --- | --- | --- | --- | --- |
 | Normal movement/inventory/dice/health/raptor motion | No model | N/A | Implemented engine | Direct local commands |
 | Player intent parsing | `gpt-6-luna` | none | **Worker implemented** (`/v1/gm/turn`) | Only when local parser cannot classify the request |
-| Ordinary rule interpretation / rule selection | `gpt-6.1-sol` | medium | **Planned** | When a supported rule requires contextual judgment |
+| Ordinary rule interpretation / rule selection | `gpt-6.1-sol` | medium | **Implemented for four bounded action types** (`/v1/gm/adjudicate`) | Investigate, distract, barricade, conceal using local scene affordances |
 | Difficult rules exceptions / improvised actions | `gpt-6.1-sol` | high | **Planned** | Novel circumstances; must return engine-validated proposals |
 | Moment-to-moment cinematic narration | `gpt-6.1-sol` | low | **Worker implemented** (`/v1/gm/narrate`) | After a committed material event |
 | Background / unnamed NPC dialogue | `gpt-6-luna` | low | **Planned** | Minor conversations when NPC simulation is implemented |
@@ -36,6 +36,7 @@ One direct-paste, self-contained source file supports:
 - `/v1/gm/turn` → Luna / reasoning none
 - `/v1/gm/narrate` → Sol / reasoning low
 - `/v1/gm/dialogue` → Sol / reasoning medium
+- `/v1/gm/adjudicate` → Sol / reasoning medium (engine-validated proposals)
 
 All output is Structured Outputs JSON schema through the Responses API. Requests specify `reasoning.effort` and a per-role response token budget. The model is selected **on the server**, not through a client-requested model field. Missing secrets return 503 and the GAME_TOKEN remains mandatory.
 
@@ -44,6 +45,7 @@ The `OPENAI_MODEL` single-model configuration is superseded. For special deploym
 - `GM_MODEL_TURN`
 - `GM_MODEL_NARRATE`
 - `GM_MODEL_DIALOGUE`
+- `GM_MODEL_ADJUDICATE`
 
 Only `gpt-6-luna`, `gpt-6.1-sol`, and `gpt-6-astra` are permitted for these settings. Never expose a user-facing model selector that directly controls API billing without a server-side policy.
 
@@ -83,3 +85,7 @@ Standard, short-context prices before any caching, processing mode, or regional 
 - Test structured output compatibility with a live key once Cloudflare has been manually redeployed.
 - Benchmark 30 realistic dinosaur-horror turns across clear intent, ambiguous intent, quiet exploration, panic, NPC dialogue and rule exceptions. Compare error rate, 95th-percentile latency, token cost and narrative coherence.
 - Add typed rule effects for exception adjudication *before* turning on the Sol referee. AI proposals alone cannot change state.
+
+## Checkpoint 006 boundary
+
+The new `/v1/gm/adjudicate` endpoint proposes exactly one typed action and never directly changes state. The engine validates the action against the player's known scene and executes dice and consequences, storing the accepted proposal in the journal. Medium reasoning is the default. High reasoning and Astra are not enabled automatically, and full improvisational scope is explicitly not yet supported. See [Referee contract](REFEREE-CONTRACT.md). Live model request quality/latency remains to be evaluated after the user manually deploys Worker v006.
