@@ -1,5 +1,31 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 006.1 — Live referee test and consistency repairs — 2026-10-21
+
+**Evidence:** User exported `dinosaur-rpg-debug-turn-3-1792611940565.json` after playing in published GitHub Pages. Browser build `006`, Worker `006`, status `OPENAI RESPONDING`, token accepted, three successful Sol referee calls and three successful Sol narrator calls, no provider errors, turn 3, seed 1993. This is a genuine live integration test rather than only mocked tests.
+
+### Verified action sequence
+1. **Distract:** `paperweight → utility` at turn 1. Agility + Mobility, six dice `[6,3,4,3,3,5]`, one success; paperweight consumed. Live AI referee ~4.08s, narrator ~2.86s. Hidden raptor stayed unalerted; narration incorrectly implied a successful distraction of an animal without evidence.
+2. **Barricade:** `rolling_cabinet → utility` at turn 2. Strength + Mobility, five dice `[2,1,3,4,4]`, zero successes. The engine correctly rejected the barricade but **incorrectly consumed the rolling cabinet despite failure**, leaving no cover and no working barrier. Referee ~2.76s, narrator ~2.96s.
+3. **Conceal:** `behind rolling_cabinet` at turn 2. Sol correctly returned `clarify` given its filtered context showed no available cabinet. **Root cause was a state-model bug, not an AI hallucination:** the prior failed barricade erroneously removed the physical prop.
+4. **Investigate:** `consoles` at turn 3. Wits + Observation, `[5,6,2,6,2]`, two successes, but result simply repeated the normal console description instead of addressing the stated question about tampering.
+
+### Fixes in Checkpoint 006.1 (GitHub main)
+
+- Failed barricades now spend time but **retain** the physical prop for cover/retry; successful barricades move the prop to an installed barrier that can still be used for cover, cannot barricade two exits, and has tracked durability.
+- `repairLegacyBarricadeSave()` reconstructs incorrectly consumed cover from the immutable accepted-action history on autosave recovery and manual LOAD. The repair preserves turn, saved dice/RNG, player/dinosaur state and history; it does not roll again. It also restores installed cover metadata for successful legacy barricades when evidence remains in the journal.
+- Distraction success now confirms a thrown object's placement and directional noise only, **not** that an unknown dinosaur actually reacted.
+- A successful `consoles` investigation now supplies specific, evidence-limited information about tampering, without falsely concluding sabotage or introducing unsupported plot consequences.
+- `tests/engine.test.mjs` adds five seed-specific and migration regression tests; total suite **64 tests**, with successful GitHub Actions validation after correcting one migration-wording test edge case.
+- Client build label `006.1` makes the new UI code identifiable via **EXPORT DEBUG**. Existing `GAME_TOKEN` browser storage and saves remain supported.
+
+### Deployment and next action
+
+**Cloudflare Worker v006 is already live and correct. No Cloudflare code update is needed.** Changes are exclusively the GitHub Pages browser engine/scenario/client code. On site reload, the user’s existing turn-3 autosave will be repaired in place (if its journal matches the observed failed cabinet attempt) and show a recovery message. User should then retry hiding behind the cabinet and export another debug report if needed. The post-fix browser smoke test remains unverified.
+
+**Next action:** `verify-v0061-autosave-recovery-and-concealment-in-browser`.
+
+
 ## Checkpoint 006 — 2026-10-21
 
 **Objective:** Add the first actual AI Game Master **adjudication** pipeline, allowing improvised actions while retaining deterministic world authority. Recovery-first inspection confirmed `main` at accepted checkpoint 005 (`e43d5b7f666b6898483570c8006732f971e093a0`). No completed baseline or accepted rules were reset.
