@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.4.0",
-  "checkpoint": "004",
-  "state": "ai_connectivity_diagnostics_autoresume_committed__requires_manual_worker_refresh",
+  "version": "0.5.0",
+  "checkpoint": "005",
+  "state": "targeted_observation_and_free_action_narration_implemented__awaiting_live_browser_confirmation",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,22 +13,23 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 34,
-  "api_status": "User reports Cloudflare Worker deployed at earlier revision; new authenticated /v1/gm/status endpoint is not verified live and requires repasting the latest Worker source",
+  "automated_tests": 38,
+  "api_status": "User-supplied checkpoint 004 debug (2026-10-21T16:31Z) confirms authenticated Worker v004 and a successful real intent-model HTTP 200 response; no live narrative call occurred because old engine rejected free look. Checkpoint 005 client now narrates resolved free observations.",
   "next_actions": [
-    "User: Re-paste current worker/index.mjs in existing Cloudflare dinosaur-rpg Worker to enable GET /v1/gm/status; deploy",
-    "User: Reload published browser game and enable AI, then click TEST AI CONNECTION using GAME_TOKEN",
-    "User: Try movement, unusual prose, and export debug JSON if repeated intro or AI error recurs",
-    "Developer: Verify actual Pages/Worker end-to-end, API model availability, and mobile browser UX",
-    "Developer: Expand engine-validated AI GM rules adjudication and NPC state persistence"
+    "User: Reload published GitHub Pages game and test 'Check outside the window.'; no Cloudflare Worker paste needed",
+    "User: If unexpected behavior remains, export checkpoint 005 DEBUG JSON",
+    "Developer: Verify real in-browser targeted observation and narration, inspect responsive graphics",
+    "Developer: Build validated context-sensitive AI GM rules adjudication for arbitrary non-observation actions",
+    "Developer: Continue Year Zero stress/panic and dinosaur perception audit against private references"
   ],
   "acceptance_criteria": [
-    "GitHub Actions validates 34 engine, Worker, redaction, and UI contract tests",
-    "AI indicator distinguishes gateway-authenticated from successful OpenAI inference",
-    "Token persists only when explicitly opted-in via browser localStorage; never in public HTML, game save or diagnostic file",
-    "Debug export includes full game state, scenario, rules version, RNG, history, client/runtime errors and AI request/response metadata",
-    "Reload restores a valid autosaved session instead of replaying initial scenario prompt",
-    "No AI request may directly mutate deterministic world state"
+    "38 automated engine, Worker, diagnostics and UI tests pass",
+    "Window look produces room-specific perceptible description without revealing hidden predator location",
+    "Time-free observation does not consume a turn, change RNG/state, or move dinosaur",
+    "AI narrator is eligible to narrate resolved targeted observations despite accepted=false",
+    "AI intent parsing recognizes look/window from current Worker; local common inspection aliases work without AI",
+    "Unrecognized targets show actionable feedback rather than generic intro",
+    "Worker source untouched in checkpoint 005 so no manual Cloudflare update necessary"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,8 +41,8 @@
     "GAME_TOKEN"
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
-  "worker_deployment": "USER REPORTED earlier manual Cloudflare deployment; new checkpoint 004 worker/index.mjs update NOT YET CONFIRMED deployed",
-  "pages_deployment": "GitHub Pages availability has not been verified in this session",
+  "worker_deployment": "User debug confirmed Cloudflare Worker v004 authenticated and OpenAI intent reply HTTP 200; no Worker source changes in checkpoint 005",
+  "pages_deployment": "User debug confirmed browser origin diabolicdonut.github.io, path /Dinosaur-Horror-RPG/, build 004; checkpoint 005 Pages update not independently browser-tested",
   "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -69,5 +70,11 @@
     "EXPORT SAVE",
     "EXPORT DEBUG full state and sanitized trace"
   ],
-  "canonical_debugging": "docs/DEBUGGING.md"
+  "canonical_debugging": "docs/DEBUGGING.md",
+  "last_bug_reproduction": {
+    "reported_command": "Check outside the window.",
+    "engine_result_before": "AI returned look/window with HTTP 200; engine repeated room.description, accepted=false; client skipped narration",
+    "engine_result_after": "look/window resolves authored exterior observation with narratable=true while accepted=false and turn/rng unchanged",
+    "debug_report_timestamp": "2026-10-21T16:31:01.033Z"
+  }
 }
