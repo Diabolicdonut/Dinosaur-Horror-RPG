@@ -70,7 +70,7 @@ async function checkConnection() {
     if (response.authenticated !== true || response.openai_configured !== true)
       throw new Error('Gateway is reachable but its credentials are not fully configured.');
     setConnection('ready', 'GATEWAY READY',
-      'Token accepted. OpenAI model call not yet verified.', {
+      'Worker v' + String(response.version || '?') + ': token accepted; OpenAI model call not yet verified.', {
       version: response.version || null, modelVerified: false,
       lastHttpStatus: result.status, lastFailure: null
     });
@@ -78,7 +78,9 @@ async function checkConnection() {
     return true;
   } catch (error) {
     const message = sanitize(String(error?.message || error));
-    setConnection('error', 'AI NOT CONNECTED', message, {
+    const label = /401/.test(message) ? 'AUTHENTICATION FAILED'
+      : /404/.test(message) ? 'UPDATE WORKER' : 'AI STATUS UNKNOWN';
+    setConnection('error', label, message, {
       modelVerified: false, lastFailure: message
     });
     return false;
