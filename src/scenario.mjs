@@ -14,6 +14,7 @@ export const SCENARIO = Object.freeze({
       exits: ['lobby', 'utility'],
       aliases: ['control room', 'control', 'operations'],
       items: [],
+      affordances: [{"id":"rolling_cabinet","label":"Heavy rolling cabinet","uses":["barricade","cover"]},{"id":"paperweight","label":"Metal paperweight","uses":["distract"]}],
       features: ['terminal', 'radio'],
       observations: [
         {
@@ -41,6 +42,7 @@ export const SCENARIO = Object.freeze({
       exits: ['control'],
       aliases: ['lobby', 'reception', 'visitor center'],
       items: ['keycard'],
+      affordances: [{"id":"display_stanchion","label":"Heavy display stanchion","uses":["barricade","cover"]},{"id":"brochure","label":"Loose souvenir brochure","uses":["distract"]}],
       features: [],
       observations: [
         {
@@ -61,6 +63,7 @@ export const SCENARIO = Object.freeze({
       exits: ['control', 'shed'],
       aliases: ['corridor', 'service corridor', 'utility', 'hall'],
       items: [],
+      affordances: [{"id":"equipment_cart","label":"Maintenance equipment cart","uses":["barricade","cover"]},{"id":"loose_bolt","label":"Loose steel bolt","uses":["distract"]}],
       features: [],
       observations: [
         {
@@ -76,6 +79,7 @@ export const SCENARIO = Object.freeze({
       exits: ['utility', 'jungle'],
       aliases: ['shed', 'maintenance', 'generator room'],
       items: ['medkit', 'flare'],
+      affordances: [{"id":"tool_cabinet","label":"Workshop tool cabinet","uses":["barricade","cover"]},{"id":"wrench","label":"Loose steel wrench","uses":["distract"]}],
       features: ['generator'],
       observations: [
         {
@@ -96,6 +100,7 @@ export const SCENARIO = Object.freeze({
       exits: ['shed', 'paddock', 'helipad'],
       aliases: ['jungle', 'path', 'service path'],
       items: [],
+      affordances: [{"id":"fallen_log","label":"Fallen log","uses":["barricade","cover"]},{"id":"loose_stones","label":"Handful of loose stones","uses":["distract"]}],
       features: [],
       observations: [
         {
@@ -116,6 +121,7 @@ export const SCENARIO = Object.freeze({
       exits: ['jungle'],
       aliases: ['paddock', 'gate', 'raptor gate'],
       items: [],
+      affordances: [{"id":"broken_panel","label":"Broken service panel","uses":["barricade","cover"]},{"id":"scrap_metal","label":"Loose scrap metal","uses":["distract"]}],
       features: [],
       observations: [
         {
@@ -131,6 +137,7 @@ export const SCENARIO = Object.freeze({
       exits: ['jungle'],
       aliases: ['helipad', 'landing pad', 'landing zone'],
       items: [],
+      affordances: [{"id":"supply_crate","label":"Emergency supply crate","uses":["barricade","cover"]},{"id":"marker_stone","label":"Loose marker stone","uses":["distract"]}],
       features: ['beacon'],
       observations: [
         {
