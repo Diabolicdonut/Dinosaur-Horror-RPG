@@ -17,6 +17,23 @@ const ALLOWED_ORIGINS = Object.freeze([
   'http://localhost:8787',
   'http://127.0.0.1:8787'
 ]);
+export const MODEL_ROUTING = Object.freeze({
+  turn: Object.freeze({ model: 'gpt-6-luna', effort: 'none', max_output_tokens: 500 }),
+  narrate: Object.freeze({ model: 'gpt-6.1-sol', effort: 'low', max_output_tokens: 850 }),
+  dialogue: Object.freeze({ model: 'gpt-6.1-sol', effort: 'medium', max_output_tokens: 1600 })
+});
+const ALLOWED_MODELS = Object.freeze(['gpt-6-luna', 'gpt-6.1-sol', 'gpt-6-astra']);
+export function modelFor(mode, env = {}) {
+  const route = MODEL_ROUTING[mode];
+  if (!route) throw new Error('invalid_model_route');
+  const override = env['GM_MODEL_' + mode.toUpperCase()];
+  const model = override === undefined ? route.model : override;
+  if (!ALLOWED_MODELS.includes(model)) throw new Error('invalid_model_configuration');
+  // Sol/Astra do not support 'none' reasoning; lift to low if explicitly overridden.
+  const effort = route.effort === 'none' && model !== 'gpt-6-luna' ? 'low' : route.effort;
+  return { model, effort, max_output_tokens: route.max_output_tokens };
+}
+
 const MAX_BYTES = 10000;
 const MAX_INPUT = 7000;
 
@@ -118,7 +135,7 @@ function extractText(body) {
   return output.flatMap(x => x.content || []).filter(x => x.type === 'output_text').map(x => x.text).join('');
 }
 async function requestOpenAI(mode, payload, env, upstreamFetch) {
-  const model = env.OPENAI_MODEL || 'gpt-5-mini';
+  const route = modelFor(mode, env);
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 24000);
   try {
@@ -126,11 +143,12 @@ async function requestOpenAI(mode, payload, env, upstreamFetch) {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.OPENAI_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model,
+        model: route.model,
+        reasoning: { effort: route.effort },
         instructions: instructionsFor(mode),
         input: JSON.stringify(payload),
         store: false,
-        max_output_tokens: 600,
+        max_output_tokens: route.max_output_tokens,
         text: { format: { type: 'json_schema', name: `dinosaur_gm_${mode}`, strict: true, schema: SCHEMAS[mode] } }
       }),
       signal: controller.signal
