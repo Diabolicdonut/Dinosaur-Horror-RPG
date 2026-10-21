@@ -1,5 +1,7 @@
 # Deployment — GitHub Pages + Cloudflare Worker
 
+**Easiest method: [paste the Worker code directly in Cloudflare](CLOUDFLARE-DASHBOARD-PASTE.md).** No GitHub/Cloudflare connection or Wrangler command is required for that approach. The remaining instructions describe optional automatic deployment through GitHub.
+
 This is the deployment runbook for checkpoint 002.
 
 ## Existing addresses
@@ -62,8 +64,8 @@ Static GitHub Pages without the Worker still plays through the supported local c
 - **401**: token mismatch, missing token field or secret not deployed.
 - **403**: browser Origin is not allowlisted in `worker/index.mjs` (expected published GitHub Pages origin: `https://diabolicdonut.github.io`).
 - **404**: Hello World code is still deployed to Cloudflare; deploy this repository's `worker/` directory.
-- **429**: rate limiting applies (currently `30` requests per `60` seconds using Cloudflare's `GM_LIMITER` binding). This is an abuse throttle, **not** a guaranteed monthly spending ceiling. Set spend alerts / budgets in OpenAI too.
-- **503**: missing secret or missing rate-limit binding. Check Wrangler configuration and Worker settings.
+- **429**: when configured through Wrangler, rate limiting applies (currently `30` requests per `60` seconds using Cloudflare's `GM_LIMITER` binding). Dashboard paste alone has **no built-in rate limit**, so protect OpenAI spending with budgets/alerts and an optional Cloudflare rate limit. These protections are not guaranteed hard spend ceilings.
+- **503**: missing secret, or a rate-limit binding that exists but is misconfigured. Manual dashboard-paste installs do not require a rate-limit binding.
 - **502**: upstream model unavailable/refusal/error; the current game mechanics remain local.
 - The authentication token in browser memory is a bearer credential. On a public page, anyone possessing it can use the Worker. Do not share it, and rotate it if exposed.
 - CORS allowlisting does not protect the API independently of bearer token authentication.
