@@ -31,3 +31,18 @@ test('client routes improvised actions through typed Sol referee instead of trea
   assert(app.includes('parsedAction: result.adjudicated'));
   assert(app.includes("Worker v"));
 });
+
+test('all browser dependencies use the same cache-busting revision and report the active build', async () => {
+  const engine = await readFile(new URL('../src/engine.mjs', import.meta.url), 'utf8');
+  assert(html.includes('id="client-build"'));
+  assert(html.includes('id="refresh-code"'));
+  assert(html.includes('src="./src/app.mjs?v=006.2"'));
+  assert(html.includes('href="./src/style.css?v=006.2"'));
+  assert(app.includes("const CLIENT_BUILD = '006.2'"));
+  for (const entry of ["'./engine.mjs?v=006.2'", "'./scenario.mjs?v=006.2'",
+    "'./diagnostics.mjs?v=006.2'"]) assert(app.includes(entry), entry);
+  assert(engine.includes("'./scenario.mjs?v=006.2'"));
+  assert(app.includes("$('client-build').textContent"));
+  assert(app.includes("searchParams.set('revision'"));
+  assert(!app.includes('localStorage.clear('), 'refresh must not clear save or token');
+});
