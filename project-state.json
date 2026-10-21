@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.6.1",
-  "checkpoint": "006.1",
-  "state": "post_live_test_regression_fixes_committed__awaiting_player_browser_confirmation",
+  "version": "0.6.2",
+  "checkpoint": "006.2",
+  "state": "post_test_browser_cache_visibility_and_debug_filename_fix_committed__pending_new_player_export",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,22 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 64,
-  "api_status": "User debug export from 2026-10-21 19:45Z verifies live Cloudflare Worker v006, authenticated request 200, three Sol medium-reasoning rulings (distract, barricade, investigate) and three successful Sol narrator responses. One hide-behind-cabinet command was logically refused after engine incorrectly marked failed barricade resource used; fixed in browser engine 006.1, not yet retested live.",
+  "automated_tests": 65,
+  "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "User: Reload GitHub Pages (Ctrl+Shift+R) and verify automatic save recovery reports repaired cabinet, then try 'I hide behind the rolling cabinet' from same turn-3 save",
-    "User: Repeat barricade test on a new incident to confirm failed attempts leave cover and successful attempts allow cover while installed",
-    "If there are anomalies upload a new EXPORT DEBUG JSON",
-    "Developer: Expand GM referee to multi-action sequences and more general resource interactions after live behavioral validation",
-    "Developer: Continue Year Zero rules audit and dinosaur perception development"
+    "User: Open GitHub Pages with fresh ?revision=006.2 URL; verify visible BUILD 006.2 · READY indicator (not just Worker v006)",
+    "User: Check whether old turn-3 save auto-repairs cabinet, then try hiding behind the cabinet without resetting incident",
+    "User: If still broken, click EXPORT DEBUG to create new dinosaur-rpg-debug-build-006.2-turn-...json and upload that NEW file",
+    "Developer: Compare fresh post-fix diagnostic logs to fixture and address actual new failure; don't infer new failure from duplicate 006 report",
+    "Developer: Continue broad AI adjudication milestones after verifying browser build and save recovery"
   ],
   "acceptance_criteria": [
-    "64 automated tests pass including reproducing user's exact seed-1993 improvised action sequence",
-    "Failed barricade does not remove local cover (turn is still charged)",
-    "Existing checkpoint 006 saved incidents with incorrectly consumed cover are repaired at load without rerolling, moving dinosaurs or resetting turns",
-    "Installed successful barrier remains a cover resource, not magically available to barricade multiple exits",
-    "Narration only confirms noise location, not unobserved dinosaur reaction",
-    "Successful tampering investigation reports specific bounded evidence",
-    "Cloudflare Worker unchanged; live post-fix browser smoke pending"
+    "65 automated tests pass including 006.1 original debug-state fix and 006.2 browser asset version checks",
+    "GitHub Pages deploy includes index.html? or query based 006.2 cache-busting for CSS, app, engine, scenario and diagnostics modules",
+    "Visible browser build marker BUILD 006.2 · READY differentiates outdated scripts from Worker version",
+    "GET LATEST GAME CODE navigates to new revision URL without clearing localStorage or API token",
+    "DEBUG export filename includes active browser build so uploaded stale files are recognizable",
+    "Post-fix user browser report not received yet; do not claim repair confirmed by user"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "User confirmed GitHub Pages build 006 with live interaction. Client build 006.1 fixes committed to main; GitHub Pages propagation and post-fix browser behavior pending user confirmation.",
+  "pages_deployment": "GitHub Actions successfully deployed 006.1 at a977b6f; 006.2 adds versioned browser assets and visible build label to diagnose stale loading; published 006.2 and real browser test pending",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -120,5 +119,14 @@
       "narration no longer asserts predator distraction without actual evidence",
       "successful console investigation returns evidence addressing tampering rather than baseline room description"
     ]
-  }
+  },
+  "last_uploaded_debug": {
+    "file": "dinosaur-rpg-debug-turn-3-1792611940565(1).json",
+    "generated_at": "2026-10-21T19:45:40.561Z",
+    "build": "006",
+    "sha256": "f94dafc4ac0aca549cf9f2181445ba3ada261b344716062fdecb89d24e747f2a",
+    "same_as_previous": true,
+    "not_new_test": true
+  },
+  "browser_asset_cache_revision": "006.2"
 }
