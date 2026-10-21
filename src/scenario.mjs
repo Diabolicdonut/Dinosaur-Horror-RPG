@@ -46,7 +46,7 @@ export const SCENARIO = Object.freeze({
         {
           id: 'reception',
           aliases: ['desk', 'reception desk', 'counter', 'access card', 'keycard'],
-          description: 'Water drips from the reception counter. A staff access card is lodged just behind the desk, close enough to retrieve.'
+          description: 'Water drips from the reception counter. A damaged badge reader and damp documents lie beneath the desk lamp.'
         },
         {
           id: 'skeleton',
