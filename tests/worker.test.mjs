@@ -194,3 +194,80 @@ test('status probe does not require separate GM_LIMITER binding', async () => {
   const r = await handleRequest(mkRequest('/v1/gm/status', null, { method: 'GET' }), env);
   assert.equal(r.status, 200);
 });
+
+const adjudicationInput = {
+  input: 'I throw the paperweight down the service corridor to distract the raptor.',
+  turn: 0, location: 'control',
+  context: {
+    location: 'control', roomName: 'Visitor Center Control Room',
+    description: 'Rain beats against the windows.',
+    exits: [{ id: 'utility', name: 'Service Corridor' }, { id: 'lobby', name: 'Lobby' }],
+    inspectables: ['window', 'consoles'], features: ['radio'],
+    affordances: [{ id: 'paperweight', label: 'Metal paperweight', uses: ['distract'] }],
+    items: [], inventory: ['flashlight'], barricades: [],
+    player: { health: 4, stress: 0, hidden: false, flashlightOn: false },
+    visibleDinos: []
+  }
+};
+const adjudication = {
+  kind: 'distract', target_id: 'utility', resource_id: 'paperweight',
+  rule_id: 'mobility', expected_turn: 0, expected_location: 'control',
+  rationale: 'A metal object is present and the corridor is adjacent.',
+  clarification: ''
+};
+
+test('Sol adjudicator uses strict typed schema, medium reasoning and no arbitrary world patches', async () => {
+  assert.equal(modelFor('adjudicate').model, 'gpt-6.1-sol');
+  assert.equal(modelFor('adjudicate').effort, 'medium');
+  assert.equal(SCHEMAS.adjudicate.additionalProperties, false);
+  assert(!SCHEMAS.adjudicate.properties.state);
+  assert(!SCHEMAS.adjudicate.properties.damage);
+  const r = await handleRequest(
+    mkRequest('/v1/gm/adjudicate', { payload: adjudicationInput }), ENV,
+    async (_, opts) => {
+      const request = JSON.parse(opts.body);
+      assert.equal(request.model, 'gpt-6.1-sol');
+      assert.equal(request.reasoning.effort, 'medium');
+      assert(request.instructions.includes('Mirror payload.turn'));
+      assert.equal(request.text.format.strict, true);
+      return new Response(JSON.stringify({
+        status: 'completed',
+        output: [{ type: 'message', content: [{ type: 'output_text', text: JSON.stringify(adjudication) }] }]
+      }), { status: 200 });
+    });
+  assert.equal(r.status, 200);
+  assert.deepEqual(await r.json(), adjudication);
+});
+test('unauthed referee request never reaches OpenAI', async () => {
+  let calls = 0;
+  const r = await handleRequest(
+    mkRequest('/v1/gm/adjudicate', { payload: adjudicationInput }, { token: false }),
+    ENV, async () => { calls++; throw Error('wrong'); });
+  assert.equal(r.status, 401);
+  assert.equal(calls, 0);
+});
+test('referee validates request bounds before sending to model', async () => {
+  let called = false;
+  const mock = async () => { called = true; throw Error('bad'); };
+  const r = await handleRequest(
+    mkRequest('/v1/gm/adjudicate', { payload: { ...adjudicationInput, turn: -1 } }), ENV, mock);
+  assert.equal(r.status, 400);
+  assert.equal(called, false);
+});
+test('provider refusal or malformed adjudication does not return a successful ruling', async () => {
+  const r = await handleRequest(
+    mkRequest('/v1/gm/adjudicate', { payload: adjudicationInput }), ENV,
+    fakeUpstream({ ...adjudication, kind: 'godmode' }));
+  assert.equal(r.status, 502);
+  assert.equal((await r.json()).error, 'ai_unavailable');
+});
+test('free status endpoint now exposes referee capability without billing OpenAI', async () => {
+  const r = await handleRequest(
+    mkRequest('/v1/gm/status', null, { method:'GET' }), ENV,
+    async () => { throw Error('unexpected inference'); });
+  assert.equal(r.status, 200);
+  const info = await r.json();
+  assert.equal(info.models.adjudicate, 'gpt-6.1-sol');
+  assert.equal(info.version, '006');
+  assert.equal(info.model_call_verified, false);
+});
