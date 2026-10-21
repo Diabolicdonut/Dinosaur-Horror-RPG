@@ -27,7 +27,8 @@ export const SCENARIO = Object.freeze({
         {
           id: 'consoles',
           aliases: ['console', 'monitors', 'monitor', 'screens', 'computers', 'terminal'],
-          description: 'Rows of dark monitors reflect the emergency lights. Red status lamps mark dead network links and a powerless communication console; the shutdown is real, not just a blank display.'
+          description: 'Rows of dark monitors reflect the emergency lights. Red status lamps mark dead network links and a powerless communication console; the shutdown is real, not just a blank display.',
+          investigation: 'A closer examination finds no obvious freshly pried panels or severed wires on the accessible consoles. The network and radio equipment have lost power; that alone cannot tell you whether the storm caused the outage or someone shut the system down intentionally.'
         },
         {
           id: 'radio',
