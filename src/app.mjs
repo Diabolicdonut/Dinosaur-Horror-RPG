@@ -180,6 +180,7 @@ function render() {
   for (const item of v.items) actionButton($('actions'), 'TAKE ' + item.name, 'take ' + item.id, 'action');
   for (const feature of v.features) actionButton($('actions'), 'USE ' + feature.toUpperCase(), 'use ' + feature, 'action');
   for (const point of v.inspectables) actionButton($('actions'), 'INSPECT ' + point.toUpperCase(), 'look ' + point, 'action');
+  for (const prop of v.affordances) actionButton($('actions'), 'EXAMINE ' + prop.label.toUpperCase(), 'look ' + prop.id, 'action');
   actionButton($('actions'), 'HIDE', 'hide');
   actionButton($('actions'), 'WAIT', 'wait');
   drawMap();
@@ -367,6 +368,7 @@ $('save').addEventListener('click', () => {
   else addLog('Browser storage unavailable. Use EXPORT SAVE instead.', 'danger');
 });
 $('load').addEventListener('click', () => {
+  if (busy) return; // Do not let a saved state replace the world during an asynchronous GM ruling.
   try {
     const raw = storageRead(SAVE_KEY);
     if (!raw) throw new Error('no saved game');
