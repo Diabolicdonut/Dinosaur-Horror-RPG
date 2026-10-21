@@ -171,3 +171,26 @@ test('player input cannot select an expensive GM model directly', async () => {
   const res = await handleRequest(mkRequest('/v1/gm/turn', { payload: requested }), ENV, upstream);
   assert.equal(res.status, 200);
 });
+
+test('authenticated /v1/gm/status verifies token without contacting OpenAI', async () => {
+  let upstreamCalled = false;
+  const upstream = async () => { upstreamCalled = true; throw Error('unexpected OpenAI request'); };
+  const response = await handleRequest(mkRequest('/v1/gm/status', null, { method: 'GET' }), ENV, upstream);
+  assert.equal(response.status, 200);
+  const json = await response.json();
+  assert.equal(json.authenticated, true);
+  assert.equal(json.openai_configured, true);
+  assert.equal(json.model_call_verified, false);
+  assert.equal(json.models.intent, 'gpt-6-luna');
+  assert.equal(upstreamCalled, false);
+});
+test('status probe rejects missing token and does not expose models', async () => {
+  const r = await handleRequest(mkRequest('/v1/gm/status', null, { method: 'GET', token: false }), ENV);
+  assert.equal(r.status, 401);
+  assert.equal((await r.json()).error, 'unauthorized');
+});
+test('status probe does not require separate GM_LIMITER binding', async () => {
+  const env = { OPENAI_API_KEY: ENV.OPENAI_API_KEY, GAME_TOKEN: ENV.GAME_TOKEN };
+  const r = await handleRequest(mkRequest('/v1/gm/status', null, { method: 'GET' }), env);
+  assert.equal(r.status, 200);
+});
