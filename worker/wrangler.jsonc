@@ -5,7 +5,9 @@
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
   "vars": {
-    "OPENAI_MODEL": "gpt-5-mini"
+    "GM_MODEL_TURN": "gpt-6-luna",
+    "GM_MODEL_NARRATE": "gpt-6.1-sol",
+    "GM_MODEL_DIALOGUE": "gpt-6.1-sol"
   },
   "secrets": {
     "required": ["OPENAI_API_KEY", "GAME_TOKEN"]
