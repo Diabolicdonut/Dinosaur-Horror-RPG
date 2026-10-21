@@ -422,7 +422,7 @@ $('export-debug').addEventListener('click', () => {
     client: { build: CLIENT_BUILD, origin: location.origin, path: location.pathname,
       userAgent: navigator.userAgent, worker: WORKER_BASE }
   });
-  downloadJson('dinosaur-rpg-debug-turn-' + state.turn + '-' + Date.now() + '.json', report);
+  downloadJson('dinosaur-rpg-debug-build-' + CLIENT_BUILD + '-turn-' + state.turn + '-' + Date.now() + '.json', report);
   addLog('Diagnostic report exported. Contains hidden world state but no GAME_TOKEN.', 'success', state.turn, 'SYSTEM');
 });
 $('clearlog').addEventListener('click', () => {
