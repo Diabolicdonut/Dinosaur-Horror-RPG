@@ -8,7 +8,7 @@
 
 - Full bytes of the new upload compared with prior `dinosaur-rpg-debug-turn-3-1792611940565.json`: **identical SHA-256 `f94dafc4ac0aca549cf9f2181445ba3ada261b344716062fdecb89d24e747f2a`** (54,872 bytes).
 - Both reports generated at **2026-10-21T19:45:40.561Z** and identify browser build **006**, turn 3, with no new command history. They predate checkpoint 006.1 bug fixes. The second upload **cannot establish that the 006.1 repair failed** or that the latest scripts are being served to the browser.
-- GitHub Actions `pages build and deployment` confirmed **success** at commit `a977b6f04457ebc51e60938d4e0068d7f2eb4424`'s predecessor (actual accepted code commit: `a977b6f04457ebc51e60938d4e0068d7f2eb4424`), so 006.1 code has been published at least once. What is running in the user's browser is still not evidenced by an updated report. The Worker was independently verified in previous report as version 006.
+- GitHub Actions `pages build and deployment` confirmed **success** at accepted 006.1 commit `a977b6f04457ebc51e60938f3a7dde0e9e4c2a60`. This demonstrates that 006.1 was published, but not which version the user's browser loaded. The Worker was independently verified in the previous report as version 006.
 
 ### Implemented
 
