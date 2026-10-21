@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.6.0",
-  "checkpoint": "006",
-  "state": "validated_typed_ai_referee_vertical_slice_committed__awaiting_manual_worker_v006_deployment",
+  "version": "0.6.1",
+  "checkpoint": "006.1",
+  "state": "post_live_test_regression_fixes_committed__awaiting_player_browser_confirmation",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,23 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 58,
-  "api_status": "Checkpoint 005 user validated Worker v004 OpenAI calls; new Sol /v1/gm/adjudicate endpoint v006 tested with mocked upstream only and NOT deployed/live-verified",
+  "automated_tests": 64,
+  "api_status": "User debug export from 2026-10-21 19:45Z verifies live Cloudflare Worker v006, authenticated request 200, three Sol medium-reasoning rulings (distract, barricade, investigate) and three successful Sol narrator responses. One hide-behind-cabinet command was logically refused after engine incorrectly marked failed barricade resource used; fixed in browser engine 006.1, not yet retested live.",
   "next_actions": [
-    "User: Re-paste and Deploy latest worker/index.mjs into Cloudflare dinosaur-rpg; verify /v1/gm/status version 006 and adjudicate model",
-    "User: Reload GitHub Pages; test control-room paperweight distraction, rolling-cabinet barricade, cabinet concealment, console investigation",
-    "User: Upload fresh EXPORT DEBUG report if an AI judgment or engine effect seems wrong",
-    "Developer: Run live end-to-end model evals for 20 representative improvisations, error cases, latency/cost",
-    "Developer: Expand typed action system to compound actions, item creation/crafting and full dinosaur sensory behavior",
-    "Developer: Continue stress/panic RAW comparison and add persistent NPC knowledge/dialogue"
+    "User: Reload GitHub Pages (Ctrl+Shift+R) and verify automatic save recovery reports repaired cabinet, then try 'I hide behind the rolling cabinet' from same turn-3 save",
+    "User: Repeat barricade test on a new incident to confirm failed attempts leave cover and successful attempts allow cover while installed",
+    "If there are anomalies upload a new EXPORT DEBUG JSON",
+    "Developer: Expand GM referee to multi-action sequences and more general resource interactions after live behavioral validation",
+    "Developer: Continue Year Zero rules audit and dinosaur perception development"
   ],
   "acceptance_criteria": [
-    "58 automatic tests pass: original engine/Worker/UI/redaction plus adjudication and anti-hallucination regressions",
-    "Old saved games without improvisation schema remain valid; new entries persist used props/barricades",
-    "Sol referee cannot supply arbitrary state patches or ungrounded world object targets",
-    "Dice/noise/cover/predator/barricade outcomes remain deterministic and journaled",
-    "Complex/unsupported proposals clarify without changing time, RNG, inventory or dinosaur state",
-    "Worker health/status advertises v006 only after manual Cloudflare deploy",
-    "Real live Worker and browser test is pending; do not claim it has passed"
+    "64 automated tests pass including reproducing user's exact seed-1993 improvised action sequence",
+    "Failed barricade does not remove local cover (turn is still charged)",
+    "Existing checkpoint 006 saved incidents with incorrectly consumed cover are repaired at load without rerolling, moving dinosaurs or resetting turns",
+    "Installed successful barrier remains a cover resource, not magically available to barricade multiple exits",
+    "Narration only confirms noise location, not unobserved dinosaur reaction",
+    "Successful tampering investigation reports specific bounded evidence",
+    "Cloudflare Worker unchanged; live post-fix browser smoke pending"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,8 +41,8 @@
     "GAME_TOKEN"
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
-  "worker_deployment": "User must re-paste current worker/index.mjs into existing Cloudflare dinosaur-rpg Worker (v006); previous live v004 verified, new version not verified",
-  "pages_deployment": "Source on main; GitHub Pages automatic publication not independently verified for Checkpoint 006",
+  "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
+  "pages_deployment": "User confirmed GitHub Pages build 006 with live interaction. Client build 006.1 fixes committed to main; GitHub Pages propagation and post-fix browser behavior pending user confirmation.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -102,5 +101,24 @@
       "barrier durability and predator obstruction"
     ],
     "safety": "no arbitrary AI state patches; reject stale/missing/unknown IDs; store accepted plan for replay"
+  },
+  "last_live_test": {
+    "browser_build": "006",
+    "worker": "006",
+    "seed": 1993,
+    "turn": 3,
+    "successful_adjudications": [
+      "distract paperweight → corridor (1 success)",
+      "investigate consoles (2 successes)"
+    ],
+    "failed_skill_checks": [
+      "barricade cabinet (0 successes)"
+    ],
+    "problem": "failed barricade consumed cabinet, producing unsupported concealment",
+    "resolved_in_source": "failed barricades retain props; successful installed barricades provide cover; legacy saves repaired from deterministic history on load",
+    "other_fixes": [
+      "narration no longer asserts predator distraction without actual evidence",
+      "successful console investigation returns evidence addressing tampering rather than baseline room description"
+    ]
   }
 }
