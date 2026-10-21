@@ -31,7 +31,7 @@ export function createDiagnostics(maxEntries = 500) {
     snapshot(secret = '') { return redactSensitive(entries, secret); }
   };
 }
-export function makeDebugReport({ state, scenario, transcript, diagnostic, aiStatus, client,
+export function makeDebugReport({ state, scenario, rules, transcript, diagnostic, aiStatus, client,
   token = '', tokenRemembered = false, aiEnabled = false, savedGameAvailable = false }) {
   const raw = {
     report_format: 'dinosaur-horror-rpg-debug',
@@ -46,7 +46,7 @@ export function makeDebugReport({ state, scenario, transcript, diagnostic, aiSta
       tokenRemembered: Boolean(tokenRemembered),
       credentials: '[REDACTED]'
     },
-    game: { state, scenario, savedGameAvailable },
+    game: { state, scenario, rules, savedGameAvailable },
     event_log: transcript,
     diagnostics: diagnostic
   };
