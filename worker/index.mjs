@@ -207,7 +207,8 @@ async function requestOpenAI(mode, payload, env, upstreamFetch) {
           typeof result.target !== 'string' || result.target.length > 200 ||
           typeof result.push !== 'boolean' || typeof result.clarification !== 'string' ||
           typeof result.reason !== 'string') throw new Error('invalid_model_action');
-    } else if (typeof result.text !== 'string' || result.text.length > 3500) {
+    } else if ((mode === 'narrate' || mode === 'dialogue') &&
+      (typeof result.text !== 'string' || result.text.length > 3500)) {
       throw new Error('invalid_model_text');
     }
     if (mode === 'adjudicate') {
