@@ -187,7 +187,14 @@ function predatorTurn(s, actionNoise, events, noiseOrigin = s.player.location) {
     if (dino.location === dino.goal) { dino.goal = null; dino.alert = 0; }
   } else if (d6(s) === 6) {
     const exits = SCENARIO.rooms[dino.location].exits;
-    dino.location = exits[d6(s) % exits.length];
+    const next = exits[d6(s) % exits.length];
+    const barrierKey = [dino.location, next].sort().join('|');
+    if ((s.improvisation?.barricades?.[barrierKey] || 0) > 0) {
+      s.improvisation.barricades[barrierKey]--;
+      event(events, 'danger', 'An animal crashes against an improvised obstacle somewhere nearby.');
+      if (s.improvisation.barricades[barrierKey] === 0)
+        event(events, 'danger', 'The improvised barrier splinters under the impact.');
+    } else dino.location = next;
   }
   if (dino.location !== s.player.location) {
     if (distance(dino.location, s.player.location) === 1) event(events, 'danger', 'Heavy claws scrape somewhere nearby. The sound has direction, but you cannot see its source.');
