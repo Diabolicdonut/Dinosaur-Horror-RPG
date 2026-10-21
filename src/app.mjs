@@ -1,5 +1,5 @@
 import { SCENARIO } from './scenario.mjs';
-import { newGame, step, view, isValidSave, parseAction, applyRefereeProposal, RULESET, ENGINE_VERSION } from './engine.mjs';
+import { newGame, step, view, isValidSave, parseAction, applyRefereeProposal, repairLegacyBarricadeSave, RULESET, ENGINE_VERSION } from './engine.mjs';
 import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs';
 
 const $ = id => document.getElementById(id);
@@ -7,7 +7,7 @@ const SAVE_KEY = 'dinosaur-horror-rpg-isla-nublar-v1';
 const WORKER_BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
 const TOKEN_KEY = 'dinosaur-horror-rpg-remembered-token-v1';
 const AI_PREF_KEY = 'dinosaur-horror-rpg-ai-enabled-v1';
-const CLIENT_BUILD = '006';
+const CLIENT_BUILD = '006.1';
 const trace = createDiagnostics(500);
 const transcript = [];
 let state = newGame();
@@ -380,11 +380,19 @@ $('load').addEventListener('click', () => {
     if (!raw) throw new Error('no saved game');
     const restored = JSON.parse(raw);
     if (!isValidSave(restored)) throw new Error('save incompatible with this version');
-    state = restored;
+    const repaired = repairLegacyBarricadeSave(restored);
+    state = repaired.state;
+    if (repaired.repaired.length) {
+      storageWrite(SAVE_KEY, JSON.stringify(state));
+      record('save_repaired', { corrections: repaired.repaired });
+    }
     record('load_game', { turn: state.turn, rng: state.rng });
     $('seed').value = String(state.initialSeed);
     $('events').replaceChildren();
     addLog('Save restored. Recent authoritative events:', 'info');
+    if (repaired.repaired.length)
+      addLog('Recovered scene resources from a previous failed barricade: ' +
+        repaired.repaired.join('; '), 'success', state.turn, 'SYSTEM');
     for (const history of state.history.slice(-8)) {
       for (const e of history.events) addLog(e.text, e.type, history.turn);
     }
@@ -473,7 +481,12 @@ function initialize() {
     try {
       const candidate = JSON.parse(raw);
       if (isValidSave(candidate)) {
-        state = candidate;
+        const repaired = repairLegacyBarricadeSave(candidate);
+        state = repaired.state;
+        if (repaired.repaired.length) {
+          storageWrite(SAVE_KEY, JSON.stringify(state));
+          record('save_repaired', { corrections: repaired.repaired });
+        }
         $('seed').value = String(state.initialSeed);
         restored = true;
         record('automatic_resume', { turn: state.turn, position: state.player.location });
@@ -483,6 +496,9 @@ function initialize() {
   if (restored) {
     addLog('Session resumed automatically from local save: turn ' + state.turn +
       ', ' + view(state).roomName + '.', 'success', state.turn, 'SYSTEM');
+    if (trace.snapshot(secret()).some(e => e.kind === 'save_repaired'))
+      addLog('Repaired a prior failed-barricade save: misplaced cover has been restored without changing turns, dice or encounters.',
+        'success', state.turn, 'SYSTEM');
     for (const h of state.history.slice(-12)) for (const e of h.events)
       addLog(e.text, e.type, h.turn, 'ENGINE HISTORY');
   } else {
