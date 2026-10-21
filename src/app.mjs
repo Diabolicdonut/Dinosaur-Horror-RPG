@@ -1,5 +1,5 @@
 import { SCENARIO } from './scenario.mjs';
-import { newGame, step, view, isValidSave, parseAction, RULESET, ENGINE_VERSION } from './engine.mjs';
+import { newGame, step, view, isValidSave, parseAction, applyRefereeProposal, RULESET, ENGINE_VERSION } from './engine.mjs';
 import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs';
 
 const $ = id => document.getElementById(id);
@@ -7,7 +7,7 @@ const SAVE_KEY = 'dinosaur-horror-rpg-isla-nublar-v1';
 const WORKER_BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
 const TOKEN_KEY = 'dinosaur-horror-rpg-remembered-token-v1';
 const AI_PREF_KEY = 'dinosaur-horror-rpg-ai-enabled-v1';
-const CLIENT_BUILD = '004';
+const CLIENT_BUILD = '006';
 const trace = createDiagnostics(500);
 const transcript = [];
 let state = newGame();
@@ -193,7 +193,8 @@ function render() {
 async function aiRequest(mode, payload) {
   const token = secret();
   if (!token) throw new Error('Enter GAME_TOKEN in the engine controls.');
-  const endpoint = mode === 'interpret' ? 'turn' : mode === 'narrate' ? 'narrate' : null;
+  const endpoint = mode === 'interpret' ? 'turn' : mode === 'narrate' ? 'narrate'
+    : mode === 'adjudicate' ? 'adjudicate' : null;
   if (!endpoint) throw new Error('Unsupported AI operation.');
   const start = performance.now();
   record('ai_request', { route: endpoint, payload: sanitize(payload) });
@@ -234,6 +235,36 @@ async function aiRequest(mode, payload) {
     throw error;
   }
 }
+function gmContext() {
+  const visible = view(state);
+  return {
+    location: visible.location, roomName: visible.roomName, description: visible.description,
+    exits: visible.exits.map(x => ({ id: x.id, name: x.name })),
+    inspectables: visible.inspectables,
+    affordances: visible.affordances,
+    items: visible.items.map(x => x.id), features: visible.features,
+    inventory: visible.inventory.map(x => x.id),
+    barricades: visible.barricades,
+    player: { health: visible.health, stress: visible.stress,
+      hidden: visible.hidden, flashlightOn: visible.flashlightOn },
+    visibleDinos: visible.visibleDinos
+  };
+}
+const IMPROVISED_WORDS = /\b(barricade|block|wedge|jam|distraction|distract|throw|toss|lob|fling|hide behind|take cover|investigate|search|study)\b/i;
+async function gmReferee(command) {
+  const proposal = await aiRequest('adjudicate', {
+    input: command, turn: state.turn, location: state.player.location,
+    context: gmContext(),
+    rules: { dice: 'Year Zero-like attribute + skill d6; 6 is success, stress increases risk',
+      rule_ids: ['observation', 'mobility', 'stealth'],
+      allowed: ['investigate', 'distract', 'barricade', 'conceal', 'clarify'] }
+  });
+  record('referee_proposal', { turn: state.turn, proposal: sanitize(proposal) });
+  const result = applyRefereeProposal(state, proposal, command);
+  record('referee_verdict', { accepted: result.accepted,
+    events: sanitize(result.events), newTurn: result.state.turn });
+  return result;
+}
 async function execute(command) {
   if (busy || state.outcome !== 'playing') return;
   busy = true; render();
@@ -241,9 +272,17 @@ async function execute(command) {
   record('player_command', { command: sanitize(command), location: state.player.location,
     turn: state.turn, aiEnabled: $('ai').checked });
   try {
-    let input = command;
-    // Fast path: known commands are parsed locally; novel prose uses the AI interpreter.
-    if ($('ai').checked && !parseAction(command).kind) {
+    let input = command, result = null;
+    const aiEnabled = $('ai').checked && Boolean(secret());
+    // Improvised actions are not incorrectly flattened into generic use/hide commands.
+    if (aiEnabled && IMPROVISED_WORDS.test(command)) {
+      try { result = await gmReferee(command); }
+      catch (error) {
+        const message = sanitize(String(error?.message || error));
+        addLog('AI referee unavailable; no improvised action was applied. ' + message, 'info', state.turn, 'SYSTEM');
+        return;
+      }
+    } else if ($('ai').checked && !parseAction(command).kind) {
       try {
         const response = await aiRequest('interpret', {
           input: command, location: view(state).roomName,
@@ -254,27 +293,34 @@ async function execute(command) {
           inventory: state.player.inventory
         });
         if (response?.action === 'clarify') {
-          addLog(response.clarification || 'That action is not yet covered by the deterministic rules.', 'info', state.turn, 'AI GM');
-          return;
-        }
-        if (response?.action && typeof response.action === 'string') {
+          if (aiEnabled) {
+            try { result = await gmReferee(command); }
+            catch (error) {
+              addLog('AI referee unavailable: ' + sanitize(String(error?.message || error)), 'info', state.turn, 'SYSTEM');
+              return;
+            }
+          } else {
+            addLog(response.clarification || 'The action needs more detail.', 'info', state.turn, 'AI GM');
+            return;
+          }
+        } else if (response?.action && typeof response.action === 'string') {
           input = { action: response.action, target: response.target || '', push: Boolean(response.push) };
         }
       } catch (error) {
-        addLog('AI parsing unavailable; local engine will attempt the command. ' + error.message, 'info', state.turn, 'SYSTEM');
+        addLog('AI parsing unavailable; local engine will attempt the command. ' +
+          sanitize(String(error?.message || error)), 'info', state.turn, 'SYSTEM');
       }
     }
-    const result = step(state, input);
+    if (!result) result = step(state, input);
     state = result.state;
-    record('engine_step', { submittedCommand: sanitize(command), parsedAction: sanitize(input),
+    record('engine_step', { submittedCommand: sanitize(command),
+      parsedAction: result.adjudicated ? 'validated_ai_referee' : sanitize(input),
       accepted: result.accepted, narratable: Boolean(result.narratable),
+      adjudicated: Boolean(result.adjudicated), rejected: Boolean(result.rejected),
       turn: state.turn, location: state.player.location,
       outcome: state.outcome, events: sanitize(result.events) });
     displayEvents(result.events);
-    if (result.accepted) {
-      storageWrite(SAVE_KEY, JSON.stringify(state));
-    }
-    // Successful time-free observations are narratable even though they do not advance the simulation.
+    if (result.accepted) storageWrite(SAVE_KEY, JSON.stringify(state));
     if ($('ai').checked && (result.accepted || result.narratable) && secret()) {
       try {
         const response = await aiRequest('narrate', {
@@ -287,10 +333,14 @@ async function execute(command) {
         if (typeof response?.text === 'string' && response.text.trim()) {
           addLog(response.text.slice(0, 1600), 'scene', state.turn, 'AI ATMOSPHERE (NOT RULES)');
         }
-      } catch (error) { addLog('Atmospheric narration unavailable: ' + error.message, 'info', state.turn, 'SYSTEM'); }
+      } catch (error) {
+        addLog('Atmospheric narration unavailable: ' +
+          sanitize(String(error?.message || error)), 'info', state.turn, 'SYSTEM');
+      }
     }
   } catch (error) {
-    record('client_error', { operation: 'execute', message: sanitize(String(error?.message || error)), stack: sanitize(error?.stack || '') });
+    record('client_error', { operation: 'execute', message: sanitize(String(error?.message || error)),
+      stack: sanitize(error?.stack || '') });
     addLog('Action rejected: ' + sanitize(String(error?.message || error)), 'danger', state.turn, 'SYSTEM');
   } finally { busy = false; render(); $('command').focus(); }
 }
