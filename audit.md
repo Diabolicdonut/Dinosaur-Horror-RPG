@@ -1,5 +1,36 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 004 — 2026-10-21
+
+**User request:** Display AI connectivity/active-state, optionally remember GAME_TOKEN across future site visits, and export complete diagnostics to investigate game anomalies, including an earlier report that the introductory prompt repeated.
+
+### Recovery and scope
+
+- Inspected current `main`, existing browser script, HTML/CSS, Worker, engine, and checkpoint.
+- Existing accepted checkpoint 003 preserved. No changes to seeded simulation mechanics.
+- Existing GitHub Pages client uses a manually pasted Cloudflare Worker; commits to GitHub do not automatically refresh that Worker.
+
+### Implemented
+
+- Cloudflare Worker `GET /v1/gm/status`: *authenticated* no-OpenAI-call readiness check. Requires GAME_TOKEN and configured OPENAI_API_KEY; returns `authenticated: true`, selected model names, `model_call_verified: false`. A successful status check intentionally does **not** claim that OpenAI API inference has succeeded.
+- Browser AI indicator with explicit disabled, missing token, checking, gateway authorized, model responded, failed states. Explicit **TEST AI CONNECTION** action; timing/status/error recording. 404 tells user to deploy newer Worker.
+- GAME_TOKEN can be remembered **only with explicit opt-in** in browser localStorage, not in GitHub public HTML, game saves, or diagnostic reports. **FORGET SAVED TOKEN** erases the local copy.
+- Auto-recovery of a valid autosave from localStorage on page load prevents unintended return to opening narrative, and player command echoes distinguish ignored actions from introduction.
+- New `src/diagnostics.mjs`: bounded action/session log, model requests/responses and HTTP statuses, browser errors, redaction, deterministic full game state, scenario and rules config. **EXPORT DEBUG** downloads a separate report, leaving **EXPORT SAVE** available for the engine save.
+- New `docs/DEBUGGING.md`, README updates, tests and CI syntax checks.
+
+### Validation
+
+- Expanded test suite to **34 tests**: engine behavior, Worker authentication/readiness, safe exports, UI control bindings.
+- GitHub Actions validation runs automatically on main. (Do not equate mocked gateway tests with live OpenAI availability.)
+- No live credential or GAME_TOKEN values accessed, recorded or committed.
+- Live browser/Worker end-to-end integration **not yet verified** here. User needs to deploy updated `worker/index.mjs` in Cloudflare before testing `/v1/gm/status`.
+
+### Next action
+
+`manual-worker-refresh-and-first-debug-export-smoke-test`
+
+
 ## Checkpoint 003 — 2026-10-20
 
 **Scope:** Assign current OpenAI API models to each Game Master role and implement server-controlled routing without changing the existing deterministic engine.
