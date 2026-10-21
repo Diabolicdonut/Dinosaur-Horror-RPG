@@ -1,5 +1,31 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 006.2 — Old debug report reuploaded; browser asset freshness — 2026-10-21
+
+**New user report:** "It's still not working." Uploaded `dinosaur-rpg-debug-turn-3-1792611940565(1).json`.
+
+### Evidence / finding
+
+- Full bytes of the new upload compared with prior `dinosaur-rpg-debug-turn-3-1792611940565.json`: **identical SHA-256 `f94dafc4ac0aca549cf9f2181445ba3ada261b344716062fdecb89d24e747f2a`** (54,872 bytes).
+- Both reports generated at **2026-10-21T19:45:40.561Z** and identify browser build **006**, turn 3, with no new command history. They predate checkpoint 006.1 bug fixes. The second upload **cannot establish that the 006.1 repair failed** or that the latest scripts are being served to the browser.
+- GitHub Actions `pages build and deployment` confirmed **success** at commit `a977b6f04457ebc51e60938d4e0068d7f2eb4424`'s predecessor (actual accepted code commit: `a977b6f04457ebc51e60938d4e0068d7f2eb4424`), so 006.1 code has been published at least once. What is running in the user's browser is still not evidenced by an updated report. The Worker was independently verified in previous report as version 006.
+
+### Implemented
+
+- HTML now references `src/app.mjs?v=006.2` and `src/style.css?v=006.2`.
+- App imports of `engine.mjs`, `scenario.mjs`, `diagnostics.mjs`, plus engine's scenario import, use matching revision `?v=006.2` to avoid stale browser ESM module caches when HTML deploys.
+- HTML shows a literal **BUILD 006.2 · LOADING** until the corresponding app script executes and sets **BUILD 006.2 · READY**; a mismatched or stuck marker diagnoses broken/stale app execution.
+- New **GET LATEST GAME CODE** button navigates to a cache-busted query-string revision; it retains game saves and `GAME_TOKEN` in localStorage, does not reset incidents.
+- Debug file names are prefixed with actual client version: `dinosaur-rpg-debug-build-006.2-turn-...`, preventing confusion with older versions.
+- New browser UI contract test checks all versioned imports, build indicator, refresh control and non-clearing of saves. Expected **65 automated tests**.
+
+### Next validation
+
+Open `https://diabolicdonut.github.io/Dinosaur-Horror-RPG/?revision=006.2` and confirm the literal browser **BUILD 006.2 · READY**, not merely Cloudflare Worker 006. Only then retry hiding behind the rolling cabinet from turn-3 autosave. If broken, export a new **build-006.2** JSON, which will contain the actual post-fix action and save-repair diagnostics.
+
+**No Cloudflare Worker code changes** in 006.1 or 006.2. Do not tell the player to repaste Worker 006.
+
+
 ## Checkpoint 006.1 — Live referee test and consistency repairs — 2026-10-21
 
 **Evidence:** User exported `dinosaur-rpg-debug-turn-3-1792611940565.json` after playing in published GitHub Pages. Browser build `006`, Worker `006`, status `OPENAI RESPONDING`, token accepted, three successful Sol referee calls and three successful Sol narrator calls, no provider errors, turn 3, seed 1993. This is a genuine live integration test rather than only mocked tests.
