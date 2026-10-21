@@ -1,5 +1,33 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 006 — 2026-10-21
+
+**Objective:** Add the first actual AI Game Master **adjudication** pipeline, allowing improvised actions while retaining deterministic world authority. Recovery-first inspection confirmed `main` at accepted checkpoint 005 (`e43d5b7f666b6898483570c8006732f971e093a0`). No completed baseline or accepted rules were reset.
+
+### Code changes
+
+- **Authoritative environment data:** `src/scenario.mjs` contains 14 grounded scene props distributed across seven rooms. Each prop has an ID, label and allowed uses (`distract`, `barricade`, `cover`).
+- **Engine:** `src/engine.mjs` provides `applyRefereeProposal`, with only four supported actions: `investigate` (Wits/Observation), `distract` (Agility/Mobility), `barricade` (Strength/Mobility), `conceal` (Agility/Mobility), plus rejection/`clarify`. All skill checks, resource consumption, noise-origin behavior, barriers, dinosaur motion, stress and turn advancement are resolved by seeded deterministic code.
+- **Validation:** Action types, rule IDs, fields, target/source IDs, current turn/location, local prop abilities, exits and keycard protection are verified before any game-state mutation. Arbitrary extra proposal fields and hallucinated props are rejected. Historical accepted adjudication records are saved with dice outcomes, initial RNG and current state.
+- **Compatibility:** Older v005 saved games without `improvisation` still load; first approved new action adds the persistent state. Old local commands and offline mode remain functional.
+- **Worker:** Added `POST /v1/gm/adjudicate` with strict Structured Outputs schema. Sol medium reasoning selects one *proposed* action only; it does not roll or return world patches. `GET /v1/gm/status` reports **006** and `models.adjudicate`.
+- **Browser:** Improvised commands route to new referee, or fall back to referee when Luna returns `clarify`. Ordinary supported commands remain local. UI exposes available props, records proposals/validation in existing diagnostics, and narrates committed outcomes. Stale Worker versions surface **UPDATE WORKER**.
+- **Model policy:** `worker/wrangler.jsonc`, `docs/MODEL-ROUTING.md` and `docs/REFEREE-CONTRACT.md` record the new Sol role and scope.
+
+### Testing and acceptance
+
+- Extended the test suite from **38 to 58** automated checks (14 additional engine tests, 5 additional Worker mocks, 1 additional UI contract test). Existing tests remain preserved.
+- Tests cover real die-roll dispatch, persistence/replay, older saves, no arbitrary AI patches, no nonexistent props, no remote teleportation, resource consumption, important item protection, barricade blocking, typed Sol response, auth and malformed proposal failure.
+- GitHub Actions success on the updated code confirms Node syntax and mocked route contracts. **Cloudflare v006 has NOT yet been manually deployed or tested against the live OpenAI API.**
+- We explicitly do not claim broad free-form rules adjudication, arbitrary item/world creation, multi-action sequences, actual model accuracy or full Alien RAW compliance. These are later milestones.
+
+### Manual release gate
+
+User must paste the entire updated `worker/index.mjs` into existing Cloudflare `dinosaur-rpg` Worker and **Deploy**. Existing `OPENAI_API_KEY` and `GAME_TOKEN` secrets remain sufficient. Test authenticated Worker status reports v006, then try distraction/cover/barricade/investigation through GitHub Pages. If behavior is unexpected, export full debug JSON.
+
+**Next action:** `manual-cloudflare-v006-deploy-and-first-adjudication-smoke-test`.
+
+
 ## Checkpoint 005 — 2026-10-21
 
 **Report:** User typed “Check outside the window” in the control room. Opening-room description repeated, no apparent response. User supplied a full redacted checkpoint 004 diagnostic file.
