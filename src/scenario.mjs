@@ -14,7 +14,26 @@ export const SCENARIO = Object.freeze({
       exits: ['lobby', 'utility'],
       aliases: ['control room', 'control', 'operations'],
       items: [],
-      features: ['terminal', 'radio']
+      features: ['terminal', 'radio'],
+      observations: [
+        {
+          id: 'window',
+          aliases: ['windows', 'outside', 'outside window', 'outside the window',
+            'through window', 'through the window', 'glass', 'security glass',
+            'view outside', 'rain outside'],
+          description: 'Through the rain-streaked reinforced glass, flickering security floodlights pick out an empty concrete forecourt. Palm fronds lash the perimeter; beyond the light, the jungle disappears into black rain. You cannot make out what is moving farther into the trees.'
+        },
+        {
+          id: 'consoles',
+          aliases: ['console', 'monitors', 'monitor', 'screens', 'computers', 'terminal'],
+          description: 'Rows of dark monitors reflect the emergency lights. Red status lamps mark dead network links and a powerless communication console; the shutdown is real, not just a blank display.'
+        },
+        {
+          id: 'radio',
+          aliases: ['communications', 'communications console', 'transceiver'],
+          description: 'The emergency radio microphone hangs beside a silent transmitter. Its power indicator is dead; the room needs auxiliary electricity before a distress call can get out.'
+        }
+      ]
     },
     lobby: {
       name: 'Visitor Center Lobby',
@@ -22,7 +41,19 @@ export const SCENARIO = Object.freeze({
       exits: ['control'],
       aliases: ['lobby', 'reception', 'visitor center'],
       items: ['keycard'],
-      features: []
+      features: [],
+      observations: [
+        {
+          id: 'reception',
+          aliases: ['desk', 'reception desk', 'counter', 'access card', 'keycard'],
+          description: 'Water drips from the reception counter. A staff access card is lodged just behind the desk, close enough to retrieve.'
+        },
+        {
+          id: 'skeleton',
+          aliases: ['skeletons', 'dinosaur skeleton', 'displays', 'exhibits'],
+          description: 'Towering dinosaur skeletons cast skeletal shadows over the flooded floor. The display lights buzz, but nothing in the exhibits is moving.'
+        }
+      ]
     },
     utility: {
       name: 'Service Corridor',
@@ -30,7 +61,14 @@ export const SCENARIO = Object.freeze({
       exits: ['control', 'shed'],
       aliases: ['corridor', 'service corridor', 'utility', 'hall'],
       items: [],
-      features: []
+      features: [],
+      observations: [
+        {
+          id: 'maintenance door',
+          aliases: ['door', 'reinforced door', 'locked door', 'shed door'],
+          description: 'The reinforced maintenance door uses an InGen staff-card lock. Its status lamp is dark, but the access reader is still mounted beside the latch.'
+        }
+      ]
     },
     shed: {
       name: 'Maintenance Shed',
@@ -38,7 +76,19 @@ export const SCENARIO = Object.freeze({
       exits: ['utility', 'jungle'],
       aliases: ['shed', 'maintenance', 'generator room'],
       items: ['medkit', 'flare'],
-      features: ['generator']
+      features: ['generator'],
+      observations: [
+        {
+          id: 'generator',
+          aliases: ['emergency generator', 'power unit', 'engine'],
+          description: 'The emergency generator is slick with condensation, its pull-start housing and control panel still intact. Starting it will make considerable noise.'
+        },
+        {
+          id: 'jungle outside',
+          aliases: ['outside', 'doorway', 'jungle path', 'path outside'],
+          description: 'Beyond the shed doorway, wind bends the jungle canopy. The muddy service path is barely visible beneath the rain.'
+        }
+      ]
     },
     jungle: {
       name: 'Jungle Service Path',
@@ -46,7 +96,19 @@ export const SCENARIO = Object.freeze({
       exits: ['shed', 'paddock', 'helipad'],
       aliases: ['jungle', 'path', 'service path'],
       items: [],
-      features: []
+      features: [],
+      observations: [
+        {
+          id: 'fence',
+          aliases: ['fence line', 'electric fence', 'warning signs'],
+          description: 'The unpowered perimeter fence vanishes under ferns. Several warning signs have been twisted by a force stronger than the wind.'
+        },
+        {
+          id: 'tracks',
+          aliases: ['footprints', 'mud', 'trail', 'prints'],
+          description: 'Deep impressions pockmark the muddy service track. Rain is already softening their edges; the direction is difficult to judge.'
+        }
+      ]
     },
     paddock: {
       name: 'Raptor Paddock Gate',
@@ -54,7 +116,14 @@ export const SCENARIO = Object.freeze({
       exits: ['jungle'],
       aliases: ['paddock', 'gate', 'raptor gate'],
       items: [],
-      features: []
+      features: [],
+      observations: [
+        {
+          id: 'gate',
+          aliases: ['paddock gate', 'fence', 'service gate', 'claw marks'],
+          description: 'Long claw gouges score the silent service gate. The torn mesh sways in the wet wind; the power indicators are unlit.'
+        }
+      ]
     },
     helipad: {
       name: 'Emergency Helipad',
@@ -62,7 +131,19 @@ export const SCENARIO = Object.freeze({
       exits: ['jungle'],
       aliases: ['helipad', 'landing pad', 'landing zone'],
       items: [],
-      features: ['beacon']
+      features: ['beacon'],
+      observations: [
+        {
+          id: 'beacon',
+          aliases: ['emergency beacon', 'locator', 'locator beacon'],
+          description: 'The emergency beacon stands dark beside the cracked landing circle. It needs the rescue frequency and restored power before it can guide a helicopter in.'
+        },
+        {
+          id: 'sky',
+          aliases: ['clouds', 'horizon', 'above'],
+          description: 'Low storm clouds obscure the horizon. No helicopter can be seen through the rain.'
+        }
+      ]
     }
   },
   initialDinosaur: {
