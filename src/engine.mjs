@@ -359,10 +359,14 @@ export function step(previous, command) {
         } else {
           const item = itemMatch(target, s.rooms[s.player.location].items);
           const feature = featureMatch(target, room.features);
-          if (item || feature) {
+          const looseProp = (room.affordances || []).find(p =>
+            !(s.improvisation?.usedProps || []).includes(s.player.location + ':' + p.id) &&
+            (p.id === target || clean(p.label) === target));
+          if (item || feature || looseProp) {
             observationResolved = true;
             event(events, 'info', item
               ? `You examine ${SCENARIO.itemNames[item]}. It is visible and within reach.`
+              : looseProp ? `You inspect ${looseProp.label}. It might provide cover, an obstacle, or a distraction depending on its size and construction.`
               : `You examine the ${feature}. ${room.description}`);
           } else {
             const available = (room.observations || []).map(o => o.id).join(', ');
@@ -405,6 +409,12 @@ export function step(previous, command) {
         const r = check(s, 'agility', 'mobility', action.push, events, 'Quiet movement');
         noise = Math.max(noise, r.noise);
         if (!r.ok) { noise = Math.max(2, noise); event(events, 'danger', 'Your quiet approach fails. You remain where you are and disturb the surroundings.'); break; }
+      }
+      const passageKey = [s.player.location, destination].sort().join('|');
+      if ((s.improvisation?.barricades?.[passageKey] || 0) > 0) {
+        s.improvisation.barricades[passageKey] = 0;
+        noise = Math.max(noise, 2);
+        event(events, 'scene', 'You shift aside the barricade to squeeze through the passage, opening it again.');
       }
       s.player.location = destination;
       s.player.hidden = false;
