@@ -1,11 +1,90 @@
 import { SCENARIO } from './scenario.mjs';
 import { newGame, step, view, isValidSave, parseAction } from './engine.mjs';
+import { createDiagnostics, makeDebugReport, redactSensitive } from './diagnostics.mjs';
 
 const $ = id => document.getElementById(id);
 const SAVE_KEY = 'dinosaur-horror-rpg-isla-nublar-v1';
 const WORKER_BASE = 'https://dinosaur-rpg.diabolicdonut.workers.dev';
+const TOKEN_KEY = 'dinosaur-horror-rpg-remembered-token-v1';
+const AI_PREF_KEY = 'dinosaur-horror-rpg-ai-enabled-v1';
+const CLIENT_BUILD = '004';
+const trace = createDiagnostics(500);
+const transcript = [];
 let state = newGame();
 let busy = false;
+let connection = { status: 'offline', label: 'AI DISABLED',
+  detail: 'Engine operates without OpenAI.', version: null,
+  modelVerified: false, lastHttpStatus: null, checkedAt: null, lastFailure: null };
+let lastSaveError = null;
+
+function secret() { return $('game-token')?.value?.trim() || ''; }
+function sanitize(value) { return redactSensitive(value, secret()); }
+function record(kind, detail = {}) { trace.add({ kind, ...detail }, secret()); }
+function setConnection(status, label, detail, extra = {}) {
+  connection = { ...connection, status, label, detail,
+    checkedAt: new Date().toISOString(), ...extra };
+  const node = $('ai-status');
+  node.className = 'ai-connection ' + status;
+  $('ai-status-label').textContent = label;
+  $('ai-status-detail').textContent = detail;
+  $('ai-status-top').textContent = 'AI: ' + label;
+  record('connection', { status, label, detail,
+    version: connection.version, lastHttpStatus: connection.lastHttpStatus });
+}
+function storageWrite(key, value) {
+  try { localStorage.setItem(key, value); lastSaveError = null; return true; }
+  catch (error) {
+    lastSaveError = String(error?.message || error);
+    record('storage_error', { operation: 'write', key, message: lastSaveError });
+    return false;
+  }
+}
+function storageRead(key) {
+  try { return localStorage.getItem(key); }
+  catch (error) { record('storage_error', { operation: 'read', key, message: String(error) }); return null; }
+}
+function storageRemove(key) {
+  try { localStorage.removeItem(key); return true; }
+  catch (error) { record('storage_error', { operation: 'remove', key, message: String(error) }); return false; }
+}
+async function checkConnection() {
+  if (!secret()) {
+    setConnection('error', 'TOKEN REQUIRED', 'Enter GAME_TOKEN, then press Test AI Connection.',
+      { modelVerified: false, lastHttpStatus: null });
+    return false;
+  }
+  setConnection('checking', 'CONNECTING', 'Checking Cloudflare authorization…',
+    { modelVerified: false });
+  const started = performance.now();
+  try {
+    const result = await fetch(WORKER_BASE + '/v1/gm/status', {
+      method: 'GET', headers: { Authorization: 'Bearer ' + secret() },
+      cache: 'no-store', signal: AbortSignal.timeout(15000)
+    });
+    record('gateway_status', { endpoint: '/v1/gm/status', httpStatus: result.status,
+      elapsedMs: Math.round(performance.now() - started) });
+    if (result.status === 401) throw new Error('GAME_TOKEN rejected by Cloudflare (HTTP 401).');
+    if (result.status === 404) throw new Error('Older Worker code is deployed (HTTP 404). Paste the latest worker/index.mjs and redeploy.');
+    if (!result.ok) throw new Error('Cloudflare status check failed (HTTP ' + result.status + ').');
+    const response = await result.json();
+    if (response.authenticated !== true || response.openai_configured !== true)
+      throw new Error('Gateway is reachable but its credentials are not fully configured.');
+    setConnection('ready', 'GATEWAY READY',
+      'Token accepted. OpenAI model call not yet verified.', {
+      version: response.version || null, modelVerified: false,
+      lastHttpStatus: result.status, lastFailure: null
+    });
+    record('gateway_models', { models: response.models || {}, version: response.version });
+    return true;
+  } catch (error) {
+    const message = sanitize(String(error?.message || error));
+    setConnection('error', 'AI NOT CONNECTED', message, {
+      modelVerified: false, lastFailure: message
+    });
+    return false;
+  }
+}
+
 
 function addLog(text, type = 'scene', turn = state.turn, source = 'ENGINE') {
   const node = document.createElement('div');
@@ -16,6 +95,10 @@ function addLog(text, type = 'scene', turn = state.turn, source = 'ENGINE') {
   node.append(header, document.createTextNode(text));
   $('events').append(node);
   $('events').scrollTop = $('events').scrollHeight;
+  const entry = sanitize({ turn, type, source, text, at: new Date().toISOString() });
+  transcript.push(entry);
+  if (transcript.length > 500) transcript.shift();
+  record('event_log', entry);
 }
 function displayEvents(events) {
   for (const e of events) addLog(e.text, e.type);
@@ -105,30 +188,55 @@ function render() {
   for (const button of document.querySelectorAll('.quick-actions button')) button.disabled = done || busy;
 }
 async function aiRequest(mode, payload) {
-  // The token is entered at runtime and never written to game saves, URLs or logs.
-  const token = $('game-token').value.trim();
-  if (!token) throw new Error('Enter your GAME_TOKEN in the engine controls.');
+  const token = secret();
+  if (!token) throw new Error('Enter GAME_TOKEN in the engine controls.');
   const endpoint = mode === 'interpret' ? 'turn' : mode === 'narrate' ? 'narrate' : null;
   if (!endpoint) throw new Error('Unsupported AI operation.');
-  const response = await fetch(WORKER_BASE + '/v1/gm/' + endpoint, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
-    body: JSON.stringify({ payload }),
-    signal: AbortSignal.timeout(28000),
-    cache: 'no-store'
-  });
-  if (!response.ok) {
-    if (response.status === 401) throw new Error('GAME_TOKEN was rejected. Check the secret in Cloudflare and your entry here.');
-    if (response.status === 429) throw new Error('AI request rate limit reached. Try again shortly.');
-    if (response.status === 503) throw new Error('Cloudflare Worker is not configured or deployed yet.');
-    if (response.status === 404) throw new Error('Worker endpoints not deployed yet.');
-    throw new Error('AI gateway returned HTTP ' + response.status);
+  const start = performance.now();
+  record('ai_request', { route: endpoint, payload: sanitize(payload) });
+  let httpStatus = null;
+  try {
+    const response = await fetch(WORKER_BASE + '/v1/gm/' + endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ payload }), signal: AbortSignal.timeout(28000), cache: 'no-store'
+    });
+    httpStatus = response.status;
+    if (!response.ok) {
+      if (response.status === 401) throw new Error('GAME_TOKEN rejected (HTTP 401).');
+      if (response.status === 429) throw new Error('Rate limit reached (HTTP 429).');
+      if (response.status === 503) throw new Error('Worker configuration unavailable (HTTP 503).');
+      if (response.status === 404) throw new Error('Worker API route missing (HTTP 404).');
+      // Preserve a sanitized error code, but not provider text or secrets.
+      let errorCode = '';
+      try { errorCode = String((await response.json()).error || '').slice(0, 80); }
+      catch { /* An HTML error response is possible. */ }
+      throw new Error('AI gateway HTTP ' + response.status + (errorCode ? ' (' + errorCode + ')' : ''));
+    }
+    const data = await response.json();
+    record('ai_response', { route: endpoint, httpStatus,
+      elapsedMs: Math.round(performance.now() - start), response: sanitize(data) });
+    setConnection('active', 'OPENAI RESPONDING',
+      'Authenticated gateway and a successful model response.', {
+      modelVerified: true, lastHttpStatus: httpStatus, lastFailure: null
+    });
+    return data;
+  } catch (error) {
+    const message = sanitize(String(error?.message || error));
+    record('ai_error', { route: endpoint, httpStatus,
+      elapsedMs: Math.round(performance.now() - start), message });
+    setConnection('error', 'AI REQUEST FAILED', message, {
+      modelVerified: false, lastHttpStatus: httpStatus, lastFailure: message
+    });
+    throw error;
   }
-  return response.json();
 }
 async function execute(command) {
   if (busy || state.outcome !== 'playing') return;
   busy = true; render();
+  addLog('> ' + sanitize(command), 'info', state.turn, 'PLAYER');
+  record('player_command', { command: sanitize(command), location: state.player.location,
+    turn: state.turn, aiEnabled: $('ai').checked });
   try {
     let input = command;
     // Fast path: known commands are parsed locally; novel prose uses the AI interpreter.
@@ -154,10 +262,12 @@ async function execute(command) {
     }
     const result = step(state, input);
     state = result.state;
+    record('engine_step', { submittedCommand: sanitize(command), parsedAction: sanitize(input),
+      accepted: result.accepted, turn: state.turn, location: state.player.location,
+      outcome: state.outcome, events: sanitize(result.events) });
     displayEvents(result.events);
     if (result.accepted) {
-      try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }
-      catch { /* Storage disabled or quota reached; manual export remains available. */ }
+      storageWrite(SAVE_KEY, JSON.stringify(state));
     }
     if ($('ai').checked && result.accepted && $('game-token').value.trim()) {
       try {
@@ -174,7 +284,8 @@ async function execute(command) {
       } catch (error) { addLog('Atmospheric narration unavailable: ' + error.message, 'info', state.turn, 'SYSTEM'); }
     }
   } catch (error) {
-    addLog('Action rejected: ' + error.message, 'danger', state.turn, 'SYSTEM');
+    record('client_error', { operation: 'execute', message: sanitize(String(error?.message || error)), stack: sanitize(error?.stack || '') });
+    addLog('Action rejected: ' + sanitize(String(error?.message || error)), 'danger', state.turn, 'SYSTEM');
   } finally { busy = false; render(); $('command').focus(); }
 }
 $('commandform').addEventListener('submit', event => {
@@ -188,22 +299,25 @@ $('newgame').addEventListener('click', () => {
   if (busy) return;
   const seed = Number($('seed').value);
   state = newGame(seed);
+  storageWrite(SAVE_KEY, JSON.stringify(state));
+  record('new_game', { seed: state.initialSeed });
   $('events').replaceChildren();
   addLog('1993. The storm has knocked out the park network. Auxiliary power and radio communications are down. Find the access card and restore contact with the outside world.', 'scene');
   addLog(view(state).description, 'scene');
   render();
 });
 $('save').addEventListener('click', () => {
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(state)); addLog('Deterministic save stored in this browser.', 'success'); }
-  catch (e) { addLog('Browser storage unavailable. Use EXPORT JSON instead.', 'danger'); }
+  if (storageWrite(SAVE_KEY, JSON.stringify(state))) addLog('Deterministic save stored in this browser.', 'success');
+  else addLog('Browser storage unavailable. Use EXPORT SAVE instead.', 'danger');
 });
 $('load').addEventListener('click', () => {
   try {
-    const raw = localStorage.getItem(SAVE_KEY);
+    const raw = storageRead(SAVE_KEY);
     if (!raw) throw new Error('no saved game');
     const restored = JSON.parse(raw);
     if (!isValidSave(restored)) throw new Error('save incompatible with this version');
     state = restored;
+    record('load_game', { turn: state.turn, rng: state.rng });
     $('seed').value = String(state.initialSeed);
     $('events').replaceChildren();
     addLog('Save restored. Recent authoritative events:', 'info');
@@ -211,24 +325,107 @@ $('load').addEventListener('click', () => {
       for (const e of history.events) addLog(e.text, e.type, history.turn);
     }
     render();
-  } catch (error) { addLog('Load failed: ' + error.message, 'danger'); }
+  } catch (error) { addLog('Load failed: ' + sanitize(String(error?.message || error)), 'danger'); }
 });
-$('export').addEventListener('click', () => {
-  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+function downloadJson(filename, data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'nublar-save-turn-' + state.turn + '.json'; a.click();
+  a.href = url; a.download = filename;
+  document.body.append(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+$('export').addEventListener('click', () => {
+  // Save JSON stays import-compatible and does not include the GAME_TOKEN.
+  downloadJson('nublar-save-turn-' + state.turn + '.json', state);
+});
+$('export-debug').addEventListener('click', () => {
+  record('debug_export', { turn: state.turn, connectionStatus: connection.status });
+  const report = makeDebugReport({
+    state: structuredClone(state), scenario: SCENARIO, transcript: structuredClone(transcript),
+    diagnostic: trace.snapshot(secret()), aiStatus: structuredClone(connection),
+    token: secret(), tokenRemembered: $('remember-token').checked,
+    aiEnabled: $('ai').checked, savedGameAvailable: Boolean(storageRead(SAVE_KEY)),
+    client: { build: CLIENT_BUILD, origin: location.origin, path: location.pathname,
+      userAgent: navigator.userAgent, worker: WORKER_BASE }
+  });
+  downloadJson('dinosaur-rpg-debug-turn-' + state.turn + '-' + Date.now() + '.json', report);
+  addLog('Diagnostic report exported. Contains hidden world state but no GAME_TOKEN.', 'success', state.turn, 'SYSTEM');
 });
 $('clearlog').addEventListener('click', () => {
   $('events').replaceChildren();
   addLog('Display cleared; the deterministic game history remains in the save.', 'info');
 });
 $('ai').addEventListener('change', () => {
-  $('aihint').textContent = $('ai').checked
-    ? 'OpenAI GM uses the Cloudflare Worker. Enter your GAME_TOKEN below; neither secret is stored in the game save. AI can interpret and narrate, but cannot override dice or world state.'
-    : 'Local deterministic mode: no Worker or API key required. Enable AI and enter your token for natural-language interpretation and narration.';
+  storageWrite(AI_PREF_KEY, $('ai').checked ? 'on' : 'off');
+  if ($('ai').checked) void checkConnection();
+  else setConnection('offline', 'AI DISABLED', 'Engine operates locally without OpenAI.', { modelVerified: false });
 });
-addLog('1993. The storm has knocked out the park network. Auxiliary power and radio communications are down. Find the access card and restore contact with the outside world.', 'scene');
-addLog(view(state).description, 'scene');
-render();
+$('game-token').addEventListener('input', () => {
+  if ($('remember-token').checked) {
+    if (!storageWrite(TOKEN_KEY, secret())) $('remember-token').checked = false;
+  }
+  setConnection('offline', secret() ? 'TOKEN CHANGED' : 'TOKEN REQUIRED',
+    'Press TEST AI CONNECTION to verify authentication.', { modelVerified: false });
+});
+$('remember-token').addEventListener('change', () => {
+  if ($('remember-token').checked) {
+    if (!storageWrite(TOKEN_KEY, secret())) {
+      $('remember-token').checked = false;
+      addLog('Could not save token in this browser. It remains session-only.', 'danger', state.turn, 'SYSTEM');
+    }
+  } else storageRemove(TOKEN_KEY);
+  record('remember_token_preference', { enabled: $('remember-token').checked });
+});
+$('forget-token').addEventListener('click', () => {
+  storageRemove(TOKEN_KEY);
+  $('remember-token').checked = false;
+  $('game-token').value = '';
+  setConnection('offline', 'TOKEN FORGOTTEN',
+    'Saved GAME_TOKEN cleared from this device.', { modelVerified: false });
+  addLog('Stored GAME_TOKEN has been cleared from this browser.', 'info', state.turn, 'SYSTEM');
+});
+$('test-ai').addEventListener('click', () => { void checkConnection(); });
+window.addEventListener('error', e => {
+  record('browser_exception', { message: sanitize(e.message), filename: e.filename,
+    line: e.lineno, column: e.colno, stack: sanitize(e.error?.stack || '') });
+});
+window.addEventListener('unhandledrejection', e => {
+  record('unhandled_rejection', { message: sanitize(String(e.reason?.message || e.reason)),
+    stack: sanitize(e.reason?.stack || '') });
+});
+
+function initialize() {
+  const savedToken = storageRead(TOKEN_KEY);
+  if (savedToken) {
+    $('game-token').value = savedToken;
+    $('remember-token').checked = true;
+  }
+  $('ai').checked = storageRead(AI_PREF_KEY) === 'on';
+  const raw = storageRead(SAVE_KEY);
+  let restored = false;
+  if (raw) {
+    try {
+      const candidate = JSON.parse(raw);
+      if (isValidSave(candidate)) {
+        state = candidate;
+        $('seed').value = String(state.initialSeed);
+        restored = true;
+        record('automatic_resume', { turn: state.turn, position: state.player.location });
+      } else record('invalid_saved_state', { message: 'Save schema invalid or incompatible.' });
+    } catch (error) { record('invalid_saved_state', { message: sanitize(String(error)) }); }
+  }
+  if (restored) {
+    addLog('Session resumed automatically from local save: turn ' + state.turn +
+      ', ' + view(state).roomName + '.', 'success', state.turn, 'SYSTEM');
+    for (const h of state.history.slice(-12)) for (const e of h.events)
+      addLog(e.text, e.type, h.turn, 'ENGINE HISTORY');
+  } else {
+    addLog('1993. The storm has knocked out the park network. Auxiliary power and radio communications are down. Find the access card and restore contact with the outside world.', 'scene');
+    addLog(view(state).description, 'scene');
+  }
+  render();
+  if ($('ai').checked) void checkConnection();
+  else setConnection('offline', 'AI DISABLED', 'Engine operates locally without OpenAI.');
+}
+initialize();
