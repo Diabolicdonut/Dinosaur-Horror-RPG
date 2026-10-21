@@ -1,4 +1,4 @@
-import { SCENARIO } from './scenario.mjs';
+import { SCENARIO } from './scenario.mjs?v=006.2';
 
 // Prototype adaptation, NOT a complete Alien RPG rules implementation.
 // All state changes and randomness occur here. No AI output can mutate state.
