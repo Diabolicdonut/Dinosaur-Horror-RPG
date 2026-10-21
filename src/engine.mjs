@@ -106,7 +106,7 @@ export function parseAction(input) {
   if (simple[phrase]) return { kind: simple[phrase], target: '', push };
   const inspect = phrase.match(/^(?:look|inspect|examine|observe|peer|check)\s+(.+)$/);
   if (inspect) return { kind: 'look', target: inspect[1], push: false };
-  const match = phrase.match(/^(go|move|walk|head|run|sprint|sneak|creep|take|grab|pick up|use|activate|repair|switch on|turn on|heal|throw)\s+(.+)$/);
+  const match = phrase.match(/^(go|move|walk|head|run|sprint|sneak|creep|take|grab|pick up|use|activate|repair|switch on|turn on|heal)\s+(.+)$/);
   if (!match) return { kind: '', target: '', push };
   const aliases = { go:'move', move:'move', walk:'move', head:'move', run:'run',
     sprint:'run', sneak:'sneak', creep:'sneak', take:'take', grab:'take',
