@@ -264,3 +264,40 @@ test('legacy checkpoint 005 saves remain compatible and upgrade on next improvis
   assert.equal(applied.accepted,true);
   assert(applied.state.improvisation.usedProps.includes('control:rolling_cabinet'));
 });
+
+test('referee rejects arbitrary world patches even if an allowed action is included', () => {
+  const initial = newGame(814);
+  const malicious = { ...referee('conceal','rolling_cabinet',''), set_health: 4 };
+  const result = applyRefereeProposal(initial, malicious);
+  assert.equal(result.rejected,true);
+  assert.deepEqual(result.state,initial);
+});
+test('save validator rejects invalid improvised state while accepting normal prior saves', () => {
+  const saved = newGame(815);
+  assert.equal(isValidSave(saved),true);
+  const variants = [
+    { ...saved, improvisation: { usedProps: 'not an array', barricades: {} } },
+    { ...saved, improvisation: { usedProps: [], barricades: { 'control|lobby': 9999 } } },
+    { ...saved, improvisation: { usedProps: [], barricades: [] } }
+  ];
+  for (const broken of variants) assert.equal(isValidSave(broken),false);
+  delete saved.improvisation;
+  assert.equal(isValidSave(saved),true);
+});
+test('passing through an existing barricade opens the route rather than leaving an impenetrable invisible wall', () => {
+  const s = newGame(816);
+  s.improvisation.barricades['control|lobby'] = 1;
+  const moved = step(s, 'move lobby');
+  assert.equal(moved.state.player.location,'lobby');
+  assert.equal(moved.state.improvisation.barricades['control|lobby'],0);
+  assert(moved.events.some(e=>e.text.includes('shift aside the barricade')));
+});
+test('scene prop inspections are available without consuming objects or turns', () => {
+  const s = newGame(817);
+  const viewBefore = view(s);
+  assert(viewBefore.affordances.some(x=>x.id==='paperweight'));
+  const r = step(s,'look paperweight');
+  assert.equal(r.narratable,true);
+  assert.equal(r.state.turn,0);
+  assert.deepEqual(r.state,s);
+});
