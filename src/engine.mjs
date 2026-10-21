@@ -573,7 +573,7 @@ export function repairLegacyBarricadeSave(previous) {
         i.placedProps[edge] = a.resource_id;
         repaired.push('Restored cover metadata for ' + a.resource_id);
       }
-    } else if (h.events?.some(e => e.type === 'danger' && e.text.includes('will not hold'))) {
+    } else if (h.events?.some(e => e.type === 'danger' && (e.text.includes('will not hold') || e.text.includes('cannot secure')))) {
       const legitimatelyConsumed = approved.some(other => other.adjudication.resource_id === a.resource_id &&
         other.adjudication.expected_location === a.expected_location &&
         (other.adjudication.kind === 'distract' || succeeded(other)));
