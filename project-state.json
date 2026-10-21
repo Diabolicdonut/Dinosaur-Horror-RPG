@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.5.0",
-  "checkpoint": "005",
-  "state": "targeted_observation_and_free_action_narration_implemented__awaiting_live_browser_confirmation",
+  "version": "0.6.0",
+  "checkpoint": "006",
+  "state": "validated_typed_ai_referee_vertical_slice_committed__awaiting_manual_worker_v006_deployment",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,24 @@
   "secondary_reference": "User private Library: Year Zero Mini.pdf",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 38,
-  "api_status": "User-supplied checkpoint 004 debug (2026-10-21T16:31Z) confirms authenticated Worker v004 and a successful real intent-model HTTP 200 response; no live narrative call occurred because old engine rejected free look. Checkpoint 005 client now narrates resolved free observations.",
+  "automated_tests": 58,
+  "api_status": "Checkpoint 005 user validated Worker v004 OpenAI calls; new Sol /v1/gm/adjudicate endpoint v006 tested with mocked upstream only and NOT deployed/live-verified",
   "next_actions": [
-    "User: Reload published GitHub Pages game and test 'Check outside the window.'; no Cloudflare Worker paste needed",
-    "User: If unexpected behavior remains, export checkpoint 005 DEBUG JSON",
-    "Developer: Verify real in-browser targeted observation and narration, inspect responsive graphics",
-    "Developer: Build validated context-sensitive AI GM rules adjudication for arbitrary non-observation actions",
-    "Developer: Continue Year Zero stress/panic and dinosaur perception audit against private references"
+    "User: Re-paste and Deploy latest worker/index.mjs into Cloudflare dinosaur-rpg; verify /v1/gm/status version 006 and adjudicate model",
+    "User: Reload GitHub Pages; test control-room paperweight distraction, rolling-cabinet barricade, cabinet concealment, console investigation",
+    "User: Upload fresh EXPORT DEBUG report if an AI judgment or engine effect seems wrong",
+    "Developer: Run live end-to-end model evals for 20 representative improvisations, error cases, latency/cost",
+    "Developer: Expand typed action system to compound actions, item creation/crafting and full dinosaur sensory behavior",
+    "Developer: Continue stress/panic RAW comparison and add persistent NPC knowledge/dialogue"
   ],
   "acceptance_criteria": [
-    "38 automated engine, Worker, diagnostics and UI tests pass",
-    "Window look produces room-specific perceptible description without revealing hidden predator location",
-    "Time-free observation does not consume a turn, change RNG/state, or move dinosaur",
-    "AI narrator is eligible to narrate resolved targeted observations despite accepted=false",
-    "AI intent parsing recognizes look/window from current Worker; local common inspection aliases work without AI",
-    "Unrecognized targets show actionable feedback rather than generic intro",
-    "Worker source untouched in checkpoint 005 so no manual Cloudflare update necessary"
+    "58 automatic tests pass: original engine/Worker/UI/redaction plus adjudication and anti-hallucination regressions",
+    "Old saved games without improvisation schema remain valid; new entries persist used props/barricades",
+    "Sol referee cannot supply arbitrary state patches or ungrounded world object targets",
+    "Dice/noise/cover/predator/barricade outcomes remain deterministic and journaled",
+    "Complex/unsupported proposals clarify without changing time, RNG, inventory or dinosaur state",
+    "Worker health/status advertises v006 only after manual Cloudflare deploy",
+    "Real live Worker and browser test is pending; do not claim it has passed"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,9 +42,9 @@
     "GAME_TOKEN"
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
-  "worker_deployment": "User debug confirmed Cloudflare Worker v004 authenticated and OpenAI intent reply HTTP 200; no Worker source changes in checkpoint 005",
-  "pages_deployment": "User debug confirmed browser origin diabolicdonut.github.io, path /Dinosaur-Horror-RPG/, build 004; checkpoint 005 Pages update not independently browser-tested",
-  "ai_scope": "current: freeform intent mapped to existing commands + committed-event narration; full exception adjudication and NPC simulation not yet implemented",
+  "worker_deployment": "User must re-paste current worker/index.mjs into existing Cloudflare dinosaur-rpg Worker (v006); previous live v004 verified, new version not verified",
+  "pages_deployment": "Source on main; GitHub Pages automatic publication not independently verified for Checkpoint 006",
+  "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
     "turn": {
@@ -59,7 +60,12 @@
       "effort": "medium"
     },
     "rule_adjudication": "gpt-6.1-sol medium/high PLANNED not implemented",
-    "escalation": "gpt-6-astra opt-in only NOT implemented"
+    "escalation": "gpt-6-astra opt-in only NOT implemented",
+    "adjudicate": {
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "state": "IMPLEMENTED in Worker source, manual Cloudflare deployment pending"
+    }
   },
   "browser_controls": [
     "AI connection indicator",
@@ -76,5 +82,25 @@
     "engine_result_before": "AI returned look/window with HTTP 200; engine repeated room.description, accepted=false; client skipped narration",
     "engine_result_after": "look/window resolves authored exterior observation with narratable=true while accepted=false and turn/rng unchanged",
     "debug_report_timestamp": "2026-10-21T16:31:01.033Z"
+  },
+  "canonical_referee": "docs/REFEREE-CONTRACT.md",
+  "new_mechanics": {
+    "proposalKinds": [
+      "investigate",
+      "distract",
+      "barricade",
+      "conceal",
+      "clarify"
+    ],
+    "scenarioProps": "2 grounded affordances per room across 7 rooms",
+    "savedState": "optional improvisation usedProps/barricades backward compatible with v005 saves",
+    "authorizedEffects": [
+      "skill checks",
+      "expending real throwable props/items",
+      "directed noise",
+      "player concealment",
+      "barrier durability and predator obstruction"
+    ],
+    "safety": "no arbitrary AI state patches; reject stale/missing/unknown IDs; store accepted plan for replay"
   }
 }
