@@ -17,6 +17,8 @@ jobs:
         run: |
           node --check src/engine.mjs
           node --check src/app.mjs
+          node --check src/diagnostics.mjs
+          node --check tests/diagnostics.test.mjs
           node --check src/scenario.mjs
           node --check server.mjs
           node --check worker/index.mjs
