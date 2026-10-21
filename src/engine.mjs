@@ -87,7 +87,7 @@ export function newGame(seed = 1993) {
     },
     rooms: Object.fromEntries(Object.entries(SCENARIO.rooms).map(([id, room]) => [id, { items: [...room.items] }])),
     flags: { power: false, distress: false, beacon: false },
-    improvisation: { usedProps: [], barricades: {} },
+    improvisation: { usedProps: [], barricades: {}, placedProps: {} },
     dinosaurs: [{ ...SCENARIO.initialDinosaur }],
     history: []
   };
@@ -115,6 +115,24 @@ export function parseAction(input) {
   return { kind: aliases[match[1]], target: match[2].replace(/^(to|the|at|into|up|toward)\s+/g, ''), push };
 }
 
+
+/** Source-of-truth props accessible in a room, including a cabinet already placed as cover.
+ * A moved barricade is unavailable for another throw/barrier while still usable as cover.
+ */
+function propVisibility(s, roomId) {
+  const all = SCENARIO.rooms[roomId].affordances || [];
+  const used = s.improvisation?.usedProps || [];
+  const free = all.filter(p => !used.includes(roomId + ':' + p.id));
+  const installed = Object.entries(s.improvisation?.placedProps || {})
+    .filter(([edge]) => (s.improvisation?.barricades?.[edge] || 0) > 0
+      && edge.split('|').includes(roomId))
+    .map(([edge, id]) => {
+      const p = all.find(item => item.id === id);
+      return p && { ...p, label: p.label + ' (barricading passage)', uses: ['cover'], installedOn: edge };
+    }).filter(Boolean);
+  return { free, visible: [...free, ...installed] };
+}
+
 /** Does not consume world time; returns only player-visible, ground-truth state. */
 export function view(s) {
   const room = SCENARIO.rooms[s.player.location];
@@ -124,7 +142,7 @@ export function view(s) {
     exits: room.exits.map(id => ({ id, name: SCENARIO.rooms[id].name })),
     items: s.rooms[s.player.location].items.map(id => ({ id, name: SCENARIO.itemNames[id] })),
     features: room.features.slice(), inspectables: (room.observations || []).map(o => o.id),
-    affordances: (room.affordances || []).filter(o => !((s.improvisation?.usedProps || []).includes(s.player.location + ':' + o.id)))
+    affordances: propVisibility(s, s.player.location).visible
       .map(o => ({ id: o.id, label: o.label, uses: [...o.uses] })),
     barricades: room.exits.filter(id => (s.improvisation?.barricades || {})[[s.player.location, id].sort().join('|')] > 0)
       .map(id => ({ exit: id, durability: s.improvisation.barricades[[s.player.location, id].sort().join('|')] })),
@@ -180,8 +198,10 @@ function predatorTurn(s, actionNoise, events, noiseOrigin = s.player.location) {
       s.improvisation.barricades[barricadeKey]--;
       dino.alert = Math.max(dino.alert, 1);
       event(events, 'danger', 'Something powerful slams into a makeshift barrier nearby.');
-      if (s.improvisation.barricades[barricadeKey] === 0)
+      if (s.improvisation.barricades[barricadeKey] === 0) {
+        delete s.improvisation.placedProps?.[barricadeKey];
         event(events, 'danger', 'Wood and metal tear free as the barricade gives way.');
+      }
     } else dino.location = next;
     dino.alert--;
     if (dino.location === dino.goal) { dino.goal = null; dino.alert = 0; }
@@ -192,8 +212,10 @@ function predatorTurn(s, actionNoise, events, noiseOrigin = s.player.location) {
     if ((s.improvisation?.barricades?.[barrierKey] || 0) > 0) {
       s.improvisation.barricades[barrierKey]--;
       event(events, 'danger', 'An animal crashes against an improvised obstacle somewhere nearby.');
-      if (s.improvisation.barricades[barrierKey] === 0)
+      if (s.improvisation.barricades[barrierKey] === 0) {
+        delete s.improvisation.placedProps?.[barrierKey];
         event(events, 'danger', 'The improvised barrier splinters under the impact.');
+      }
     } else dino.location = next;
   }
   if (dino.location !== s.player.location) {
@@ -262,9 +284,9 @@ export function applyRefereeProposal(previous, proposal, playerInput = '') {
   const roomId = previous.player.location;
   const room = SCENARIO.rooms[roomId];
   const used = previous.improvisation?.usedProps || [];
-  const props = (room.affordances || []).filter(p => !used.includes(roomId + ':' + p.id));
-  const prop = props.find(p => p.id === resource);
-  const targetProp = props.find(p => p.id === target);
+  const props = propVisibility(previous, roomId);
+  const prop = props.free.find(p => p.id === resource);
+  const targetProp = props.visible.find(p => p.id === target);
   const knownObservation = (room.observations || []).find(o => o.id === target);
   if (kind === 'investigate' &&
     !(knownObservation || targetProp || room.features.includes(target)
@@ -284,7 +306,8 @@ export function applyRefereeProposal(previous, proposal, playerInput = '') {
     return rejectProposal(previous, 'That is not an available place to take cover.');
 
   const s = structuredClone(previous);
-  if (!s.improvisation) s.improvisation = { usedProps: [], barricades: {} };
+  if (!s.improvisation) s.improvisation = { usedProps: [], barricades: {}, placedProps: {} };
+  if (!s.improvisation.placedProps) s.improvisation.placedProps = {};
   const events = [];
   const chosen = REFEREE_RULES[kind];
   event(events, 'info', `GM ruling: ${kind} (${chosen.attribute} + ${chosen.skill}; ${rule}).`);
@@ -294,7 +317,7 @@ export function applyRefereeProposal(previous, proposal, playerInput = '') {
   if (kind === 'investigate') {
     noise = Math.max(noise, 1);
     if (result.ok) {
-      const description = knownObservation?.description ||
+      const description = knownObservation?.investigation || knownObservation?.description ||
         (targetProp ? `You examine ${targetProp.label} for signs of recent disturbance.` :
           `You study the ${target} carefully, but uncover no additional confirmed details.`);
       event(events, 'success', description);
@@ -311,16 +334,17 @@ export function applyRefereeProposal(previous, proposal, playerInput = '') {
     noise = Math.max(noise, result.ok ? 3 : 2);
     if (result.ok) noiseOrigin = target;
     event(events, result.ok ? 'success' : 'danger', result.ok
-      ? `The thrown ${prop?.label || SCENARIO.itemNames[resource] || resource} clatters toward ${SCENARIO.rooms[target].name}, drawing attention away from your position.`
+      ? `The thrown ${prop?.label || SCENARIO.itemNames[resource] || resource} clatters toward ${SCENARIO.rooms[target].name}. The sound travels away from your position; you cannot yet tell whether an animal heard it.`
       : `The thrown ${prop?.label || SCENARIO.itemNames[resource] || resource} strikes nearby; the sound gives away your own position.`);
   } else if (kind === 'barricade') {
-    if (prop) s.improvisation.usedProps.push(roomId + ':' + resource);
     noise = Math.max(noise, 2);
     if (result.ok) {
+      s.improvisation.usedProps.push(roomId + ':' + resource);
       const key = [roomId, target].sort().join('|');
       s.improvisation.barricades[key] = Math.min(2, Math.max(1, result.successes));
-      event(events, 'success', `You wedge ${prop.label} across the passage to ${SCENARIO.rooms[target].name}. The obstacle may delay a pursuer.`);
-    } else event(events, 'danger', `You struggle to place ${prop.label}, but it will not hold against a determined animal.`);
+      s.improvisation.placedProps[key] = resource;
+      event(events, 'success', `You wedge ${prop.label} across the passage to ${SCENARIO.rooms[target].name}. The obstacle may delay a pursuer, and the cabinet remains available as cover.`);
+    } else event(events, 'danger', `You cannot secure ${prop.label} across the passage, but the object remains here and can still be used for cover or another attempt.`);
   }
   s.turn++;
   if (s.outcome === 'playing') predatorTurn(s, noise, events, noiseOrigin);
@@ -423,6 +447,13 @@ export function step(previous, command) {
       }
       const passageKey = [s.player.location, destination].sort().join('|');
       if ((s.improvisation?.barricades?.[passageKey] || 0) > 0) {
+        const material = s.improvisation.placedProps?.[passageKey];
+        if (material) {
+          const source = s.improvisation.usedProps.find(key =>
+            key.endsWith(':' + material) && passageKey.split('|').includes(key.split(':')[0]));
+          if (source) s.improvisation.usedProps = s.improvisation.usedProps.filter(key => key !== source);
+          delete s.improvisation.placedProps[passageKey];
+        }
         s.improvisation.barricades[passageKey] = 0;
         noise = Math.max(noise, 2);
         event(events, 'scene', 'You shift aside the barricade to squeeze through the passage, opening it again.');
@@ -515,6 +546,46 @@ export function step(previous, command) {
   return { state: s, events, accepted: advance, narratable: observationResolved };
 }
 
+
+/** Repair the confirmed v006 bug without resetting turn, dice, inventory or chronology.
+ * A failed barricade was marked "consumed"; successful barricades were not tagged
+ * as still-visible cover. Reconcile only evidence preserved by the action journal.
+ * Do not infer actions from truncated (>249) histories.
+ */
+export function repairLegacyBarricadeSave(previous) {
+  if (!isValidSave(previous)) throw new Error('Invalid or incompatible save state.');
+  const state = structuredClone(previous);
+  const repaired = [];
+  if (!state.improvisation || !Array.isArray(state.history) || state.history.length >= MAX_HISTORY)
+    return { state, repaired };
+  const i = state.improvisation;
+  if (!i.placedProps) i.placedProps = {};
+  const approved = state.history.filter(h => h.adjudication && ['barricade', 'distract'].includes(h.adjudication.kind));
+  const succeeded = h => h.events?.some(e =>
+    e.type === 'success' && h.adjudication.kind === 'barricade' && e.text.startsWith('You wedge'));
+  for (const h of approved.filter(h => h.adjudication.kind === 'barricade')) {
+    const a = h.adjudication;
+    const resourceKey = a.expected_location + ':' + a.resource_id;
+    if (!i.usedProps.includes(resourceKey)) continue;
+    if (succeeded(h)) {
+      const edge = [a.expected_location, a.target_id].sort().join('|');
+      if ((i.barricades[edge] || 0) > 0 && !i.placedProps[edge]) {
+        i.placedProps[edge] = a.resource_id;
+        repaired.push('Restored cover metadata for ' + a.resource_id);
+      }
+    } else if (h.events?.some(e => e.type === 'danger' && e.text.includes('will not hold'))) {
+      const legitimatelyConsumed = approved.some(other => other.adjudication.resource_id === a.resource_id &&
+        other.adjudication.expected_location === a.expected_location &&
+        (other.adjudication.kind === 'distract' || succeeded(other)));
+      if (!legitimatelyConsumed) {
+        i.usedProps = i.usedProps.filter(key => key !== resourceKey);
+        repaired.push('Restored ' + a.resource_id + ' after failed barricade');
+      }
+    }
+  }
+  return { state, repaired };
+}
+
 export function isValidSave(s) {
   const i = s?.improvisation;
   const improvOk = i === undefined || (
@@ -522,6 +593,10 @@ export function isValidSave(s) {
     Array.isArray(i.usedProps) && i.usedProps.length <= 100 &&
     i.usedProps.every(x => typeof x === 'string' && x.length <= 100) &&
     i.barricades && typeof i.barricades === 'object' && !Array.isArray(i.barricades) &&
+    (i.placedProps === undefined || (i.placedProps && typeof i.placedProps === 'object' &&
+      !Array.isArray(i.placedProps) && Object.entries(i.placedProps).length <= 50 &&
+      Object.entries(i.placedProps).every(([k,v]) =>
+        k.length <= 100 && typeof v === 'string' && v.length <= 80))) &&
     Object.entries(i.barricades).length <= 50 &&
     Object.entries(i.barricades).every(([k,v]) =>
       k.length <= 100 && Number.isInteger(v) && v >= 0 && v <= 2));
