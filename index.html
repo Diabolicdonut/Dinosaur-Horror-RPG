@@ -15,7 +15,7 @@
         <span class="brand-sigil" aria-hidden="true">JP</span>
         <div><p class="overline">FIELD INCIDENT TERMINAL / 1993</p><h1>CONTAINMENT <strong>LOST</strong></h1><p class="subtitle">A Dinosaur Horror RPG proof of concept</p></div>
       </div>
-      <div class="system-label"><span class="blink" aria-hidden="true"></span>ISLA NUBLAR <small>SIMULATION ONLINE</small></div>
+      <div class="system-label">ISLA NUBLAR <small>SIMULATION ONLINE</small><span id="ai-status-top" class="ai-status-top">AI: DISABLED</span></div>
     </header>
     <main class="dashboard">
       <aside class="panel sidebar">
@@ -65,11 +65,15 @@
         <p class="panel-label">ENGINE CONTROLS</p>
         <label class="input-label" for="seed">REPLAY SEED</label>
         <input id="seed" inputmode="numeric" type="number" min="0" max="4294967295" value="1993"/>
-        <div class="controls"><button id="newgame" type="button">NEW INCIDENT</button><button id="save" type="button">SAVE</button><button id="load" type="button">LOAD</button><button id="export" type="button">EXPORT JSON</button></div>
+        <div class="controls"><button id="newgame" type="button">NEW INCIDENT</button><button id="save" type="button">SAVE</button><button id="load" type="button">LOAD</button><button id="export" type="button">EXPORT SAVE</button><button id="export-debug" class="debug-button" type="button">EXPORT DEBUG</button></div>
+        <div id="ai-status" class="ai-connection offline" role="status" aria-live="polite"><span class="ai-dot" aria-hidden="true"></span><div><strong id="ai-status-label">AI DISABLED</strong><small id="ai-status-detail">Engine operates without OpenAI.</small></div></div>
+        <button id="test-ai" type="button" class="test-ai">TEST AI CONNECTION</button>
         <label class="toggle"><input id="ai" type="checkbox"/> <span>AI GAME MASTER (BETA)</span></label>
-        <label class="input-label" for="game-token">GAME_TOKEN (private — not stored)</label>
-        <input id="game-token" type="password" autocomplete="new-password" spellcheck="false" placeholder="Your Cloudflare GAME_TOKEN"/>
-        <p id="aihint" class="map-note">Offline rules engine is always authoritative. Enable AI to connect to the Cloudflare Worker.</p>
+        <label class="input-label" for="game-token">GAME_TOKEN (private)</label>
+        <input id="game-token" type="password" autocomplete="off" spellcheck="false" placeholder="Your Cloudflare GAME_TOKEN"/>
+        <label class="toggle remember-token"><input id="remember-token" type="checkbox"/> <span>REMEMBER TOKEN ON THIS DEVICE</span></label>
+        <button id="forget-token" type="button" class="forget-token">FORGET SAVED TOKEN</button>
+        <p id="aihint" class="map-note">The token can be saved in this browser only, never in public HTML or debug exports. Use on a trusted device.</p>
         <p class="footer-note">PROTOTYPE RULES V1 · SEED-REPLAYABLE · PERSONAL STUDY BUILD</p>
       </aside>
     </main>
