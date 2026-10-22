@@ -1,7 +1,8 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007e';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007e';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007f';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007f';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007e';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007f';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007f';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -56,12 +57,15 @@ function selectedOption(id,label,selected){
 function show(){
  if(!state||!isPartySave(state))return;
  const watching=cameraActorId(state),v=partyView(state,{actorId:watching});
- const active=state.actors[state.cursor],owner=currentOwner(state);
+ const turn=activeCombatSlot(state),predatorTurn=turn?.kind==='dinosaur';
+ const active=predatorTurn?{name:'Velociraptor',id:state.dinosaurs[0].id}:
+   state.actors.find(a=>a.id===activeTurnId(state));
+ const owner=currentOwner(state);
  const ownHuman=owner==='human'&&state.outcome==='playing';
  $('beat').textContent=String(v.beat).padStart(3,'0');
  $('round').textContent=String(v.round).padStart(2,'0');
  $('active').textContent=active.name;
- $('owner').textContent=owner==='human'?'PLAYER':'COMPUTER';
+ $('owner').textContent=predatorTurn?'DINOSAUR':owner==='human'?'PLAYER':'COMPUTER';
  $('party-count').textContent=state.actors.length+' SURVIVORS';
  $('control-mode').value=state.control.mode;
  $('control-summary').textContent=state.control.mode.toUpperCase()+' · '+owner.toUpperCase()+' TO ACT';
@@ -76,9 +80,9 @@ function show(){
    (running?'AI PLAYBACK ACTIVE':'AI PLAYBACK PAUSED');
  $('sim-resume').disabled=state.control.mode==='party'||running||state.outcome!=='playing';
  $('sim-pause').disabled=state.control.mode==='party'||!running||state.outcome!=='playing';
- $('sim-step').disabled=state.control.mode==='party'||owner!=='ai'||state.outcome!=='playing';
+ $('sim-step').disabled=owner!=='ai'||state.outcome!=='playing';
  $('party-roster').innerHTML=state.actors.map(a=>{
-  const selected=a.id===watching,turn=a.id===active.id;
+  const selected=a.id===watching,acting=a.id===active.id;
   const human=state.control.mode==='party'||
     (state.control.mode==='focus'&&state.control.focusedActorId===a.id);
   // A focus or spectator camera cannot automatically know separated survivors' stats/positions.
@@ -89,10 +93,10 @@ function show(){
     ((a.criticalInjuries||[]).length?' · INJURED':'')):
     'Status unknown from this viewpoint';
   return '<button type="button" data-view="'+esc(a.id)+'" class="roster-item'+
-    (selected?' selected camera-actor':'')+(turn?' active':'')+'">'+
+    (selected?' selected camera-actor':'')+(acting?' active':'')+'">'+
     '<span><strong>'+esc(a.name)+'</strong><small>'+esc(CAREERS[a.career]?.label||a.career)+
     '<br>'+details+'</small></span><span class="chip '+(human?'player-owned':'ai-owned')+'">'+
-    (turn?(human?'TO ACT':'AI TURN'):(human?'PLAYER':'AI'))+'</span></button>';
+    (acting?(human?'TO ACT':'AI TURN'):(human?'PLAYER':'AI'))+'</span></button>';
  }).join('');
  $('location-title').textContent=v.roomName;
  $('sector').textContent=v.location.toUpperCase();
@@ -131,10 +135,19 @@ function show(){
   ...(v.visibleDinosaurs.length?[['attack dinosaur','Fight the dinosaur']]:[]),
   ...state.actors.filter(a=>a.location===v.location&&a.broken&&!a.dead&&a.id!==v.actorId)
     .map(a=>['aid '+a.id,'First aid: '+a.name]),
-  ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen']
+  ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
+  ...(v.combat?[['end','End combat turn']]:[])
  ];
  $('world-buttons').innerHTML=actions.map(([order,label])=>
-  '<button type="button" data-order="'+esc(order)+'"'+(!canScene?' disabled':'')+'>'+esc(label)+'</button>').join('');
+  '<button type="button" data-order="'+esc(order)+'"'+
+    (!canScene||(v.combat&&order!=='end'&&!(() => {
+       const budget=v.combat.remaining;
+       if(!budget)return true;
+       const cost=combatCost(order.split(' ')[0]);
+       return cost==='full'?(budget.fullSpent||budget.quickSpent>=2):
+         cost==='quick'?(budget.quickSpent>=2||
+           (budget.fullSpent&&budget.quickSpent>=1)):false;
+    })())?' disabled':'')+'>'+esc(label)+'</button>').join('');
  $('party-events').innerHTML=v.events.length?v.events.map(e=>
   '<p class="event-entry '+esc(e.category)+'"><small>BEAT '+e.beat+'</small>'+esc(e.message)+'</p>').join(''):
   '<p class="note">No observations from this camera yet.</p>';
@@ -144,6 +157,14 @@ function show(){
  $('party-command').placeholder=ownHuman?
    'Order for '+active.name+' (e.g. go lobby, inspect consoles)':
    'The computer currently controls '+active.name;
+ const actionBudget=v.combat?.remaining;
+ $('combat-status').textContent=v.combat?
+   'COMBAT ROUND '+v.combat.round+' · INITIATIVE CARD #'+v.combat.card+
+   ' · '+(predatorTurn?'Dinosaur turn (automatic)':(actionBudget?
+      'Full '+(actionBudget.fullSpent?'spent':'ready')+
+      ' · Quick '+Math.max(0,2-actionBudget.quickSpent)+' remaining':'No human action budget'))+
+   ' · 5–10 seconds per combat round':
+   'EXPLORATION · 5–10 minute stretches · no combat';
  if(state.outcome!=='playing')announce(state.outcome==='lost'?
   'ALL SURVIVORS LOST — this incident has ended.':'Rescue objectives complete; this incident has ended.');
  queueAutoplay();
@@ -186,7 +207,7 @@ function autoOnce({singleStep=false}={}){
   }
   return false;
  }
- const who=state.actors[state.cursor].name;
+ const who=activeCombatSlot(state)?.kind==='dinosaur'?'Velociraptor':state.actors[state.cursor].name;
  const statement=who+' (AI): '+result.decision.acceptedAction+
    (result.decision.proposed.target?' '+result.decision.proposed.target:'');
  commit(result,statement);
@@ -194,15 +215,16 @@ function autoOnce({singleStep=false}={}){
 }
 function queueAutoplay(){
  cancelAuto();
- if(!state||state.control.paused||state.control.mode==='party'||
+ const predator=activeCombatSlot(state)?.kind==='dinosaur';
+ if(!state||(state.control.paused&&!predator)||(!predator&&state.control.mode==='party')||
    state.outcome!=='playing'||currentOwner(state)!=='ai'||document.hidden)return;
  const expectedBeat=state.beat,expectedEpoch=state.control.epoch;
  timer=setTimeout(()=>{
    timer=null;
    if(!state||state.beat!==expectedBeat||state.control.epoch!==expectedEpoch||
-      state.control.paused||document.hidden||currentOwner(state)!=='ai')return;
-   autoOnce();
- },state.control.speedMs);
+      (!predator&&state.control.paused)||document.hidden||currentOwner(state)!=='ai')return;
+   autoOnce({singleStep:predator&&state.control.mode==='party'});
+ },predator&&state.control.mode==='party'?450:state.control.speedMs);
 }
 function applyControl(result,message){
  cancelAuto();
