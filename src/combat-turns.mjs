@@ -72,6 +72,7 @@ export function advanceCombatSlot(s,nextSeed=null){
     s.cursor=(s.cursor+1)%s.actors.length;return false;
    }
    s.combat.round++;
+   if(s.clock){s.clock.combatRounds++;s.clock.combatSeconds+=10;}
    Object.assign(s.combat,next);
    s.combat.roundHistory.push({round:s.combat.round,seed,order:cloning(next.order)});
    s.combat.roundHistory=s.combat.roundHistory.slice(-24);
