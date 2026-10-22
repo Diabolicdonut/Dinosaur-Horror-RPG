@@ -20,3 +20,6 @@
 /* 007-E survival encounter visual states */
 .roster-item:has(.chip.player-owned){border-left:3px solid #b29b68}
 .scene-danger{box-shadow:inset 0 0 10px rgba(140,28,16,.13)}
+
+/* 007-F combat turn indicator: kept neutral in exploration, warning only in combat. */
+.combat-banner{padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);background:#0d1d17;color:var(--ink);font-size:12px;letter-spacing:.3px;line-height:1.5;margin:0 0 11px}
