@@ -117,11 +117,15 @@ test('personnel lab has independent save key, creator controls and versioned mod
  assert(page.includes('PERSONNEL REGISTRY') || page.includes('PERSONNEL <span>REGISTRY'));
  for (const id of ['party-size','party-seed','make-party','reroll-party','export-party','roster-list','editor-root'])
   assert(page.includes('id="'+id+'"'));
- assert(page.includes('./src/characters-app.mjs?v=007'));
+ assert(page.includes('./src/characters-app.mjs?v=007b'));
  assert(app.includes("dinosaur-character-lab-007"));
  assert(app.includes('data-edit="talent"'));
  assert(app.includes("generateCharacter("));
  assert(!app.includes('dinosaur-rpg-save'), 'must not overwrite live incident saves');
+ assert(page.includes('id="dice-lab"'));
+ for(const id of ['roll-skill','roll-context','roll-stress','roll-modifier','roll-push','roll-seed','roll-show-dice','run-check','rerun-check','roll-result']) assert(page.includes('id="'+id+'"'));
+ assert(app.includes("import {resolveSkillCheck} from './evolved-checks.mjs?v=007b'"));
+ assert(app.includes("resolveSkillCheck(c,"));
 });
 
 test('new browser creator module and deterministic career model both parse as JavaScript',()=>{
