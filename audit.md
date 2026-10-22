@@ -1,5 +1,29 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-D — Three dynamic control modes and grounded spectator AI — 2026-10-22
+
+**Recovery source:** GitHub `main` checkpoint 007-C `e0a80cc56882f7630f11f9a3d74b637fb4d6870d`. Existing party engine, Character Lab, Evolved checks and source scenario were inspected. Strict Dinosaur Horror repository isolation observed.
+
+**Implemented production code:**
+- `src/party-engine.mjs` v3 adds authoritative player/AI action ownership, actor-scoped visited/attempted memory, persistent control settings and journals. Existing party v2 saves are explicitly validated and upgraded without losing RNG, actions, item ownership, character status or dinosaur state; **old solo 006.2 saves and engine are untouched**.
+- `src/party-director.mjs` adds **Party, Focus/Character and Spectator**, a selectable human character, independently selected follow-turn or fixed camera, non-temporal atomic switching, bounded actor-local observations, deterministic offline AI companion action proposals, journaled decisions, and stale-epoch/beat rejection.
+- `party.html`, `src/party-app.mjs` and CSS implement runtime mode selection, actor takeover, camera controls, Pause/Step/Resume, 400/800/1200/2000ms display pacing, saved control state, automatic pause on hidden tab/reload, and compatibility with validated Character Lab roster launches. Character Lab now labels the launch **Dynamic Party 007-D**.
+- **Autonomy without omniscience:** AI director receives a restricted per-survivor view (own career, inventory, visits, personal attempted clues, local rooms/items, visible dinosaur and nearby allies, abstract shared mission milestones), *not* true dinosaur coordinates or other actors' private knowledge. Only deterministic `partyStep` approves and commits skill checks and outcomes. AI proposal, goal and commit index are logged for replay.
+- **Same survival rules regardless of controller:** manual and AI resolve identical seeded Evolved-style d6 checks and shared time. Switching agency/camera does not advance world time, mutate RNG or reroll consequences. Pause blocks automatic action; Step commits exactly one AI-controlled actor action.
+
+**Regression coverage:** Added `tests/party-director.test.mjs` (**24 tests**) for mode ownership, focus takeover, non-temporal switches, camera independence, pause/step, expected-epoch stale guards, seed/replay determinism, AI actor knowledge isolation, version 2-to-3 save migration, malformed control/save rejection, and live UI contract/syntax. Retained **119 earlier tests**, yielding **143 total**. A 400-beat bounded spectator integration test demonstrates successful physical keycard collection, genuine generator power restoration, distress radio operation, and beacon rescue conclusion using the same legal world engine. Legacy browser contract test was updated for new revision.
+
+**CI recovery:** Initial commits changed the live 007-C page/version before updating the page-specific regression assertion, causing GitHub CI failure. Updated the assertion to the 007-D URL/header. New tests and the extended 400-action spectator objective acceptance now pass in GitHub CI. The final checkpoint controller/audit commit still requires its own workflow verification.
+
+**Unfinished mechanics / disclosures:** Companion behavior is a **bounded deterministic offline decision policy**, not Sol/LLM-driven general improvisation or freeform conversation. Character relationships and agendas are still rudimentary. The shared party action clock is a simplified round robin, NOT full Alien Evolved quick/full combat action economy. Predator encounters currently increase stress; severe injuries, armor, death, pursuit, full panic action effects and most world-dependent talents are deferred. This checkpoint does not claim full Evolved RAW fidelity.
+
+**Files/authority:** See `docs/CONTROL-MODES-007D.md` for precise behavior, control boundaries and QA, plus the accepted baseline `docs/MULTI-CHARACTER-CONTROL-MODES.md`. No private copyrighted source PDFs were distributed.
+
+**Deployment:** Frontend and local game modules only, no Cloudflare Worker changes or manual repaste needed. GitHub Pages deployment and interactive browser smoke remain distinct validation gates.
+
+**Next:** Start 007-E source-faithful Evolved action economy and dinosaur perception/combat, preserving these dynamic controls and versioned migration checks.
+
+
 ## Checkpoint 007-C — Playable multi-character Party Incident (alpha) — 2026-10-22
 
 **Recovery:** Inspected authoritative GitHub `main` at prior accepted checkpoint 007-B (`2dbbe50b75b86c72d1e24156ed58c1f40aa2bcb6`), source `src/scenario.mjs`, original `src/engine.mjs`, Evolved check/character code, current project controller, user-approved control mode and generation contracts. Preserved the legacy 006.2 incident source and Cloudflare Worker unchanged.
