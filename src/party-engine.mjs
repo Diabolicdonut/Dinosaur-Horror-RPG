@@ -5,6 +5,7 @@
 import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact} from './evolved-encounters.mjs';
 
 export const PARTY_ENGINE_VERSION = 3;
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
@@ -46,6 +47,8 @@ function nextTurn(s){
  if(s.cursor===0)s.round++;
 }
 function dinoTick(s,noise,at) {
+ const species=DINO_SPECIES.velociraptor;
+ if(s.dinosaurs[0]?.defeated)return;
  const d=s.dinosaurs[0];
  // A dinosaur hears noise only within plausible map reach, never a remote action.
  if(noise>0&&dist(d.location,at)<=noise){
@@ -62,14 +65,70 @@ function dinoTick(s,noise,at) {
      d.location=exits[nextSeed(s)%exits.length];
    }
  }
- for(const person of s.actors) {
-  if(person.location===d.location&&!person.hidden&&person.health>0){
-   // Pending combat milestone: creature proximity produces stress, not invented lethal attacks.
-   person.stress=Math.min(30,person.stress+1);
-   if(person.location===at||person.id===s.actors[s.cursor].id)
-     gameEvent(s,person.name+' sees a '+d.kind+' dangerously close. Stress increases.',person.id,'danger');
+ for(const person of s.actors){
+  if(person.dead||person.health<=0||person.location!==d.location)continue;
+  person.seenThreats??=[];
+  if(person.hidden){
+   if(d.alert>0&&s.beat%Math.max(2,s.actors.length)===0){
+    const search=rollDicePool(species.observation,nextSeed(s));
+    if(search.successes>=2){
+     person.hidden=false;
+     gameEvent(s,'The velociraptor searches the cover and uncovers '+person.name+'.',person.id,'danger');
+    }
+   }
+   if(person.hidden)continue;
   }
+  if(!person.seenThreats.includes(d.id)){
+   const observation=detectCreature(person,{seed:nextSeed(s),observationDice:species.observation,
+     cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0,
+     guarding:Boolean(person.guarding)});
+   person.seenThreats.push(d.id);
+   person.guarding=false;
+   gameEvent(s,person.name+(observation.margin>0?' spots a moving velociraptor before it reacts.':
+     ' encounters a velociraptor at close range.'),person.id,'danger');
+   const panic=panicOnContact(person,{seed:nextSeed(s),
+     canFlee:SCENARIO.rooms[person.location].exits.length>0,
+     cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
+   person.stress=panic.after.stress;
+   person.panicResponses=panic.after.panicResponses;
+   person.panicState=panic.after.panicState;
+   person.pendingSkip=panic.after.pendingSkip;
+   if(panic.event.dropItem&&panic.event.dropped){
+    person.inventory=panic.after.inventory;
+    s.rooms[person.location].items.push(panic.event.dropped);
+    gameEvent(s,person.name+' drops '+itemLabel(panic.event.dropped)+' in panic.',person.id,'danger');
+   }
+   if(panic.event.flee){
+    const exits=SCENARIO.rooms[person.location].exits;
+    if(exits.length){
+     person.location=exits[nextSeed(s)%exits.length];
+     person.visitedRooms??=[];
+     if(!person.visitedRooms.includes(person.location))person.visitedRooms.push(person.location);
+     gameEvent(s,person.name+' flees in terror to '+SCENARIO.rooms[person.location].name+'.',person.id,'danger');
+    }
+    continue;
+   }
+   if(panic.event.kind==='catatonic'||panic.event.demandCover){
+    person.hidden=Boolean(panic.event.demandCover);continue;
+   }
+   if(observation.margin>0)continue;
+  }
+  if(person.location!==d.location||person.hidden)continue;
+  const last=d.lastStrikes?.[person.id]??-999;
+  if(s.beat-last<Math.max(2,s.actors.length))continue;
+  d.lastStrikes??={};d.lastStrikes[person.id]=s.beat;
+  const strike=applyCreatureAttack(person,{seed:nextSeed(s),
+    attackerDice:species.attack,baseDamage:species.baseDamage});
+  person.health=strike.after.health;
+  person.broken=strike.after.broken;
+  person.dead=strike.after.dead;
+  person.criticalInjuries=strike.after.criticalInjuries||person.criticalInjuries||[];
+  if(strike.damage)
+   gameEvent(s,'Velociraptor strikes '+person.name+' for '+strike.damage+
+     ' damage'+(strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''),person.id,'danger');
+  else gameEvent(s,person.name+' avoids the velociraptor’s immediate strike.',person.id,'danger');
  }
+ if(s.actors.every(a=>a.dead))s.outcome='lost';
 }
 function matchRoom(target,room) {
  const raw=String(target||'').toLowerCase().replace(/^(to |the |into |toward |towards )+/,'').trim();
@@ -108,6 +167,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  const actors=deep(party).map(c=>({
   ...c,location:SCENARIO.start,health:c.healthMax,
   inventory:[],hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
+  armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
   lastAction:null
  }));
@@ -120,7 +180,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
-  dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null}],
+  dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
   actions:[]
  };
@@ -188,6 +248,7 @@ export function partyView(s,{actorId=null}={}) {
  const place=SCENARIO.rooms[actor.location];
  return {
   beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
+  time:{explorationStretches:Math.floor(s.beat/s.actors.length),minutes:STRETCH_MINUTES*Math.floor(s.beat/s.actors.length),combatRoundSeconds:ROUND_SECONDS},
   controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
   cameraMode:s.control.cameraMode,paused:s.control.paused,
   activeActorId:s.actors[s.cursor].id,
@@ -199,6 +260,7 @@ export function partyView(s,{actorId=null}={}) {
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
+  injuries:actor.criticalInjuries||[],broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
   hidden:actor.hidden,flags:{...s.flags},
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
    roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
