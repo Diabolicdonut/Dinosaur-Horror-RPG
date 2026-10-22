@@ -175,3 +175,26 @@ test('combat action costs are explicit and players cannot command the predator d
  assert.equal(partyStep(s,{kind:'predator'},{actorId:id,source:'human'}).accepted,false);
  assert.equal(JSON.stringify(s),before);
 });
+
+test('combat initiative rounds advance combat seconds without incorrectly adding ten-minute stretches',()=>{
+ let s=fixture(32);
+ const startingMinutes=s.clock.explorationStretches;
+ const startingCombatSeconds=s.clock.combatSeconds;
+ const count=s.combat.order.length;
+ for(let i=0;i<count;i++)s=turn(s);
+ assert.equal(s.clock.explorationStretches,startingMinutes);
+ assert.equal(s.clock.combatRounds,1);
+ assert.equal(s.clock.combatSeconds,startingCombatSeconds+10);
+ const view=JSON.parse(JSON.stringify(s));
+ assert.equal(view.clock.combatSeconds,10);
+});
+test('legacy v3 party save with no explicit clock adds safe separate clock on first action',()=>{
+ let s=newPartyIncident({seed:2020,roster});
+ delete s.combat;delete s.clock;
+ assert(isPartySave(s));
+ const r=partyStep(s,'wait',{source:'human',actorId:'pc-1'});
+ assert.equal(r.accepted,true);
+ assert.equal(r.state.clock.explorationActions,1);
+ assert.equal(r.state.clock.combatSeconds,0);
+ assert.equal(s.clock,undefined,'source save is not mutated');
+});
