@@ -195,7 +195,7 @@ export function isPartySave(s) {
     !Number.isInteger(s.control.epoch)||s.control.epoch<0||
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
-    !['playing','rescued'].includes(s.outcome)||
+    !['playing','rescued','lost'].includes(s.outcome)||
     s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
     s.actors.length>8||s.cursor>=s.actors.length||
@@ -278,6 +278,10 @@ export function parsePartyAction(input) {
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
  if(['wait','hold','stay'].includes(line))return {kind:'wait',target:'',push:0};
+ if(['guard','watch','keep guard','stand watch'].includes(line))return {kind:'guard',target:'',push:0};
+ if(/^(?:attack|strike|fight|hit)(?:\s+.*)?$/.test(line))return {kind:'attack',target:'dinosaur',push};
+ const aid=line.match(/^(?:aid|treat|first aid|stabilize)\s+(pc-[1-8])$/);
+ if(aid)return {kind:'aid',target:aid[1],push:0};
  if(/^(?:hide|conceal|crouch|take cover)(?:\s+.*)?$/.test(line))return {kind:'hide',target:'',push};
  const regex=[
   [/^(?:go|move|walk|head|run|sneak|creep)\s+(?:to\s+)?(.+)$/,'move'],
@@ -302,9 +306,22 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
    return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','move','take','give','hide','use','investigate'].includes(action.kind))
+ if(!['wait','move','take','give','hide','use','investigate','guard','aid','attack'].includes(action.kind))
    return rejected(previous,'Describe a supported action or use the scene controls.');
  const s=deep(previous),a=s.actors[s.cursor];
+ if(a.dead){
+  gameEvent(s,a.name+' cannot act.',a.id,'danger');
+  return accepted(s,a,'incapacitated','',{},0);
+ }
+ if(a.pendingSkip){
+  a.pendingSkip=false;
+  gameEvent(s,a.name+' loses a turn to panic.',a.id,'danger');
+  return accepted(s,a,'panic_freeze','',{},0);
+ }
+ if(a.broken&&action.kind!=='move'&&action.kind!=='wait'){
+  gameEvent(s,a.name+' is too injured to act.',a.id,'danger');
+  return accepted(s,a,'incapacitated','',{},0);
+ }
  const result=(skill,context='')=>{
    const seed=nextSeed(s);
    const rolled=resolveSkillCheck(a,{skill,context,seed,push:action.push});
@@ -321,11 +338,50 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
    gameEvent(s,a.name+' waits and listens.',a.id);
    return accepted(s,a,'wait','',{},0);
  }
+ if(action.kind==='guard'){
+  a.guarding=true;
+  gameEvent(s,a.name+' keeps watch for movement.',a.id);
+  return accepted(s,a,'guard','',{},0);
+ }
+ if(action.kind==='aid'){
+  const patient=s.actors.find(x=>x.id===action.target);
+  if(!patient||patient.id===a.id||patient.location!==a.location||!patient.broken||patient.dead)
+   return rejected(previous,'First aid requires a living incapacitated companion in the same room.');
+  const help=applyMedicalAid(a,patient,{seed:nextSeed(s)});
+  if(help.success){
+   patient.health=help.patient.health;patient.broken=false;patient.stabilized=true;
+  }
+  gameEvent(s,a.name+(help.success?' stabilizes ':' fails to stabilize ')+patient.name+'.',
+    a.id,help.success?'milestone':'risk');
+  return accepted(s,a,'aid',patient.id,{success:help.success,base:help.check.initial.base,stressDice:help.check.initial.stress},0);
+ }
+ if(action.kind==='attack'){
+  const d=s.dinosaurs[0];
+  if(d.defeated||d.location!==a.location)return rejected(previous,'No dinosaur is within attacking range.');
+  const gear=[...(a.gear||[]),...a.inventory];
+  const ranged=gear.includes('service carbine')||gear.includes('tranquilizer launcher');
+  const skill=ranged?'ranged_combat':'close_combat';
+  const check=result(skill);
+  const damage=check.success?Math.max(0,(ranged?2:1)+check.successes-1-DINO_SPECIES.velociraptor.armor):0;
+  d.health=Math.max(0,(d.health??DINO_SPECIES.velociraptor.health)-damage);
+  if(d.health===0)d.defeated=true;
+  a.hidden=false;
+  gameEvent(s,a.name+' attacks the velociraptor'+(damage?' for '+damage+' damage.':' but cannot injure it.')+
+    (d.defeated?' It collapses.':''),a.id,'danger');
+  return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated},ranged?3:2);
+ }
  if(action.kind==='move'){
    const room=matchRoom(action.target,a.location);
    if(!room)return rejected(previous,'That destination is not connected to this room.');
    if(a.location==='utility'&&room==='shed'&&!a.inventory.includes('keycard'))
      return rejected(previous,a.name+' needs the staff access card to enter the shed.');
+   if(s.dinosaurs[0].location===a.location&&!a.hidden&&!s.dinosaurs[0].defeated&&!a.broken){
+    const escape=result('mobility');
+    if(!escape.success){
+     gameEvent(s,a.name+' fails to break away from the velociraptor.',a.id,'risk');
+     return accepted(s,a,'escape_fail',room,escape,2);
+    }
+   }
    a.location=room;a.hidden=false;
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
    gameEvent(s,a.name+' enters '+SCENARIO.rooms[room].name+'.',a.id);
@@ -350,6 +406,8 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
    return accepted(s,a,'give',item,{recipientId:target.id},0);
  }
  if(action.kind==='hide'){
+   if(!(SCENARIO.rooms[a.location].affordances||[]).length)
+    return rejected(previous,'This open zone has no usable concealment.');
    const rolled=result('mobility');
    a.hidden=rolled.success;
    gameEvent(s,a.name+(rolled.success?' finds concealment.':' fails to conceal themselves.'),a.id,rolled.success?'action':'risk');
