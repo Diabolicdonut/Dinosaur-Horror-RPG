@@ -46,6 +46,14 @@ Supported actions include traveling along valid exits, picking up and handing ov
 
 Party game saves use `dinosaur-party-incident-007c` and never overwrite the old checkpoint 006.2 solo save. No Cloudflare Worker update or API key is required. See [precise playable scope and test ledger](docs/PARTY-INCIDENT-007C.md).
 
+## Checkpoint 007-E — Active dinosaur survival encounters
+
+The [party incident](party.html) now has grounded encounters with the map-tracked velociraptor. Human and computer-controlled survivors use the same seeded observation, stress and attack mechanics. Characters can be wounded, incapacitated or killed; their armor, cover, panic, and first aid matter. The game adds guarded observation, close or ranged attacks when the dinosaur is physically in reach, attempts to break contact, and aid for a colocated broken survivor.
+
+**Rules scope:** the [survival implementation audit](docs/SURVIVAL-ENCOUNTERS-007E.md) distinguishes active combat/stealth and D66 injury mechanics from deferred full initiative scheduling, source-exact injury/death timelines and creature signature attacks. The quick/full action budget and initiative-card functions are tested, but **not yet enforced in the live round-robin turn scheduler**. This is an encounter alpha, not complete Alien Evolved RAW.
+
+**Compatibility:** Party/Character/Spectator switching, earlier party saves, the separate legacy solo game and Cloudflare Worker are preserved. No Worker redeployment is required.
+
 ## Design contract
 
 - The **deterministic engine** owns dice, character state, locations, items, predator positions, injury, stress, panic, victory and death.
