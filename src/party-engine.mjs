@@ -111,6 +111,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   stressResponses:c.stressResponses||[],panicResponses:[],
   lastAction:null
  }));
+ actors[0].inventory.push(...SCENARIO.startItems);
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
@@ -147,7 +148,7 @@ export function partyView(s,{actorId=null}={}) {
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
-  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!actor.hidden)
+  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location)
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
@@ -155,7 +156,7 @@ export function partyView(s,{actorId=null}={}) {
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
    roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
    active:a.id===s.actors[s.cursor].id})),
-  events:s.events.slice(-40)
+  events:s.events.filter(e=>e.actorId===null||e.actorId===actor.id).slice(-40)
  };
 }
 export function parsePartyAction(input) {
