@@ -4,6 +4,14 @@ A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initia
 
 **Status:** Checkpoint 006.1 — live adjudication verified; cover persistence and saved-state recovery repaired. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
+## Rules authority and free-form roleplaying (accepted October 22, 2026)
+
+**Primary rules reference from now on: the user's privately supplied *Alien RPG — Evolved Edition* (Free League).** Previous 2019 Alien RPG core and *Year Zero Mini* are comparison and supplemental references only. The game's existing checkpoint 006.2 dice/stress implementation is a *legacy prototype*, not Evolved RAW; authority adoption **does not yet change running mechanics**. Follow [the accepted Evolved edition / natural-language doctrine](docs/EVOLVED-RULES-AUTHORITY.md), alongside the [accurate legacy implementation baseline](docs/RULES-BASELINE.md).
+
+**Player-facing direction:** free-form natural-language intent, not a command or skill menu. AI proposes relevant attribute/skill based on intent and method, respecting context, physical constraints and action economy; a deterministic engine validates and resolves mechanical consequences, including hidden creatures and Evolved-inspired risk. Skills and expertise remain useful internal distinctions, and no rolls should be required for straightforward actions. The limited built-in verbs / typed referee kinds in currently published code are a temporary technical constraint, not the intended final play interface.
+
+**Deployment:** This authority change is documentation-only. No Cloudflare Worker repaste or browser refresh is required for the decision itself. The existing game does not yet implement generalized free-form adjudication.
+
 ## Design contract
 
 - The **deterministic engine** owns dice, character state, locations, items, predator positions, injury, stress, panic, victory and death.
@@ -34,7 +42,7 @@ See **[Deployment instructions](docs/DEPLOYMENT.md)**, **[AI status and diagnost
 
 ## Rights and references
 
-*Alien RPG* (Free League) and *Year Zero Mini* by Matt Kay / 3 Skulls Pub are design references supplied privately in the user's Library; neither PDF is included in this repository. This repository is a personal technical prototype, with original code and paraphrased mechanics rather than copied rulebook text. *Jurassic Park* and its setting belong to their respective rights holders.
+The primary mechanics reference is the privately supplied *Alien RPG — Evolved Edition* (Free League). The original 2019 *Alien RPG* core and *Year Zero Mini* by Matt Kay / 3 Skulls Pub remain comparison/supplemental sources. The PDFs are not included in this repository. This repository is a personal technical prototype, with original code and paraphrased mechanics rather than copied rulebook text. *Jurassic Park* and its setting belong to their respective rights holders.
 
 ## Checkpoint 004: AI status and debugging
 
