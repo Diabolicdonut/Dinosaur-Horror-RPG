@@ -138,16 +138,15 @@ function show(){
   ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
   ...(v.combat?[['end','End combat turn']]:[])
  ];
- $('world-buttons').innerHTML=actions.map(([order,label])=>
-  '<button type="button" data-order="'+esc(order)+'"'+
-    (!canScene||(v.combat&&order!=='end'&&!(() => {
-       const budget=v.combat.remaining;
-       if(!budget)return true;
-       const cost=combatCost(order.split(' ')[0]);
-       return cost==='full'?(budget.fullSpent||budget.quickSpent>=2):
-         cost==='quick'?(budget.quickSpent>=2||
-           (budget.fullSpent&&budget.quickSpent>=1)):false;
-    })())?' disabled':'')+'>'+esc(label)+'</button>').join('');
+ $('world-buttons').innerHTML=actions.map(([order,label])=>{
+  const budget=v.combat?.remaining,cost=combatCost(order.split(' ')[0]);
+  const exhausted=Boolean(budget&&(
+   (cost==='full'&&(budget.fullSpent||budget.quickSpent>=2))||
+   (cost==='quick'&&(budget.quickSpent>=2||(budget.fullSpent&&budget.quickSpent>=1)))
+  ));
+  return '<button type="button" data-order="'+esc(order)+'"'+
+    (!canScene||exhausted?' disabled':'')+'>'+esc(label)+'</button>';
+ }).join('');
  $('party-events').innerHTML=v.events.length?v.events.map(e=>
   '<p class="event-entry '+esc(e.category)+'"><small>BEAT '+e.beat+'</small>'+esc(e.message)+'</p>').join(''):
   '<p class="note">No observations from this camera yet.</p>';
@@ -216,13 +215,13 @@ function autoOnce({singleStep=false}={}){
 function queueAutoplay(){
  cancelAuto();
  const predator=activeCombatSlot(state)?.kind==='dinosaur';
- if(!state||(state.control.paused&&!predator)||(!predator&&state.control.mode==='party')||
+ if(!state||(state.control.paused&&!(predator&&state.control.mode==='party'))||(!predator&&state.control.mode==='party')||
    state.outcome!=='playing'||currentOwner(state)!=='ai'||document.hidden)return;
  const expectedBeat=state.beat,expectedEpoch=state.control.epoch;
  timer=setTimeout(()=>{
    timer=null;
    if(!state||state.beat!==expectedBeat||state.control.epoch!==expectedEpoch||
-      (!predator&&state.control.paused)||document.hidden||currentOwner(state)!=='ai')return;
+      (state.control.paused&&!(predator&&state.control.mode==='party'))||document.hidden||currentOwner(state)!=='ai')return;
    autoOnce({singleStep:predator&&state.control.mode==='party'});
  },predator&&state.control.mode==='party'?450:state.control.speedMs);
 }
