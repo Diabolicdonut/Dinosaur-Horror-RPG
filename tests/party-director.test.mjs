@@ -282,3 +282,10 @@ test('spectator autonomy can advance a grounded shared objective without hidden 
  assert(s.beat>=poweredAt);
  assert(s.aiDecisions.length>0);
 });
+
+test('malformed save actor collection is rejected instead of throwing during control validation',()=>{
+ const invalid=start();invalid.actors={};
+ assert.equal(isPartySave(invalid),false);
+ const missing=start();missing.control.focusedActorId='pc-missing';
+ assert.equal(isPartySave(missing),false);
+});
