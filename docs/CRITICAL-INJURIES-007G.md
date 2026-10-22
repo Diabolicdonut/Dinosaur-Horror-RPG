@@ -38,7 +38,7 @@ The book explicitly recommends discussing whether mental-trauma/mental-illness r
 - `src/combat-turns.mjs`: wound-driven full-action movement and quick COMMAND Rally.
 - `src/party-director.mjs`: nearby urgent casualty awareness for medical AI; no hidden-map authority.
 - `src/party-app.mjs`, `party.html`: wound labels, urgent treatment status, recovery actions and build 007-G cache revision.
-- `tests/evolved-injuries.test.mjs`: 24 tests covering the complete D66 code grid, injury penalties, clocks, death rolls, treatment failures, legal medical interactions, dynamic combat action cost, actor-local AI and old save integrity.
-- Previous **184 tests** retained. Total expected: **208**. Only GitHub CI confirms the final accepted state; no claim of manual visual browser QA from Node testing alone.
+- `tests/evolved-injuries.test.mjs`: 25 tests covering the complete D66 code grid, injury penalties, clocks, death rolls, treatment failures, legal medical interactions, dynamic combat action cost, actor-local AI and old save integrity.
+- Previous **184 tests** retained. Total expected: **209**. Only GitHub CI confirms the final accepted state; no claim of manual visual browser QA from Node testing alone.
 
 **Next milestone (007-H):** detailed infection, wound-driven secondary damage, source-precise death-roll timing, interactive reactive defenses and initiative changes, plus expanded safe medical facilities and character conversation. Continue to preserve v3 party saves and legacy 006.2 solo game/Worker isolation.
