@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Party / Focus / Spectator dynamic-control requirement — 2026-10-22
+
+**New user-approved gameplay direction:** Three modes are switchable during the *same* continuous dinosaur incident: **PARTY** (human decisions for all playable human characters), **FOCUS** (human decisions for one active selected character, AI companions for the others), **SPECTATOR** (AI decisions for all, with pause, step and takeover). Separate decision **agency** from UI **viewpoint**; changing camera must not grant new world knowledge to characters.
+
+**Architectural consequences:** The next implementation should create a first-class roster of separately initialized, Evolved-compliant careers, skills, talents, stress, inventory, injury, location, motives, knowledge and action points. One actor-ID-based deterministic scheduler must enforce Evolved timings in all modes, while actor-level AI proposals remain bounded and cannot directly modify dice or the world. Validated autonomous intentions must be journaled for repeatable replay. Mode switches apply at safe action boundaries without undoing committed state or spending turns twice. Spectator auto-advances only while actively running the simulation and stops on pause or user takeover.
+
+**Development change:** Updated `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md` to integrate multi-actor modeling in Phase B before autonomous companions, mode switching and full spectator simulation in Phase D. Added `docs/MULTI-CHARACTER-CONTROL-MODES.md`; updated `project-state.json` and README. This is an original Dinosaur Horror feature, not an attribution to Evolved RAW.
+
+**Runtime status:** No game engine, browser client, Cloudflare Worker, existing save format or automated tests changed. This is a *design specification*, not a claim of implemented spectator controls. Continue to treat current checkpoint 006.2 implementation and its open user smoke-test gate honestly.
+
+
 ## New primary design acceptance — Faithful Evolved mechanics, hidden rolls, Jurassic Park theming — 2026-10-22
 
 **User decision:** Retain *Alien RPG — Evolved Edition* mechanics as faithfully as possible (dice pools, twelve trained skills, careers, selectable talents, stress, Resolve, panic, pushes, combat, injuries, action timing, equipment). Re-theme setting, professions, talents, equipment and dinosaur threats for Jurassic Park. Retain the actual **seeded dice rolls behind the screen** and let players describe attempted actions freely, while the AI selects valid skill/attribute/talent adjudications without requiring players to speak in rules terms.
