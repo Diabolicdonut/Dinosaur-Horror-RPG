@@ -88,7 +88,7 @@ export function enrichInjuries(actor,time,seed=1993){
   const lethal=rule.lethal;
   return {...w,label:rule.label,lethal:Boolean(lethal),
    deadline:lethal||null,medicalVersion:MEDICAL_VERSION,inflictedAt:born,
-   stabilized:Boolean(w.stabilized||next.stabilized),
+   stabilized:Boolean(w.stabilized),
    deathSuccesses:w.deathSuccesses||0,
    nextDeathAt:lethal&&lethal!=='instant'?
      (acceptedN(w.nextDeathAt)?w.nextDeathAt:born+unitSeconds(lethal)):null,
