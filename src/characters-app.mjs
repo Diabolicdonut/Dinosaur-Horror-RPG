@@ -56,6 +56,7 @@ function draw() {
   $('validation-pill').textContent=issues.length?issues.length+' ISSUES':'VALID';
   $('validation-pill').style.color=issues.length?'#e59a84':'#92ceb2';
   $('export-party').disabled=validateParty(party).length>0;
+  $('start-party').disabled=validateParty(party).length>0;
   const aPoints=Object.values(c.attributes).reduce((sum,v)=>sum+(Number(v)||0),0);
   const skPoints=Object.values(c.skills).reduce((sum,v)=>sum+(Number(v)||0),0);
   let body='<div class="editor-head"><div class="field" style="flex:1;min-width:210px"><label>Park career<select data-edit="career">'+CAREER_IDS.map(k=>option(k,CAREERS[k].label,c.career)).join('')+'</select></label></div><button type="button" id="reroll-character" class="secondary">Regenerate unlocked</button></div>';
@@ -168,6 +169,14 @@ $('reroll-party').addEventListener('click',()=>{
   catch(error){notify('Could not regenerate entire party: '+error.message);}
 });
 $('export-party').addEventListener('click',saveRoster);
+$('start-party').addEventListener('click',()=>{
+  const errors=validateParty(party);
+  if(errors.length){notify('Cannot launch: '+errors.join(' '));return;}
+  try {
+    sessionStorage.setItem('dinosaur-party-launch-007c',JSON.stringify({seed,characters:party}));
+    window.location.href='./party.html';
+  }catch(error){notify('Cannot transfer roster to party incident: '+error.message);}
+});
 try {
   const raw=localStorage.getItem(STORE);
   if(raw){
