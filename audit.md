@@ -1,5 +1,22 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-F — Live initiative and action economy — 2026-10-22
+
+**Recovery:** Inspected current main at accepted 007-E commit `ef5a134aa0513546c7946686d9405da6ab6751d8`, the authoritative party engine/director, character and encounter modules, controls, action tests and source scenario. Rules mapped to user's private *Alien RPG — Evolved Edition*, printed combat/initiative pp. 59–61 and supporting combat/damage pp. 62–71. No copyrighted rulebook tables, prose or art copied into public code.
+
+**Implemented:** `src/combat-turns.mjs` now schedules seeded unique 1–10 initiative cards for local exposed survivors and two Velociraptor Speed turns per round, redrawing cards after each completed round. Actor turns enforce full+quick (either order) or two quick actions; unsupported excess actions are rejected without time, inventory, skill rolls or RNG changes. `end` yields unused budget. Prepared defenses spend quick capacity before the actual seeded dinosaur attack; no free automatic dodge. All accepted card actions, including predator attacks, append to the same authoritative world ledger.
+
+**World integration:** `src/party-engine.mjs` transitions from exploration into a real combat phase upon observable dinosaur contact; delayed dinosaur attacks occur on its drawn initiative, not arbitrary exploration adjacency ticks. Combat ends on creature defeat or absence of local exposed opponents. `src/party-director.mjs` treats dinosaur slots as AI-owned irrespective of Party/Focus/Spectator and preserves single-action spectator stepping and pause behavior. Browser `party.html` exposes active card, round, action budget, End Combat Turn and elapsed combat time; client/style cache revised to 007f.
+
+**Separate clocks:** New optional `clock` tracks exploration actions/stretches apart from completed combat rounds/seconds. Previous v3 party saves without combat/clock remain accepted; earlier v2→v3 migration is unchanged. No legacy solo 006.2 save, `src/engine.mjs`, Worker credential or Cloudflare Worker source modified.
+
+**Validation:** Added `tests/combat-turns.test.mjs` (**17 tests**) for initiative uniqueness/order, double-speed monster turns, legal and illegal action combinations, seeded reproducibility, actor-source authorization, reserved dodge expenditure, mid-combat mode switches, deterministic spectator stepping, malformed saved budgets and old-save/time compatibility. Existing 167 tests retained. Target/final total **184**. GitHub CI has reported pass on implementation and README commits; the audit/controller HEAD still needs its workflow acceptance.
+
+**Known fidelity gaps:** Initiative holding/trading and ambush first-card priority, human-confirmed out-of-turn defense selection, source-exact ranged cover/ammo and many full combat creature options are not yet implemented. Critical injury and death-roll timing remain the prior 007-E limited adaptation, not full Evolved RAW. See `docs/COMBAT-INITIATIVE-007F.md` for fidelity matrix and future tasks. Graphical manual browser smoke has not been claimed.
+
+**Next milestone:** 007-G source-specific critical injuries and death/medical clocks, then surprise/ambush and deliberate interrupts while keeping mode switching, RNG and all existing saves stable.
+
+
 ## Checkpoint 007-E — Dinosaur survival encounter alpha — 2026-10-22
 
 **Authority:** User-private Alien RPG Evolved Edition, printed pp. 54–73 for time, stealth, initiative, actions, armor, damage, injury and panic. Public code uses original procedures and original park content, not reproduced rulebook pages.
