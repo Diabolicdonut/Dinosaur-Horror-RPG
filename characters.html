@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#09130f"/>
 <meta name="description" content="Dinosaur Horror RPG — create a legal Jurassic Park-era character party."/>
 <title>Personnel Registry — Dinosaur Horror RPG</title>
-<link rel="stylesheet" href="./src/characters.css?v=007"/>
+<link rel="stylesheet" href="./src/characters.css?v=007b"/>
 </head>
 <body>
 <main class="lab">
@@ -14,13 +14,13 @@
     <div>
       <p class="eyebrow">INTERNATIONAL GENETIC TECHNOLOGIES / PERSONNEL ARCHIVE</p>
       <h1>PERSONNEL <span>REGISTRY</span></h1>
-      <p>CHARACTER LAB 007 · Evolved-based character creation</p>
+      <p>CHARACTER LAB 007-B · Evolved-based character creation</p>
     </div>
     <a class="secondary" href="./index.html">← Return to the live incident</a>
   </header>
   <section class="notice" aria-label="Development status">
     <strong>Playable character creator preview.</strong>
-    Build, validate, save, and export parties here. Characters are not yet connected to the incident engine. This lab uses Evolved starting budgets and original park careers; talent effects and spectator control are future milestones.
+    Build, validate, save, and export parties here. Characters are not yet connected to the incident engine. This lab uses Evolved starting budgets and original park careers. A seeded skill-check sandbox now models hidden d6 pools and several talent effects; the live incident and spectator controls are not yet connected.
   </section>
   <section class="toolbar panel" aria-label="Character generation">
     <label>Party size <input type="number" min="1" max="8" id="party-size" value="3"/></label>
@@ -41,8 +41,35 @@
       <div id="editor-root"></div>
     </section>
   </div>
+  <section class="panel section" id="dice-lab" aria-label="Hidden dice test laboratory">
+    <div class="section-head"><h2>FIELD ASSESSMENT / HIDDEN DICE</h2><span>RULES 007-B · SANDBOX ONLY</span></div>
+    <p class="note">Run a seeded Evolved-based skill check for the selected survivor. It demonstrates stress, pushes and qualifying talent modifiers without altering their sheet, live game or saved incident.</p>
+    <div class="check-grid">
+      <label>Testing survivor <strong id="roll-actor"></strong></label>
+      <label>Skill <select id="roll-skill"></select></label>
+      <label>Situation <select id="roll-context">
+        <option value="">Ordinary attempt</option>
+        <option value="active_search">Search for concealed clues</option>
+        <option value="dodge">Dodge an attack</option>
+        <option value="grapple">Restrain a threat</option>
+        <option value="first_aid">First aid</option>
+        <option value="surgery">Surgical care</option>
+        <option value="rally">Rally an injured survivor</option>
+        <option value="authority">Use official authority</option>
+        <option value="cunning">Find a clever angle in negotiations</option>
+        <option value="acceleration">Accelerate or brake a vehicle</option>
+      </select></label>
+      <label>Stress <input id="roll-stress" type="number" min="0" max="12" step="1" value="2"/></label>
+      <label>Base-dice adjustment <input id="roll-modifier" type="number" min="-10" max="10" step="1" value="0"/></label>
+      <label>Push count <select id="roll-push"><option value="0">No push</option><option value="1">Push once</option><option value="2">Attempt double push (talent only)</option></select></label>
+      <label>Dice seed <input id="roll-seed" type="number" min="0" max="4294967295" value="1993"/></label>
+      <label class="inline-check"><input type="checkbox" id="roll-show-dice"/> Reveal individual dice (debug)</label>
+    </div>
+    <div class="action-bar"><button id="run-check" type="button">Resolve test check</button><button id="rerun-check" type="button" class="secondary">Repeat same seed</button></div>
+    <div class="check-result" id="roll-result" role="status" aria-live="polite">Choose a skill and test the selected survivor.</div>
+  </section>
   <footer>Created characters use separate seeded generation and cannot alter the live game's saved incident or random state. Source book remains private.</footer>
 </main>
-<script type="module" src="./src/characters-app.mjs?v=007"></script>
+<script type="module" src="./src/characters-app.mjs?v=007b"></script>
 </body>
 </html>
