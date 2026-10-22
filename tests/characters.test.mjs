@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
 import {
  ATTRIBUTES, SKILLS, CAREERS, CAREER_IDS, RULE_VERSION, derived, validateCharacter,
  validateParty, generateCharacter, makeParty, editCharacter
@@ -121,4 +122,12 @@ test('personnel lab has independent save key, creator controls and versioned mod
  assert(app.includes('data-edit="talent"'));
  assert(app.includes("generateCharacter("));
  assert(!app.includes('dinosaur-rpg-save'), 'must not overwrite live incident saves');
+});
+
+test('new browser creator module and deterministic career model both parse as JavaScript',()=>{
+ for(const path of ['../src/characters.mjs','../src/characters-app.mjs']){
+  const file=new URL(path,import.meta.url);
+  const result=spawnSync(process.execPath,['--check',file.pathname],{encoding:'utf8'});
+  assert.equal(result.status,0, path+': '+result.stderr);
+ }
 });
