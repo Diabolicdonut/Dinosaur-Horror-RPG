@@ -33,6 +33,14 @@ Start with Evolved's twelve skill **mechanical categories** as internal canonica
 
 Keep Evolved's talent timing, activation conditions and dice/stress consequences when creating setting-specific equivalents. Never silently grant unlimited ability to an archetype because its description suggests it is an expert.
 
+## Party-control, character-control and spectator requirement (new acceptance)
+
+The game supports three player-switchable **decision authority** modes over the same persisted Jurassic Park incident: (1) control all playable characters, (2) control exactly one selectable character while AI controls the others, (3) spectate while AI controls all playable characters. The player can change modes during play (at safe action commit boundaries), and can change **camera/viewpoint** independently of who controls actions. Preserve per-character statistics, resources, injuries, stress, personal knowledge, relationships and goals regardless of mode.
+
+**This is a Dinosaur Horror game extension, not a mechanic copied from Alien Evolved.** The character skill, talent, dice, timing and combat mechanics are the same in every mode. The engine remains authoritative over decisions' consequences. See [multi-character control modes](MULTI-CHARACTER-CONTROL-MODES.md) for exact ownership rules, scheduling, spectator controls, security/knowledge boundaries, and testing.
+
+**Implementation order change:** Build a roster of independently modeled playable actors and an actor-ID-based scheduler *alongside the Evolved character system* in Phase B. Do **not** build the main engine around a permanent single `state.player` assumption. Implement mode/viewpoint switching on top of the scheduler, followed by AI companions, and finally spectator autonomous play. Guard old saves with a migration.
+
 ## Work phases with validation gates
 
 ### Phase A: Evolved mechanical rules inventory
@@ -50,6 +58,7 @@ Build a **source-to-engine matrix** against the private book with: rule name, pa
 ### Phase B: Mechanical foundation / character system
 
 - Introduce data-driven character careers, attributes, skills and talent definitions; implement character creation validation and advancement.
+- Model a **roster of playable actors by stable ID** from the outset, with each character's independent skills, talents, stress, injury, inventory, location, agenda and knowledge; implement one deterministic scheduling and action-ownership service for all three modes. Preserve existing save behavior with migration.
 - Port Evolved-style dice pool resolution **with every die result retained**, seed replay, stress dice distinguished from base dice, push and stress-response semantics and conditional effects.
 - Add skill and talent hooks in original game code and verify the probability distribution against mathematical expectations as a diagnostic, **without replacing dice**.
 - Audit the current `check()` and `RULESET` as legacy only; fix deviations in new engine version while maintaining migration/saved-game handling.
@@ -67,6 +76,8 @@ Build a **source-to-engine matrix** against the private book with: rule name, pa
 ### Phase D: Natural-language Game Master
 
 - Interpret user intent and method, source objects, goal, stakes and action sequence without a player-facing verb list.
+- Implement distinct **Party / Character / Spectator** mode control and independent **camera/viewpoint** selection; give each playable AI character bounded character-specific proposals for autonomous decisions and preserve selected focus, pending plans and mode switches in a journal.
+- Spectator autonomously advances the same real game simulation with Pause/Step/Resume and single-actor takeover; prevent unauthorized omniscience, double turns, stale AI actions and fabricated story outcomes.
 - Translate to **actual Evolved-compatible skill checks and talent triggers** behind the screen. Request a different attribute with a given skill when justified, subject to deterministic approval.
 - Split or sequence compound actions using real time/action costs and interruptions; resolve success/failure and secondary outcomes using recorded dice.
 - Narrate from committed, player-visible events only. Expose optional explain-ruling/debug mode, not obligatory checks to player.
