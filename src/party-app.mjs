@@ -84,7 +84,9 @@ function show(){
   // A focus or spectator camera cannot automatically know separated survivors' stats/positions.
   const nearby=state.control.mode==='party'||a.id===watching||
     a.location===state.actors.find(x=>x.id===watching).location;
-  const details=nearby?(esc(a.location)+' · HP '+a.health+'/'+a.healthMax+' · Stress '+a.stress):
+  const details=nearby?(esc(a.location)+' · HP '+a.health+'/'+a.healthMax+' · Stress '+a.stress+
+    (a.dead?' · DECEASED':a.broken?' · INCAPACITATED':'')+
+    ((a.criticalInjuries||[]).length?' · INJURED':'')):
     'Status unknown from this viewpoint';
   return '<button type="button" data-view="'+esc(a.id)+'" class="roster-item'+
     (selected?' selected camera-actor':'')+(turn?' active':'')+'">'+
@@ -97,7 +99,11 @@ function show(){
  $('room-description').textContent=v.description;
  $('viewed-character').textContent='Watching '+v.actorName+
    (v.actorId===v.activeActorId?' · CURRENT TURN':' · NOT CURRENT TURN')+
-   ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'');
+   ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'')+
+   (v.dead?' · DECEASED':v.broken?' · INCAPACITATED':'')+
+   (v.panicState?' · Panic: '+v.panicState:'')+
+   (v.injuries?.length?' · Critical injuries: '+v.injuries.map(i=>'#'+i.code).join(', '):'')+
+   ' · Approx. elapsed time '+v.time.minutes+' min';
  const flags=v.flags;
  $('objectives').innerHTML=[
    ['Recover the staff access card',state.actors.some(a=>a.inventory.includes('keycard'))],
@@ -122,7 +128,10 @@ function show(){
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
-  ['hide','Find cover'],['wait','Wait / Listen']
+  ...(v.visibleDinosaurs.length?[['attack dinosaur','Fight the dinosaur']]:[]),
+  ...state.actors.filter(a=>a.location===v.location&&a.broken&&!a.dead&&a.id!==v.actorId)
+    .map(a=>['aid '+a.id,'First aid: '+a.name]),
+  ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen']
  ];
  $('world-buttons').innerHTML=actions.map(([order,label])=>
   '<button type="button" data-order="'+esc(order)+'"'+(!canScene?' disabled':'')+'>'+esc(label)+'</button>').join('');
@@ -135,7 +144,8 @@ function show(){
  $('party-command').placeholder=ownHuman?
    'Order for '+active.name+' (e.g. go lobby, inspect consoles)':
    'The computer currently controls '+active.name;
- if(state.outcome!=='playing')announce('Rescue objectives complete; this incident has ended.');
+ if(state.outcome!=='playing')announce(state.outcome==='lost'?
+  'ALL SURVIVORS LOST — this incident has ended.':'Rescue objectives complete; this incident has ended.');
  queueAutoplay();
 }
 function commit(result,label){
