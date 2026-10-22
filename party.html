@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="theme-color" content="#09130f"/>
+<meta name="description" content="Dinosaur Horror RPG, experimental multi-character incident with shared world time."/>
+<title>Party Incident 007-C — Dinosaur Horror RPG</title>
+<link rel="stylesheet" href="./src/characters.css?v=007c"/>
+<link rel="stylesheet" href="./src/party.css?v=007c"/>
+</head>
+<body>
+<main class="lab">
+<header class="mast">
+  <div><p class="eyebrow">ISLA NUBLAR / 1993 / EMERGENCY TEAM SIMULATION</p>
+    <h1>CONTAINMENT <span>LOST</span></h1>
+    <p>CHECKPOINT 007-C · PARTY INCIDENT ALPHA</p>
+  </div>
+  <nav class="nav"><a class="secondary" href="./characters.html">← Personnel Registry</a>
+    <a class="secondary" href="./index.html">Legacy solo incident</a></nav>
+</header>
+<section class="notice">
+ <strong>Playable multi-character development build.</strong>
+ Your generated survivors share one island, one item supply, one dinosaur and one action clock.
+ Party control works now; AI companions, spectator mode, full combat and completely free-form referee actions are not yet available. Original saved incidents remain separate.
+</section>
+<section class="panel control-strip" aria-label="Party incident controls">
+ <div><small>ACTION BEAT</small><strong id="beat">000</strong></div>
+ <div><small>ROSTER ROUND</small><strong id="round">01</strong></div>
+ <div><small>ACTIVE SURVIVOR</small><strong id="active">–</strong></div>
+ <div class="control-buttons">
+  <button type="button" id="save-incident" class="secondary">Save</button>
+  <button type="button" id="load-incident" class="secondary">Load</button>
+  <button type="button" id="restart-incident" class="secondary">Restart from party</button>
+  <button type="button" id="export-incident" class="secondary">Export incident</button>
+ </div>
+</section>
+<p id="party-status" class="status" role="status" aria-live="polite"></p>
+<div class="workspace party-workspace">
+  <aside class="panel roster">
+    <div class="section-head"><h2>Personnel</h2><span id="party-count">0</span></div>
+    <div class="roster-list" id="party-roster"></div>
+    <p class="note">Select any survivor to view their location and knowledge. Only the highlighted active survivor may take the next action. Each accepted action advances shared time.</p>
+    <div class="section"><h3>Shared objectives</h3><div id="objectives" class="objectives"></div></div>
+  </aside>
+  <section class="panel incident-main">
+    <div class="section-head"><h2 id="location-title">Visitor Center</h2><span id="sector"></span></div>
+    <div id="room-description" class="room-prose"></div>
+    <div id="viewed-character" class="viewed-character"></div>
+    <div class="section">
+      <h3>Local scene</h3>
+      <div id="local-scene" class="local-scene"></div>
+    </div>
+    <div class="section">
+      <h3>Movement</h3>
+      <div id="travel-buttons" class="action-choices"></div>
+    </div>
+    <div class="section">
+      <h3>World actions</h3>
+      <div id="world-buttons" class="action-choices"></div>
+    </div>
+    <div class="section">
+      <h3>Orders to the active survivor</h3>
+      <form id="party-command-form" autocomplete="off">
+        <label for="party-command" class="note">Describe an action (currently bounded verbs; expanded AI referee is a later milestone)</label>
+        <div class="command-row">
+          <input id="party-command" maxlength="200" required placeholder="e.g. inspect consoles, go lobby, take keycard, repair generator"/>
+          <button id="party-submit" type="submit">Act</button>
+        </div>
+      </form>
+      <div class="action-choices quiet">
+        <label class="inline-check"><input id="party-push" type="checkbox"/> Push eligible skill check (+stress)</label>
+        <label class="inline-check"><input id="party-show-roll" type="checkbox"/> Show hidden dice (debug)</label>
+      </div>
+      <p class="note">To exchange the staff access card, keep both survivors together and use: <code>give keycard to pc-2</code>. Successful checks use the acting character's skills, talents and stress.</p>
+    </div>
+    <div class="section">
+      <div class="section-head"><h3>Incident log · selected survivor</h3><span>PERSONAL VIEW</span></div>
+      <div id="party-events" class="check-result event-list"></div>
+    </div>
+  </section>
+</div>
+<footer>007-C is an independently saved prototype. Dinosaur encounters currently increase stress; complete attack, injury and combat procedures are not yet implemented.</footer>
+</main>
+<script type="module" src="./src/party-app.mjs?v=007c"></script>
+</body>
+</html>
