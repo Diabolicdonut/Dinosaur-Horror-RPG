@@ -237,3 +237,30 @@ export function talentRule(character,{context='',skill='',vehicleModel=''}={}) {
  return {talent,bonus,actionCost,nursingDayMultiplier:nursing,ammoDiceReduction,
    procedure:SPECIAL_TALENTS[talent]||null};
 }
+
+/**
+ * An opposed test uses two actor sheets and two independent seeded streams.
+ * The active actor must exceed the defender's number of successes. Ties do
+ * not grant success to the aggressor; caller may specify a narrative stalemate.
+ * No dice or actor state is skipped merely because the actor is AI-controlled.
+ */
+export function resolveOpposedCheck(active,opponent,{
+ seed=1993,activeSkill,opponentSkill=activeSkill,activeContext='',
+ opponentContext='',activePush=0,opponentPush=0,
+ activeModifier=0,opponentModifier=0
+}={}) {
+ const n=seedValue(seed);
+ const a=resolveSkillCheck(active,{
+  skill:activeSkill,context:activeContext,modifier:activeModifier,
+  push:activePush,seed:n
+ });
+ const b=resolveSkillCheck(opponent,{
+  skill:opponentSkill,context:opponentContext,modifier:opponentModifier,
+  push:opponentPush,seed:(n ^ 0xa5a5a5a5)>>>0
+ });
+ return {active:a,opponent:b,
+   winner:a.successes>b.successes?'active':a.successes<b.successes?'opponent':'tie',
+   activeSucceeds:a.success&&a.successes>b.successes,
+   margin:a.successes-b.successes
+ };
+}
