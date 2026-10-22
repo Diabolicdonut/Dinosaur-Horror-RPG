@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint **007-C — Party Incident playable alpha**. Launch a validated, manually/custom/hybrid-generated 1–8-survivor party from the Personnel Registry into a new shared, deterministic island incident with individual actions and Evolved-style seeded checks. This is **manual Party control only**, not yet AI-controlled companions or spectator play. The legacy single-character incident stays at 006.2 and retains separate saves. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint **007-D — Dynamic Party / Character / Spectator Simulation**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Rules authority and free-form roleplaying (accepted October 22, 2026)
 
@@ -18,17 +18,17 @@ The future Dinosaur Horror RPG supports switching among **PARTY** (player contro
 
 The same Evolved-inspired **character sheets, hidden seeded rolls, action economy, combat, injuries and deterministic world state** govern all three modes. Computer companions have independent objectives, personalities, memories and knowledge limitations; accepted decisions are recorded so actions can be replayed. Spectator includes Pause/Step/Resume and can return control to the human at any time.
 
-See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **This is a planned architecture, not a deployed gameplay feature**; checkpoint 006.2 still models one playable character. Do not redeploy Cloudflare for this documentation update.
+See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **All three controls are now available in the Party Incident 007-D alpha**. Camera selection, safe takeover and pause/step/resume are working; richer character relationships, a generative AI referee, Evolved full combat timing and injuries remain unimplemented. The separate solo 006.2 build still models one playable character. No Cloudflare redeployment is required for the offline party modes.
 
-## Character creation: manual, automatic or hybrid (planned)
+## Character creation: manual, automatic or hybrid (working Personnel Registry)
 
 Create **any or all playable survivors** manually, automatically, or with a mixed/hybrid approach. Each party member can use a different method. Choose a career, lock chosen skills/attributes/talent/background fields, generate the remaining details, preview the Evolved-valid character sheet, and selectively reroll individual members or the entire unlocked party. A separate character creation seed preserves reproducibility without consuming the live game's random stream.
 
 Profession, 12-skill training, talents, gear, stress/Resolve and derived attributes use a common Evolved-compatible rule validator. Generate original Jurassic Park backgrounds and motivations without adding unauthorized mechanical advantages. Character creation is separate from Party/Focus/Spectator control modes: any character may be manually or AI controlled later. Once play starts, advancement and equipment changes follow the game rules rather than retconning the character.
 
-See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **This feature is not yet implemented in the checkpoint 006.2 browser.**
+See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **Creation works in the separate Personnel Registry and launches Party Incident 007-D**; the original 006.2 solo page intentionally retains its old fixed character.
 
-**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. This is a standalone preview; its new careers and talent options are not yet playable in the incident. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
+**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. Generated parties can now be played in the separate 007-D party incident, using supported Evolved-style skill/talent mechanics; several world-dependent talent effects are still pending. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
 
 ## Checkpoint 007-B — mechanical Field Assessment
 
@@ -36,9 +36,11 @@ The [Personnel Registry](characters.html) now provides a **FIELD ASSESSMENT / HI
 
 The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based base/stress rolls, successes, pushes, Resolve and stress responses, passive and opposed checks, story points, separate panic-result classification, and multiple context-triggered career talents. **World-dependent talent effects**, actual panic movement/turn loss, injury consequences, equipment changes and full combat action costs are **not implemented in live gameplay** and remain explicitly gated. See [exact implementation / talent status](docs/EVOLVED-DICE-TALENT-STATUS.md).
 
-## Checkpoint 007-C — Play the generated party (alpha)
+## Checkpoint 007-D — Play or spectate your party (alpha)
 
-**[Open the Party Incident](party.html)** or select **Launch Party Incident 007-C** in the [Personnel Registry](characters.html). Your roster transfers into one persistent park incident with the same rooms, keycard, generator, radio, beacon and a roaming raptor. One survivor acts at a time in a shared round-robin exploration clock. Every skill-based attempt uses that actor's Evolved-style characteristics, talents, stress and actual seeded d6 rolls. The player may inspect different survivors' own locations and observation logs without advancing time.
+**[Open the Party Incident](party.html)** or select **Launch Dynamic Party 007-D** in the [Personnel Registry](characters.html). Your roster transfers into one persistent park incident with the same rooms, keycard, generator, radio, beacon and a roaming raptor. One survivor acts at a time in a shared round-robin exploration clock. Every skill-based attempt uses that actor's Evolved-style characteristics, talents, stress and actual seeded d6 rolls. The player may inspect different survivors' own locations and observation logs without advancing time.
+
+**Three live control modes:** Party (human commands all survivors), Character (human commands one selected survivor while the computer decides other turns), and Spectator (computer runs all survivors; pause, one-step, resume at selected pace). Camera view is independent of controller. AI decisions are bounded to each character's local scene and persistent skills/known objectives, not an omniscient AI model. Mode switches do not spend game time. Existing 007-C party saves upgrade to 007-D without resetting actions, dice, dinosaurs or inventory. See [checkpoint 007-D scope and limitations](docs/CONTROL-MODES-007D.md).
 
 Supported actions include traveling along valid exits, picking up and handing over physical items, concealing oneself, investigating listed scene details, and operating objective equipment. Actions not yet modeled are rejected instead of invented. A limited natural-language parser accepts common phrasing, but **full improvisational AI GM actions and the intended Character/Spectator autonomy are still pending**. Predator proximity currently causes stress rather than full combat or injury.
 
