@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {makeParty} from '../src/characters.mjs';
 import {newPartyIncident,partyStep,isPartySave,partyView} from '../src/party-engine.mjs';
 import {activeCombatSlot,beginCombat} from '../src/combat-turns.mjs';
+import {actorObservation,chooseCompanionAction} from '../src/party-director.mjs';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,pendingLethal,
  resolveClinicalAid,resolveRally,resolveSurgery,deathRoll,tickMedicalClock,healingDays,
  ROUND_SECONDS,STRETCH_SECONDS,SHIFT_SECONDS,DAY_SECONDS} from '../src/evolved-injuries.mjs';
@@ -232,4 +233,42 @@ test('old valid party save without medical state remains accepted and gains it l
  assert(r.accepted,true);
  assert.equal(r.state.actors[0].criticalInjuries[0].medicalVersion,undefined);
  assert.deepEqual(s,snapshot);
+});
+
+test('a wounded survivor actually rolls fewer Observation dice in the live party engine',()=>{
+ const clean=base(),wounded=base();
+ wounded.actors[0].criticalInjuries=[{code:16}];
+ const first=partyStep(clean,'investigate consoles',{actorId:'pc-1',source:'human'});
+ const second=partyStep(wounded,'investigate consoles',{actorId:'pc-1',source:'human'});
+ assert(first.accepted&&second.accepted);
+ assert.equal(second.result.base.length,first.result.base.length-1);
+});
+test('leg trauma converts a real combat move from quick to full cost',()=>{
+ const s=base();
+ s.actors[0].criticalInjuries=[{code:14}];
+ s.dinosaurs[0].location='control';
+ assert(beginCombat(s,3));
+ s.combat.index=s.combat.order.findIndex(x=>x.kind==='human'&&x.actorId==='pc-1');
+ s.cursor=0;
+ const r=partyStep(s,'move lobby',{actorId:'pc-1',source:'human'});
+ assert(r.accepted,r.reason);
+ assert.equal(r.state.combat.budgets['pc-1'].fullSpent,1);
+});
+test('computer medics recognize lethal injuries even when the patient can still stand',()=>{
+ const s=injured(53,{broken:false});
+ const observation=actorObservation(s,'pc-2');
+ const decision=chooseCompanionAction(observation);
+ assert.equal(decision.kind,'aid');
+ assert.equal(decision.target,'pc-1');
+});
+test('a failed treatment at later world time restarts the shortened medical deadline from treatment',()=>{
+ const s=injured(44),p=byId(s,'pc-1'),medic=byId(s,'pc-2');
+ let failure=null;
+ for(let seed=1;seed<200;seed++){
+  const r=resolveClinicalAid(medic,p,{seed,time:1200});
+  if(!r.success){failure=r;break;}
+ }
+ assert(failure);
+ assert.equal(failure.patient.criticalInjuries[0].deadline,'stretch');
+ assert.equal(failure.patient.criticalInjuries[0].nextDeathAt,1800);
 });
