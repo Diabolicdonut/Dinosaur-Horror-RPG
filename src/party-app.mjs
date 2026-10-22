@@ -107,7 +107,8 @@ function show(){
    (v.dead?' · DECEASED':v.broken?' · INCAPACITATED':'')+
    (v.panicState?' · Panic: '+v.panicState:'')+
    (v.injuries?.length?' · Critical injuries: '+v.injuries.map(i=>'#'+i.code).join(', '):'')+
-   ' · Approx. elapsed time '+v.time.minutes+' min';
+   ' · Exploration '+v.time.minutes+' min'+
+   (v.time.combatSeconds?' · Combat '+v.time.combatSeconds+' s':'');
  const flags=v.flags;
  $('objectives').innerHTML=[
    ['Recover the staff access card',state.actors.some(a=>a.inventory.includes('keycard'))],
