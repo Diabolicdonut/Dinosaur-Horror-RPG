@@ -16,12 +16,13 @@
   "automated_tests": 65,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "First inventory and implement the uploaded Evolved Edition mechanics faithfully using private rulebook citations internally, no copied text/tables or copyrighted PDFs in public repo",
-    "Create Jurassic Park versions of Evolved careers and career talent choices, retaining original attribute/skill training structure, character creation limits, gear and advancement",
-    "Implement complete seeded behind-the-screen base/stress dice, pushing, extra successes, Resolve, stress responses and panic; validate per-die replay and exceptions",
-    "Implement faithful Evolved stealth, combat action economy, damage, critical injury, recovery and supplies; adapt dinosaur sensory ecology and attack behaviors using tested rules",
-    "Once mechanical foundation is stable, map unrestricted natural-language methods to skill/attribute/talent checks, compound actions and world effects; no skill buttons or player commands required",
-    "Continue previous browser 006.2 save/debug issue separately; do not claim newer mechanics are deployed or ask for Cloudflare redeploy before Worker code actually changes"
+    "Create Evolved rule-to-engine inventory against private Evolved PDF with Jurassic Park adaptation mapping and seed tests.",
+    "Build independent playable roster with Evolved careers, twelve skills, talents, individual inventory/stress/injuries/knowledge and actor-ID-based actions; migrate checkpoint 006.2 singleton saves.",
+    "Implement faithful Evolved seeded dice, stress/Resolve/pushing, timing, stealth/combat action economy for any acting character, independently of who controls them.",
+    "Add Party / Focus / Spectator selector, focus-character switcher, independent camera perspective and atomic mode changes that preserve all past world state.",
+    "Develop knowledge-bounded AI companion autonomy and deterministic actor scheduler with committed intention logs; allow spectator pause, step, playback pace and immediate human takeover.",
+    "Then expand natural-language AI Game Master translation to actor-scoped skill/talent requests and compound plans; keep every mode under one world/rules engine.",
+    "Continue earlier browser build 006.2 QA independently; no Cloudflare Worker deploy for design-only changes."
   ],
   "acceptance_criteria": [
     "Current checkpoint 006.2 65-test runtime baseline is preserved and not misrepresented as Evolved-complete",
@@ -134,15 +135,26 @@
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
   "design_doctrine": {
-    "play_interface": "Natural-language intention and method. No mandatory user-visible actions, skill names or dice; internal actual Evolved dice rolls and skills for all consequential checks.",
+    "play_interface": "Three runtime-switchable control modes: Party (player controls full playable roster), Focus (player controls exactly one selectable actor while AI operates all others), Spectator (AI controls all and player watches/pauses/steps); character camera/viewpoint independent. Natural-language intention and method; Evolved dice/skills remain hidden.",
     "capabilities": "Four Evolved attributes, twelve Evolved skill categories, career-linked starting skill emphasis and talent choices; no exclusively class-locked skill. Adapt careers and talents to Jurassic Park while preserving underlying math/procedures.",
     "ai_role": "Translate player's described methods to vetted Evolved skill/attribute pairing, allowed talent triggers, meaningful stakes, timed sequence and legal environmental effects; never roll or edit state.",
     "engine_role": "Perform seeded base and stress d6 rolls, apply exact Evolved skill/push/Resolve/stress/panic/stunt/health/action-economy logic, validate physical reality, inventory, characters and hidden dinosaur state, persist events and results.",
     "checks": "Only uncertain actions with meaningful stakes; handle routine and impossible actions without RNG, and composite action sequences with transparent time/action costs",
     "probability": "REPLACED: Preserve actual Evolved dice procedures under the screen. May compute numeric success probabilities for QA/debug without changing the original distribution; arbitrary percent-based probability engine postponed until after faithful Evolved parity and only by approval.",
-    "current_implementation": "Design and repo documentation accepted, NOT yet implemented; checkpoint 006.2 browser + Worker still use legacy partial dice and restricted referee kinds."
+    "current_implementation": "Design decisions recorded only, NOT yet implemented; checkpoint 006.2 browser + Worker still use legacy singleton player and limited referee kinds."
   },
   "rules_adaptation_plan": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
   "mechanics_direction": "Faithful Alien RPG Evolved Edition mechanics first; actual seeded hidden d6 pools, stress dice, Resolve, 12 skills, career-linked talents, pushes, stunts, stealth/combat/actions, injury and gear, adapted with original Jurassic Park content. Differences only via explicit approved house rules.",
-  "approved_career_design": "Evolved-style career-linked starting caps/choices with twelve broadly usable skills; Jurassic Park roles, training, talent options, gear and progression. Careers do not exclusively own skills; rank-zero attempts permitted."
+  "approved_career_design": "Evolved-style career-linked starting caps/choices with twelve broadly usable skills; Jurassic Park roles, training, talent options, gear and progression. Careers do not exclusively own skills; rank-zero attempts permitted.",
+  "multi_character_control_contract": "docs/MULTI-CHARACTER-CONTROL-MODES.md",
+  "approved_control_modes": {
+    "party": "Human controls future actions of every playable party character. AI/simulation runs dinosaurs and external NPCs.",
+    "focus": "Human controls one selected playable character at a time; AI controls others, including persistent goals/knowledge.",
+    "spectator": "AI controls every playable character; player watches, can pause/step/adjust pace and take over any time.",
+    "switching": "Switch freely in runtime with change taking effect after current atomic action; preserve world, RNG, turns, health, stress, inventory, knowledge, agendas, injuries and dinosaur state.",
+    "viewpoint": "Camera separate from control, defaults to character-limited/player-perceivable information; optional omniscient director must be explicit and does not change character knowledge.",
+    "action_economy": "All modes share same Evolved dice, initiative, timed action costs and deterministic state transition engine.",
+    "ai_boundary": "Accepted NPC/companion decisions replay from journal; stale requests dropped if mode/focus/world version changed.",
+    "current_implementation": "Design approved in repository; no actual multi-character UI, NPC autonomy or spectator runtime implemented in checkpoint 006.2."
+  }
 }
