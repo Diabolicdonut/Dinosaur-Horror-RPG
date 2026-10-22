@@ -24,6 +24,14 @@ Implement **three switchable modes** with one authoritative persistent simulatio
 - **Horror default:** character-limited camera and narration, not privileged global knowledge. Follow only what the selected character can perceive or was truthfully told. Party view may aggregate observations known by active party members, with location/source labels to avoid telepathic sharing.
 - Optional **omniscient director** spectator presentation, if desired later, must be opt-in and explicitly warn of spoilers. It does not grant extra in-world information to any actor when returning to manual play.
 
+## Mixed-source character creation is independent of control
+
+Players can **custom-create, automatically generate, or hybrid-edit any or all playable characters** before the incident. They may manually build one character and automatically generate the rest, auto-generate the entire roster, customize a generated survivor's career/talent/backstory, and protect approved choices with per-field locks and seed-replay. A character's creation method has **no effect on which of the three modes can control them**; switching control/camera never regenerates a sheet.
+
+Character creation and roster selection precede Party/Focus/Spectator execution. The same Evolved Edition character validator must approve careers, attribute budget, twelve skill allocations, talents, Health/Resolve and starting resources regardless of manual or automated source. After the adventure begins, changes to characters must follow legitimate progression/injury/equipment rules, not an edit that overwrites recorded events.
+
+See [manual, automatic and hybrid character generation](CHARACTER-GENERATION-MODES.md) for the complete user experience and safeguards.
+
 ## Persistent characters
 
 Each playable character must be a first-class actor with:
@@ -77,7 +85,7 @@ Suggested mode examples:
 
 ## Development sequencing
 
-This decision changes the implementation order: **multi-actor character and scheduler foundations should be designed alongside careers and dice resolution, before broad autonomous AI GM behavior.** Character creation, Evolved rolls and time scheduling must work for an actor identified by ID—not implicitly the singular `player`—before we add spectator/autopilot. Implement in increments: multi-character schema → modes/ownership/viewpoint → deterministic scheduler → AI companion decisions → fully autonomous spectator simulation → live model evaluations.
+This decision changes the implementation order: **multi-actor character and scheduler foundations should be designed alongside careers and dice resolution, before broad autonomous AI GM behavior.** The common character validator and manual/automatic/hybrid roster creator must be implemented before companion autonomy; an actor's generation provenance must never imply AI or human decision ownership. Character creation, Evolved rolls and time scheduling must work for an actor identified by ID—not implicitly the singular `player`—before we add spectator/autopilot. Implement in increments: multi-character schema → modes/ownership/viewpoint → deterministic scheduler → AI companion decisions → fully autonomous spectator simulation → live model evaluations.
 
 **Adaptation status:** Multiple controllable characters and spectator simulation are *original Dinosaur Horror game features*, not claims about built-in Evolved Edition rules. The underlying mechanical checks remain faithful to Evolved.
 
