@@ -1,5 +1,23 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-B — Independent Evolved d6, Resolve and talent rules sandbox — 2026-10-22
+
+**Recovery and source:** Inspected GitHub main checkpoint 007-A (`669b09b1ea7a61089523f1f3b58aedfb9322009f`) and the user-supplied private *Alien RPG — Evolved Edition*, chapter 3 skills pp. 42–44 and talents pp. 48–51, and stress/panic pp. 72–73. This milestone implements mechanical rules, not copyrighted text.
+
+**Implemented:**
+- `src/evolved-checks.mjs`: Deterministic seeded d6 stream; attribute + skill base dice; stress dice; individual faces and successes; success quality; modifiers and assistance; active/passive checks; pushing with locked successes, appropriate extra stress dice and no-push conditions; Resolve stress response and lasting effects; repeat response stress; separate panic classification; actor-specific opposed tests; earned cinematic story-point conversion of one die to a six; no direct mutations.
+- Source-mapped Jurassic Park talent hooks for existing character careers: bonuses to active investigation, grappling, dodging, first aid, surgery, rally and vehicle maneuvers; appropriate skill/attribute substitutions; context-specific second pushes; voluntary extra stress; omission of stress dice without erasing effective stress level; Strength damage resistance check; group safe-rest stress recovery; preliminary action-cost, nursing and ammunition hooks. All 27 selected talent identities have a documented mechanic contract, but **many world-dependent talents are not yet mechanically complete**.
+- `characters.html`, `src/characters-app.mjs` and CSS: isolated **Field Assessment / Hidden Dice** check sandbox, letting player test a validated survivor with skill, situation, stress, signed modifiers, push count and seed; dice remain concealed by default but optional debug reveals exact rolls and stress results.
+- `tests/evolved-checks.test.mjs`: reproducibility, push limits, stress die ones, response restrictions, passive checks, attribute switching, talent scopes, optional story point, recovery, damage resistance, opposed comparisons and no hidden game-state mutations. `tests/characters.test.mjs` updated for UI version and controls.
+- `docs/EVOLVED-DICE-TALENT-STATUS.md`: detailed matrix differentiating implemented numeric hooks from pending world-state procedures.
+
+**Failure and recovery during CI:** An added group recovery test incorrectly used the randomly generated tactical character's starting talent rather than equipping the named stress-recovery talent. GitHub CI caught the expectation mismatch (expected 1 stress, got 2). Fixed test fixture to explicitly equip `Steady Under Fire` at commit `761c921a`. Subsequent validation at commits `793ccfd8` and `761c921a` succeeded, and the full test count reaches **100** at the current checkpoint.
+
+**Non-goals / safety boundary:** This standalone rules lab does not touch `src/engine.mjs` or the Cloudflare Worker v006, does not start incidents with generated parties, and does not enact dangerous world consequences for unvalidated AI plans. Panic's specific movement/turn loss, injuries, supplies, equipment creation, action scheduling, and all remaining talent effects require future source-faithful world integration. No Cloudflare repaste needed; no real manual browser smoke claimed.
+
+**Next implementation gate:** persistent multiple human actors, one authoritative Evolved decision scheduler and save migration, then connect the validated party generator to new incidents. Introduce full-world context approval and accurate mechanical talent effects when their prerequisites actually exist.
+
+
 ## Checkpoint 007-A — Usable character-generation vertical slice — 2026-10-22
 
 **Source verified:** Privately uploaded *Alien RPG — Evolved Edition*, Core Concepts pp. 25–27 and careers pp. 31–39, plus project controller and prior accepted mode/generator contracts.
