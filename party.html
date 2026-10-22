@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#09130f"/>
 <meta name="description" content="Dinosaur Horror RPG, experimental multi-character incident with shared world time."/>
-<title>Party Incident 007-E — Dinosaur Horror RPG</title>
-<link rel="stylesheet" href="./src/characters.css?v=007e"/>
-<link rel="stylesheet" href="./src/party.css?v=007e"/>
+<title>Party Incident 007-F — Dinosaur Horror RPG</title>
+<link rel="stylesheet" href="./src/characters.css?v=007f"/>
+<link rel="stylesheet" href="./src/party.css?v=007f"/>
 </head>
 <body>
 <main class="lab">
 <header class="mast">
   <div><p class="eyebrow">ISLA NUBLAR / 1993 / EMERGENCY TEAM SIMULATION</p>
     <h1>CONTAINMENT <span>LOST</span></h1>
-    <p>CHECKPOINT 007-E · DINOSAUR SURVIVAL ENCOUNTERS</p>
+    <p>CHECKPOINT 007-F · INITIATIVE & COMBAT TURNS</p>
   </div>
   <nav class="nav"><a class="secondary" href="./characters.html">← Personnel Registry</a>
     <a class="secondary" href="./index.html">Legacy solo incident</a></nav>
 </header>
 <section class="notice">
  <strong>Playable multi-character development build.</strong>
- Your survivors share one persistent incident. Switch between Party Control, one-character control with autonomous companions, or Spectator Mode at any time. Computer companions use an offline, rules-bounded decision policy. Dinosaur contact now triggers detection, panic, actual attacks, injury, and possible death; full initiative-linked quick/full combat turns and critical-injury recovery remain in development. Original solo saves remain separate.
+ Your survivors share one persistent incident. Switch between Party Control, one-character control with autonomous companions, or Spectator Mode at any time. Computer companions use an offline, rules-bounded decision policy. Dinosaur encounters now draw initiative for exposed survivors and the raptor’s two turns per round. Full and quick actions have separate budgets, with reserved defensive reactions. Critical-injury recovery and species-specific attack tables remain in development. Original solo saves remain separate.
 </section>
 <section class="panel control-strip" aria-label="Party incident controls">
  <div><small>ACTION BEAT</small><strong id="beat">000</strong></div>
@@ -64,6 +64,7 @@
  </div>
  <p class="note">Control mode determines who decides actions; the camera only determines what you see. Switching never rerolls or resets an action. All modes use the same hidden dice and world state.</p>
 </section>
+<p id="combat-status" class="combat-banner" role="status" aria-live="polite">EXPLORATION · 5–10 minute stretches</p>
 <p id="party-status" class="status" role="status" aria-live="polite"></p>
 <div class="workspace party-workspace">
   <aside class="panel roster">
@@ -109,8 +110,8 @@
     </div>
   </section>
 </div>
-<footer>007-E adds live dinosaur perception, attack damage, critical injuries, panic and field first aid. Combat initiative/action budgets are implemented as tested rules primitives but not yet integrated into the round-robin party turn scheduler. Complete creature signature attacks and critical healing remain future work.</footer>
+<footer>007-F integrates seeded 1–10 initiative cards, two raptor turns per combat round, and full/quick budgets into the playable party scheduler. Stand Watch reserves a quick defensive dodge if one remains available. Complete D66 injury-specific treatment and creature signature attacks remain future work.</footer>
 </main>
-<script type="module" src="./src/party-app.mjs?v=007e"></script>
+<script type="module" src="./src/party-app.mjs?v=007f"></script>
 </body>
 </html>
