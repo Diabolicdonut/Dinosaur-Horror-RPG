@@ -151,7 +151,7 @@ export function resolveClinicalAid(medic,patient,{seed=1993,self=false,medicalGe
 export function resolveRally(commander,patient,{seed=1993}={}){
  if(!patient||patient.dead||!patient.broken||commander.id===patient.id)
   return {accepted:false,reason:'Rally requires a living broken teammate.'};
- const roll=resolveSkillCheck(commander,{skill:'command',context:'rally',seed});
+ const roll=resolveSkillCheck(commander,{skill:'command',context:'rally',modifier:woundModifiers(commander,'command').modifier,seed});
  const after=copy(patient);
  if(roll.success){after.broken=false;after.health=Math.min(after.healthMax,Math.max(1,roll.successes));}
  return {accepted:true,success:roll.success,commanderAfter:roll.after,patient:after,roll};
@@ -162,7 +162,7 @@ export function resolveSurgery(medic,patient,{seed=1993,medicalGear=false}={}){
  if(!medic||!patient||medic.id===patient.id||patient.dead||!pending.length)
   return {accepted:false,reason:'No treatable surgery-requiring wound.'};
  if(!medicalGear)return {accepted:false,reason:'Surgery requires suitable medical equipment.'};
- const roll=resolveSkillCheck(medic,{skill:'medical_aid',context:'surgery',modifier:1,seed});
+ const roll=resolveSkillCheck(medic,{skill:'medical_aid',context:'surgery',modifier:1+woundModifiers(medic,'medical_aid',{twoHands:true}).modifier,seed});
  const after=copy(patient);
  if(roll.success){
   for(const wound of after.criticalInjuries)
