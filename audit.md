@@ -1,5 +1,22 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## New primary design acceptance — Faithful Evolved mechanics, hidden rolls, Jurassic Park theming — 2026-10-22
+
+**User decision:** Retain *Alien RPG — Evolved Edition* mechanics as faithfully as possible (dice pools, twelve trained skills, careers, selectable talents, stress, Resolve, panic, pushes, combat, injuries, action timing, equipment). Re-theme setting, professions, talents, equipment and dinosaur threats for Jurassic Park. Retain the actual **seeded dice rolls behind the screen** and let players describe attempted actions freely, while the AI selects valid skill/attribute/talent adjudications without requiring players to speak in rules terms.
+
+**Supersedes:** The earlier plan to replace all Evolved d6 pools with a bespoke numeric percent-outcome system before porting Evolved. Numeric probabilities may be calculated for testing, balancing or optional transparency but are *not* the authoritative resolution method for the initial faithful port.
+
+**Source clarification:** Evolved Core Concepts p. 26 gives twelve independently usable skills, starting career-related skill caps (career up to 3; other skills up to 1), ten distributed skill points, one starting career talent, and untrained attempts. Career is a specialization, **not** a class-exclusive skill list.
+
+**Public code/copyright boundary:** Reimplement mechanics in original code and original themed prose, without publishing the private PDF or reproducing long authored excerpts, scenario text, graphics or original tables. Record every deliberate house-rule departure separately and test it.
+
+**Written and committed:** `docs/EVOLVED-RULES-AUTHORITY.md` revised to explicitly supersede the percent-first proposal; `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md` added with phase gates, career analogues and skill/talent contracts; project controller and README updated.
+
+**Release status:** Documentation only. No `src/engine.mjs`, `worker/index.mjs`, page scripts, save formats, or Cloudflare code changed in this pass. Current browser build 006.2 remains the limited Year Zero-inspired prototype and is NOT a complete Evolved conversion.
+
+**Next implementation action:** Start Phase A source-to-engine rules inventory, then Phase B character careers/skills/talents and full Evolved dice/stress implementation with reproducible tests; only then retrofit natural-language translation and dinosaur creature ecology.
+
+
 ## Rules authority decision — 2026-10-22 (no runtime migration)
 
 **User-directed decision:** Newly uploaded, privately held `Alien RPG - Evolved Edition.pdf` is primary rules authority for Dinosaur Horror RPG from this point forward. Previously used 2019 Alien RPG core and Year Zero Mini references become historical/secondary and supplemental respectively. Future approved, documented Dinosaur Horror mechanical deviations take precedence where deliberate.
