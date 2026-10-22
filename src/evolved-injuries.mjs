@@ -188,7 +188,7 @@ export function deathRoll(actor,{seed=1993,injuryCode=null}={}){
  return {accepted:true,success:roll.success,roll,next,injuryCode:injury.code,
   threeSaves:roll.success&&w.deathSuccesses>=3};
 }
-export function tickMedicalClock(actor,{from,to,seed=1993,safeRest=false,nurse=false}={}){
+export function tickMedicalClock(actor,{from,to,seed=1993,safeRest=false,nurse=false,deferRoundDeath=false}={}){
  if(!acceptedN(from)||!acceptedN(to)||to<from)
   throw new RangeError('Medical time must progress forward.');
  let next=enrichInjuries(actor,from,seed);
@@ -198,7 +198,8 @@ export function tickMedicalClock(actor,{from,to,seed=1993,safeRest=false,nurse=f
   if(next.dead)break;
   const rule=TRAUMA[wound.code];
   if(!rule||wound.healed)continue;
-  if(rule.lethal&&!wound.stabilized&&rule.lethal!=='instant'){
+  if(rule.lethal&&!wound.stabilized&&rule.lethal!=='instant'&&
+     !(deferRoundDeath&&wound.deadline==='round')){
    if(!acceptedN(wound.nextDeathAt))wound.nextDeathAt=from+unitSeconds(wound.deadline);
    let checks=0;
    while(!next.dead&&!wound.stabilized&&wound.nextDeathAt<=to&&checks++<250){
