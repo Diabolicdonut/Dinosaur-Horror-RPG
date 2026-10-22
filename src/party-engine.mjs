@@ -6,6 +6,7 @@ import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact} from './evolved-encounters.mjs';
+import {activeCombatSlot,activeTurnId,beginCombat,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
 
 export const PARTY_ENGINE_VERSION = 3;
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
@@ -47,47 +48,46 @@ function nextTurn(s){
  if(s.cursor===0)s.round++;
 }
 function dinoTick(s,noise,at) {
- const species=DINO_SPECIES.velociraptor;
- if(s.dinosaurs[0]?.defeated)return;
- const d=s.dinosaurs[0];
- // A dinosaur hears noise only within plausible map reach, never a remote action.
+ const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ if(d.defeated||s.combat?.active)return;
  if(noise>0&&dist(d.location,at)<=noise){
-   d.lastHeard=at;
-   d.alert=Math.min(4,d.alert+noise);
+  d.lastHeard=at;d.alert=Math.min(4,d.alert+noise);
  }
- // Moving every second actor beat is an intentionally limited prototype behavior.
- if((s.beat+1)%2===0) {
-   if(d.alert>0&&d.lastHeard&&d.location!==d.lastHeard) {
-     d.location=stepToward(d.location,d.lastHeard);d.alert--;
-   } else if(d.alert>0) d.alert--;
-   else if(nextSeed(s)%3===0){
-     const exits=SCENARIO.rooms[d.location].exits;
-     d.location=exits[nextSeed(s)%exits.length];
-   }
+ // Secret patrol during exploration stretches; no creature combat attacks
+ // occur here. Once contact is established, drawn initiative governs attacks.
+ if((s.beat+1)%2===0){
+  if(d.alert>0&&d.lastHeard&&d.location!==d.lastHeard){
+   d.location=stepToward(d.location,d.lastHeard);d.alert--;
+  }else if(d.alert>0)d.alert--;
+  else if(nextSeed(s)%3===0){
+   const exits=SCENARIO.rooms[d.location].exits;
+   d.location=exits[nextSeed(s)%exits.length];
+  }
  }
+ let exposed=false;
  for(const person of s.actors){
-  if(person.dead||person.health<=0||person.location!==d.location)continue;
+  if(person.dead||person.broken||person.health<=0||person.location!==d.location)continue;
   person.seenThreats??=[];
   if(person.hidden){
    if(d.alert>0&&s.beat%Math.max(2,s.actors.length)===0){
     const search=rollDicePool(species.observation,nextSeed(s));
     if(search.successes>=2){
      person.hidden=false;
-     gameEvent(s,'The velociraptor searches the cover and uncovers '+person.name+'.',person.id,'danger');
+     gameEvent(s,'The velociraptor uncovers '+person.name+'.',person.id,'danger');
     }
    }
    if(person.hidden)continue;
   }
   if(!person.seenThreats.includes(d.id)){
    const observation=detectCreature(person,{seed:nextSeed(s),observationDice:species.observation,
-     cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0,
-     guarding:Boolean(person.guarding)});
+    guarding:Boolean(person.guarding),
+    cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
    person.seenThreats.push(d.id);
-   gameEvent(s,person.name+(observation.margin>0?' spots a moving velociraptor before it reacts.':
-     ' encounters a velociraptor at close range.'),person.id,'danger');
+   gameEvent(s,person.name+(observation.margin>0?' spots a hunting velociraptor first.':
+    ' discovers a velociraptor at close range.'),person.id,'danger');
    const panic=panicOnContact(person,{seed:nextSeed(s),
-     canFlee:SCENARIO.rooms[person.location].exits.length>0,
-     cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
+    canFlee:SCENARIO.rooms[person.location].exits.length>0,
+    cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
    person.stress=panic.after.stress;
    person.panicResponses=panic.after.panicResponses;
    person.panicState=panic.after.panicState;
@@ -102,34 +102,71 @@ function dinoTick(s,noise,at) {
      !(person.location==='utility'&&dest==='shed'&&!person.inventory.includes('keycard')));
     if(exits.length){
      person.location=exits[nextSeed(s)%exits.length];
-     person.visitedRooms??=[];
      if(!person.visitedRooms.includes(person.location))person.visitedRooms.push(person.location);
-     gameEvent(s,person.name+' flees in terror to '+SCENARIO.rooms[person.location].name+'.',person.id,'danger');
+     gameEvent(s,person.name+' flees to '+SCENARIO.rooms[person.location].name+'.',person.id,'danger');
     }
     continue;
    }
-   if(panic.event.kind==='catatonic'||panic.event.demandCover){
-    person.hidden=Boolean(panic.event.demandCover);continue;
-   }
-   if(observation.margin>0)continue;
+   if(panic.event.demandCover){person.hidden=true;continue;}
   }
-  if(person.location!==d.location||person.hidden)continue;
-  const last=d.lastStrikes?.[person.id]??-999;
-  if(s.beat-last<Math.max(2,s.actors.length))continue;
-  d.lastStrikes??={};d.lastStrikes[person.id]=s.beat;
-  const strike=applyCreatureAttack(person,{seed:nextSeed(s),
-    attackerDice:species.attack,baseDamage:species.baseDamage,dodge:Boolean(person.guarding)});
-  person.guarding=false;
-  person.health=strike.after.health;
-  person.broken=strike.after.broken;
-  person.dead=strike.after.dead;
-  person.criticalInjuries=strike.after.criticalInjuries||person.criticalInjuries||[];
-  if(strike.damage)
-   gameEvent(s,'Velociraptor strikes '+person.name+' for '+strike.damage+
-     ' damage'+(strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''),person.id,'danger');
-  else gameEvent(s,person.name+' avoids the velociraptor’s immediate strike.',person.id,'danger');
+  exposed=true;
  }
- if(s.actors.every(a=>a.dead))s.outcome='lost';
+ if(exposed){
+  const seed=nextSeed(s);
+  if(beginCombat(s,seed)){
+   gameEvent(s,'A velociraptor encounter begins. Initiative is drawn for the exposed survivors.',null,'danger');
+   const slot=activeCombatSlot(s);
+   if(slot?.kind==='human')s.cursor=s.actors.findIndex(a=>a.id===slot.actorId);
+  }
+ }
+}
+/** Only the active dinosaur slot may resolve a creature turn. */
+function predatorStep(previous,{actorId,source}){
+ const slot=activeCombatSlot(previous),d=previous.dinosaurs[0];
+ if(slot?.kind!=='dinosaur'||source!=='ai'||actorId!==d.id)
+  return rejected(previous,'The predator does not currently have initiative.');
+ const s=deep(previous),beast=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ const targets=s.actors.filter(a=>a.location===beast.location&&!a.hidden&&!a.dead&&!a.broken);
+ let detail={kind:'predator_wait',target:''};
+ if(targets.length){
+  // Deterministic target selection; the creature does not perceive characters
+  // hidden in another room or behind unsearched cover.
+  const victim=targets[nextSeed(s)%targets.length];
+  const budget=s.combat.budgets[victim.id];
+  const canDodge=Boolean(victim.guarding&&budget&&budget.quickSpent<2&&
+   !(budget.fullSpent&&budget.quickSpent>=1));
+  if(canDodge){
+   const paid=checkDodgeInterrupt(s,victim.id);
+   if(paid)gameEvent(s,victim.name+' uses a reserved quick action to dodge.',victim.id,'danger');
+  }
+  const strike=applyCreatureAttack(victim,{seed:nextSeed(s),
+   attackerDice:species.attack,baseDamage:species.baseDamage,dodge:canDodge});
+  victim.guarding=false;
+  victim.health=strike.after.health;victim.broken=strike.after.broken;
+  victim.dead=strike.after.dead;victim.criticalInjuries=strike.after.criticalInjuries||victim.criticalInjuries||[];
+  if(strike.evade){
+   victim.stress=strike.evade.after.stress;
+   victim.stressResponses=strike.evade.after.stressResponses;
+  }
+  gameEvent(s,strike.damage?
+   'Velociraptor strikes '+victim.name+' for '+strike.damage+' damage'+
+     (strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''):
+   victim.name+' survives the velociraptor’s strike without injury.',victim.id,'danger');
+  detail={kind:'predator_attack',target:victim.id,damage:strike.damage,evaded:canDodge,
+   critical:strike.critical?.code||null};
+ }else gameEvent(s,'The velociraptor searches for exposed prey.',null,'danger');
+ s.actions.push({beat:s.beat,actorId:beast.id,...detail,combatRound:s.combat.round,card:slot.card});
+ s.actions=s.actions.slice(-200);
+ s.beat++;
+ finishDinosaurAction(s,nextSeed);
+ return {accepted:true,state:s,result:detail};
+}
+function checkDodgeInterrupt(s,actorId){
+ const b=s.combat?.budgets?.[actorId];
+ if(!b||b.quickSpent>=2||(b.fullSpent&&b.quickSpent>=1))return false;
+ b.quickSpent++;b.quick=2-b.quickSpent;
+ if(b.quickSpent===2)b.full=0;
+ return true;
 }
 function matchRoom(target,room) {
  const raw=String(target||'').toLowerCase().replace(/^(to |the |into |toward |towards )+/,'').trim();
@@ -151,11 +188,20 @@ function matchObservation(target,location) {
    o.id===q||o.aliases?.includes(q))||null;
 }
 function accepted(s,actor,kind,target,extra={},noise=0) {
- const beat=s.beat;
- s.actions.push({beat,actorId:actor.id,kind,target,...extra});
+ const wasCombat=Boolean(s.combat?.active),slot=activeCombatSlot(s);
+ s.actions.push({beat:s.beat,actorId:actor.id,kind,target,...extra,
+  ...(wasCombat?{combatRound:s.combat.round,card:slot?.card??null}: {})});
  s.actions=s.actions.slice(-200);
- dinoTick(s,noise,actor.location);
- nextTurn(s);
+ if(wasCombat){
+  s.beat++;
+  const costKind=kind==='escape_fail'?'move':
+   ['incapacitated','panic_freeze'].includes(kind)?'wait':kind;
+  finishCombatAction(s,actor.id,costKind,nextSeed);
+ }else{
+  dinoTick(s,noise,actor.location);
+  if(s.combat?.active)s.beat++;
+  else nextTurn(s);
+ }
  return {accepted:true,state:s,result:extra};
 }
 function rejected(before,why){
@@ -179,7 +225,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],
+  controlHistory:[],aiDecisions:[],combat:null,
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -196,6 +242,7 @@ export function isPartySave(s) {
     !Number.isInteger(s.control.epoch)||s.control.epoch<0||
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
+    !validCombatState(s)||
     !['playing','rescued','lost'].includes(s.outcome)||
     s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
@@ -252,7 +299,10 @@ export function partyView(s,{actorId=null}={}) {
   time:{explorationStretches:Math.floor(s.beat/s.actors.length),minutes:STRETCH_MINUTES*Math.floor(s.beat/s.actors.length),combatRoundSeconds:ROUND_SECONDS},
   controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
   cameraMode:s.control.cameraMode,paused:s.control.paused,
-  activeActorId:s.actors[s.cursor].id,
+  activeActorId:activeTurnId(s),
+  combat:s.combat?.active?{round:s.combat.round,card:activeCombatSlot(s)?.card,
+   owner:activeCombatSlot(s)?.kind,order:s.combat.order.map(t=>({...t})),
+   remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
   location:actor.location,roomName:place.name,description:place.description,
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
@@ -279,6 +329,7 @@ export function parsePartyAction(input) {
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
  if(['wait','hold','stay'].includes(line))return {kind:'wait',target:'',push:0};
+ if(['end','end turn','pass turn','done'].includes(line))return {kind:'end',target:'',push:0};
  if(['guard','watch','keep guard','stand watch'].includes(line))return {kind:'guard',target:'',push:0};
  if(/^(?:attack|strike|fight|hit)(?:\s+.*)?$/.test(line))return {kind:'attack',target:'dinosaur',push};
  const aid=line.match(/^(?:aid|treat|first aid|stabilize)\s+(pc-[1-8])$/);
@@ -298,17 +349,25 @@ export function parsePartyAction(input) {
 }
 export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
- const action=parsePartyAction(raw);
- const actor=previous.actors[previous.cursor];
- if(actorId!==null&&actor.id!==actorId)return rejected(previous,'It is '+actor.name+"'s turn.");
+ const action=parsePartyAction(raw),slot=activeCombatSlot(previous);
+ const activeId=activeTurnId(previous);
+ if(slot?.kind==='dinosaur')return predatorStep(previous,{actorId,source});
+ const actor=previous.actors.find(a=>a.id===activeId);
+ if(!actor)throw new RangeError('Scheduled survivor missing.');
+ if(actorId!==null&&actor.id!==actorId)
+  return rejected(previous,'It is '+actor.name+"'s turn.");
  const human=previous.control.mode==='party'||
    (previous.control.mode==='focus'&&previous.control.focusedActorId===actor.id);
  if(!['human','ai'].includes(source)||source!==(human?'human':'ai'))
-   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
+  return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','move','take','give','hide','use','investigate','guard','aid','attack'].includes(action.kind))
-   return rejected(previous,'Describe a supported action or use the scene controls.');
+ if(!['wait','end','move','take','give','hide','use','investigate','guard','aid','attack'].includes(action.kind))
+  return rejected(previous,'Describe a supported action or use the scene controls.');
+ if(slot){
+  const budget=checkCombatAction(previous,actor.id,action.kind);
+  if(!budget.accepted)return rejected(previous,budget.reason);
+ }else if(action.kind==='end')return rejected(previous,'End Turn is only available in combat.');
  const s=deep(previous),a=s.actors[s.cursor];
  if(a.dead){
   gameEvent(s,a.name+' cannot act.',a.id,'danger');
@@ -335,6 +394,10 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
      pushRefused:rolled.pushRefused};
  };
+ if(action.kind==='end'){
+  gameEvent(s,a.name+' ends their combat turn.',a.id);
+  return accepted(s,a,'end','',{},0);
+ }
  if(action.kind==='wait'){
    gameEvent(s,a.name+' waits and listens.',a.id);
    return accepted(s,a,'wait','',{},0);
