@@ -49,18 +49,6 @@ export function checkCombatAction(s,actorId,kind){
  const result=spendActionBudget(b,cost);
  return {...result,cost};
 }
-export function markCombatAction(s,actorId,kind){
- const check=checkCombatAction(s,actorId,kind);
- if(!check.accepted)throw new RangeError(check.reason);
- if(check.cost==='end'){
-  advanceCombatSlot(s);
-  return;
- }
- s.combat.budgets[actorId]=check.budget;
- if(check.budget.quickSpent>=2||
-    (check.budget.fullSpent>=1&&check.budget.quickSpent>=1))
-  advanceCombatSlot(s);
-}
 function combatantsRemain(s){
  return !s.dinosaurs[0].defeated&&inScene(s).length>0;
 }
@@ -102,6 +90,13 @@ export function advanceCombatSlot(s,nextSeed=null){
 }
 export function finishCombatAction(s,actorId,kind,nextSeed){
  if(!s.combat?.active)return;
+ // A threat that has been defeated, or has lost all exposed opponents,
+ // ends this encounter immediately; no dead creature receives a later turn.
+ if(!combatantsRemain(s)){
+  s.combat.active=false;s.combat.endedAt=s.beat;
+  s.cursor=(s.cursor+1)%s.actors.length;
+  return;
+ }
  const check=checkCombatAction(s,actorId,kind);
  if(!check.accepted)throw new Error(check.reason);
  if(check.cost==='end'){
