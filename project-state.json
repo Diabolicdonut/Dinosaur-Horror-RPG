@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.6.2",
-  "checkpoint": "006.2",
-  "state": "post_test_browser_cache_visibility_and_debug_filename_fix_committed__pending_new_player_export",
+  "version": "0.7.0",
+  "checkpoint": "007-A",
+  "state": "character_lab_standalone_implemented_and_validated_not_integrated_into_incident",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 65,
+  "automated_tests": 77,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Begin Evolved reference mechanical audit and build canonical Jurassic Park career + 12-skill/talent character schema and validator.",
-    "Build per-character manual, deterministic automatic, and hybrid editable/lockable generator and party roster with independent character-creation seed.",
-    "Implement full Evolved seeded behind-the-screen dice, stress, Resolve and character development for any actor ID.",
-    "Implement selectable Party/Focus/Spectator control modes using the same deterministic scheduler with independent camera, knowledge bounds and safe mode switches.",
-    "Implement AI companion behavior and spectator autoplay with pause/step while preventing omniscience or unsupported state edits.",
-    "Retain checkpoint 006.2 browser/worker as deployed legacy prototype until new mechanical, generator and mode tests pass."
+    "Complete Phase B: implement actual Evolved mechanical talent effects and applicable gear modifiers with source-specific tests; independent character creator already running as preview.",
+    "Port faithful seeded base/stress dice rolls, pushing, extra successes, Resolve, panic and skill resolution for actor ID; preserve browser v006.2 legacy seed/save until migration.",
+    "Implement multi-actor roster persistence and schema migration from the existing singleton game; stage party/character/spectator decision ownership on shared scheduler.",
+    "Connect validated character lab parties to actual new incidents only after actor-ID scheduler and action rules are working.",
+    "Implement dinosaur stealth, injuries, combat/initiative and AI companions/spectator; no simulated omniscience and deterministic accepted proposal journals.",
+    "Browser smoke test the standalone Character Lab, including editing, locking, export, reload and responsive sizing; automated suite 77 passing."
   ],
   "acceptance_criteria": [
-    "Current checkpoint 006.2 65-test runtime baseline is preserved and not misrepresented as Evolved-complete",
-    "Evolved rule-to-engine matrix completed, exceptions and deliberate house rules documented with verified book page references",
-    "All Evolved-derived character stats, twelve skills, starting career caps, career talents and equipment loadouts implemented and tested with original Jurassic Park prose",
-    "Original seeded dice pools and stress dice, push/Resolve/panic, stunts, opposed/passive checks and mechanics reproduced internally with deterministic tests",
-    "Natural-language input never requires manual skill, dice or preselected action verbs; engine checks plausibility and actions with correct time costs",
-    "No copyrighted rulebook PDFs or wholesale source text/tables committed publicly; no Worker redeploy for documentation-only changes"
+    "Standalone character lab produces legal nine-career sheets and 1–8-party JSON rosters with Evolved starting budgets, talents and derived stats.",
+    "12 new character tests + 65 prior tests validated in GitHub CI (77 total).",
+    "Actor generation is seed replayable and independent of live incident RNG/localStorage.",
+    "Initial Evolved character creation fidelity and deliberate park adaptation differences documented in docs/EVOLVED-CHARACTER-MATRIX.md.",
+    "Live game remains build 006.2 with Worker v006 unchanged, no claims of multi-character mode or new talent effects.",
+    "Next live incident integration requires stable multi-actor migration and explicit regression tests."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -171,5 +171,39 @@
     "in_game": "No arbitrary re-gen/character-sheet overwrite after scenario starts; legitimate advancement, injuries, equipment and recruitment are persisted.",
     "original_setting": "Jurassic Park careers/personas/relationships, scenario-constrained NPC generation.",
     "implementation": "Approved documentation only; current 006.2 runtime does not support a multi-character creator."
+  },
+  "canonical_character_module": "src/characters.mjs",
+  "character_lab_page": "characters.html",
+  "character_lab_ui_module": "src/characters-app.mjs",
+  "character_lab_css": "src/characters.css",
+  "character_creation_source_matrix": "docs/EVOLVED-CHARACTER-MATRIX.md",
+  "character_lab": {
+    "status": "standalone_browser_preview",
+    "live_game_status": "Legacy game remains build 006.2 with singleton character and Worker v006",
+    "features": [
+      "9 Jurassic Park-themed Evolved-mapped careers and 12 skill categories",
+      "14-attribute-point creation budget (career cap 5), 10 skill point budget and skill starting caps",
+      "Legal starting career talent choice and 2 thematic gear items",
+      "Health and Resolve derived from attributes",
+      "Seeded separate automatic character generation for 1–8 survivors",
+      "Manual editing for name career attributes skills talent equipment personal objective",
+      "Per-field/group locking and selective regeneration",
+      "Shared rules validator across manual/auto/hybrid",
+      "Browser-local isolated draft autosave",
+      "Validate and export JSON roster draft",
+      "Homepage personnel registry link"
+    ],
+    "unsupported": [
+      "Not yet playable in the current incident",
+      "Career-themed talent effects not yet resolved at runtime",
+      "Alternate Evolved optional lifepath/random generation not yet implemented",
+      "Not yet Party/Focus/Spectator mode",
+      "No AI companion behavior or scene-constrained NPC generation",
+      "No cloud browser smoke-test yet"
+    ],
+    "separate_rng": true,
+    "separate_local_storage": true,
+    "worker_redeployment_required": false,
+    "source_rules": "Alien Evolved Core Concepts pp 25–27 and careers pp 31–39; original gear, story text and placeholder park talent names"
   }
 }
