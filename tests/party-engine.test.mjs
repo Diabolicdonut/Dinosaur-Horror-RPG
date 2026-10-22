@@ -22,7 +22,13 @@ test('multi-actor launch uses exact validated identities and independent sheets'
  assert.equal(s.actors[1].career,'maintenance');
  assert.equal(s.actors[1].health,s.actors[1].healthMax);
  assert.equal(isPartySave(s),true);
+ assert.deepEqual(s.startingRoster,PARTY);
  assert.equal(isValidSave(s),false);
+});
+test('invalid starting-roster substitutions fail party save validation',()=>{
+ const s=setup();
+ s.startingRoster[0].attributes.wits=99;
+ assert.equal(isPartySave(s),false);
 });
 test('party launch rejects invalid skill budgets and duplicate actor IDs',()=>{
  const invalid=structuredClone(PARTY);invalid[0].skills.mobility=9;
@@ -170,6 +176,13 @@ test('multi-character incident browser and validated roster transfer have isolat
  assert(app.includes("partyStep("));
  assert(lab.includes('dinosaur-party-launch-007c'));
  assert(lab.includes('validateParty(party)'));
+ assert(app.includes('sessionStorage.removeItem(LAUNCH)'));
+ assert(app.includes('state.startingRoster'));
+ assert(app.includes('newPartyIncident(setup)'));
+ assert(page.includes('PARTY INCIDENT ALPHA'));
+ const characters=await readFile(new URL('../characters.html',import.meta.url),'utf8');
+ assert(characters.includes('id="start-party"'));
+
  assert(!app.includes('dinosaur-rpg-save'),'must not overwrite legacy saved games');
  for(const file of ['../src/party-engine.mjs','../src/party-app.mjs']){
   const result=spawnSync(process.execPath,['--check',new URL(file,import.meta.url).pathname],{encoding:'utf8'});
