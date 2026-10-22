@@ -126,6 +126,7 @@ function predatorStep(previous,{actorId,source}){
  if(slot?.kind!=='dinosaur'||source!=='ai'||actorId!==d.id)
   return rejected(previous,'The predator does not currently have initiative.');
  const s=deep(previous),beast=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  const targets=s.actors.filter(a=>a.location===beast.location&&!a.hidden&&!a.dead&&!a.broken);
  let detail={kind:'predator_wait',target:''};
  if(targets.length){
@@ -188,6 +189,7 @@ function matchObservation(target,location) {
    o.id===q||o.aliases?.includes(q))||null;
 }
 function accepted(s,actor,kind,target,extra={},noise=0) {
+ if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  const wasCombat=Boolean(s.combat?.active),slot=activeCombatSlot(s);
  s.actions.push({beat:s.beat,actorId:actor.id,kind,target,...extra,
   ...(wasCombat?{combatRound:s.combat.round,card:slot?.card??null}: {})});
@@ -199,6 +201,8 @@ function accepted(s,actor,kind,target,extra={},noise=0) {
   finishCombatAction(s,actor.id,costKind,nextSeed);
  }else{
   dinoTick(s,noise,actor.location);
+  s.clock.explorationActions++;
+  s.clock.explorationStretches=Math.floor(s.clock.explorationActions/s.actors.length);
   if(s.combat?.active)s.beat++;
   else nextTurn(s);
  }
@@ -222,6 +226,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
+  clock:{explorationActions:0,explorationStretches:0,combatRounds:0,combatSeconds:0},
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
@@ -243,6 +248,8 @@ export function isPartySave(s) {
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
     !validCombatState(s)||
+    (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
+      Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
     s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
@@ -284,6 +291,7 @@ export function upgradePartySave(candidate) {
      .map(a=>a.target).filter(x=>typeof x==='string'))];
  }
  const id=s.actors[s.cursor]?.id||s.actors[0].id;
+ s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  s.control={mode:'party',focusedActorId:id,cameraMode:'follow',cameraActorId:id,
    paused:true,speedMs:1200,epoch:0};
  s.controlHistory=[];s.aiDecisions=[];
@@ -296,7 +304,10 @@ export function partyView(s,{actorId=null}={}) {
  const place=SCENARIO.rooms[actor.location];
  return {
   beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
-  time:{explorationStretches:Math.floor(s.beat/s.actors.length),minutes:STRETCH_MINUTES*Math.floor(s.beat/s.actors.length),combatRoundSeconds:ROUND_SECONDS},
+  time:{explorationStretches:s.clock?.explorationStretches??Math.floor(s.beat/s.actors.length),
+   minutes:STRETCH_MINUTES*(s.clock?.explorationStretches??Math.floor(s.beat/s.actors.length)),
+   combatRounds:s.clock?.combatRounds??0,combatSeconds:s.clock?.combatSeconds??0,
+   combatRoundSeconds:ROUND_SECONDS},
   controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
   cameraMode:s.control.cameraMode,paused:s.control.paused,
   activeActorId:activeTurnId(s),
