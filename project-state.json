@@ -13,10 +13,10 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 118,
+  "automated_tests": 119,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete browser smoke-test for 007-C via Party Incident link: launch validated party, act with separate survivors, save/load, transfer keycard, restore generator and radio, confirm scenario progression.",
+    "Perform live-browser smoke test of Party Incident 007-C with new launch overriding old save, actor views/turns, item handoff, saved reload, seeded checks, and full objective path.",
     "Implement Evolved action and exploration-time scheduler with separate decision ownership and safe queued mode switching between Party, Focus and Spectator.",
     "Add actor-grounded AI companion policy with persistent agendas, limited knowledge, and validated proposals; expose Pause/Step/Resume to observer.",
     "Complete dinosaur stealth, chase, combat, injuries and full panic world effects before claiming faithful all-weather Evolved survival play.",
@@ -24,7 +24,7 @@
     "Develop opt-in legacy solo save importer rather than silently reinterpreting old 006.2 state; preserve older game and private Worker."
   ],
   "acceptance_criteria": [
-    "118 automated tests pass including 18 party-engine and browser contract tests.",
+    "119 automated tests pass including 19 party-engine and browser contract tests.",
     "New party simulator runs 1–8 validated Evolved-style survivors, one turn each, shared time and deterministic replay.",
     "A staff card belongs to exactly one room or actor and can only pass into the shed by its carrier; radio/beacon require durable flags.",
     "Party scene information is actor-specific and dinosaur does not teleport or expose hidden location via view.",
@@ -271,6 +271,8 @@
     "party_save_kind": "dinosaur-party-incident",
     "party_engine_version": 2,
     "legacy_version": "006.2",
-    "worker_version": "006"
+    "worker_version": "006",
+    "starting_roster_recovery": "Validated immutable original roster saved in Party Incident, ensuring restart doesn't rewrite characters or reuse newer draft.",
+    "launch_priority": "Explicit new Character Lab launch overrides existing party autosave and consumes one-time launch session marker. Normal reload restores current party."
   }
 }
