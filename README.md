@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint 007-B — independent Personnel Registry now includes a seeded Evolved-style behind-the-screen skill-check sandbox, stress responses, pushing, story points, opposed checks, and tested career talent hooks. Character generation remains validated and exportable. The existing playable incident is still checkpoint 006.2 (one fixed player character); full rules integration is not yet complete. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint **007-C — Party Incident playable alpha**. Launch a validated, manually/custom/hybrid-generated 1–8-survivor party from the Personnel Registry into a new shared, deterministic island incident with individual actions and Evolved-style seeded checks. This is **manual Party control only**, not yet AI-controlled companions or spectator play. The legacy single-character incident stays at 006.2 and retains separate saves. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Rules authority and free-form roleplaying (accepted October 22, 2026)
 
@@ -35,6 +35,14 @@ See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES
 The [Personnel Registry](characters.html) now provides a **FIELD ASSESSMENT / HIDDEN DICE** panel. Select a survivor and scenario context, choose a skill, stress, modifiers, requested pushes and seed, then run a real individual-d6 check in the isolated Evolved resolution module. Initial dice remain hidden by default, with an opt-in **Reveal individual dice (debug)** control. Repeat the same seed to replay the check. Running the laboratory does **not** change the saved incident or permanently modify a character sheet.
 
 The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based base/stress rolls, successes, pushes, Resolve and stress responses, passive and opposed checks, story points, separate panic-result classification, and multiple context-triggered career talents. **World-dependent talent effects**, actual panic movement/turn loss, injury consequences, equipment changes and full combat action costs are **not implemented in live gameplay** and remain explicitly gated. See [exact implementation / talent status](docs/EVOLVED-DICE-TALENT-STATUS.md).
+
+## Checkpoint 007-C — Play the generated party (alpha)
+
+**[Open the Party Incident](party.html)** or select **Launch Party Incident 007-C** in the [Personnel Registry](characters.html). Your roster transfers into one persistent park incident with the same rooms, keycard, generator, radio, beacon and a roaming raptor. One survivor acts at a time in a shared round-robin exploration clock. Every skill-based attempt uses that actor's Evolved-style characteristics, talents, stress and actual seeded d6 rolls. The player may inspect different survivors' own locations and observation logs without advancing time.
+
+Supported actions include traveling along valid exits, picking up and handing over physical items, concealing oneself, investigating listed scene details, and operating objective equipment. Actions not yet modeled are rejected instead of invented. A limited natural-language parser accepts common phrasing, but **full improvisational AI GM actions and the intended Character/Spectator autonomy are still pending**. Predator proximity currently causes stress rather than full combat or injury.
+
+Party game saves use `dinosaur-party-incident-007c` and never overwrite the old checkpoint 006.2 solo save. No Cloudflare Worker update or API key is required. See [precise playable scope and test ledger](docs/PARTY-INCIDENT-007C.md).
 
 ## Design contract
 
