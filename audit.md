@@ -1,5 +1,22 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-A — Usable character-generation vertical slice — 2026-10-22
+
+**Source verified:** Privately uploaded *Alien RPG — Evolved Edition*, Core Concepts pp. 25–27 and careers pp. 31–39, plus project controller and prior accepted mode/generator contracts.
+
+**Production code committed:** `src/characters.mjs` provides nine original Jurassic Park careers mapped to Evolved's key attributes and three key skills; all twelve skill categories; core 14-point attribute budget, 10-point skill budget, career starting caps, one career talent selection, two original starting items, calculated Health and Resolve, stable actor IDs, seeded per-slot generation, independent revision streams, individual field locks, manual editing, and common validation. Character generator does not consume the gameplay engine's random stream.
+
+**User-accessible browser preview:** `characters.html`, `src/characters-app.mjs`, `src/characters.css` provide a responsive roster editor for 1–8 characters. Player can auto-generate entire party, manually edit each value, switch careers, lock individual attributes/skills and other fields, regenerate unlocked parts, review errors, save draft separately in localStorage, and export a validated JSON party. Home `index.html` now links to the Personnel Registry.
+
+**Source and fidelity ledger:** `docs/EVOLVED-CHARACTER-MATRIX.md` records rulebook references, exact portions covered, original park-theme substitutions, and outstanding work. The lab uses standard legal allocation with an original *weighted seed generator* rather than Evolved's optional lifepath or roll-attribute creation procedures; themed talent names are placeholders whose mechanics are not yet active. This is candidly marked in the browser.
+
+**Tests:** `tests/characters.test.mjs` adds 12 tests for nine career mappings, legal character generation across 120 seeds per career, budgets, conditional caps, derived stats, consistent seeded results, distinct IDs, lock preservation/conflicts, manual validation, source-isolated state, client contract and JavaScript syntax. Existing 65 automated tests retained, target **77 / 77**. GitHub Actions reports validation success at changes through `ba65e95`; final controller commit pending its own push check.
+
+**Boundary:** The live incident still runs separate checkpoint 006.2 single-character engine, and the Worker remains v006. A roster exported by Character Lab is **not** a playable incident save; multi-character progression, Party/Focus/Spectator control, Evolved talents in action, active AI companions and dinosaur perception are pending. No Worker or original engine implementation files were changed. No Cloudflare redeployment needed.
+
+**Next gate:** Implement faithful career talent effects, then actor-ID dice/actions and party save migration, and finally connect Character Lab-generated validated rosters to new incidents. Browser-specific manual QA of the new lab has not been performed; CI static/browser-file contracts and Node tests have passed.
+
+
 ## Mixed manual / automatic / hybrid character creation — 2026-10-22
 
 **User decision:** Allow each playable character to be fully auto-generated, entirely custom-built, or a hybrid using locked/preferred components. The player may use this for **any or all** characters in a party, independently of three accepted Party/Focus/Spectator runtime control modes.
