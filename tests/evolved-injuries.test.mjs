@@ -272,3 +272,15 @@ test('a failed treatment at later world time restarts the shortened medical dead
  assert.equal(failure.patient.criticalInjuries[0].deadline,'stretch');
  assert.equal(failure.patient.criticalInjuries[0].nextDeathAt,1800);
 });
+
+test('bleeding abdominal injury can break a survivor during a Mobility check and causes another D66 wound',()=>{
+ const s=injured(45,{broken:false});
+ s.actors[0].health=1;
+ const initial=s.actors[0].criticalInjuries.length;
+ const r=partyStep(s,'hide',{actorId:'pc-1',source:'human'});
+ assert.equal(r.accepted,true,r.reason);
+ assert.equal(r.state.actors[0].health,0);
+ assert.equal(r.state.actors[0].broken,true);
+ assert.equal(r.state.actors[0].criticalInjuries.length,initial+1);
+ assert.equal(s.actors[0].criticalInjuries.length,initial);
+});
