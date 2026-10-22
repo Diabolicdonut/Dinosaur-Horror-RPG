@@ -253,3 +253,19 @@ test('opposed ties never count as success for the active party',()=>{
  }
  assert(found);
 });
+
+test('earned cinematic story points turn one ordinary die into a success without new random draws',()=>{
+ const c={...actor('ranger'),storyPoints:2};
+ const plain=run(c,{seed:166,stress:0});
+ const spent=run(c,{seed:166,stress:0,spendStoryPoint:true});
+ assert(spent.successes>=1);
+ assert(spent.initial.base.length>0);
+ assert.equal(spent.storyPointSpent,true);
+ assert.equal(spent.after.storyPoints,1);
+ assert.equal(spent.draws,plain.draws);
+ assert.equal(c.storyPoints,2,'input remains unchanged');
+ const before=run(c,{seed:166,stress:0,spendStoryPoint:true,storyPointTiming:'before'});
+ assert.equal(before.initial.base[0],6);
+ const noPoint=actor('ranger');
+ assert.throws(()=>run(noPoint,{seed:1,spendStoryPoint:true}),RangeError);
+});
