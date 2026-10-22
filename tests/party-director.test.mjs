@@ -262,3 +262,20 @@ test('UI mode controls and versioned browser entrypoint exist and parse',async()
   assert.equal(check.status,0,path+': '+check.stderr);
  }
 });
+
+test('spectator autonomy can advance a grounded shared objective without hidden teleports',()=>{
+ let s=spectator();
+ let poweredAt=null;
+ for(let i=0;i<180&&s.outcome==='playing';i++){
+  const result=runAutonomousTurn(s,{singleStep:true});
+  assert(result.accepted,result.reason);
+  s=result.state;
+  if(s.flags.power&&poweredAt===null)poweredAt=s.beat;
+  assert(isPartySave(s));
+ }
+ assert(s.actions.some(a=>a.kind==='take'&&a.target==='keycard'),
+   'an AI survivor should physically recover the unique visible staff card');
+ assert(poweredAt!==null,'a card-holding AI survivor should eventually reach the shed and restore power');
+ assert(s.beat>=poweredAt);
+ assert(s.aiDecisions.length>0);
+});
