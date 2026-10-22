@@ -1,9 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007g';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007g';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007h';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007h';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007g';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007g';
-import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007g';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007h';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007h';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007h';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -157,6 +157,9 @@ function show(){
     .map(a=>['surgery '+a.id,'Surgery: '+a.name]),
   ...(['control','shed'].includes(v.location)&&!v.combat?[['rest','Rest safely (one stretch)']]:[]),
   ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
+  ...(v.combat&&canScene?v.combat.order.slice(v.combat.index+1).map(slot=>
+   ['hold '+slot.card,'Hold for '+(slot.kind==='dinosaur'?'Velociraptor':
+      state.actors.find(a=>a.id===slot.actorId)?.name||'survivor')+' (#'+slot.card+')']):[]),
   ...(v.combat?[['end','End combat turn']]:[])
  ];
  $('world-buttons').innerHTML=actions.map(([order,label])=>{
@@ -186,6 +189,8 @@ function show(){
    ' · '+(predatorTurn?'Dinosaur turn (automatic)':(actionBudget?
       'Full '+(actionBudget.fullSpent?'spent':'ready')+
       ' · Quick '+Math.max(0,2-actionBudget.quickSpent)+' remaining':'No human action budget'))+
+   (v.combat.surprise?.ambush&&!v.combat.surprise.consumed&&v.combat.round===1?
+     ' · AMBUSH: first strike cannot be dodged':'')+
    ' · 5–10 seconds per combat round':
    'EXPLORATION · 5–10 minute stretches · no combat';
  if(state.outcome!=='playing')announce(state.outcome==='lost'?
