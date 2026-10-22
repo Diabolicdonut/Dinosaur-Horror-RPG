@@ -115,10 +115,15 @@ export function resolveSkillCheck(character,options={}) {
  requiredCharacter(character);
  const {skill:requested,context='',attribute:override=null,modifier=0,help=0,
    passive=false,push=0,omitStressDice=0,voluntaryStress=false,
-   seed=1993,vehicleModel='',attributeOnly=false} = options;
+   seed=1993,vehicleModel='',attributeOnly=false,
+   spendStoryPoint=false,storyPointTiming='after'} = options;
  if(!isInt(modifier,-15,15)||!isInt(help,0,3)||!isInt(push,0,2)||!isInt(omitStressDice,0,2))
    throw new RangeError('Invalid check modifier, helper count, push count or stress omission.');
  if(typeof passive!=='boolean')throw new TypeError('Passive must be Boolean.');
+ if(typeof spendStoryPoint!=='boolean'||!['before','after'].includes(storyPointTiming))
+   throw new RangeError('Invalid story point choice.');
+ if(spendStoryPoint&&(!isInt(character.storyPoints??0,1,3)))
+   throw new RangeError('Actor has no available story point.');
  if(!SKILLS[requested]&&!attributeOnly)throw new RangeError('Unknown skill.');
  const skill=attributeOnly?null:pickSkill(character,requested,context);
  let attribute=override??(skill?SKILL_ATTRIBUTE[skill]:null);
@@ -144,6 +149,7 @@ export function resolveSkillCheck(character,options={}) {
  const rollD6=createDiceStream(seed);
  let base=rollPool(()=>rollD6.rollD6(),baseCount);
  let stress=rollPool(()=>rollD6.rollD6(),Math.max(0,state.stress-omitStressDice));
+ if(spendStoryPoint&&storyPointTiming==='before')base[0]=6;
  const first={base:[...base],stress:[...stress],stressLevel:state.stress};
  const responseEvents=[];
  let blocked=false;
@@ -177,10 +183,12 @@ export function resolveSkillCheck(character,options={}) {
    response();
    remaining--;
  }
+ if(spendStoryPoint&&storyPointTiming==='after')base[0]=6;
  const outcome=rollOutcome(base,stress,blocked);
  const next=copy(character);
  next.stress=state.stress;
  next.stressResponses=state.stressResponses;
+ if(spendStoryPoint)next.storyPoints=(character.storyPoints||0)-1;
  if(character.talent==='Chain of Command'&&context==='rank_order'&&skill==='command'&&!passive){
    next.stress+=1;
    notes.push('rank_order_stress');
@@ -188,6 +196,7 @@ export function resolveSkillCheck(character,options={}) {
  return {
    actorId:character.id,skill,attribute,context,baseCount,stressDiceInitially:first.stress.length,
    modifier,help,talent:character.talent,notes,initial:first,pushes,responseEvents,
+   storyPointSpent:spendStoryPoint,storyPointTiming:spendStoryPoint?storyPointTiming:null,
    pushRequested:push,pushRefused:refused,stressTriggered,
    ...outcome,extraSuccesses:Math.max(0,outcome.successes-1),
    after:next,draws:rollD6.snapshot().draws
