@@ -125,7 +125,7 @@ export function resolveClinicalAid(medic,patient,{seed=1993,self=false,medicalGe
  if(self&&patient.id!==medic.id)return {accepted:false,reason:'Self-care must target the actor.'};
  if(self&&patient.broken)return {accepted:false,reason:'Broken survivors cannot treat themselves.'};
  const roll=resolveSkillCheck(medic,{skill:'medical_aid',context:'first_aid',
-  modifier:(self?-2:0)+(medicalGear?1:0),seed});
+  modifier:(self?-2:0)+(medicalGear?1:0)+woundModifiers(medic,'medical_aid',{twoHands:true}).modifier,seed});
  const target=enrichInjuries(patient,time,seed),now=copy(target),events=[];
  if(roll.success){
   for(const w of pendingLethal(now)){w.stabilized=true;w.nextDeathAt=null;}
