@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Rules authority decision — 2026-10-22 (no runtime migration)
+
+**User-directed decision:** Newly uploaded, privately held `Alien RPG - Evolved Edition.pdf` is primary rules authority for Dinosaur Horror RPG from this point forward. Previously used 2019 Alien RPG core and Year Zero Mini references become historical/secondary and supplemental respectively. Future approved, documented Dinosaur Horror mechanical deviations take precedence where deliberate.
+
+**Source-grounded findings:** Evolved Core Concepts pp. 25–26 includes Strength/Agility/Wits/Empathy, twelve skills, Resolve and Health formulas. Using Skills p. 42 explicitly discourages unnecessary rolls and lets the GM require a check when stakes warrant it. Using Skills p. 43 explicitly allows nondefault attribute/skill pairings when the method supports them. P. 44 treats some passive checks secretly and separately from normal stress responses.
+
+**Adopted interface doctrine:** Use player's natural-language intention and method, not a list of allowed verbs or exposed skill commands. GM interprets and recommends suitable attribute/skill combination, difficulty and time constraints. Engine checks physical feasibility against true state, rolls or samples seeded probability, and applies only validated persistent effects. Keep trained skill or expertise distinctions internally to preserve professions. Reusable engine effect primitives and action economy remain necessary and do not become visible player "commands".
+
+**Implementation status:** Documentation/authority changes only. `src/engine.mjs`, `worker/index.mjs`, browser build 006.2, the prior user's saved game, and all existing tests are unchanged. Real-world free-form adjudication, Evolved stress/Resolve/Health procedures and computer-native outcome distributions are *planned*, not implemented. Do not falsely claim RAW parity. See `docs/EVOLVED-RULES-AUTHORITY.md` and updated `docs/RULES-BASELINE.md`.
+
+**Next development gate:** Evolved mechanism inventory and design of typed natural-language method-to-action-effect adjudication with deterministic tests before any Worker/browser schema rollout.
+
+
 ## Checkpoint 006.2 — Old debug report reuploaded; browser asset freshness — 2026-10-21
 
 **New user report:** "It's still not working." Uploaded `dinosaur-rpg-debug-turn-3-1792611940565(1).json`.
