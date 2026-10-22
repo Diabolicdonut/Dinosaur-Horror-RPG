@@ -6,7 +6,7 @@ import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs';
-import {activeCombatSlot,activeTurnId,beginCombat,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
+import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs';
 
@@ -95,7 +95,7 @@ function dinoTick(s,noise,at) {
    d.location=exits[nextSeed(s)%exits.length];
   }
  }
- let exposed=false;
+ let exposed=false,predatorAmbush=false,humanAlerted=false;
  for(const person of s.actors){
   if(person.dead||person.broken||person.health<=0||person.location!==d.location)continue;
   person.seenThreats??=[];
@@ -114,6 +114,8 @@ function dinoTick(s,noise,at) {
     guarding:Boolean(person.guarding),
     cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
    person.seenThreats.push(d.id);
+   if(observation.margin<0)predatorAmbush=true;
+   if(observation.margin>0)humanAlerted=true;
    gameEvent(s,person.name+(observation.margin>0?' spots a hunting velociraptor first.':
     ' discovers a velociraptor at close range.'),person.id,'danger');
    const panic=panicOnContact(person,{seed:nextSeed(s),
@@ -144,8 +146,12 @@ function dinoTick(s,noise,at) {
  }
  if(exposed){
   const seed=nextSeed(s);
-  if(beginCombat(s,seed)){
-   gameEvent(s,'A velociraptor encounter begins. Initiative is drawn for the exposed survivors.',null,'danger');
+  const ambush=predatorAmbush&&!humanAlerted;
+  if(beginCombat(s,seed,ambush?{surpriseActorId:'dinosaur-1',ambush:true}:{})){
+   gameEvent(s,ambush?
+    'Velociraptor ambush! The animal acts first; its initial strike cannot be dodged.':
+    'A velociraptor encounter begins. Initiative is drawn for the exposed survivors.',
+    null,'danger');
    const slot=activeCombatSlot(s);
    if(slot?.kind==='human')s.cursor=s.actors.findIndex(a=>a.id===slot.actorId);
   }
@@ -166,14 +172,18 @@ function predatorStep(previous,{actorId,source}){
   // hidden in another room or behind unsearched cover.
   const victim=targets[nextSeed(s)%targets.length];
   const budget=s.combat.budgets[victim.id];
-  const canDodge=Boolean(victim.guarding&&budget&&budget.quickSpent<2&&
+  const surprising=Boolean(s.combat.surprise?.ambush&&!s.combat.surprise.consumed&&
+    s.combat.surprise.actorId===slot.actorId&&s.combat.round===1);
+  const canDodge=Boolean(!surprising&&victim.guarding&&budget&&budget.quickSpent<2&&
    !(budget.fullSpent&&budget.quickSpent>=1));
   if(canDodge){
    const paid=checkDodgeInterrupt(s,victim.id);
    if(paid)gameEvent(s,victim.name+' uses a reserved quick action to dodge.',victim.id,'danger');
   }
   const strike=applyCreatureAttack(victim,{seed:nextSeed(s),
-   attackerDice:species.attack,baseDamage:species.baseDamage,dodge:canDodge});
+   attackerDice:species.attack+(surprising?2:0),
+   baseDamage:species.baseDamage,dodge:canDodge});
+  if(surprising)s.combat.surprise.consumed=true;
   victim.guarding=false;
   victim.health=strike.after.health;victim.broken=strike.after.broken;
   victim.dead=strike.after.dead;
@@ -193,6 +203,7 @@ function predatorStep(previous,{actorId,source}){
      (strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''):
    victim.name+' survives the velociraptor’s strike without injury.',victim.id,'danger');
   detail={kind:'predator_attack',target:victim.id,damage:strike.damage,evaded:canDodge,
+   ambush:surprising,attackDice:species.attack+(surprising?2:0),
    critical:strike.critical?.code||null};
  }else gameEvent(s,'The velociraptor searches for exposed prey.',null,'danger');
  s.actions.push({beat:s.beat,actorId:beast.id,...detail,combatRound:s.combat.round,card:slot.card});
@@ -386,7 +397,10 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
- if(['wait','hold','stay'].includes(line))return {kind:'wait',target:'',push:0};
+ if(['wait','stay'].includes(line))return {kind:'wait',target:'',push:0};
+ const hold=line.match(/^(?:hold|hold off|defer)\s+(?:to\s+)?(?:card\s+)?(\d{1,2})$/);
+ if(hold)return {kind:'hold',target:hold[1],push:0};
+ if(line==='hold')return {kind:'wait',target:'',push:0};
  if(['end','end turn','pass turn','done'].includes(line))return {kind:'end',target:'',push:0};
  if(['guard','watch','keep guard','stand watch'].includes(line))return {kind:'guard',target:'',push:0};
  if(['rest','rest safely','recover','take a rest'].includes(line))return {kind:'rest',target:'',push:0};
@@ -425,8 +439,22 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','end','move','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
+ if(!['wait','hold','end','move','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
+ if(action.kind==='hold'){
+  if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
+  if(!/^\d{1,2}$/.test(action.target))return rejected(previous,'Select a valid later initiative card.');
+  const changed=deep(previous);
+  const held=holdOff(changed,actor.id,Number(action.target));
+  if(!held.accepted)return rejected(previous,held.reason);
+  gameEvent(changed,actor.name+' holds off, trading initiative card #'+held.fromCard+
+    ' for #'+held.toCard+'.',actor.id,'action');
+  changed.actions.push({beat:changed.beat,actorId:actor.id,kind:'hold',
+   target:String(held.toCard),card:held.fromCard,combatRound:changed.combat.round,
+   recipientId:held.recipientId});
+  changed.actions=changed.actions.slice(-200);
+  return {accepted:true,state:changed,result:held};
+ }
  if(slot){
   const budget=checkCombatAction(previous,actor.id,action.kind);
   if(!budget.accepted)return rejected(previous,budget.reason);
@@ -447,13 +475,13 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   gameEvent(s,a.name+' is too injured to act.',a.id,'danger');
   return accepted(s,a,'incapacitated','',{},0);
  }
- const result=(skill,context='')=>{
+ const result=(skill,context='',bonus=0)=>{
    const seed=nextSeed(s);
    const injury=woundModifiers(a,skill,{
     twoHands:['comtech','medical_aid','ranged_combat','piloting'].includes(skill),
     twoArms:['close_combat','heavy_machinery'].includes(skill)});
    const rolled=resolveSkillCheck(a,{skill,context,seed,push:action.push,
-    modifier:injury.modifier});
+    modifier:injury.modifier+bonus});
    const next=rolled.after;
    // Changes to the actor's psychological sheet are authoritative and persistent.
    a.stress=next.stress;a.stressResponses=next.stressResponses;
@@ -547,17 +575,26 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
  if(action.kind==='attack'){
   const d=s.dinosaurs[0];
   if(d.defeated||d.location!==a.location)return rejected(previous,'No dinosaur is within attacking range.');
+  const covertStrike=!s.combat?.active&&a.hidden&&d.alert===0;
+  if(covertStrike){
+   a.hidden=false;
+   const seed=nextSeed(s);
+   if(!beginCombat(s,seed,{surpriseActorId:a.id,ambush:true}))
+    return rejected(previous,'Could not establish an eligible ambush.');
+   gameEvent(s,a.name+' launches a concealed ambush and claims initiative card #1.',a.id,'danger');
+  }
   const gear=[...(a.gear||[]),...a.inventory];
   const ranged=gear.includes('service carbine')||gear.includes('tranquilizer launcher');
   const skill=ranged?'ranged_combat':'close_combat';
-  const check=result(skill);
+  const check=result(skill,covertStrike?'ambush':'',covertStrike?2:0);
+  if(covertStrike)s.combat.surprise.consumed=true;
   const damage=check.success?Math.max(0,(ranged?2:1)+check.successes-1-DINO_SPECIES.velociraptor.armor):0;
   d.health=Math.max(0,(d.health??DINO_SPECIES.velociraptor.health)-damage);
   if(d.health===0)d.defeated=true;
   a.hidden=false;
   gameEvent(s,a.name+' attacks the velociraptor'+(damage?' for '+damage+' damage.':' but cannot injure it.')+
     (d.defeated?' It collapses.':''),a.id,'danger');
-  return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated},ranged?3:2);
+  return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated,ambush:covertStrike},ranged?3:2);
  }
  if(action.kind==='move'){
    const limitations=woundModifiers(a,'mobility');
