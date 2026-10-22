@@ -30,11 +30,11 @@ The party incident is not connected to the v006 Cloudflare AI Worker. It uses de
 - `src/party-engine.mjs` — authoritative multi-actor world state, shared action clock, seeded Evolved check calls, item and room constraints, queued actor rotation, hidden dinosaur, character-specific view projection, save validation.
 - `party.html` and `src/party-app.mjs` / `src/party.css` — the independent browser user interface; interactive roster, dynamic room actions, free-form bounded command field, progress flags, save/load/export.
 - `characters.html` / `src/characters-app.mjs` — validated `Launch Party Incident 007-C` transfer.
-- `tests/party-engine.test.mjs` — 18 tests for starting roster, source rule validation, different actors' turns and locations, fixed item transfer, action rejection, personal observations, seeded replay, legacy save isolation, browser page contract and module syntax.
+- `tests/party-engine.test.mjs` — 19 tests for starting roster, source rule validation, different actors' turns and locations, fixed item transfer, action rejection, personal observations, seeded replay, legacy save isolation, browser page contract and module syntax.
 
 ## Acceptance and next milestone
 
-Checkpoint 007-C is accepted when GitHub CI validates all **118 tests** and GitHub Pages deploys this commit. Automated syntax/contract tests are not a substitute for manual browser smoke testing.
+Checkpoint 007-C is accepted when GitHub CI validates all **119 tests** and GitHub Pages deploys this commit. Automated syntax/contract tests are not a substitute for manual browser smoke testing.
 
 Checkpoint 007-D should implement a full **actor-level scheduler and Party/Focus/Spectator decision ownership**, using the same saved scenario and rolls. Focus mode needs knowledge-bounded autonomous companion proposals; Spectator needs a reliable pause/step/resume progression. Actual full gameplay AI may then be connected only after bounded world-effect contracts and interrupted-turn tests are validated.
 
