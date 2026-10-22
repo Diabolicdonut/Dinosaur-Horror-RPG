@@ -115,7 +115,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
-  actors,flags:{power:false,distress:false,beacon:false},
+  startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false},
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -130,6 +130,7 @@ export function isPartySave(s) {
     s.actors.length>8||s.cursor>=s.actors.length||
     !Number.isInteger(s.rng)||!s.rooms||!s.flags||!Array.isArray(s.actions)||
     !Array.isArray(s.events)||!Array.isArray(s.dinosaurs)||
+    !Array.isArray(s.startingRoster)||validateParty(s.startingRoster).length!==0||
     !SCENARIO.rooms[s.dinosaurs[0]?.location])return false;
  if(validateParty(s.actors).length)return false;
  return s.actors.every(a=>SCENARIO.rooms[a.location]&&Array.isArray(a.inventory)&&
