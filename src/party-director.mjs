@@ -3,6 +3,7 @@
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs';
 import { isPartySave, partyView, partyStep } from './party-engine.mjs';
+import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs';
 
 export const CONTROL_MODES=Object.freeze(['party','focus','spectator']);
@@ -111,7 +112,9 @@ export function actorObservation(s,actorId){
   observations:view.observations.map(x=>x.id),
   dinosaurs:[...view.visibleDinosaurs],
   nearbyAllies:s.actors.filter(a=>a.id!==actorId&&a.location===actor.location)
-    .map(a=>({id:a.id,name:a.name,career:a.career,broken:Boolean(a.broken),dead:Boolean(a.dead)})),
+    .map(a=>({id:a.id,name:a.name,career:a.career,broken:Boolean(a.broken),dead:Boolean(a.dead),
+      lethalUnstable:pendingLethal(a).length>0,
+      surgeryNeeded:(a.criticalInjuries||[]).some(w=>!w.healed&&!w.surgeryDone&&TRAUMA[w.code]?.surgery)})),
   mission:{...view.flags}
  };
 }
@@ -131,9 +134,17 @@ function to(observation,destination,goal){
 export function chooseCompanionAction(observation){
  const o=observation;
  if(o.dead||o.broken)return proposal('wait','','incapacitated','This survivor cannot act.');
- const patient=o.nearbyAllies.find(a=>a.broken&&!a.dead);
+ const patient=o.nearbyAllies.find(a=>!a.dead&&(a.broken||a.lethalUnstable));
  if(patient&&o.career==='medic')
-   return proposal('aid',patient.id,'stabilize_ally','Treat a nearby incapacitated survivor.');
+   return proposal('aid',patient.id,'stabilize_ally','Treat a nearby wounded survivor.');
+ if(patient?.broken&&['supervisor','ranger','tactical'].includes(o.career))
+   return proposal('rally',patient.id,'rally_survivor','Help a nearby incapacitated survivor return to action.');
+ if(o.career==='medic'&&['control','shed'].includes(o.location)&&
+   o.nearbyAllies.some(a=>a.surgeryNeeded)&&
+   (o.equipment?.includes('medical bag')||o.inventory.includes('medkit'))){
+   const op=o.nearbyAllies.find(a=>a.surgeryNeeded);
+   return proposal('surgery',op.id,'surgical_repair','Operate on a nearby survivor whose injury requires surgery.');
+ }
  if(o.dinosaurs.length){
    if(o.hidden)return proposal('wait','','avoid_dinosaur','Remain concealed from the dinosaur.');
    if(o.equipment?.includes('service carbine')||o.equipment?.includes('tranquilizer launcher')||
