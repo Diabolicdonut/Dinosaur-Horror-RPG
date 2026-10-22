@@ -16,20 +16,20 @@
   "automated_tests": 65,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Preserve existing checkpoint 006.2 user troubleshooting and ensure active game browser build is verified; do not claim newly adopted rules are deployed",
-    "Audit Evolved 2025 skill, Resolve, stress response, pushing, action economy, passive checks, stealth and injury mechanics against current code",
-    "Design method/intent-based typed referee proposal separating player actions from reusable engine effects, with skill/attribute pairing and explicit costs",
-    "Build and validate deterministic computer-native probability sampling with seeded replay; retain Evolved behaviors until deliberate deviations are approved",
-    "Test common and unconventional natural-language approaches and compound actions with real AI models while safeguarding hidden dinosaur world state",
-    "Only after engine and browser contract change manually deploy updated Cloudflare Worker and validate end-to-end"
+    "First inventory and implement the uploaded Evolved Edition mechanics faithfully using private rulebook citations internally, no copied text/tables or copyrighted PDFs in public repo",
+    "Create Jurassic Park versions of Evolved careers and career talent choices, retaining original attribute/skill training structure, character creation limits, gear and advancement",
+    "Implement complete seeded behind-the-screen base/stress dice, pushing, extra successes, Resolve, stress responses and panic; validate per-die replay and exceptions",
+    "Implement faithful Evolved stealth, combat action economy, damage, critical injury, recovery and supplies; adapt dinosaur sensory ecology and attack behaviors using tested rules",
+    "Once mechanical foundation is stable, map unrestricted natural-language methods to skill/attribute/talent checks, compound actions and world effects; no skill buttons or player commands required",
+    "Continue previous browser 006.2 save/debug issue separately; do not claim newer mechanics are deployed or ask for Cloudflare redeploy before Worker code actually changes"
   ],
   "acceptance_criteria": [
-    "65 automated tests pass including 006.1 original debug-state fix and 006.2 browser asset version checks",
-    "GitHub Pages deploy includes index.html? or query based 006.2 cache-busting for CSS, app, engine, scenario and diagnostics modules",
-    "Visible browser build marker BUILD 006.2 · READY differentiates outdated scripts from Worker version",
-    "GET LATEST GAME CODE navigates to new revision URL without clearing localStorage or API token",
-    "DEBUG export filename includes active browser build so uploaded stale files are recognizable",
-    "Post-fix user browser report not received yet; do not claim repair confirmed by user"
+    "Current checkpoint 006.2 65-test runtime baseline is preserved and not misrepresented as Evolved-complete",
+    "Evolved rule-to-engine matrix completed, exceptions and deliberate house rules documented with verified book page references",
+    "All Evolved-derived character stats, twelve skills, starting career caps, career talents and equipment loadouts implemented and tested with original Jurassic Park prose",
+    "Original seeded dice pools and stress dice, push/Resolve/panic, stunts, opposed/passive checks and mechanics reproduced internally with deterministic tests",
+    "Natural-language input never requires manual skill, dice or preselected action verbs; engine checks plausibility and actions with correct time costs",
+    "No copyrighted rulebook PDFs or wholesale source text/tables committed publicly; no Worker redeploy for documentation-only changes"
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -134,12 +134,15 @@
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
   "design_doctrine": {
-    "play_interface": "Natural-language intention and method, no mandatory player-facing fixed action or skill vocabulary",
-    "capabilities": "Keep four Evolved attributes and internally differentiated trained skills/expertise; select attribute/skill contextually, including unusual pairings when appropriate",
-    "ai_role": "Interpret intent/method and propose validated skill, time cost, target and typed outcome candidates; no direct world-state authority",
-    "engine_role": "Validate physical feasibility, resources, skills, time, stress/Resolve, predator hidden state, seeded probability and persistent effects",
+    "play_interface": "Natural-language intention and method. No mandatory user-visible actions, skill names or dice; internal actual Evolved dice rolls and skills for all consequential checks.",
+    "capabilities": "Four Evolved attributes, twelve Evolved skill categories, career-linked starting skill emphasis and talent choices; no exclusively class-locked skill. Adapt careers and talents to Jurassic Park while preserving underlying math/procedures.",
+    "ai_role": "Translate player's described methods to vetted Evolved skill/attribute pairing, allowed talent triggers, meaningful stakes, timed sequence and legal environmental effects; never roll or edit state.",
+    "engine_role": "Perform seeded base and stress d6 rolls, apply exact Evolved skill/push/Resolve/stress/panic/stunt/health/action-economy logic, validate physical reality, inventory, characters and hidden dinosaur state, persist events and results.",
     "checks": "Only uncertain actions with meaningful stakes; handle routine and impossible actions without RNG, and composite action sequences with transparent time/action costs",
-    "probability": "Computer-native seeded numeric resolution allowed; Evolved edition is reference baseline; only intentional, tested Dinosaur Horror deviations may change its probabilities",
-    "current_implementation": "Design decided, NOT yet implemented; checkpoint 006.2 browser and Worker still use bounded actions and legacy simplified dice mechanics"
-  }
+    "probability": "REPLACED: Preserve actual Evolved dice procedures under the screen. May compute numeric success probabilities for QA/debug without changing the original distribution; arbitrary percent-based probability engine postponed until after faithful Evolved parity and only by approval.",
+    "current_implementation": "Design and repo documentation accepted, NOT yet implemented; checkpoint 006.2 browser + Worker still use legacy partial dice and restricted referee kinds."
+  },
+  "rules_adaptation_plan": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
+  "mechanics_direction": "Faithful Alien RPG Evolved Edition mechanics first; actual seeded hidden d6 pools, stress dice, Resolve, 12 skills, career-linked talents, pushes, stunts, stealth/combat/actions, injury and gear, adapted with original Jurassic Park content. Differences only via explicit approved house rules.",
+  "approved_career_design": "Evolved-style career-linked starting caps/choices with twelve broadly usable skills; Jurassic Park roles, training, talent options, gear and progression. Careers do not exclusively own skills; rank-zero attempts permitted."
 }
