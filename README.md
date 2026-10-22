@@ -12,6 +12,14 @@ A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initia
 
 **Deployment:** This authority change is documentation-only. No Cloudflare Worker repaste or browser refresh is required for the decision itself. The existing game does not yet implement generalized free-form adjudication.
 
+## Playable-party control modes (new design requirement)
+
+The future Dinosaur Horror RPG supports switching among **PARTY** (player controls every playable character), **FOCUS** (player controls exactly one selectable character and AI controls the other playable characters) and **SPECTATOR** (AI autonomously controls all playable characters). Switch control dynamically at safe action boundaries without resetting the story, characters, injuries, supplies, stress, dinosaurs or dice. **Camera/viewpoint is independent** of who controls decisions; the normal camera respects individual character knowledge to preserve horror.
+
+The same Evolved-inspired **character sheets, hidden seeded rolls, action economy, combat, injuries and deterministic world state** govern all three modes. Computer companions have independent objectives, personalities, memories and knowledge limitations; accepted decisions are recorded so actions can be replayed. Spectator includes Pause/Step/Resume and can return control to the human at any time.
+
+See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **This is a planned architecture, not a deployed gameplay feature**; checkpoint 006.2 still models one playable character. Do not redeploy Cloudflare for this documentation update.
+
 ## Design contract
 
 - The **deterministic engine** owns dice, character state, locations, items, predator positions, injury, stress, panic, victory and death.
