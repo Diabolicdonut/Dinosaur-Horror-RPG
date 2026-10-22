@@ -12,9 +12,11 @@
 
 **Save policy:** New schema `kind=dinosaur-party-incident`, `version=2` and browser key `dinosaur-party-incident-007c`. Old checkpoint 006.2 solo key, saves, engine, Worker v006 and API keys remain untouched. Explicit old-solo-to-party save migration is postponed, not claimed.
 
-**Tests:** Added `tests/party-engine.test.mjs` with **18 checks** covering legal roster and independent actor stats, turn ordering and shared time, action authorization, inventory and card hand-off, room restrictions, authored investigation, seeded replay, filtered knowledge, independent saves, unsupported target failure, and syntax/browser transfer contract. All prior suites remain. Target/current total **118 tests**. Github workflow must confirm the final controller/audit commit before calling the checkpoint validated.
+**Tests:** Added `tests/party-engine.test.mjs` with **19 checks** covering legal roster and independent actor stats, turn ordering and shared time, action authorization, inventory and card hand-off, room restrictions, authored investigation, seeded replay, filtered knowledge, independent saves, unsupported target failure, and syntax/browser transfer contract. All prior suites remain. Target/current total **119 tests**. Github workflow must confirm the final controller/audit commit before calling the checkpoint validated.
 
 **Limitations:** Only human-managed Party mode operates in 007-C. Focus, autonomous companions, full spectator play, exact Evolved combat timing and initiative, critical injuries, real dinosaur attacks, complete world-targeted talents, and unbounded AI referee are not yet implemented. A simplified action-beat exploration counter must not be mistaken for full Evolved RAW encounter time.
+
+**Launch/restart hardening:** A deliberate new Character Lab launch now takes precedence over an older Party Incident autosave and consumes its one-time session handoff; ordinary reloads restore the current party. The save retains a separate validated original roster so Restart recreates exactly the intended party, not a post-injury or newly edited draft. Added an independent validator test for tampered starting rosters (bringing tests to 119).
 
 **Next:** Browser smoke test the party launch and objective path, then implement one general actor scheduler with user/AI decision ownership, safe mode switches, knowledge-bounded autonomous companions and spectator pause/step. Preserve the option to revert to the old solo page. The full boundaries are recorded at `docs/PARTY-INCIDENT-007C.md`.
 
