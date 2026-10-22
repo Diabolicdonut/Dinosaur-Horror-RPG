@@ -1,6 +1,6 @@
 # Multi-character control and spectator simulation — design decision
 
-**Accepted:** 2026-10-22. **Scope:** Dinosaur Horror RPG, single human player controlling a party of playable human characters. **Status:** architecture accepted only; not implemented in checkpoint 006.2.
+**Accepted:** 2026-10-22. **Scope:** Dinosaur Horror RPG, single human player controlling a party of playable human characters. **Status:** Party/Focus/Spectator controls and knowledge-bounded offline companion autonomy **implemented in party checkpoint 007-D**; full Evolved action economy, live generative AI Game Master, sophisticated relationships, and dinosaur combat remain pending. Original solo game 006.2 remains separate. See [007-D implementation audit](CONTROL-MODES-007D.md).
 
 ## Product contract
 
