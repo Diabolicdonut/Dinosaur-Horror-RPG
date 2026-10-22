@@ -51,7 +51,7 @@ const unitSeconds=unit=>unit==='round'?ROUND_SECONDS:unit==='stretch'?STRETCH_SE
 export function worldSeconds(state){
  const c=state.clock||{};
  return (acceptedN(c.explorationStretches)?c.explorationStretches:
-   Math.floor((s=>s.beat/s.actors.length)(state)))*STRETCH_SECONDS+
+   Math.floor(state.beat/state.actors.length))*STRETCH_SECONDS+
    (acceptedN(c.combatSeconds)?c.combatSeconds:0);
 }
 export function woundModifiers(actor,skill,{twoHands=false,twoArms=false}={}){
