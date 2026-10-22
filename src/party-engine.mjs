@@ -6,7 +6,7 @@ import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 
-export const PARTY_ENGINE_VERSION = 2;
+export const PARTY_ENGINE_VERSION = 3;
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 const deep = v => JSON.parse(JSON.stringify(v));
@@ -107,7 +107,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  if(issues.length)throw new RangeError(issues.join(' '));
  const actors=deep(party).map(c=>({
   ...c,location:SCENARIO.start,health:c.healthMax,
-  inventory:[],hidden:false,observed:[],stress:c.stress??0,
+  inventory:[],hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
   stressResponses:c.stressResponses||[],panicResponses:[],
   lastAction:null
  }));
@@ -116,6 +116,9 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false},
+  control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
+    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
+  controlHistory:[],aiDecisions:[],
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -124,6 +127,14 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
 }
 export function isPartySave(s) {
  if(!s||s.kind!==PARTY_SAVE_KIND||s.version!==PARTY_ENGINE_VERSION||
+    !s.control||!['party','focus','spectator'].includes(s.control.mode)||
+    !['follow','actor'].includes(s.control.cameraMode)||
+    !s.actors?.some(a=>a.id===s.control.focusedActorId)||
+    !s.actors?.some(a=>a.id===s.control.cameraActorId)||
+    typeof s.control.paused!=='boolean'||
+    !Number.isInteger(s.control.epoch)||s.control.epoch<0||
+    ![400,800,1200,2000].includes(s.control.speedMs)||
+    !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
     !['playing','rescued'].includes(s.outcome)||
     s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
@@ -134,10 +145,42 @@ export function isPartySave(s) {
     !SCENARIO.rooms[s.dinosaurs[0]?.location])return false;
  if(validateParty(s.actors).length)return false;
  return s.actors.every(a=>SCENARIO.rooms[a.location]&&Array.isArray(a.inventory)&&
-   Array.isArray(a.observed)&&typeof a.health==='number'&&a.health>=0&&
+   Array.isArray(a.observed)&&Array.isArray(a.visitedRooms)&&
+   a.visitedRooms.every(r=>Boolean(SCENARIO.rooms[r]))&&
+   Array.isArray(a.attemptedObservations)&&
+   typeof a.health==='number'&&a.health>=0&&
    Number.isInteger(a.stress)&&a.stress>=0&&a.stress<=30)&&
    Object.keys(SCENARIO.rooms).every(id=>
      Array.isArray(s.rooms[id]?.items));
+}
+/**
+ * Explicit opt-in migration from the accepted checkpoint 007-C save schema.
+ * Never touch the older, unrelated checkpoint 006.2 singleton game.
+ */
+export function upgradePartySave(candidate) {
+ if(isPartySave(candidate))return deep(candidate);
+ if(!candidate||candidate.kind!==PARTY_SAVE_KIND||candidate.version!==2)
+   throw new RangeError('Unrecognized party save version.');
+ const s=deep(candidate);
+ if(!Array.isArray(s.actors)||!s.actors.length||!Array.isArray(s.actions)||
+    !Array.isArray(s.events)||!Array.isArray(s.startingRoster)||
+    validateParty(s.startingRoster).length)
+   throw new RangeError('Legacy party save is incomplete.');
+ s.version=PARTY_ENGINE_VERSION;
+ for(const actor of s.actors){
+  if(!SCENARIO.rooms[actor.location])throw new RangeError('Unknown actor location.');
+  const visits=[SCENARIO.start,...s.actions.filter(a=>a.actorId===actor.id&&a.kind==='move')
+     .map(a=>a.target).filter(x=>SCENARIO.rooms[x])];
+  actor.visitedRooms=[...new Set([...visits,actor.location])];
+  actor.attemptedObservations=[...new Set(s.actions.filter(a=>a.actorId===actor.id&&a.kind==='investigate')
+     .map(a=>a.target).filter(x=>typeof x==='string'))];
+ }
+ const id=s.actors[s.cursor]?.id||s.actors[0].id;
+ s.control={mode:'party',focusedActorId:id,cameraMode:'follow',cameraActorId:id,
+   paused:true,speedMs:1200,epoch:0};
+ s.controlHistory=[];s.aiDecisions=[];
+ if(!isPartySave(s))throw new RangeError('Legacy party save did not pass migration checks.');
+ return s;
 }
 export function partyView(s,{actorId=null}={}) {
  if(!isPartySave(s))throw new RangeError('Invalid party incident save.');
@@ -145,6 +188,8 @@ export function partyView(s,{actorId=null}={}) {
  const place=SCENARIO.rooms[actor.location];
  return {
   beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
+  controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
+  cameraMode:s.control.cameraMode,paused:s.control.paused,
   activeActorId:s.actors[s.cursor].id,
   location:actor.location,roomName:place.name,description:place.description,
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
@@ -184,11 +229,15 @@ export function parsePartyAction(input) {
  if(give)return {kind:'give',target:give[1],recipientId:give[2],push:0};
  return {kind:'',target:line,push:0};
 }
-export function partyStep(previous,raw,{actorId=null}={}) {
+export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
  const action=parsePartyAction(raw);
  const actor=previous.actors[previous.cursor];
  if(actorId!==null&&actor.id!==actorId)return rejected(previous,'It is '+actor.name+"'s turn.");
+ const human=previous.control.mode==='party'||
+   (previous.control.mode==='focus'&&previous.control.focusedActorId===actor.id);
+ if(!['human','ai'].includes(source)||source!==(human?'human':'ai'))
+   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
  if(!['wait','move','take','give','hide','use','investigate'].includes(action.kind))
@@ -216,6 +265,7 @@ export function partyStep(previous,raw,{actorId=null}={}) {
    if(a.location==='utility'&&room==='shed'&&!a.inventory.includes('keycard'))
      return rejected(previous,a.name+' needs the staff access card to enter the shed.');
    a.location=room;a.hidden=false;
+   if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
    gameEvent(s,a.name+' enters '+SCENARIO.rooms[room].name+'.',a.id);
    return accepted(s,a,'move',room,{},1);
  }
@@ -247,6 +297,8 @@ export function partyStep(previous,raw,{actorId=null}={}) {
    const observation=matchObservation(action.target,a.location);
    if(!observation)return rejected(previous,'Nothing matching that detail is present here.');
    const rolled=result('observation','active_search');
+   const known=a.location+':'+observation.id;
+   if(!a.attemptedObservations.includes(known))a.attemptedObservations.push(known);
    if(rolled.success){
      if(!a.observed.includes(a.location+':'+observation.id))a.observed.push(a.location+':'+observation.id);
      gameEvent(s,a.name+' examines '+observation.id+': '+(observation.investigation||observation.description),a.id);
