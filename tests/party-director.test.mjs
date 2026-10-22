@@ -263,8 +263,9 @@ test('UI mode controls and versioned browser entrypoint exist and parse',async()
  }
 });
 
-test('spectator autonomy can advance a grounded shared objective without hidden teleports',()=>{
+test('spectator can complete objectives in a controlled no-predator fixture',()=>{
  let s=spectator();
+ s.dinosaurs[0].defeated=true; // Isolate reasoning about goals from independent lethal encounter risk.
  let poweredAt=null;
  for(let i=0;i<400&&s.outcome==='playing';i++){
   const result=runAutonomousTurn(s,{singleStep:true});
