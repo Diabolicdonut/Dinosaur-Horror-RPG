@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {makeParty} from '../src/characters.mjs';
 import {newPartyIncident,partyStep,partyView,isPartySave,parsePartyAction} from '../src/party-engine.mjs';
 import {actorObservation,chooseCompanionAction} from '../src/party-director.mjs';
+import {activeCombatSlot,activeTurnId} from '../src/combat-turns.mjs';
 const roster=makeParty({seed:19,size:3,careers:['ranger','medic','tactical']});
 const game=(seed=1993)=>newPartyIncident({seed,roster});
 function exposure(seed){
@@ -30,23 +31,31 @@ test('no distant room observation exposes hidden predator position',()=>{
  assert(!('hiddenPredatorLocation' in a));
  assert.equal(a.dinosaurs.length,0);
 });
-test('dinosaur exposure can inflict actual damage, broken condition and source-coded critical injury',()=>{
- let struck=false,broken=false;
+test('drawn dinosaur initiative turns inflict real injuries; contact itself does not auto-attack',()=>{
+ let struck=false,broken=false,foundCombat=false;
  for(let seed=1;seed<500;seed++){
-  const result=exposure(seed);
-  assert.equal(result.accepted,true);
-  const actor=result.state.actors[0];
-  if(actor.health<actor.healthMax){struck=true;}
-  if(actor.broken){
-   broken=true;
-   assert.equal(actor.health,0);
-   assert(actor.criticalInjuries.length>=1);
-   assert.equal(result.state.outcome==='playing'||result.state.outcome==='lost',true);
+  let s=exposure(seed).state;
+  if(s.combat?.active)foundCombat=true;
+  for(let turn=0;turn<30&&s.combat?.active&&s.outcome==='playing';turn++){
+   const slot=activeCombatSlot(s),id=activeTurnId(s);
+   const response=slot.kind==='dinosaur'?
+     partyStep(s,{kind:'predator'},{source:'ai',actorId:s.dinosaurs[0].id}):
+     partyStep(s,'end',{source:'human',actorId:id});
+   assert.equal(response.accepted,true,response.reason);
+   s=response.state;
+   if(s.actors.some(a=>a.health<a.healthMax))struck=true;
+   if(s.actors.some(a=>a.broken)){
+    const injured=s.actors.find(a=>a.broken);
+    assert.equal(injured.health,0);assert(injured.criticalInjuries.length>=1);
+    broken=true;
+   }
+   if(struck&&broken)break;
   }
   if(struck&&broken)break;
  }
- assert(struck,'there should be reachable seeded harm outcomes');
- assert(broken,'there should be a reachable seeded critical injury');
+ assert(foundCombat,'a real encounter should enter drawn initiative');
+ assert(struck,'scheduled raptor turns can injure exposed survivors');
+ assert(broken,'scheduled raptor turns can cause a D66 critical injury');
 });
 test('successful hiding prevents automatic discovery until active search is attempted',()=>{
  const s=game(53);
