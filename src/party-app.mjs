@@ -1,8 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007f';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007f';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007g';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007g';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007f';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007f';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007g';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007g';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007g';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -106,7 +107,10 @@ function show(){
    ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'')+
    (v.dead?' · DECEASED':v.broken?' · INCAPACITATED':'')+
    (v.panicState?' · Panic: '+v.panicState:'')+
-   (v.injuries?.length?' · Critical injuries: '+v.injuries.map(i=>'#'+i.code).join(', '):'')+
+   (v.injuries?.length?' · Injuries: '+v.injuries.map(i=>
+     '#'+i.code+' '+(i.label||TRAUMA[i.code]?.label||'Wound')+
+     (i.healed?' [healed]':i.stabilized?' [stable]':i.deadline?' [urgent '+i.deadline+']':'')
+     ).join('; '):'')+
    ' · Exploration '+v.time.minutes+' min'+
    (v.time.combatSeconds?' · Combat '+v.time.combatSeconds+' s':'');
  const flags=v.flags;
@@ -123,24 +127,43 @@ function show(){
  if(v.observations.length)scene.push('Inspectable: '+v.observations.map(x=>x.id).join(', '));
  if(v.inventory.length)scene.push('Carried: '+v.inventory.map(x=>x.name).join(', '));
  if(v.visibleDinosaurs.length)scene.push('DANGER — '+v.visibleDinosaurs.join(', ')+' in this room');
+ if(v.medicalUrgency?.length)
+  scene.push('MEDICAL EMERGENCY — '+v.medicalUrgency.map(x=>'Wound #'+x.code+
+    ': '+x.deadline+' interval to next survival check').join('; '));
  if(!scene.length)scene.push('No listed equipment or loose supplies in reach.');
  $('local-scene').innerHTML=scene.map(x=>'<div class="scene-thing'+
    (x.startsWith('DANGER')?' scene-danger':'')+'">'+esc(x)+'</div>').join('');
  const canScene=ownHuman&&v.actorId===v.activeActorId;
+ const impairment=woundModifiers(state.actors.find(a=>a.id===v.actorId),'mobility');
+ const travelCost=impairment.moveFull?'full':'quick';
+ const moveBudget=v.combat?.remaining;
+ const exhaustedMove=Boolean(moveBudget&&(
+   impairment.immobile||(travelCost==='full'?(moveBudget.fullSpent||moveBudget.quickSpent>=2):
+   (moveBudget.quickSpent>=2||(moveBudget.fullSpent&&moveBudget.quickSpent>=1)))));
  $('travel-buttons').innerHTML=v.exits.map(x=>
-   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene?' disabled':'')+'>'+esc(x.name)+'</button>').join('');
+   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene||exhaustedMove?' disabled':'')+'>'+esc(x.name)+'</button>').join('');
  const actions=[
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
   ...(v.visibleDinosaurs.length?[['attack dinosaur','Fight the dinosaur']]:[]),
-  ...state.actors.filter(a=>a.location===v.location&&a.broken&&!a.dead&&a.id!==v.actorId)
+  ...state.actors.filter(a=>a.location===v.location&&!a.dead&&
+      (a.broken||pendingLethal(a).length))
     .map(a=>['aid '+a.id,'First aid: '+a.name]),
+  ...state.actors.filter(a=>a.location===v.location&&a.broken&&!a.dead&&a.id!==v.actorId)
+    .map(a=>['rally '+a.id,'Rally '+a.name]),
+  ...state.actors.filter(a=>a.location===v.location&&!a.dead&&a.id!==v.actorId&&
+       a.criticalInjuries?.some(w=>!w.healed&&!w.surgeryDone&&TRAUMA[w.code]?.surgery))
+    .map(a=>['surgery '+a.id,'Surgery: '+a.name]),
+  ...(['control','shed'].includes(v.location)&&!v.combat?[['rest','Rest safely (one stretch)']]:[]),
   ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
   ...(v.combat?[['end','End combat turn']]:[])
  ];
  $('world-buttons').innerHTML=actions.map(([order,label])=>{
-  const budget=v.combat?.remaining,cost=combatCost(order.split(' ')[0]);
+  const budget=v.combat?.remaining;
+  let cost=combatCost(order.split(' ')[0]);
+  if(order.startsWith('move ')&&woundModifiers(state.actors.find(a=>a.id===v.actorId),'mobility').moveFull)
+   cost='full';
   const exhausted=Boolean(budget&&(
    (cost==='full'&&(budget.fullSpent||budget.quickSpent>=2))||
    (cost==='quick'&&(budget.quickSpent>=2||(budget.fullSpent&&budget.quickSpent>=1)))
