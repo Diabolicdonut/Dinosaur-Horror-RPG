@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-E — Dinosaur survival encounter alpha — 2026-10-22
+
+**Authority:** User-private Alien RPG Evolved Edition, printed pp. 54–73 for time, stealth, initiative, actions, armor, damage, injury and panic. Public code uses original procedures and original park content, not reproduced rulebook pages.
+
+**Implemented:** `src/evolved-encounters.mjs` adds seeded source-based initiative and quick/full action budgets, passive creature detection, armor/damage, D66 critical injury classification, panic and medical aid. `src/party-engine.mjs` integrates physical dinosaur attacks, death/incapacitation, cover searches, wounds, panic events, trained treatment and dinosaur defeat in the shared island. `src/party-director.mjs` grants AI companions only their actual local knowledge and equipment. Party, Character and Spectator all use the same consequences. `party.html` and `src/party-app.mjs` expose new survival controls with revision 007e.
+
+**Validation:** Added twelve standalone encounter tests and twelve integrated party-survival tests, preserving 143 earlier tests (**167 total**). Prior guaranteed-rescue spectator fixture is now a no-predator objective test: actual dinosaur-horror runs are allowed to be fatal. No manual browser verification is claimed.
+
+**Known source gaps:** Drawn initiative and quick/full action budgets are tested independently but **not yet enforced by the current round-robin party scheduler**. Attacks per roster cycle, simplified D66 effects/death timers, and partial panic responses are documented house-rule/prototype limits, **not complete Evolved RAW**. See `docs/SURVIVAL-ENCOUNTERS-007E.md`.
+
+**Compatibility:** Earlier party saves remain accepted, original 006.2 solo game and Cloudflare Worker unchanged; frontend-only Pages build.
+
+
 ## Checkpoint 007-D — Three dynamic control modes and grounded spectator AI — 2026-10-22
 
 **Recovery source:** GitHub `main` checkpoint 007-C `e0a80cc56882f7630f11f9a3d74b637fb4d6870d`. Existing party engine, Character Lab, Evolved checks and source scenario were inspected. Strict Dinosaur Horror repository isolation observed.
