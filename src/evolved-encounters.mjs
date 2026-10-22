@@ -14,16 +14,22 @@ export const DINO_SPECIES=Object.freeze({
 const copy=v=>JSON.parse(JSON.stringify(v));
 function d6(seed){return createDiceStream(seed);}
 const throws=(what)=>{throw new RangeError(what);};
-export function rollInitiative({actorIds=[],dinosaurTurns=2,seed=1993}={}) {
+export function rollInitiative({actorIds=[],dinosaurTurns=2,seed=1993,surpriseActorIds=[]}={}) {
  if(!Array.isArray(actorIds)||new Set(actorIds).size!==actorIds.length ||
   actorIds.some(id=>typeof id!=='string'||!id))
   throw new RangeError('Combatants require distinct named actor IDs.');
  if(!Number.isInteger(dinosaurTurns)||dinosaurTurns<0||
     actorIds.length+dinosaurTurns<1||actorIds.length+dinosaurTurns>10)
    throw new RangeError('Initiative requires 1–10 card assignments.');
+ const participants=[...actorIds,...Array.from({length:dinosaurTurns},(_,i)=>'dinosaur-'+(i+1))];
+ if(!Array.isArray(surpriseActorIds)||new Set(surpriseActorIds).size!==surpriseActorIds.length||
+    surpriseActorIds.some(id=>!participants.includes(id)))
+   throw new RangeError('Surprise attackers must be actual distinct combatants.');
  const deck=Array.from({length:10},(_,i)=>i+1),roll=d6(seed),cards=[];
+ for(const id of surpriseActorIds)
+  cards.push({actorId:id,card:deck.shift(),kind:id.startsWith('dinosaur-')?'dinosaur':'human'});
  const unbiasedIndex=size=>{let x,limit=36-36%size;do{x=(roll.rollD6()-1)*6+(roll.rollD6()-1);}while(x>=limit);return x%size;};
- for(const id of [...actorIds,...Array.from({length:dinosaurTurns},(_,i)=>'dinosaur-'+(i+1))]){
+ for(const id of participants.filter(id=>!surpriseActorIds.includes(id))){
   const n=unbiasedIndex(deck.length);
   cards.push({actorId:id,card:deck.splice(n,1)[0],kind:id.startsWith('dinosaur-')?'dinosaur':'human'});
  }
