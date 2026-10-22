@@ -39,7 +39,9 @@ function save(){
  catch{announce('Browser storage unavailable. Export the party incident to retain progress.');return false;}
 }
 function create(){
- setup=loadSetup();
+ const original=state?.startingRoster&&validateParty(state.startingRoster).length===0 ?
+   {seed:state.initialSeed,roster:state.startingRoster} : (setup??loadSetup());
+ setup=original;
  state=newPartyIncident(setup);
  viewed=state.actors[0].id;
  save();
@@ -156,6 +158,17 @@ $('export-incident').addEventListener('click',()=>{
  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
  announce('Party incident exported.');
 });
-setup=loadSetup();
-if(!restore())create();
+let incoming=null;
+try{
+ const raw=sessionStorage.getItem(LAUNCH);
+ if(raw){incoming=JSON.parse(raw);sessionStorage.removeItem(LAUNCH);}
+}catch{incoming=null;}
+if(incoming&&validateParty(incoming.characters||[]).length===0){
+ // A deliberate new launch must not silently load a previous party's save.
+ setup={seed:incoming.seed??1993,roster:incoming.characters};
+ state=newPartyIncident(setup);
+ viewed=state.actors[0].id;
+ save();
+ announce('New validated party launched. Older legacy solo saves were not touched.');
+}else if(!restore())create();
 show();
