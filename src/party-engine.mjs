@@ -164,12 +164,13 @@ export function parsePartyAction(input) {
  if(typeof input==='object'&&input!==null)
    return {kind:String(input.kind||'').toLowerCase(),target:String(input.target||''),
      recipientId:input.recipientId||null,push:input.push===1||input.push===true?1:0};
- let line=String(input||'').toLowerCase().trim();
+ let line=String(input||'').toLowerCase().trim().replace(/[.!?]+$/,'');
+ line=line.replace(/^(?:i(?:\s+want\s+to|\s+try\s+to)?\s+|my\s+character\s+|we\s+)/,'');
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
  if(['wait','hold','stay'].includes(line))return {kind:'wait',target:'',push:0};
- if(['hide','conceal','take cover'].includes(line))return {kind:'hide',target:'',push};
+ if(/^(?:hide|conceal|crouch|take cover)(?:\s+.*)?$/.test(line))return {kind:'hide',target:'',push};
  const regex=[
   [/^(?:go|move|walk|head|run|sneak|creep)\s+(?:to\s+)?(.+)$/,'move'],
   [/^(?:take|pick up|grab)\s+(.+)$/,'take'],
