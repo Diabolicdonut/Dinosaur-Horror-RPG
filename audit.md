@@ -1,5 +1,22 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-G — D66 critical injury and medical time — 2026-10-22
+
+**Recovered authority:** Current GitHub main at 007-F `6abc30e4dbe82356490782805fbbd3b7257e8e3b`; user-private Evolved Edition printed pp. 68–71 for breaking, D66 critical injuries, death checks, stabilization, surgery and wound healing, and p. 55 for round/stretch/shift durations. No proprietary rulebook PDF or long text reproduced in public files.
+
+**Implementation:** Added `src/evolved-injuries.mjs` with all 36 source-inspired D66 injury codes, original short Jurassic survival condition labels, numeric penalties, movement/arm constraints, lethal survival intervals, deterministic no-stress/no-push Stamina checks, three-success stabilization, exact procedural separation of First Aid / COMMAND Rally / shift Surgery, and D6-based injury healing. Safe recovery uses elapsed stretches, while Recovery Care doubles time spent attended. Full death/medical consequences are actor-owned persistent events, not AI narration.
+
+**Live world changes:** `src/party-engine.mjs` now enriches genuinely sustained wounds, applies skill and movement penalties, updates medical clocks on world time advancement, emits death/healing events, handles bleeding-caused additional critical wounds and supports `aid pc-X`, `rally pc-X`, `surgery pc-X` and `rest`. In `src/combat-turns.mjs`, Rally consumes a quick action, while lower-limb injuries convert movement to a full action. Human and AI actors use one authoritative resolver. `src/party-director.mjs` allows locally aware medics to treat a nonbroken lethal casualty and safely qualified colleagues to rally; it never grants knowledge of a remote dinosaur or patient. The 007-G client displays injury labels, unstable intervals and treatment actions.
+
+**Automated QA:** `tests/evolved-injuries.test.mjs` adds **25** focused tests checking every D66 code, penalties, 10s/10m/6h timers, Stamina-only death rolls, stabilization after three successes, First Aid (including ambulatory lethal casualties), worsening failure deadlines, COMMAND rally non-stabilization, medical gear Surgery, long healing and Recovery Care, historical-save compatibility, live skill modifiers, movement cost changes, injury-induced secondary bleeding and companion decision boundaries. Together with the 184 previously accepted regressions, expected **209** automated checks. Final GitHub CI is authoritative. Prior CI also caught a stale 007-F cache revision assertion after the browser app was updated; the assertions were versioned to 007g.
+
+**Safety/isolation:** Same isolated party schema v3 and legacy `dinosaur-party-incident-007c` save key. Only optional injury metadata is lazily added; no migration of unrelated 006.2 singleton saves. No Cloudflare Worker source, keys or config were touched.
+
+**Source fidelity boundaries:** Time intervals follow 10-second rounds, 10-minute stretches and six-hour shifts within Evolved's ranges. The *round-level* death-check scheduler currently checks at completed round boundaries, not strictly after the affected actor's own turn as the book states. Condition #43 is not mapped to a full mental disorder because the source explicitly calls for group consent; infection/sickness #46, prosthetics, and long-term complication subtleties are not yet finished. First aid uses the existing room/zone resolution rather than a more granular Adjacent position, and +1 for park medical equipment is a transparent local modifier. See `docs/CRITICAL-INJURIES-007G.md` for exact details.
+
+**Next gate:** End-to-end live-browser medical QA, then deeper Evolved death timing, infectious conditions and optional mental trauma, plus surprise/ambush, advanced defensive interrupts and species-specific threats.
+
+
 ## Checkpoint 007-F — Live initiative and action economy — 2026-10-22
 
 **Recovery:** Inspected current main at accepted 007-E commit `ef5a134aa0513546c7946686d9405da6ab6751d8`, the authoritative party engine/director, character and encounter modules, controls, action tests and source scenario. Rules mapped to user's private *Alien RPG — Evolved Edition*, printed combat/initiative pp. 59–61 and supporting combat/damage pp. 62–71. No copyrighted rulebook tables, prose or art copied into public code.
