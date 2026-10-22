@@ -9,18 +9,19 @@
   "canonical_engine": "src/engine.mjs",
   "executable": "index.html",
   "runtime": "server.mjs",
-  "original_rulebook_reference": "User private Library: Alien RPG - The Role Playing Game.pdf",
-  "secondary_reference": "User private Library: Year Zero Mini.pdf",
+  "original_rulebook_reference": "Legacy secondary comparison only: Alien RPG - The Role Playing Game.pdf (2019 core)",
+  "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
   "automated_tests": 65,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "User: Open GitHub Pages with fresh ?revision=006.2 URL; verify visible BUILD 006.2 · READY indicator (not just Worker v006)",
-    "User: Check whether old turn-3 save auto-repairs cabinet, then try hiding behind the cabinet without resetting incident",
-    "User: If still broken, click EXPORT DEBUG to create new dinosaur-rpg-debug-build-006.2-turn-...json and upload that NEW file",
-    "Developer: Compare fresh post-fix diagnostic logs to fixture and address actual new failure; don't infer new failure from duplicate 006 report",
-    "Developer: Continue broad AI adjudication milestones after verifying browser build and save recovery"
+    "Preserve existing checkpoint 006.2 user troubleshooting and ensure active game browser build is verified; do not claim newly adopted rules are deployed",
+    "Audit Evolved 2025 skill, Resolve, stress response, pushing, action economy, passive checks, stealth and injury mechanics against current code",
+    "Design method/intent-based typed referee proposal separating player actions from reusable engine effects, with skill/attribute pairing and explicit costs",
+    "Build and validate deterministic computer-native probability sampling with seeded replay; retain Evolved behaviors until deliberate deviations are approved",
+    "Test common and unconventional natural-language approaches and compound actions with real AI models while safeguarding hidden dinosaur world state",
+    "Only after engine and browser contract change manually deploy updated Cloudflare Worker and validate end-to-end"
   ],
   "acceptance_criteria": [
     "65 automated tests pass including 006.1 original debug-state fix and 006.2 browser asset version checks",
@@ -128,5 +129,17 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "006.2"
+  "browser_asset_cache_revision": "006.2",
+  "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
+  "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
+  "authority_decision_date": "2026-10-22",
+  "design_doctrine": {
+    "play_interface": "Natural-language intention and method, no mandatory player-facing fixed action or skill vocabulary",
+    "capabilities": "Keep four Evolved attributes and internally differentiated trained skills/expertise; select attribute/skill contextually, including unusual pairings when appropriate",
+    "ai_role": "Interpret intent/method and propose validated skill, time cost, target and typed outcome candidates; no direct world-state authority",
+    "engine_role": "Validate physical feasibility, resources, skills, time, stress/Resolve, predator hidden state, seeded probability and persistent effects",
+    "checks": "Only uncertain actions with meaningful stakes; handle routine and impossible actions without RNG, and composite action sequences with transparent time/action costs",
+    "probability": "Computer-native seeded numeric resolution allowed; Evolved edition is reference baseline; only intentional, tested Dinosaur Horror deviations may change its probabilities",
+    "current_implementation": "Design decided, NOT yet implemented; checkpoint 006.2 browser and Worker still use bounded actions and legacy simplified dice mechanics"
+  }
 }
