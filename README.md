@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint 007-A — standalone Personnel Registry with Evolved-style nine-career character creation, validated manual/automatic/hybrid sheets and JSON roster export. Existing live incident remains checkpoint 006.2 (single character). Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint 007-B — independent Personnel Registry now includes a seeded Evolved-style behind-the-screen skill-check sandbox, stress responses, pushing, story points, opposed checks, and tested career talent hooks. Character generation remains validated and exportable. The existing playable incident is still checkpoint 006.2 (one fixed player character); full rules integration is not yet complete. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Rules authority and free-form roleplaying (accepted October 22, 2026)
 
@@ -29,6 +29,12 @@ Profession, 12-skill training, talents, gear, stress/Resolve and derived attribu
 See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **This feature is not yet implemented in the checkpoint 006.2 browser.**
 
 **[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. This is a standalone preview; its new careers and talent options are not yet playable in the incident. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
+
+## Checkpoint 007-B — mechanical Field Assessment
+
+The [Personnel Registry](characters.html) now provides a **FIELD ASSESSMENT / HIDDEN DICE** panel. Select a survivor and scenario context, choose a skill, stress, modifiers, requested pushes and seed, then run a real individual-d6 check in the isolated Evolved resolution module. Initial dice remain hidden by default, with an opt-in **Reveal individual dice (debug)** control. Repeat the same seed to replay the check. Running the laboratory does **not** change the saved incident or permanently modify a character sheet.
+
+The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based base/stress rolls, successes, pushes, Resolve and stress responses, passive and opposed checks, story points, separate panic-result classification, and multiple context-triggered career talents. **World-dependent talent effects**, actual panic movement/turn loss, injury consequences, equipment changes and full combat action costs are **not implemented in live gameplay** and remain explicitly gated. See [exact implementation / talent status](docs/EVOLVED-DICE-TALENT-STATUS.md).
 
 ## Design contract
 
