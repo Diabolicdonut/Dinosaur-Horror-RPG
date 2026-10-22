@@ -101,6 +101,7 @@ export function actorObservation(s,actorId){
   hidden:actor.hidden,stress:actor.stress,health:actor.health,broken:Boolean(actor.broken),dead:Boolean(actor.dead),
   panicState:actor.panicState||null,
   inventory:[...actor.inventory],
+  equipment:[...(actor.gear||[])],
   visitedRooms:[...actor.visitedRooms],
   attemptedObservations:[...actor.attemptedObservations],
   roomName:view.roomName,exits:view.exits.map(x=>x.id),
@@ -133,7 +134,8 @@ export function chooseCompanionAction(observation){
    return proposal('aid',patient.id,'stabilize_ally','Treat a nearby incapacitated survivor.');
  if(o.dinosaurs.length){
    if(o.hidden)return proposal('wait','','avoid_dinosaur','Remain concealed from the dinosaur.');
-   if(o.inventory.includes('service carbine')||o.inventory.includes('tranquilizer launcher'))
+   if(o.equipment?.includes('service carbine')||o.equipment?.includes('tranquilizer launcher')||
+      o.inventory.includes('service carbine')||o.inventory.includes('tranquilizer launcher'))
      return proposal('attack','dinosaur','protect_survivors','Use a carried weapon against an immediately visible predator.');
    return proposal('hide','','avoid_dinosaur','Try to find concealment from a nearby dinosaur.');
  }
