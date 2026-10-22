@@ -124,6 +124,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
 }
 export function isPartySave(s) {
  if(!s||s.kind!==PARTY_SAVE_KIND||s.version!==PARTY_ENGINE_VERSION||
+    !['playing','rescued'].includes(s.outcome)||
     s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
     s.actors.length>8||s.cursor>=s.actors.length||
@@ -253,6 +254,8 @@ export function partyStep(previous,raw,{actorId=null}={}) {
  if(action.kind==='use'){
    const feature=matchFeature(action.target,a.location);
    if(!feature)return rejected(previous,'That mechanism is not here.');
+   if(!['generator','radio','beacon'].includes(feature))
+     return rejected(previous,'This feature cannot yet be operated through the party simulation.');
    if(feature==='generator'&&s.flags.power)return rejected(previous,'Auxiliary power is already active.');
    if(feature==='radio'&&!s.flags.power)return rejected(previous,'The radio requires auxiliary power.');
    if(feature==='radio'&&s.flags.distress)return rejected(previous,'The distress call has already been transmitted.');
