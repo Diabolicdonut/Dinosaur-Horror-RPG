@@ -266,7 +266,7 @@ test('UI mode controls and versioned browser entrypoint exist and parse',async()
 test('spectator autonomy can advance a grounded shared objective without hidden teleports',()=>{
  let s=spectator();
  let poweredAt=null;
- for(let i=0;i<180&&s.outcome==='playing';i++){
+ for(let i=0;i<400&&s.outcome==='playing';i++){
   const result=runAutonomousTurn(s,{singleStep:true});
   assert(result.accepted,result.reason);
   s=result.state;
@@ -276,6 +276,9 @@ test('spectator autonomy can advance a grounded shared objective without hidden 
  assert(s.actions.some(a=>a.kind==='take'&&a.target==='keycard'),
    'an AI survivor should physically recover the unique visible staff card');
  assert(poweredAt!==null,'a card-holding AI survivor should eventually reach the shed and restore power');
+ assert(s.flags.distress,'a survivor should successfully send a radio distress call');
+ assert(s.flags.beacon,'autonomous survivors should eventually activate the beacon');
+ assert.equal(s.outcome,'rescued');
  assert(s.beat>=poweredAt);
  assert(s.aiDecisions.length>0);
 });
