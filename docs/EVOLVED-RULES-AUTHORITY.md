@@ -2,6 +2,23 @@
 
 **Accepted decision:** 2026-10-22. **Scope:** Dinosaur Horror RPG only.
 
+## Updated implementation doctrine — faithful Evolved mechanical adaptation (latest decision, supersedes earlier probability redesign)
+
+**Use the Evolved Edition's actual rules and dice procedures as the default mechanical specification.** Implement attributes, career-based character creation, twelve skills, career skill advancement caps, selectable talents, base/stress dice, multiple successes, pushes, Resolve and stress responses, panic, timed exploration, action economy, gear, injuries, healing, NPC behavior, stealth and combat as faithfully as applicable. When an Alien-specific mechanic has no literal Jurassic Park analogue, retain its *mechanical role and interactions* and adapt the fictional content, such as specific careers, gear, and dinosaur threats. Any deliberate numerical/procedural deviation is a separately reviewed, documented, tested house rule; do not silently normalize or simplify rules.
+
+The computer **rolls the actual seeded dice internally**, recording original individual results and their effects for testing, playback and transparent optional debugging. Players are not asked to select actions/skills or roll manually. This deliberately supersedes the prior proposal to replace Evolved dice pools with a custom numeric probability function before parity has been established. Probability analytics can still derive the exact odds from the original dice mechanics, but it must not change the rules or random outcome distribution.
+
+**Source-sensitive implementation:** The privately uploaded Evolved PDF stays in the user's Library. Reimplement numerical rules, game logic and thematic mappings in original code and original prose; do not transcribe or redistribute the copyrighted rulebook text, tables, artwork, or scenario material wholesale in the public repository. Keep exact mechanical interactions where possible and create original Jurassic Park-inspired careers, talents, dinosaur attacks, items and atmospheric prose.
+
+**Character creation clarification:** Careers are not exclusive skill classes. Evolved Core Concepts p. 26 says there are 12 skills (0–5) and a character may attempt an untrained skill using the associated attribute; characters allocate 10 initial skill points, career skills can start up to 3 and noncareer skills up to 1, and their initial talent comes from career-specific options. Preserve these distinctions when adapting careers to the park setting. All checks remain fully internal and selected from player intent and described method.
+
+**Roll resolution:** Preserve success-on-6, separate base and stress dice, extra successes/stunts, allowed skill-to-attribute switching, gear/help/difficulty modifiers, push timing and restrictions, persistent stress responses, Resolve, passive checks, opposed checks, action restrictions and the book's distinct panic response procedure. Do not substitute the current legacy checkpoint 006.2 panic formula or simply roll once for success/failure.
+
+**Adoption order:** First achieve Evolved mechanical parity (with Jurassic Park-themed content) and regression tests; then expand natural-language GM translation onto the rules. The GM proposes skill/attribute, modifiers, goals and sequence; authoritative code performs checks and state changes. Invisible dice are an *interface* decision, not a replacement resolution system.
+
+**Current release status:** Documentation and design authority only. The current browser/Worker remains a limited legacy prototype and is not yet a faithful Evolved adaptation.
+
+
 ## Authority precedence (new default)
 
 1. Explicit, newer Dinosaur Horror project decisions and deliberately documented dinosaur-specific adaptations.
@@ -50,7 +67,7 @@ The deterministic engine:
 - **Attribute and skill are chosen from the method**, not just the verb. Physically threatening a person might emphasize Strength + Manipulation; calmly persuading them might emphasize Empathy + Manipulation. Different backgrounds/equipment/conditions can change feasibility and odds.
 - **Don't check every sentence**: ordinary observation, conversation, plausible routine motion and already-determined outcomes need no dice-equivalent check, following Evolved's 'When To Roll' principle.
 - **Do not eliminate timing or action economy**: the player can speak freely, but combat quick/full actions, exploration time, attention and consequences must still be enforced.
-- **No mandatory physical/virtual dice presentation**: probability can be computed directly, but preserve Evolved mathematical behavior until a separately accepted, tested Dinosaur Horror deviation supersedes it.
+- **Actual internal dice resolution retained:** roll seeded base and stress dice, storing per-die results and applying Evolved procedures in order. The player need not see or operate them. Computational probability summaries are optional diagnostics, not a replacement rules engine.
 
 ## Example referee conversion (illustrative architecture; NOT implemented yet)
 
@@ -62,10 +79,10 @@ The GM should identify a compound plan of environmental manipulation, lighting a
 
 ## Migration order / gates
 
-1. Keep checkpoint 006.2 game/save/Cloudflare stability intact and retain reproducible seeded outcome logs.
+1. Keep checkpoint 006.2 game/save/Cloudflare stability intact and retain reproducible seeded **per-die** outcome logs.
 2. Inventory Evolved mechanisms against `src/engine.mjs` and explicitly note differences, especially pushing, stress response/Resolve, passive rolls, skill categories, success margins, action costs, injuries and hidden detection.
 3. Create an internal flexible action proposal representation (intent, method, targets, attribute, trained specialty, stakes, time cost and allowable **typed** effects); validate and resolve it without static player-facing verbs.
-4. Add tests for different approaches to the same obstacle, analogous skills from different methods, failure with retained physical resources, compound actions, impossible actions and unknown player-visible facts.
+4. Implement and test Evolved-compatible career/skill/talent development, dice/stress/Resolve/panic, stunts, pushing, timed action economy and injuries, then validate different natural-language approaches, resource persistence, compound actions and hidden-world boundaries.
 5. Only then replace the existing Worker/browser adjudication contract with an updated, backward-compatible typed protocol. Worker updates will require explicit manual Cloudflare deployment and a live smoke test.
 
 **Boundary:** This document changes project authority and design direction. It does not implement a new game engine, endorse arbitrary AI world mutations, or supersede the need for formal tests.
