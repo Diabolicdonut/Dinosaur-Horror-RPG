@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.0",
-  "checkpoint": "007-A",
-  "state": "character_lab_standalone_implemented_and_validated_not_integrated_into_incident",
+  "version": "0.7.1",
+  "checkpoint": "007-B",
+  "state": "evolved_check_and_talent_lab_implemented_live_incident_remains_006_2",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 77,
+  "automated_tests": 100,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete Phase B: implement actual Evolved mechanical talent effects and applicable gear modifiers with source-specific tests; independent character creator already running as preview.",
-    "Port faithful seeded base/stress dice rolls, pushing, extra successes, Resolve, panic and skill resolution for actor ID; preserve browser v006.2 legacy seed/save until migration.",
-    "Implement multi-actor roster persistence and schema migration from the existing singleton game; stage party/character/spectator decision ownership on shared scheduler.",
-    "Connect validated character lab parties to actual new incidents only after actor-ID scheduler and action rules are working.",
-    "Implement dinosaur stealth, injuries, combat/initiative and AI companions/spectator; no simulated omniscience and deterministic accepted proposal journals.",
-    "Browser smoke test the standalone Character Lab, including editing, locking, export, reload and responsive sizing; automated suite 77 passing."
+    "Verify Character Lab 007-B in an actual browser, including all skill-check controls, same-seed reproducibility, and talent-specific contexts.",
+    "Implement a multi-actor engine state with stable character ID, Health/Resolve/stress, talents, equipment, position and actor actions; preserve old one-player saves via migration.",
+    "Add Evolved source-correct environmental/time-cost/combat/injury protocols before enabling all world-dependent talent actions.",
+    "Connect validated character draft roster to new incident creation, then schedule independent turns for Party/Focus/Spectator decision ownership.",
+    "Keep AI rule proposals bounded by actor-specific world knowledge and deterministic outcomes.",
+    "Do not redeploy Cloudflare until Worker code actually needs changed; continue older 006.2 user debug gate separately."
   ],
   "acceptance_criteria": [
-    "Standalone character lab produces legal nine-career sheets and 1–8-party JSON rosters with Evolved starting budgets, talents and derived stats.",
-    "12 new character tests + 65 prior tests validated in GitHub CI (77 total).",
-    "Actor generation is seed replayable and independent of live incident RNG/localStorage.",
-    "Initial Evolved character creation fidelity and deliberate park adaptation differences documented in docs/EVOLVED-CHARACTER-MATRIX.md.",
-    "Live game remains build 006.2 with Worker v006 unchanged, no claims of multi-character mode or new talent effects.",
-    "Next live incident integration requires stable multi-actor migration and explicit regression tests."
+    "100 automated Node regression tests pass with original live incident unchanged.",
+    "Exactly 27 themed starting talents accounted for in mechanical metadata; activated modifiers tested, world-dependent talent effects explicitly deferred.",
+    "Stress-response + Resolve, pushes, extra successes, separate panic roll, story points, passive and opposed skill checks have seeded replay tests.",
+    "Isolated Character Lab displays user-friendly outcomes while keeping individual dice hidden by default and allowing debug reveal.",
+    "Character Lab tests do not alter existing game saves, RNG, player progress or Cloudflare Worker; no claim of full Evolved RAW-complete game."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -178,7 +177,7 @@
   "character_lab_css": "src/characters.css",
   "character_creation_source_matrix": "docs/EVOLVED-CHARACTER-MATRIX.md",
   "character_lab": {
-    "status": "standalone_browser_preview",
+    "status": "standalone_character_creator_plus_evolved_seeded_check_lab",
     "live_game_status": "Legacy game remains build 006.2 with singleton character and Worker v006",
     "features": [
       "9 Jurassic Park-themed Evolved-mapped careers and 12 skill categories",
@@ -191,7 +190,12 @@
       "Shared rules validator across manual/auto/hybrid",
       "Browser-local isolated draft autosave",
       "Validate and export JSON roster draft",
-      "Homepage personnel registry link"
+      "Homepage personnel registry link",
+      "Optional test-check panel with character-based d6 successes and stress",
+      "Context-triggered talent bonuses and eligible double pushes",
+      "Resolve-governed stress responses and separate panic check classification",
+      "Deterministic opposed checks and earned story-point use",
+      "Optional detailed debug showing all individual dice and stress-response roll"
     ],
     "unsupported": [
       "Not yet playable in the current incident",
@@ -199,11 +203,40 @@
       "Alternate Evolved optional lifepath/random generation not yet implemented",
       "Not yet Party/Focus/Spectator mode",
       "No AI companion behavior or scene-constrained NPC generation",
-      "No cloud browser smoke-test yet"
+      "No cloud browser smoke-test yet",
+      "Stress/panic turn loss, fleeing, equipment loss, and persistent psychological effects not applied to full world simulation",
+      "Many source talents require injury, combat, NPC, vehicle and inventory systems before their complete effects can apply",
+      "Testing a skill in Character Lab does not spend time, move dinosaurs or modify saved game"
     ],
     "separate_rng": true,
     "separate_local_storage": true,
     "worker_redeployment_required": false,
     "source_rules": "Alien Evolved Core Concepts pp 25–27 and careers pp 31–39; original gear, story text and placeholder park talent names"
+  },
+  "evolved_mechanics_module": "src/evolved-checks.mjs",
+  "mechanical_authority": "Alien RPG Evolved Edition privately supplied, skill pp 42-44, talents pp 48-51, stress and panic pp 72-73",
+  "evolved_mechanics_audit": "docs/EVOLVED-DICE-TALENT-STATUS.md",
+  "evolved_rules_scope": {
+    "implemented": [
+      "Attribute/skill base d6 and current stress dice with individual logged faces, success on 6, stress response on stress die 1",
+      "Untrained skill, difficult/assisted modifiers, flexible attribute pairing, multiple successes",
+      "Seeded pushes and stress increase, restricted by stress die one, Deflated, and passive rolls",
+      "Resolve-based stress response outcomes and permanent responses for the returned actor state",
+      "Actor-scoped opposed skill checks, strict margin, seeded streams",
+      "Selected context-valid Evolved-mapped park career talent bonuses, double pushes, stress management and typed hooks",
+      "Cinematic earned story-point automated six on a base die, spent from existing points",
+      "Panic roll classification separate from skill success; cannot yet apply to physical world",
+      "Character Lab private testing does not consume incident random state or overwrite saves"
+    ],
+    "pending": [
+      "Complete per-dinosaur/persistent NPC effect handling for all 27 talents and real in-game prerequisite enforcement",
+      "True playable character/party world schema and save migration",
+      "Full panic response effects and interruptions in engine action scheduler",
+      "Evolved initiative/combat, death/critical injuries, armor, supplies, equipment resource tracking and advancement",
+      "Party/Focus/Spectator control selection, AI companions and autonomous spectator modes",
+      "End-to-end browser/manual play and staged Web/Worker protocol migrations"
+    ],
+    "browser": "characters.html?revision=007b",
+    "actual_live_game": "index.html continues Checkpoint 006.2 and Worker v006"
   }
 }
