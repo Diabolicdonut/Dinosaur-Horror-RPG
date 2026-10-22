@@ -2,9 +2,10 @@
 // This module only manages turn scheduling; party-engine is authoritative for
 // actor health, world position, inventory, Evolved rolls and consequences.
 import {rollInitiative,createActionBudget,spendActionBudget} from './evolved-encounters.mjs';
+import {woundModifiers} from './evolved-injuries.mjs';
 export const COMBAT_SCHEDULER_VERSION='007-F';
 export const COMBAT_COST=Object.freeze({
- move:'quick',take:'quick',give:'quick',guard:'quick',
+ move:'quick',take:'quick',give:'quick',guard:'quick',rally:'quick',
  attack:'full',hide:'full',aid:'full',use:'full',investigate:'full'
 });
 const cloning=x=>JSON.parse(JSON.stringify(x));
@@ -42,7 +43,13 @@ export function checkCombatAction(s,actorId,kind){
  if(slot.kind==='dinosaur')return {accepted:false,reason:'The velociraptor acts next.'};
  if(slot.actorId!==actorId)return {accepted:false,reason:'Another combatant has initiative.'};
  if(kind==='wait'||kind==='end')return {accepted:true,cost:'end'};
- const cost=combatCost(kind);
+ let cost=combatCost(kind);
+ if(kind==='move'){
+  const actor=s.actors.find(a=>a.id===actorId);
+  const injury=woundModifiers(actor,'mobility');
+  if(injury.immobile)return {accepted:false,reason:'A spinal injury prevents movement.'};
+  if(injury.moveFull)cost='full';
+ }
  if(!cost)return {accepted:false,reason:'Action is not supported in combat.'};
  const b=s.combat.budgets[actorId];
  if(!b)return {accepted:false,reason:'Combat actor has no action budget.'};
