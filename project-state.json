@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.4",
-  "checkpoint": "007-E",
-  "state": "dinosaur_survival_encounter_alpha_implemented_with_source_faithful_rules_primitives_and_partial_runtime_application",
+  "version": "0.7.5",
+  "checkpoint": "007-F",
+  "state": "live_combat_initiative_and_action_economy_validated_pending_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 167,
+  "automated_tests": 184,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Run live graphical browser tests for 007-E across Party/Character/Spectator, exposed contact, concealment, first aid, panic, death, respawn/restart and older 007-D saves.",
-    "Replace simple party round-robin in combat with Evolved per-round drawn initiative, creature Speed turns, one full/one quick or two quick actions and interrupt defense with safe control switching.",
-    "Implement full Evolved D66 injury-specific effects, death-roll intervals, trauma, ongoing bleeding, stabilized conditions and recovery/surgery.",
-    "Expand Jurassic dinosaur sensory/attack data and physically grounded pursuit, armor, ammo and environmental combat effects.",
-    "Complete source-accurate panic propagation and recovery, plus injury-aware AI companion objectives and dialogue.",
-    "Preserve private rulebook copyright, original solo engine, versioned save fidelity and deterministic replay."
+    "Run real browser smoke play in Party, Character and Spectator modes, verifying initiative cards, end turn, budget rejection, creature AI, reserved dodge, pause/step/resume and saved combat round.",
+    "Implement source-exact D66 injury penalties, round/stretch/shift death-roll deadlines, stabilization, surgery and healing clocks.",
+    "Add Evolved surprise/ambush first-card priority, deliberate initiative holding/trading and explicit human interrupt-choice support.",
+    "Expand physical dinosaur-specific actions, audio/vision/chases, ranged ammo, blocking/cover and accurate in-world environmental hazards.",
+    "Complete full panic consequences, stress recovery and companion clinical rescue choices.",
+    "Preserve 007-C/007-D/007-E party saves, original 006.2 solo engine and deterministic histories during incremental upgrades."
   ],
   "acceptance_criteria": [
-    "167 automated regressions pass, including 12 new mechanical encounter and 12 new live survival tests.",
-    "Actual exposed raptor can inflict armor-reduced damage, critical injury and death; concealed or remote survivors remain protected.",
-    "Only a colocated broken survivor may receive Medical Aid and actual nearby dinosaurs may be attacked, with role-appropriate rolls and persistent results.",
-    "Dinosaur threat and its defeat persist across all modes with seeded replay and no secret predator omniscience.",
-    "Existing Party/Character/Spectator controls and party saves remain usable; legacy solo v006.2/Cloudflare Worker unmodified.",
-    "Explicit distinction between implemented source-based mechanics and NOT YET runtime-linked combat initiative/action budget or complete injury timelines."
+    "184 deterministic Node tests pass, including 17 live combat-turn and independent timekeeping tests.",
+    "Unique 1–10 initiative cards are drawn for involved humans plus two raptor turns; order redrawn each combat round.",
+    "Human can spend full+quick or two quick without exceeding action limits; attacks only on creature initiative and validated human actions.",
+    "Prepared defensive Mobility dodge consumes quick budget, not a free roll; no unseen/distant target attack.",
+    "Party/Character/Spectator modes, pause/step, independent viewpoint and mode switches preserve combat order, RNG, actor consequences.",
+    "Exploration minutes do not increase from combat actions; saved initiative/budgets and old v3 party saves remain valid.",
+    "Complete Evolved RAW combat/injury is NOT claimed; documented remaining source rules are tracked by reference."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -309,5 +310,34 @@
     "save_schema": "Party v3 with optional per-character survival fields, compatible with earlier 007-D saves",
     "solo_engine": "006.2 legacy solo game and Worker v006 are unchanged",
     "backend_deploy_required": false
+  },
+  "combat_scheduler_engine": "src/combat-turns.mjs",
+  "combat_scheduler_audit": "docs/COMBAT-INITIATIVE-007F.md",
+  "combat_scheduler": {
+    "status": "Live seeded Evolved-inspired initiative, human action budgets and Speed-2 raptor turns in the party incident",
+    "reference": "Private Alien RPG Evolved Edition printed Combat & Initiative pp 59–61; combat and damage pp 62–71",
+    "implemented": [
+      "Exposure to a real co-located raptor starts drawn 1–10 combat initiative; unscheduled proximity attacks are no longer used",
+      "One card for each engaged survivor and two cards for Velociraptor Speed 2; sort ascending and redraw each combat round",
+      "Human actor may take full+quick in either order, or two quick; reject illegal action costs before state mutation or dice",
+      "End Combat Turn skips unused budget, with other actors and two creature slots resolved individually",
+      "Dinosaur initiative slots are always AI-owned; Party mode handles raptor without granting computer human survivor turns",
+      "Spectator one-step commits exactly one character or creature action; Character/Party/Spectator control switches preserve cards and spent budgets",
+      "Guarded survivor automatically spends one available quick for dodge before a scheduled raptor attack; cannot defend for free",
+      "Combat phase ends on animal defeat or loss of exposed local opponents and returns to exploration",
+      "Persistent optional v3 combat overlay stores sorted cards, initiative index, budgets and capped round history; old v3 party saves remain readable",
+      "Independent exploration clock estimates minutes per party cycle; completed combat rounds separately count seconds",
+      "Browser 007-F status shows initiative card/round, remaining full/quick actions, End Turn and separate combat seconds",
+      "Solo checkpoint 006.2 save and Cloudflare Worker unaffected"
+    ],
+    "deferred": [
+      "Full surprise and ambush initiative priority, holding off and swapping initiative cards",
+      "Human-selected out-of-turn dodge/defend confirmation; current prepared watch auto-dodge is a bounded interface rule",
+      "Source-exact combat range, cover, grapple, weapon supply/ammo and creature signature attacks",
+      "Complete D66 injury-specific persistent effects, death-roll timers, surgery and full medical recovery",
+      "Advanced chase/ecology, full panic propagation, cinematic pacing and conversational referee",
+      "Manual graphical browser interaction validation beyond Node syntax/contract and deterministic test suite"
+    ],
+    "compatibility": "Party v3 save structure is retained with optional combat and clock properties; existing v2->v3 migration preserved"
   }
 }
