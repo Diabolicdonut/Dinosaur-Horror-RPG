@@ -41,6 +41,12 @@ The game supports three player-switchable **decision authority** modes over the 
 
 **Implementation order change:** Build a roster of independently modeled playable actors and an actor-ID-based scheduler *alongside the Evolved character system* in Phase B. Do **not** build the main engine around a permanent single `state.player` assumption. Implement mode/viewpoint switching on top of the scheduler, followed by AI companions, and finally spectator autonomous play. Guard old saves with a migration.
 
+## Manual, automatic and hybrid character creator (new acceptance)
+
+Provide per-slot choice of **manually create**, **auto-generate**, or **hybrid generate/edit** for **any or all** playable party members. Players may lock career/attribute/skill/talent/equipment/identity fields, selectively reroll the unlocked parts, auto-fill missing roster slots or generate a whole party, and preview/validate all character sheets. All options use the same Evolved Edition character creation validator and a distinct seeded generation stream, with no silent changes to already-approved characters or to incident RNG.
+
+This is independent of Party/Focus/Spectator decision ownership. Generator output is mechanically indistinguishable from manually selected legal careers/skills/talents, with original Jurassic Park identity and biographies. During play, characters evolve only through established progression, injury and equipment rules—not retroactive regeneration. See [character-generation design contract](CHARACTER-GENERATION-MODES.md).
+
 ## Work phases with validation gates
 
 ### Phase A: Evolved mechanical rules inventory
@@ -58,6 +64,7 @@ Build a **source-to-engine matrix** against the private book with: rule name, pa
 ### Phase B: Mechanical foundation / character system
 
 - Introduce data-driven character careers, attributes, skills and talent definitions; implement character creation validation and advancement.
+- Build a **shared mechanical character validator** and party-roster creator with per-character manual, seeded random and hybrid/locked-field generation, including Evolved rule caps, derived values, selected talents and starting gear. Keep creation RNG independent from gameplay RNG.
 - Model a **roster of playable actors by stable ID** from the outset, with each character's independent skills, talents, stress, injury, inventory, location, agenda and knowledge; implement one deterministic scheduling and action-ownership service for all three modes. Preserve existing save behavior with migration.
 - Port Evolved-style dice pool resolution **with every die result retained**, seed replay, stress dice distinguished from base dice, push and stress-response semantics and conditional effects.
 - Add skill and talent hooks in original game code and verify the probability distribution against mathematical expectations as a diagnostic, **without replacing dice**.
