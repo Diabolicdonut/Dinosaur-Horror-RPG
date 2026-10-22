@@ -119,14 +119,14 @@ export function pendingLethal(actor){
 export function clinicallyEligible(patient){
  return Boolean(patient&&!patient.dead&&(patient.broken||pendingLethal(patient).length));
 }
-export function resolveClinicalAid(medic,patient,{seed=1993,self=false,medicalGear=false}={}){
+export function resolveClinicalAid(medic,patient,{seed=1993,self=false,medicalGear=false,time=0}={}){
  if(!clinicallyEligible(patient)||!medic||(!self&&medic.id===patient.id))
   return {accepted:false,reason:'No living broken or unstabilized lethal-injury patient.'};
  if(self&&patient.id!==medic.id)return {accepted:false,reason:'Self-care must target the actor.'};
  if(self&&patient.broken)return {accepted:false,reason:'Broken survivors cannot treat themselves.'};
  const roll=resolveSkillCheck(medic,{skill:'medical_aid',context:'first_aid',
   modifier:(self?-2:0)+(medicalGear?1:0),seed});
- const target=enrichInjuries(patient,0,seed),now=copy(target),events=[];
+ const target=enrichInjuries(patient,time,seed),now=copy(target),events=[];
  if(roll.success){
   for(const w of pendingLethal(now)){w.stabilized=true;w.nextDeathAt=null;}
   if(now.broken){
@@ -141,7 +141,7 @@ export function resolveClinicalAid(medic,patient,{seed=1993,self=false,medicalGe
    if(index>=2){now.dead=true;now.health=0;events.push('death_from_failed_treatment');break;}
    if(index>=0){
     w.deadline=['shift','stretch','round'][index+1];
-    w.nextDeathAt=(w.inflictedAt||0)+unitSeconds(w.deadline);
+    w.nextDeathAt=time+unitSeconds(w.deadline);
     events.push('lethal_interval_worsened');
    }
   }
