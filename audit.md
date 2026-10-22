@@ -1,5 +1,22 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-H — Surprise, ambush, held initiative, survivor-turn death rolls — 2026-10-22
+
+**Recovery:** Inspected authoritative GitHub `main` at the accepted 007-G commit `e3cb7a2ea12a98fbc43846b3cb3d2343ab7ed58a`; confirmed existing 209-test injury/clinical release, its successful GitHub Actions and GitHub Pages deployment. Grounded new procedures in the privately supplied *Alien RPG — Evolved Edition* printed pp. 59–61 (surprise, ambush, holding off) and p. 68 (round-lethal death checks). No private rulebook contents, files or illustrations published.
+
+**Mechanics implemented:** `src/evolved-encounters.mjs` allocates the first numbered cards to valid surprising attackers before seeded unique-card draws. `src/combat-turns.mjs` validates source-style **holding off** only with an unplayed, later initiative card: swaps the two combatant identities while preserving the card numbers, existing action budgets and already committed records; adds a capped hold journal. Ambush applies +2 dice only to an initial strike, with defense/dodge forbidden for its surprised target, and records one-time surprise consumption. `src/party-engine.mjs` permits a concealed person to ambush a colocated unaware velociraptor; a predator that observes exposed survivors first can take card #1 for its opening ambush. The incident logs all card changes and initial attack modifiers.
+
+**Corrected medical timing:** A live character turn now ends with that specific survivor's round-lethal STAMINA check, not an unrelated round-boundary medical tick. `src/combat-turns.mjs` calls the existing no-stress, unpushable `deathRoll` after the active actor's action budget is exhausted or the turn is ended, records seeded check details, and honors a delayed turn after holding initiative. `src/evolved-injuries.mjs` allows the combat-wide medical clock to defer `round` interval checks so they aren't duplicated; stretches/shifts continue as earlier. Broken-but-living survivors retain initiative opportunities for medical timing.
+
+**Browser and autonomy:** `party.html` and `src/party-app.mjs` now show a pending ambush and **Hold for [Combatant] (#Card)** options generated from the unplayed cards, plus parser support for `hold off to card N`. Client revisions updated to `007h`. Actor decision ownership is unchanged across Party, Character and Spectator; camera switches do not spend RNG/time. `characters.html` launches 007-H.
+
+**Validation:** Added 12 deterministic `tests/initiative-hold-ambush.test.mjs` tests for surprise priority and uniqueness, actual predator and human ambush bonuses/dodge restriction, card swapping without time/RNG/budget cost, invalid holds, deferred actor death rolls, prevention of duplicate roll at next completed round, spectator continuation and compatible command parsing. Retains 209 existing tests, for **221 total**. Encounter, medical and browser contract tests are all included in GitHub Actions; final HEAD CI and Pages acceptance must be checked.
+
+**Compatibility and fidelity gaps:** Uses optional `combat.surprise`, `combat.holds`, `medicalChecks` and wound metadata in existing party v3 saves. Prior party v2 migration, current party world/AI, old singleton 006.2 save and the Cloudflare Worker are untouched. The game still uses prepared automatic defense instead of explicit out-of-turn player confirmation and doesn't implement the full multi-attacker ambush/dialogue, range nuance or all infection/mental trauma effects. See `docs/SURPRISE-INITIATIVE-007H.md`. Browser graphical smoke not claimed.
+
+**Next:** Player-authorized active reaction to an imminent raptor attack, multi-attacker stealth positioning and remaining Evolved injury/clinical consequences with stable saved world boundaries.
+
+
 ## Checkpoint 007-G — D66 critical injury and medical time — 2026-10-22
 
 **Recovered authority:** Current GitHub main at 007-F `6abc30e4dbe82356490782805fbbd3b7257e8e3b`; user-private Evolved Edition printed pp. 68–71 for breaking, D66 critical injuries, death checks, stabilization, surgery and wound healing, and p. 55 for round/stretch/shift durations. No proprietary rulebook PDF or long text reproduced in public files.
