@@ -7,6 +7,8 @@ import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact} from './evolved-encounters.mjs';
 import {activeCombatSlot,activeTurnId,beginCombat,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
+import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
+ resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs';
 
 export const PARTY_ENGINE_VERSION = 3;
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
@@ -41,6 +43,35 @@ function itemLabel(id) { return SCENARIO.itemNames[id]||id; }
 function gameEvent(s,message,actorId=null,category='action'){
  s.events.push({beat:s.beat,actorId,category,message});
  s.events=s.events.slice(-160);
+}
+function medicalTick(s,from,{safeRestFor=null,nurseFor=null}={}){
+ const to=worldSeconds(s);
+ if(to<from)throw new Error('Simulation time must not move backward.');
+ if(to===from)return;
+ for(let i=0;i<s.actors.length;i++){
+  const person=s.actors[i];
+  if(person.dead)continue;
+  const seed=nextSeed(s);
+  const change=tickMedicalClock(person,{from,to,seed,
+   safeRest:person.id===safeRestFor,nurse:person.id===nurseFor});
+  s.actors[i]=change.after;
+  for(const event of change.events){
+   const detail=event.kind==='injury_healed'?'recovers from injury':
+     event.kind==='death_save_pass'?'survives a medical death check':
+     'fails a medical death check';
+   gameEvent(s,person.name+' '+detail+' ('+event.code+').',person.id,
+    event.kind==='death_save_fail'?'danger':'milestone');
+  }
+ }
+ if(s.actors.every(a=>a.dead))s.outcome='lost';
+}
+function equippedMedicalGear(a){
+ return [...(a.gear||[]),...(a.inventory||[])].some(x=>
+  ['medical bag','medkit','first aid pouch','sterile gloves','sedative kit'].includes(x));
+}
+function safeTreatmentZone(s,actor){
+ return ['control','shed'].includes(actor.location)&&
+  (s.dinosaurs[0].defeated||dist(s.dinosaurs[0].location,actor.location)>1);
 }
 function nextTurn(s){
  s.cursor=(s.cursor+1)%s.actors.length;
@@ -126,6 +157,7 @@ function predatorStep(previous,{actorId,source}){
  if(slot?.kind!=='dinosaur'||source!=='ai'||actorId!==d.id)
   return rejected(previous,'The predator does not currently have initiative.');
  const s=deep(previous),beast=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ const medicalFrom=worldSeconds(s);
  if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  const targets=s.actors.filter(a=>a.location===beast.location&&!a.hidden&&!a.dead&&!a.broken);
  let detail={kind:'predator_wait',target:''};
@@ -144,7 +176,12 @@ function predatorStep(previous,{actorId,source}){
    attackerDice:species.attack,baseDamage:species.baseDamage,dodge:canDodge});
   victim.guarding=false;
   victim.health=strike.after.health;victim.broken=strike.after.broken;
-  victim.dead=strike.after.dead;victim.criticalInjuries=strike.after.criticalInjuries||victim.criticalInjuries||[];
+  victim.dead=strike.after.dead;
+  if(strike.critical){
+   victim.criticalInjuries=(strike.after.criticalInjuries||[]).map(w=>({...w}));
+   const updated=enrichInjuries(victim,medicalFrom,nextSeed(s));
+   Object.assign(victim,updated);
+  }
   if(strike.evade){
    victim.stress=strike.evade.after.stress;
    victim.stressResponses=strike.evade.after.stressResponses;
@@ -160,6 +197,7 @@ function predatorStep(previous,{actorId,source}){
  s.actions=s.actions.slice(-200);
  s.beat++;
  finishDinosaurAction(s,nextSeed);
+ medicalTick(s,medicalFrom);
  return {accepted:true,state:s,result:detail};
 }
 function checkDodgeInterrupt(s,actorId){
@@ -188,8 +226,9 @@ function matchObservation(target,location) {
  return SCENARIO.rooms[location].observations?.find(o=>
    o.id===q||o.aliases?.includes(q))||null;
 }
-function accepted(s,actor,kind,target,extra={},noise=0) {
+function accepted(s,actor,kind,target,extra={},noise=0,additionalStretches=0,{safeRestFor=null,nurseFor=null}={}) {
  if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
+ const medicalFrom=worldSeconds(s);
  const wasCombat=Boolean(s.combat?.active),slot=activeCombatSlot(s);
  s.actions.push({beat:s.beat,actorId:actor.id,kind,target,...extra,
   ...(wasCombat?{combatRound:s.combat.round,card:slot?.card??null}: {})});
@@ -206,6 +245,11 @@ function accepted(s,actor,kind,target,extra={},noise=0) {
   if(s.combat?.active)s.beat++;
   else nextTurn(s);
  }
+ if(additionalStretches){
+  s.clock.explorationActions+=additionalStretches*s.actors.length;
+  s.clock.explorationStretches+=additionalStretches;
+ }
+ medicalTick(s,medicalFrom,{safeRestFor,nurseFor});
  return {accepted:true,state:s,result:extra};
 }
 function rejected(before,why){
@@ -220,7 +264,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   inventory:[],hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
   armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
-  lastAction:null
+  medicalRest:false,lastAction:null
  }));
  actors[0].inventory.push(...SCENARIO.startItems);
  return {
@@ -322,7 +366,8 @@ export function partyView(s,{actorId=null}={}) {
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
-  injuries:actor.criticalInjuries||[],broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
+  injuries:actor.criticalInjuries||[],medicalUrgency:pendingLethal(actor).map(w=>({code:w.code,deadline:w.deadline,nextDeathAt:w.nextDeathAt})),
+  broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
   hidden:actor.hidden,flags:{...s.flags},
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
    roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
@@ -342,6 +387,11 @@ export function parsePartyAction(input) {
  if(['wait','hold','stay'].includes(line))return {kind:'wait',target:'',push:0};
  if(['end','end turn','pass turn','done'].includes(line))return {kind:'end',target:'',push:0};
  if(['guard','watch','keep guard','stand watch'].includes(line))return {kind:'guard',target:'',push:0};
+ if(['rest','rest safely','recover','take a rest'].includes(line))return {kind:'rest',target:'',push:0};
+ const rally=line.match(/^(?:rally|encourage|revive)\s+(pc-[1-8])$/);
+ if(rally)return {kind:'rally',target:rally[1],push:0};
+ const surg=line.match(/^(?:surgery|operate on)\s+(pc-[1-8])$/);
+ if(surg)return {kind:'surgery',target:surg[1],push:0};
  if(/^(?:attack|strike|fight|hit)(?:\s+.*)?$/.test(line))return {kind:'attack',target:'dinosaur',push};
  const aid=line.match(/^(?:aid|treat|first aid|stabilize)\s+(pc-[1-8])$/);
  if(aid)return {kind:'aid',target:aid[1],push:0};
@@ -373,12 +423,14 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','end','move','take','give','hide','use','investigate','guard','aid','attack'].includes(action.kind))
+ if(!['wait','end','move','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(slot){
   const budget=checkCombatAction(previous,actor.id,action.kind);
   if(!budget.accepted)return rejected(previous,budget.reason);
  }else if(action.kind==='end')return rejected(previous,'End Turn is only available in combat.');
+ if(slot&&['rest','surgery'].includes(action.kind))
+  return rejected(previous,'A long medical procedure cannot be performed during an active combat round.');
  const s=deep(previous),a=s.actors[s.cursor];
  if(a.dead){
   gameEvent(s,a.name+' cannot act.',a.id,'danger');
@@ -389,17 +441,22 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   gameEvent(s,a.name+' loses a turn to panic.',a.id,'danger');
   return accepted(s,a,'panic_freeze','',{},0);
  }
- if(a.broken&&action.kind!=='move'&&action.kind!=='wait'){
+ if(a.broken&&action.kind!=='move'&&action.kind!=='wait'&&action.kind!=='rest'){
   gameEvent(s,a.name+' is too injured to act.',a.id,'danger');
   return accepted(s,a,'incapacitated','',{},0);
  }
  const result=(skill,context='')=>{
    const seed=nextSeed(s);
-   const rolled=resolveSkillCheck(a,{skill,context,seed,push:action.push});
+   const injury=woundModifiers(a,skill,{
+    twoHands:['comtech','medical_aid','ranged_combat','piloting'].includes(skill),
+    twoArms:['close_combat','heavy_machinery'].includes(skill)});
+   const rolled=resolveSkillCheck(a,{skill,context,seed,push:action.push,
+    modifier:injury.modifier});
    const next=rolled.after;
    // Changes to the actor's psychological sheet are authoritative and persistent.
    a.stress=next.stress;a.stressResponses=next.stressResponses;
    a.storyPoints=next.storyPoints;
+   if(injury.bleeds){a.health=Math.max(0,a.health-1);if(a.health===0)a.broken=true;}
    return {seed,success:rolled.success,successes:rolled.successes,
      base:rolled.initial.base,stressDice:rolled.initial.stress,
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
@@ -420,17 +477,58 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
  }
  if(action.kind==='aid'){
   const patient=s.actors.find(x=>x.id===action.target);
+  if(!patient||patient.location!==a.location||!clinicallyEligible(patient))
+   return rejected(previous,'First aid needs a living broken or unstabilized patient in this room.');
+  const self=patient.id===a.id;
+  if(self&&a.broken)return rejected(previous,'A broken survivor cannot give themselves first aid.');
+  const help=resolveClinicalAid(a,patient,{seed:nextSeed(s),self,
+   medicalGear:equippedMedicalGear(a)});
+  if(!help.accepted)return rejected(previous,help.reason);
+  a.stress=help.medicAfter.stress;
+  a.stressResponses=help.medicAfter.stressResponses;
+  Object.assign(patient,help.patient);
+  gameEvent(s,a.name+(help.success?' stabilizes ':' fails to stabilize ')+patient.name+
+   (help.events.includes('lethal_interval_worsened')?' — lethal interval worsens.':'')+
+   (help.events.includes('death_from_failed_treatment')?' The patient dies.':''),a.id,
+   help.success?'milestone':'danger');
+  return accepted(s,a,'aid',patient.id,{success:help.success,events:help.events,
+   base:help.roll.initial.base,stressDice:help.roll.initial.stress},0);
+ }
+ if(action.kind==='rally'){
+  const patient=s.actors.find(x=>x.id===action.target);
   if(!patient||patient.id===a.id||patient.location!==a.location||!patient.broken||patient.dead)
-   return rejected(previous,'First aid requires a living incapacitated companion in the same room.');
-  const help=applyMedicalAid(a,patient,{seed:nextSeed(s)});
-  a.stress=help.check.after.stress;
-  a.stressResponses=help.check.after.stressResponses;
-  if(help.success){
-   patient.health=help.patient.health;patient.broken=false;patient.stabilized=true;
-  }
-  gameEvent(s,a.name+(help.success?' stabilizes ':' fails to stabilize ')+patient.name+'.',
-    a.id,help.success?'milestone':'risk');
-  return accepted(s,a,'aid',patient.id,{success:help.success,base:help.check.initial.base,stressDice:help.check.initial.stress},0);
+   return rejected(previous,'Rally requires a living broken companion in the same room.');
+  const rally=resolveRally(a,patient,{seed:nextSeed(s)});
+  if(!rally.accepted)return rejected(previous,rally.reason);
+  a.stress=rally.commanderAfter.stress;
+  a.stressResponses=rally.commanderAfter.stressResponses;
+  Object.assign(patient,rally.patient);
+  gameEvent(s,a.name+(rally.success?' rallies ':' fails to rally ')+patient.name+
+   '. Any untreated lethal wound remains dangerous.',a.id,rally.success?'milestone':'risk');
+  return accepted(s,a,'rally',patient.id,{success:rally.success,
+   base:rally.roll.initial.base},0);
+ }
+ if(action.kind==='surgery'){
+  const patient=s.actors.find(x=>x.id===action.target);
+  if(!patient||patient.location!==a.location||patient.id===a.id||patient.dead)
+   return rejected(previous,'Surgery requires a living companion present in the same room.');
+  if(!safeTreatmentZone(s,a))return rejected(previous,'Surgery requires a secure medical location, away from the raptor.');
+  const operation=resolveSurgery(a,patient,{seed:nextSeed(s),
+   medicalGear:equippedMedicalGear(a)});
+  if(!operation.accepted)return rejected(previous,operation.reason);
+  Object.assign(patient,operation.patient);
+  a.stress=operation.medicAfter.stress;
+  a.stressResponses=operation.medicAfter.stressResponses;
+  gameEvent(s,a.name+(operation.success?' completes ':' cannot complete ')+
+    'surgery for '+patient.name+'.',a.id,operation.success?'milestone':'danger');
+  return accepted(s,a,'surgery',patient.id,{success:operation.success},0,36);
+ }
+ if(action.kind==='rest'){
+  if(!safeTreatmentZone(s,a))return rejected(previous,'Rest requires a safe staffed room without nearby dinosaur activity.');
+  gameEvent(s,a.name+' takes an uninterrupted recovery stretch.',a.id,'milestone');
+  return accepted(s,a,'rest','',{safe:true},0,1,{safeRestFor:a.id,
+   nurseFor:s.actors.find(p=>p.id!==a.id&&p.location===a.location&&
+    p.talent==='Recovery Care')?a.id:null});
  }
  if(action.kind==='attack'){
   const d=s.dinosaurs[0];
@@ -448,6 +546,8 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated},ranged?3:2);
  }
  if(action.kind==='move'){
+   const limitations=woundModifiers(a,'mobility');
+   if(limitations.immobile)return rejected(previous,'This injury prevents movement until treated.');
    const room=matchRoom(action.target,a.location);
    if(!room)return rejected(previous,'That destination is not connected to this room.');
    if(a.location==='utility'&&room==='shed'&&!a.inventory.includes('keycard'))
