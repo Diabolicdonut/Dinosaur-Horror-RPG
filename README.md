@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint **007-F — Live Combat Initiative and Action Economy (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint **007-G — Critical Injuries and Medical Recovery (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Rules authority and free-form roleplaying (accepted October 22, 2026)
 
@@ -18,7 +18,7 @@ The future Dinosaur Horror RPG supports switching among **PARTY** (player contro
 
 The same Evolved-inspired **character sheets, hidden seeded rolls, action economy, combat, injuries and deterministic world state** govern all three modes. Computer companions have independent objectives, personalities, memories and knowledge limitations; accepted decisions are recorded so actions can be replayed. Spectator includes Pause/Step/Resume and can return control to the human at any time.
 
-See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **All three controls are available in the Party Incident 007-F alpha**. Camera selection, safe takeover and pause/step/resume are working. Drawn initiative, two raptor turns per round and full/quick action budgets now run in the same persistent world; source-complete injury recovery, surprise/ambush and conversational AI remain incomplete. The separate solo 006.2 build still models one playable character. No Cloudflare redeployment is required for the offline party modes.
+See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **All three controls are available in the Party Incident 007-G alpha**. Camera selection, safe takeover and pause/step/resume are working. Drawn initiative, two raptor turns per round and full/quick action budgets now run in the same persistent world; source-complete injury recovery, surprise/ambush and conversational AI remain incomplete. The separate solo 006.2 build still models one playable character. No Cloudflare redeployment is required for the offline party modes.
 
 ## Character creation: manual, automatic or hybrid (working Personnel Registry)
 
@@ -28,7 +28,7 @@ Profession, 12-skill training, talents, gear, stress/Resolve and derived attribu
 
 See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **Creation works in the separate Personnel Registry and launches Party Incident 007-F**; the original 006.2 solo page intentionally retains its old fixed character.
 
-**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. Generated parties can now be played in the separate 007-F party incident, using supported Evolved-style skill/talent mechanics; several world-dependent talent effects are still pending. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
+**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. Generated parties can now be played in the separate 007-G party incident, using supported Evolved-style skill/talent mechanics; several world-dependent talent effects are still pending. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
 
 ## Checkpoint 007-B — mechanical Field Assessment
 
@@ -45,6 +45,14 @@ The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based b
 Supported actions include traveling along valid exits, picking up and handing over physical items, concealing oneself, investigating listed scene details, and operating objective equipment. Actions not yet modeled are rejected instead of invented. A limited natural-language parser accepts common phrasing, but **full improvisational AI GM actions and the intended Character/Spectator autonomy are still pending**. Predator proximity currently causes stress rather than full combat or injury.
 
 Party game saves use `dinosaur-party-incident-007c` and never overwrite the old checkpoint 006.2 solo save. No Cloudflare Worker update or API key is required. See [precise playable scope and test ledger](docs/PARTY-INCIDENT-007C.md).
+
+## Checkpoint 007-G — Persistent Wounds and Medical Survival
+
+The [Party Incident](party.html) now includes **injury-specific D66 consequences** rather than reducing each critical wound to a generic label. Survivors retain skill penalties, compromised movement, severe bleeding, and lethal danger even when Health is restored. A lethal injury demands unpushable, stress-free STAMINA survival checks at its own clock interval: round, stretch or shift. Three successful checks stabilize the injury; failure can be fatal.
+
+**First Aid** and **Rally** are different: First Aid can stabilize dangerous wounds, while a quick COMMAND Rally only restores a broken companion's ability to act. Properly equipped medics can attempt **Surgery** over a secured shift. Resting in a safe room advances the clock, restores Health and reduces stress; D6-based wound healing durations and the Recovery Care talent determine longer recovery. Computer-controlled medics use the same eligible treatment actions as the player.
+
+The [007-G implementation and source-parity report](docs/CRITICAL-INJURIES-007G.md) identifies remaining gaps—especially detailed infection, optional mental-trauma rules, prosthetics and exact death-check timing after a particular survivor's turn. The original solo incident and private Worker are untouched. Earlier party saves remain supported.
 
 ## Checkpoint 007-F — Combat Initiative and Action Budgets
 
