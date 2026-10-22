@@ -1,5 +1,24 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-C — Playable multi-character Party Incident (alpha) — 2026-10-22
+
+**Recovery:** Inspected authoritative GitHub `main` at prior accepted checkpoint 007-B (`2dbbe50b75b86c72d1e24156ed58c1f40aa2bcb6`), source `src/scenario.mjs`, original `src/engine.mjs`, Evolved check/character code, current project controller, user-approved control mode and generation contracts. Preserved the legacy 006.2 incident source and Cloudflare Worker unchanged.
+
+**New mechanics code:** `src/party-engine.mjs` implements a separately versioned game state containing an Evolved-valid roster (1–8 independent actors); stable IDs, physical locations, distinct skills/talents/stress/inventory/observations; room item persistence; existing scenario objectives and dinosaur; authenticated actor-ID action ownership; one round-robin roster scheduler and shared action-beat clock; staff-card door restriction; legal movement, item pick-up/transfer, concealment, authored-detail investigation, generator/radio/beacon repair, and waiting. All skill checks call existing `resolveSkillCheck` with the actual acting survivor's seeded values. Failed attempts spend time where appropriate but do not silently consume props. Unsupported/objectless actions fail without RNG or time cost. Part of the existing `src/scenario.mjs` authoritative world is reused; no duplicate map.
+
+**New UI:** `party.html`, `src/party-app.mjs`, `src/party.css`: readable multi-survivor roster and acting-actor highlight; single-actor camera selection independent of turn ownership; exits, affordance-dependent objective controls, bounded natural-language orders, optional push and debug dice, personal event journal, independent Save/Load/Export and objective status. `characters.html` adds **Launch Party Incident 007-C**; Character Lab transfers **only validated** rosters using distinct session storage. A direct visit to party page can load a valid latest lab draft or seed-generate a default party.
+
+**Creature knowledge:** One persistent dinosaur traverses connected exits in a deterministic interim hearing/patrol model; proximity increases exposed characters' stress but **combat/damage/death are intentionally not invented**. World includes hidden predator state, while scene projections show it only when in a relevant actor's room. Personal event projection excludes other actors' private investigations. Individual per-actor knowledge is not automatically shared.
+
+**Save policy:** New schema `kind=dinosaur-party-incident`, `version=2` and browser key `dinosaur-party-incident-007c`. Old checkpoint 006.2 solo key, saves, engine, Worker v006 and API keys remain untouched. Explicit old-solo-to-party save migration is postponed, not claimed.
+
+**Tests:** Added `tests/party-engine.test.mjs` with **18 checks** covering legal roster and independent actor stats, turn ordering and shared time, action authorization, inventory and card hand-off, room restrictions, authored investigation, seeded replay, filtered knowledge, independent saves, unsupported target failure, and syntax/browser transfer contract. All prior suites remain. Target/current total **118 tests**. Github workflow must confirm the final controller/audit commit before calling the checkpoint validated.
+
+**Limitations:** Only human-managed Party mode operates in 007-C. Focus, autonomous companions, full spectator play, exact Evolved combat timing and initiative, critical injuries, real dinosaur attacks, complete world-targeted talents, and unbounded AI referee are not yet implemented. A simplified action-beat exploration counter must not be mistaken for full Evolved RAW encounter time.
+
+**Next:** Browser smoke test the party launch and objective path, then implement one general actor scheduler with user/AI decision ownership, safe mode switches, knowledge-bounded autonomous companions and spectator pause/step. Preserve the option to revert to the old solo page. The full boundaries are recorded at `docs/PARTY-INCIDENT-007C.md`.
+
+
 ## Checkpoint 007-B — Independent Evolved d6, Resolve and talent rules sandbox — 2026-10-22
 
 **Recovery and source:** Inspected GitHub main checkpoint 007-A (`669b09b1ea7a61089523f1f3b58aedfb9322009f`) and the user-supplied private *Alien RPG — Evolved Edition*, chapter 3 skills pp. 42–44 and talents pp. 48–51, and stress/panic pp. 72–73. This milestone implements mechanical rules, not copyrighted text.
