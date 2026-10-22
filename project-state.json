@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.5",
-  "checkpoint": "007-F",
-  "state": "live_combat_initiative_and_action_economy_validated_pending_browser_smoke",
+  "version": "0.7.6",
+  "checkpoint": "007-G",
+  "state": "critical_injury_and_medical_recovery_operational_with_partial_source_parity",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,25 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 184,
+  "automated_tests": 209,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Run real browser smoke play in Party, Character and Spectator modes, verifying initiative cards, end turn, budget rejection, creature AI, reserved dodge, pause/step/resume and saved combat round.",
-    "Implement source-exact D66 injury penalties, round/stretch/shift death-roll deadlines, stabilization, surgery and healing clocks.",
-    "Add Evolved surprise/ambush first-card priority, deliberate initiative holding/trading and explicit human interrupt-choice support.",
-    "Expand physical dinosaur-specific actions, audio/vision/chases, ranged ammo, blocking/cover and accurate in-world environmental hazards.",
-    "Complete full panic consequences, stress recovery and companion clinical rescue choices.",
-    "Preserve 007-C/007-D/007-E party saves, original 006.2 solo engine and deterministic histories during incremental upgrades."
+    "Perform graphical browser QA on 007-G: medical urgency, First Aid, Rally, Surgery, Rest, lethal timers, spectator medic responses, save reload and control switching.",
+    "Implement advanced sickness/infection consequences, death checks immediately after injured actors' turns, and opt-in mental trauma with group-consent controls.",
+    "Add Evolved surprise/ambush, initiative swapping, deliberate defensive interrupts and complete panic world effects.",
+    "Implement physically grounded dinosaur chase, blocking cover, unique species attacks, weapon reloads and environmental injuries.",
+    "Expand medical recovery and rehabilitation, prosthetics and long-term survivor condition tracking.",
+    "Preserve deterministic actor/world state, all party save versions, legacy solo engine and separate Cloudflare Worker."
   ],
   "acceptance_criteria": [
-    "184 deterministic Node tests pass, including 17 live combat-turn and independent timekeeping tests.",
-    "Unique 1–10 initiative cards are drawn for involved humans plus two raptor turns; order redrawn each combat round.",
-    "Human can spend full+quick or two quick without exceeding action limits; attacks only on creature initiative and validated human actions.",
-    "Prepared defensive Mobility dodge consumes quick budget, not a free roll; no unseen/distant target attack.",
-    "Party/Character/Spectator modes, pause/step, independent viewpoint and mode switches preserve combat order, RNG, actor consequences.",
-    "Exploration minutes do not increase from combat actions; saved initiative/budgets and old v3 party saves remain valid.",
-    "Complete Evolved RAW combat/injury is NOT claimed; documented remaining source rules are tracked by reference."
+    "209 automated tests pass, including 25 new D66 injury, treatment, death-timer, healing, AI and live action integration regressions.",
+    "Critical wound penalties persist after Health is restored and stop when healed; D66 duration dice are reproducible.",
+    "Stamina death checks use no stress dice or pushes; round/stretch/shift urgency and three-success stabilization are persistent.",
+    "Actual First Aid can stabilize nonbroken lethal injuries, Rally only restores broken Health, and failed First Aid can worsen the lethal deadline.",
+    "Source-based Surgery requires suitable gear, a present patient, a safe location and one simulated shift.",
+    "Safe Rest and Recovery Care heal on elapsed simulation time rather than instantly erasing critical wounds.",
+    "Party, Focus and Spectator control still share identical actor consequences; legacy party and solo save safety is preserved.",
+    "Complete Evolved RAW is not claimed: mental trauma, infectious complications and per-character roll timing remain explicit follow-up items."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -130,7 +131,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "006.2",
+  "browser_asset_cache_revision": "007g",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -339,5 +340,34 @@
       "Manual graphical browser interaction validation beyond Node syntax/contract and deterministic test suite"
     ],
     "compatibility": "Party v3 save structure is retained with optional combat and clock properties; existing v2->v3 migration preserved"
+  },
+  "evolved_injury_engine": "src/evolved-injuries.mjs",
+  "evolved_injury_audit": "docs/CRITICAL-INJURIES-007G.md",
+  "injury_recovery": {
+    "status": "source-grounded D66 persistent medical procedures playable in Party/Character/Spectator modes",
+    "rulebook": "Privately supplied Alien RPG Evolved Edition, printed pp. 68–71 and time pp. 54–55",
+    "implemented": [
+      "All D66 injury codes map to original wound states with source numeric penalties, lethal intervals, heal-time dice and surgical requirements",
+      "Active skills use applicable injury penalties, certain leg wounds convert combat movement to full actions, severe spine injuries restrict movement",
+      "Round, stretch and shift clock intervals can trigger unpushable and stress-free Stamina survival checks; three successes stop subsequent rolls",
+      "First Aid treats broken and nonbroken lethal casualties; failed medical aid worsens lethal interval; correct source treatment differs from Rally",
+      "Quick COMMAND Rally can restore broken allies while preserving untreated lethal wounds",
+      "Secured six-hour surgery requires equipment and trained Medical Aid; surgery-dependent healing unlocks on success",
+      "Safe ten-minute resting stretch restores Health and relieves stress; wound healing persists in days and can benefit from original Recovery Care talent",
+      "Bleeding abdominal injury causes extra damage from Mobility/Close Combat use, possibly incapacitating and causing an additional critical injury",
+      "Actual incident clock advances medical conditions across exploration, combat and long surgery/recovery time",
+      "Companion medics respond to nearby nonbroken lethal patients; other role-eligible companions can rally broken teammates",
+      "Old v3 party saves and original v2-to-v3 migration remain accepted without rewriting earlier action/dice history",
+      "Legacy 006.2 solo incident and Cloudflare Worker remain unchanged"
+    ],
+    "partial_or_pending": [
+      "Source requires round-interval Stamina roll immediately after an affected character's own turn; current deterministic prototype processes on completed combat-round clock ticks",
+      "Full mental trauma table optional group-consent procedure for critical 43 and session-end panic remains intentionally disabled",
+      "Infection/disease-specific ongoing consequences for critical 46 and prosthesis/long-term organ complications are not yet complete",
+      "Precise adjacent medical positioning beyond current same-room zone abstraction, procedure interruptions, and detailed hospital equipment",
+      "Full player-declared interrupt defense, initiative hold/swap, source-specific dinosaur signature attacks and comprehensive panic propagation",
+      "Manual graphical browser QA separate from automated verification"
+    ],
+    "compatibility": "Party save version 3 with optional lazily enriched injury and clock metadata; older party saves and 006.2 solo build unaffected"
   }
 }
