@@ -5,7 +5,7 @@
 import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact} from './evolved-encounters.mjs';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs';
 import {activeCombatSlot,activeTurnId,beginCombat,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs';
@@ -458,7 +458,19 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
    // Changes to the actor's psychological sheet are authoritative and persistent.
    a.stress=next.stress;a.stressResponses=next.stressResponses;
    a.storyPoints=next.storyPoints;
-   if(injury.bleeds){a.health=Math.max(0,a.health-1);if(a.health===0)a.broken=true;}
+   if(injury.bleeds){
+    const prior=a.health;
+    a.health=Math.max(0,a.health-1);
+    if(prior>0&&a.health===0){
+     a.broken=true;
+     const critical=rollCriticalInjury(nextSeed(s),a.criticalInjuries||[]);
+     const trauma=enrichInjuries({...a,criticalInjuries:[...(a.criticalInjuries||[]),critical]},
+       worldSeconds(s),nextSeed(s));
+     Object.assign(a,trauma);
+     if(TRAUMA[critical.code]?.lethal==='instant')a.dead=true;
+     gameEvent(s,a.name+' is incapacitated by an existing bleeding injury and suffers another critical wound.',a.id,'danger');
+    }
+   }
    return {seed,success:rolled.success,successes:rolled.successes,
      base:rolled.initial.base,stressDice:rolled.initial.stress,
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
