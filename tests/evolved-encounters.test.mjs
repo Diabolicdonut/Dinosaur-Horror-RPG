@@ -79,7 +79,7 @@ test('critical D66 roll when broken and instant death at double health in one hi
  }
  assert(broken?.critical);assert.equal(broken.after.health,0);
  assert(broken.after.broken);
- const lethal=applyCreatureAttack(c,{seed:15,attackerDice:18,baseDamage:15});
+ const lethal=applyCreatureAttack(c,{seed:15,attackerDice:18,baseDamage:12});
  assert.equal(lethal.dead,true);
  assert.equal(lethal.after.health,0);
 });
