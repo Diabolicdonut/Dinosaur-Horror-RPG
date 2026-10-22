@@ -2,14 +2,14 @@
 // This module only manages turn scheduling; party-engine is authoritative for
 // actor health, world position, inventory, Evolved rolls and consequences.
 import {rollInitiative,createActionBudget,spendActionBudget} from './evolved-encounters.mjs';
-import {woundModifiers} from './evolved-injuries.mjs';
+import {woundModifiers,pendingLethal,deathRoll,worldSeconds} from './evolved-injuries.mjs';
 export const COMBAT_SCHEDULER_VERSION='007-H';
 export const COMBAT_COST=Object.freeze({
  move:'quick',take:'quick',give:'quick',guard:'quick',rally:'quick',
  attack:'full',hide:'full',aid:'full',use:'full',investigate:'full'
 });
 const cloning=x=>JSON.parse(JSON.stringify(x));
-const inScene=s=>s.actors.filter(a=>a.location===s.dinosaurs[0].location&&!a.dead&&!a.broken&&!a.hidden);
+const inScene=s=>s.actors.filter(a=>a.location===s.dinosaurs[0].location&&!a.dead&&!a.hidden);
 export function activeCombatSlot(s){
  return s.combat?.active?s.combat.order[s.combat.index]||null:null;
 }
@@ -120,7 +120,7 @@ export function advanceCombatSlot(s,nextSeed=null){
   if(!slot)throw new Error('Initiative schedule became invalid.');
   if(slot.kind==='dinosaur'&&!s.dinosaurs[0].defeated)return true;
   const actor=s.actors.find(a=>a.id===slot.actorId);
-  if(actor&&actor.location===s.dinosaurs[0].location&&!actor.dead&&!actor.broken&&!actor.hidden){
+  if(actor&&actor.location===s.dinosaurs[0].location&&!actor.dead&&!actor.hidden){
    s.cursor=s.actors.indexOf(actor);
    return true;
   }
@@ -128,11 +128,40 @@ export function advanceCombatSlot(s,nextSeed=null){
  }
  throw new Error('Combat initiative exceeded safety bound.');
 }
+function completeActorMedicalTurn(s,actorId,nextSeed){
+ const index=s.actors.findIndex(a=>a.id===actorId);
+ if(index<0||s.actors[index].dead)return;
+ let actor=s.actors[index];
+ const due=pendingLethal(actor).filter(w=>w.deadline==='round'&&
+   w.lastTurnDeathRound!==s.combat.round);
+ for(const wound of due){
+  if(actor.dead)break;
+  const seed=nextSeed(s),result=deathRoll(actor,{seed,injuryCode:wound.code});
+  if(!result.accepted)continue;
+  actor=result.next;
+  const current=actor.criticalInjuries.find(w=>w.code===wound.code);
+  if(current){
+   current.lastTurnDeathRound=s.combat.round;
+   current.nextDeathAt=current.stabilized?null:worldSeconds(s)+10;
+  }
+  s.actors[index]=actor;
+  s.events.push({beat:s.beat,actorId,category:result.success?'milestone':'danger',
+    message:actor.name+(result.success?' survives':' fails')+
+     ' a round-critical death check ('+wound.code+').' });
+  s.events=s.events.slice(-160);
+  s.medicalChecks??=[];
+  s.medicalChecks.push({round:s.combat.round,actorId,code:wound.code,seed,
+    success:result.success,beat:s.beat});
+  s.medicalChecks=s.medicalChecks.slice(-160);
+ }
+ if(s.actors.every(a=>a.dead))s.outcome='lost';
+}
 export function finishCombatAction(s,actorId,kind,nextSeed){
  if(!s.combat?.active)return;
  // A threat that has been defeated, or has lost all exposed opponents,
  // ends this encounter immediately; no dead creature receives a later turn.
  if(!combatantsRemain(s)){
+  completeActorMedicalTurn(s,actorId,nextSeed);
   s.combat.active=false;s.combat.endedAt=s.beat;
   s.cursor=(s.cursor+1)%s.actors.length;
   return;
@@ -140,11 +169,14 @@ export function finishCombatAction(s,actorId,kind,nextSeed){
  const check=checkCombatAction(s,actorId,kind);
  if(!check.accepted)throw new Error(check.reason);
  if(check.cost==='end'){
+  completeActorMedicalTurn(s,actorId,nextSeed);
   advanceCombatSlot(s,nextSeed);return;
  }
  s.combat.budgets[actorId]=check.budget;
- if(check.budget.quickSpent===2||(check.budget.fullSpent===1&&check.budget.quickSpent===1))
+ if(check.budget.quickSpent===2||(check.budget.fullSpent===1&&check.budget.quickSpent===1)){
+  completeActorMedicalTurn(s,actorId,nextSeed);
   advanceCombatSlot(s,nextSeed);
+ }
 }
 export function finishDinosaurAction(s,nextSeed){
  if(!s.combat?.active||activeCombatSlot(s)?.kind!=='dinosaur')
