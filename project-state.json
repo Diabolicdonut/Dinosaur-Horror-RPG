@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.3",
-  "checkpoint": "007-D",
-  "state": "multi_character_dynamic_party_focus_spectator_alpha_validated_pending_final_browser_smoke",
+  "version": "0.7.4",
+  "checkpoint": "007-E",
+  "state": "dinosaur_survival_encounter_alpha_implemented_with_source_faithful_rules_primitives_and_partial_runtime_application",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 143,
+  "automated_tests": 167,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Run manual live-browser QA of Party Incident 007-D for Party→Character→Spectator→Party, active actor takeover, camera selection, pause/step/resume and reload/migration.",
-    "Implement source-faithful Evolved time system: exploration turns, round initiative, action budgets and perception rather than a simplified one-beat round robin.",
-    "Add dinosaur-specific stealth and detection, physical pursuits and injuries/armor/critical injury with deterministic safety and stress/panic consequences.",
-    "Develop richer actor-bounded companion personalities, agendas and dialogue; integrate actual AI Game Master proposals behind a typed validator without changing dice/world authority.",
-    "Implement remaining context-sensitive career talents that depend on real world objects, healing, gear and combat, with Evolved reference parity fixtures.",
-    "Preserve previous solo save/Worker and 007-C party migration; make source-scoped regression and graphical checks gates before declaring complete Evolved adaptation."
+    "Run live graphical browser tests for 007-E across Party/Character/Spectator, exposed contact, concealment, first aid, panic, death, respawn/restart and older 007-D saves.",
+    "Replace simple party round-robin in combat with Evolved per-round drawn initiative, creature Speed turns, one full/one quick or two quick actions and interrupt defense with safe control switching.",
+    "Implement full Evolved D66 injury-specific effects, death-roll intervals, trauma, ongoing bleeding, stabilized conditions and recovery/surgery.",
+    "Expand Jurassic dinosaur sensory/attack data and physically grounded pursuit, armor, ammo and environmental combat effects.",
+    "Complete source-accurate panic propagation and recovery, plus injury-aware AI companion objectives and dialogue.",
+    "Preserve private rulebook copyright, original solo engine, versioned save fidelity and deterministic replay."
   ],
   "acceptance_criteria": [
-    "143 automated regressions passing; spectator simulation completes objective chain with item/door/skill constraints.",
-    "Party/Focus/Spectator changes never advance action beat, change RNG or reset position/stress/inventory.",
-    "Only designated human-owned actor accepts manual actions; AI owns exactly appropriate turns; camera selection independent.",
-    "Spectator pause does not commit world effects and One Action advances exactly one validated character turn; stale timer intents rejected.",
-    "Character AI receives only restricted actor observation (current location/dinosaur, local items, own memories/gear) and public mission milestones.",
-    "Party v2 saved data migrates to v3 with exact world/RNG/action preservation, new 007-D saves remain independent of legacy solo 006.2.",
-    "All three browser modes and simulated AI currently use only original local deterministic logic; no Cloudflare redeployment, no claim of full Evolved combat or LLM companions."
+    "167 automated regressions pass, including 12 new mechanical encounter and 12 new live survival tests.",
+    "Actual exposed raptor can inflict armor-reduced damage, critical injury and death; concealed or remote survivors remain protected.",
+    "Only a colocated broken survivor may receive Medical Aid and actual nearby dinosaurs may be attacked, with role-appropriate rolls and persistent results.",
+    "Dinosaur threat and its defeat persist across all modes with seeded replay and no secret predator omniscience.",
+    "Existing Party/Character/Spectator controls and party saves remain usable; legacy solo v006.2/Cloudflare Worker unmodified.",
+    "Explicit distinction between implemented source-based mechanics and NOT YET runtime-linked combat initiative/action budget or complete injury timelines."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -280,5 +279,35 @@
     "migration": "Explicit upgradePartySave accepts valid checkpoint 007-C party schema v2 and reconstructs per-actor memories; old solo 006.2 save remains untouched"
   },
   "party_director_engine": "src/party-director.mjs",
-  "party_control_milestone": "docs/CONTROL-MODES-007D.md"
+  "party_control_milestone": "docs/CONTROL-MODES-007D.md",
+  "evolved_encounter_engine": "src/evolved-encounters.mjs",
+  "encounter_rules_audit": "docs/SURVIVAL-ENCOUNTERS-007E.md",
+  "encounter_implementation": {
+    "status": "Playable map-grounded dinosaur encounter alpha across Party, Character and Spectator control",
+    "source_reference": "Private Alien RPG Evolved Edition PDF pp 54-73 for time, stealth, initiative, quick/full actions, attacks, armor, injury, panic",
+    "implemented": [
+      "Independent seeded 1-10 unique initiative card and Evolved full/quick action budget primitives (currently tested separately, not live-scheduler enforced)",
+      "Independent per-character passive opposed Observation for proximity contact, with guarding bonus",
+      "Dinosaur remains physical: connected rooms, noise response, active hidden-character search, no omniscient AI detection",
+      "Actual seeded dinosaur attacks and retained individual armor, Health, broken status, D66 critical injury and possible death",
+      "Partial Resolve/panic consequences including item drops, flee, hiding, skip-next-turn and actor-visible incident log",
+      "In-game guard, dinosaur attack, trapped-escape checks and trained medical aid when targets are physically eligible",
+      "Raptor has original Jurassic Park scenario stats; defeating it removes it as a threat",
+      "Game over if everyone dies, conditional rescue otherwise; previous guaranteed-spectator-rescue fixture isolated from real lethal play",
+      "Party/Character/Spectator decision ownership remains backed by same engine and personal observations; AI medics respond to colocated broken survivors",
+      "Approximate exploration stretches reported as 10 minutes per completed party cycle; actual Evolved combat rounds reference 10 seconds"
+    ],
+    "planned": [
+      "Actual drawn initiative enforcement, dinosaur speed turns and full/quick action budgets inside main party/AI director",
+      "Exact Evolved stealth timing, hiding search and ambush options across group, creature-specific detection and audio",
+      "Full D66 effects, bleeding, death rolls, surgery/recovery clocks and infection/survival hazards",
+      "Complete panic effect interactions and in-world propagation of simultaneous trauma",
+      "Species-specific threat attacks, ranged weapon ammunition, barriers and damage types",
+      "Fully conversational AI Game Mother and actor agendas",
+      "Manual graphical browser QA of full encounter, wound and recovery"
+    ],
+    "save_schema": "Party v3 with optional per-character survival fields, compatible with earlier 007-D saves",
+    "solo_engine": "006.2 legacy solo game and Worker v006 are unchanged",
+    "backend_deploy_required": false
+  }
 }
