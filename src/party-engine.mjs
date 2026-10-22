@@ -44,7 +44,7 @@ function gameEvent(s,message,actorId=null,category='action'){
  s.events.push({beat:s.beat,actorId,category,message});
  s.events=s.events.slice(-160);
 }
-function medicalTick(s,from,{safeRestFor=null,nurseFor=null}={}){
+function medicalTick(s,from,{safeRestFor=null,nurseFor=null,deferRoundDeath=false}={}){
  const to=worldSeconds(s);
  if(to<from)throw new Error('Simulation time must not move backward.');
  if(to===from)return;
@@ -53,7 +53,7 @@ function medicalTick(s,from,{safeRestFor=null,nurseFor=null}={}){
   if(person.dead)continue;
   const seed=nextSeed(s);
   const change=tickMedicalClock(person,{from,to,seed,
-   safeRest:person.id===safeRestFor,nurse:person.id===nurseFor});
+   safeRest:person.id===safeRestFor,nurse:person.id===nurseFor,deferRoundDeath});
   s.actors[i]=change.after;
   for(const event of change.events){
    const detail=event.kind==='injury_healed'?'recovers from injury':
@@ -210,7 +210,7 @@ function predatorStep(previous,{actorId,source}){
  s.actions=s.actions.slice(-200);
  s.beat++;
  finishDinosaurAction(s,nextSeed);
- medicalTick(s,medicalFrom);
+ medicalTick(s,medicalFrom,{deferRoundDeath:true});
  return {accepted:true,state:s,result:detail};
 }
 function checkDodgeInterrupt(s,actorId){
@@ -262,7 +262,7 @@ function accepted(s,actor,kind,target,extra={},noise=0,additionalStretches=0,{sa
   s.clock.explorationActions+=additionalStretches*s.actors.length;
   s.clock.explorationStretches+=additionalStretches;
  }
- medicalTick(s,medicalFrom,{safeRestFor,nurseFor});
+ medicalTick(s,medicalFrom,{safeRestFor,nurseFor,deferRoundDeath:wasCombat});
  return {accepted:true,state:s,result:extra};
 }
 function rejected(before,why){
