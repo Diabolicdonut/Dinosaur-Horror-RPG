@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.6",
-  "checkpoint": "007-G",
-  "state": "critical_injury_and_medical_recovery_operational_with_partial_source_parity",
+  "version": "0.7.7",
+  "checkpoint": "007-H",
+  "state": "surprise_ambush_holding_initiative_and_actor_turn_death_checks_implemented",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,25 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 209,
+  "automated_tests": 221,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Perform graphical browser QA on 007-G: medical urgency, First Aid, Rally, Surgery, Rest, lethal timers, spectator medic responses, save reload and control switching.",
-    "Implement advanced sickness/infection consequences, death checks immediately after injured actors' turns, and opt-in mental trauma with group-consent controls.",
-    "Add Evolved surprise/ambush, initiative swapping, deliberate defensive interrupts and complete panic world effects.",
-    "Implement physically grounded dinosaur chase, blocking cover, unique species attacks, weapon reloads and environmental injuries.",
-    "Expand medical recovery and rehabilitation, prosthetics and long-term survivor condition tracking.",
-    "Preserve deterministic actor/world state, all party save versions, legacy solo engine and separate Cloudflare Worker."
+    "Run graphical browser smoke in Party/Character/Spectator: predator ambush, human concealed first strike, hold to later initiative, combat save/reload, injured-actor death checks and medical treatment.",
+    "Implement explicit player defense interrupts with pause/choice before the raptor attack, applied without retroactively changing action outcomes.",
+    "Expand multiple-attacker surprise, cautious stealth-mode approach, exact location/range restrictions and communication-bounded combat team setup.",
+    "Complete infection/sickness and consent-controlled mental trauma, full treatment/injury effects and permanent prosthesis interactions.",
+    "Preserve earlier party version migrations, separate 006.2 solo save and Cloudflare Worker deployment."
   ],
   "acceptance_criteria": [
-    "209 automated tests pass, including 25 new D66 injury, treatment, death-timer, healing, AI and live action integration regressions.",
-    "Critical wound penalties persist after Health is restored and stop when healed; D66 duration dice are reproducible.",
-    "Stamina death checks use no stress dice or pushes; round/stretch/shift urgency and three-success stabilization are persistent.",
-    "Actual First Aid can stabilize nonbroken lethal injuries, Rally only restores broken Health, and failed First Aid can worsen the lethal deadline.",
-    "Source-based Surgery requires suitable gear, a present patient, a safe location and one simulated shift.",
-    "Safe Rest and Recovery Care heal on elapsed simulation time rather than instantly erasing critical wounds.",
-    "Party, Focus and Spectator control still share identical actor consequences; legacy party and solo save safety is preserved.",
-    "Complete Evolved RAW is not claimed: mental trauma, infectious complications and per-character roll timing remain explicit follow-up items."
+    "221 automated regressions pass, including 12 new surprise, hold-off and wounded-actor medical timing cases.",
+    "First card is guaranteed for eligible ambusher with +2 initial attack dice and no dodge; ordinary attack rolls stay unchanged.",
+    "Holding swaps only identities on future drawn cards, not world time, RNG, spent action budgets or prior log.",
+    "Round-lethal injuries roll after that survivor's own actual turn, including a turn deferred through holding; no duplicate at combat clock round boundary.",
+    "Party/Character/Spectator and deterministic AI ownership still function with initiative swaps.",
+    "Party v3 saves remain valid, solo v006.2/Cloudflare remain untouched, actual graphic UI smoke is not claimed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -131,7 +128,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007g",
+  "browser_asset_cache_revision": "007h",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -369,5 +366,32 @@
       "Manual graphical browser QA separate from automated verification"
     ],
     "compatibility": "Party save version 3 with optional lazily enriched injury and clock metadata; older party saves and 006.2 solo build unaffected"
+  },
+  "initiative_surprise_audit": "docs/SURPRISE-INITIATIVE-007H.md",
+  "initiative_surprise": {
+    "status": "Playable surprise and ambush priority, held-initiative swaps and correct round-lethal medical timing",
+    "authority": "Alien RPG Evolved Edition user-private printed pp. 59–61 and p. 68",
+    "implemented": [
+      "Guaranteed earliest numbered initiative cards for validated surprising attackers; other cards uniquely seeded",
+      "Predator surprise from source-style opposed observation when the Velociraptor sees exposed survivors first",
+      "Initial ambush uses +2 attack dice and cannot be dodged; no repeating surprise bonus on later creature Speed turns",
+      "Concealed human can initiate eligible +2-die ambush against colocated unaware velociraptor",
+      "Human can hold off to a later combatant's numbered initiative; receiver immediately acts, holder's card moves later without spending actions or time",
+      "Action budgets already spent and human-versus-computer ownership are preserved when initiative identities swap",
+      "Round-lethal STAMINA checks execute after the injured survivor's own finished turn; holding defers check until the moved actual turn",
+      "No duplicate death checks at round-end combat medical tick; seeded per-actor medical check journal for replay",
+      "Broken but living survivors retain their initiative turns and associated round-death check eligibility",
+      "Dynamic Hold for Card controls and ambush warning available in browser Party/Character/Spectator modes",
+      "Old party v3 save state and older v2 migration preserved without changing the old 006.2 solo game or Worker"
+    ],
+    "incomplete": [
+      "Full player-confirmed reactive dodge/defend just before attack; current prepared dodge is policy-driven",
+      "Multiple human ambushers and broader group setup negotiation beyond deterministic earliest-card assignment",
+      "Complete positional/stealth approach and perception conditions for all kinds of surprise",
+      "Remaining mental-trauma, sickness/infection and advanced injury effects",
+      "Full creature signature attacks, weapon resource tracking and comprehensive panic transmissions",
+      "Manual graphical browser smoke across all three modes"
+    ],
+    "compat": "Optional combat.surprise, combat.holds, medicalChecks and wounded-actor check metadata in existing party v3 saves"
   }
 }
