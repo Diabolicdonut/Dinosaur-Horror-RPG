@@ -227,14 +227,23 @@ export function reduceDamage(character,{seed=1993,damage}={}){
  const prevented=Math.min(damage,roll.successes);
  return {damage:damage-prevented,prevented,roll};
 }
-export function restStress(character,{safe=true,stretch=true}={}) {
+export function restStress(character,{safe=true,stretch=true,nearby=[]}={}) {
  requiredCharacter(character);
  if(!safe||!stretch)throw new RangeError('Stress recovery requires a safe, uninterrupted stretch.');
- const next=copy(character);
+ if(!Array.isArray(nearby))throw new TypeError('Nearby actors must be a list.');
  const amount=character.talent==='Steady Under Fire'?2:1;
- next.stress=Math.max(0,(next.stress||0)-amount);
- next.stressResponses=(next.stressResponses||[]).slice(amount);
- return {after:next,amount};
+ function recover(actor,points) {
+   requiredCharacter(actor);
+   const next=copy(actor);
+   const regained=Math.min(actor.stress||0,points);
+   next.stress=Math.max(0,(actor.stress||0)-points);
+   next.stressResponses=(actor.stressResponses||[]).slice(regained);
+   return next;
+ }
+ const after=recover(character,amount);
+ // Only the specialist grants enhanced safe-rest recovery to nearby party members.
+ const nearbyAfter=nearby.map(actor=>recover(actor,amount));
+ return {after,nearbyAfter,amount};
 }
 export function talentRule(character,{context='',skill='',vehicleModel=''}={}) {
  requiredCharacter(character);
