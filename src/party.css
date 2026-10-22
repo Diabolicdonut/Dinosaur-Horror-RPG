@@ -16,3 +16,7 @@
 @media(max-width:1150px){.agency-fields{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:620px){.agency-fields{grid-template-columns:1fr 1fr}.agency-playback button{flex:1}}
 @media(max-width:390px){.agency-fields{grid-template-columns:1fr}}
+
+/* 007-E survival encounter visual states */
+.roster-item:has(.chip.player-owned){border-left:3px solid #b29b68}
+.scene-danger{box-shadow:inset 0 0 10px rgba(140,28,16,.13)}
