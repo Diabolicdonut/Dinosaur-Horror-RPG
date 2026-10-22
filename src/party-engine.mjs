@@ -83,7 +83,6 @@ function dinoTick(s,noise,at) {
      cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0,
      guarding:Boolean(person.guarding)});
    person.seenThreats.push(d.id);
-   person.guarding=false;
    gameEvent(s,person.name+(observation.margin>0?' spots a moving velociraptor before it reacts.':
      ' encounters a velociraptor at close range.'),person.id,'danger');
    const panic=panicOnContact(person,{seed:nextSeed(s),
@@ -350,6 +349,8 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   if(!patient||patient.id===a.id||patient.location!==a.location||!patient.broken||patient.dead)
    return rejected(previous,'First aid requires a living incapacitated companion in the same room.');
   const help=applyMedicalAid(a,patient,{seed:nextSeed(s)});
+  a.stress=help.check.after.stress;
+  a.stressResponses=help.check.after.stressResponses;
   if(help.success){
    patient.health=help.patient.health;patient.broken=false;patient.stabilized=true;
   }
