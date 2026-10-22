@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.2",
-  "checkpoint": "007-C",
-  "state": "multi_character_party_incident_alpha_implemented_legacy_0062_preserved",
+  "version": "0.7.3",
+  "checkpoint": "007-D",
+  "state": "multi_character_dynamic_party_focus_spectator_alpha_validated_pending_final_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 119,
+  "automated_tests": 143,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Perform live-browser smoke test of Party Incident 007-C with new launch overriding old save, actor views/turns, item handoff, saved reload, seeded checks, and full objective path.",
-    "Implement Evolved action and exploration-time scheduler with separate decision ownership and safe queued mode switching between Party, Focus and Spectator.",
-    "Add actor-grounded AI companion policy with persistent agendas, limited knowledge, and validated proposals; expose Pause/Step/Resume to observer.",
-    "Complete dinosaur stealth, chase, combat, injuries and full panic world effects before claiming faithful all-weather Evolved survival play.",
-    "Implement validated source-specified career talent procedures requiring real world state and add test fixtures for each role.",
-    "Develop opt-in legacy solo save importer rather than silently reinterpreting old 006.2 state; preserve older game and private Worker."
+    "Run manual live-browser QA of Party Incident 007-D for Party→Character→Spectator→Party, active actor takeover, camera selection, pause/step/resume and reload/migration.",
+    "Implement source-faithful Evolved time system: exploration turns, round initiative, action budgets and perception rather than a simplified one-beat round robin.",
+    "Add dinosaur-specific stealth and detection, physical pursuits and injuries/armor/critical injury with deterministic safety and stress/panic consequences.",
+    "Develop richer actor-bounded companion personalities, agendas and dialogue; integrate actual AI Game Master proposals behind a typed validator without changing dice/world authority.",
+    "Implement remaining context-sensitive career talents that depend on real world objects, healing, gear and combat, with Evolved reference parity fixtures.",
+    "Preserve previous solo save/Worker and 007-C party migration; make source-scoped regression and graphical checks gates before declaring complete Evolved adaptation."
   ],
   "acceptance_criteria": [
-    "119 automated tests pass including 19 party-engine and browser contract tests.",
-    "New party simulator runs 1–8 validated Evolved-style survivors, one turn each, shared time and deterministic replay.",
-    "A staff card belongs to exactly one room or actor and can only pass into the shed by its carrier; radio/beacon require durable flags.",
-    "Party scene information is actor-specific and dinosaur does not teleport or expose hidden location via view.",
-    "Original 006.2 save key, engine and Cloudflare Worker are unchanged; 007-C uses isolated save format.",
-    "Focus/Spectator/AI companion automation are not yet present; known scope documented."
+    "143 automated regressions passing; spectator simulation completes objective chain with item/door/skill constraints.",
+    "Party/Focus/Spectator changes never advance action beat, change RNG or reset position/stress/inventory.",
+    "Only designated human-owned actor accepts manual actions; AI owns exactly appropriate turns; camera selection independent.",
+    "Spectator pause does not commit world effects and One Action advances exactly one validated character turn; stale timer intents rejected.",
+    "Character AI receives only restricted actor observation (current location/dinosaur, local items, own memories/gear) and public mission milestones.",
+    "Party v2 saved data migrates to v3 with exact world/RNG/action preservation, new 007-D saves remain independent of legacy solo 006.2.",
+    "All three browser modes and simulated AI currently use only original local deterministic logic; no Cloudflare redeployment, no claim of full Evolved combat or LLM companions."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -150,12 +151,13 @@
   "approved_control_modes": {
     "party": "Human controls future actions of every playable party character. AI/simulation runs dinosaurs and external NPCs.",
     "focus": "Human controls one selected playable character at a time; AI controls others, including persistent goals/knowledge.",
-    "spectator": "AI controls every playable character; player watches, can pause/step/adjust pace and take over any time.",
-    "switching": "Switch freely in runtime with change taking effect after current atomic action; preserve world, RNG, turns, health, stress, inventory, knowledge, agendas, injuries and dinosaur state.",
-    "viewpoint": "Camera separate from control, defaults to character-limited/player-perceivable information; optional omniscient director must be explicit and does not change character knowledge.",
+    "spectator": "Local browser auto progression with Pause/Step/Resume/400-2000ms display pacing; hidden tab pauses, no background agent.",
+    "switching": "Atomic live mode/focus changes, paused by default on switching, no world RNG/time change; control epoch cancels stale scheduled AI decisions.",
+    "viewpoint": "Follow active or watch selected survivor independently; remote stats suppressed in non-party modes; no default omniscience.",
     "action_economy": "All modes share same Evolved dice, initiative, timed action costs and deterministic state transition engine.",
     "ai_boundary": "Accepted NPC/companion decisions replay from journal; stale requests dropped if mode/focus/world version changed.",
-    "current_implementation": "Design approved in repository; no actual multi-character UI, NPC autonomy or spectator runtime implemented in checkpoint 006.2."
+    "current_implementation": "Party, Focus/Character and Spectator running in independent 007-D party game. AI uses deterministic knowledge-bounded offline companion policy; source-complete Evolved combat and general free-form AI adjudication remain pending.",
+    "save_migration": "Party v2 to v3 with validated original roster, preserved dice/rng and records, legacy singleton untouched."
   },
   "character_generation_contract": "docs/CHARACTER-GENERATION-MODES.md",
   "approved_character_generation": {
@@ -243,36 +245,40 @@
   "party_incident_page": "party.html",
   "party_incident_engine": "src/party-engine.mjs",
   "party_incident_ui": "src/party-app.mjs",
-  "party_incident_spec": "docs/PARTY-INCIDENT-007C.md",
+  "party_incident_spec": "docs/CONTROL-MODES-007D.md",
   "party_incident": {
-    "status": "working multi-character party-control alpha with independent browser save and scenario progression",
+    "status": "Three-mode Party/Character/Spectator playable browser alpha with offline computer companions, live takeover, independent camera and pause/step/resume",
     "source": "Evolved-style character mechanics in src/characters.mjs and actual hidden d6 resolution in src/evolved-checks.mjs",
     "implemented": [
-      "1–8 Evolved-valid manual, hybrid, or automatic party characters launch from Character Lab via session storage",
-      "Persistent independent actors with career, skills, talent, stress, Health, inventory, location, observations and concealment",
-      "Shared room items, physical keycard ownership, inventoried transfer to colocated survivor, single power/radio/beacon objectives",
-      "One authoritative round-robin party scheduler and one shared action-beat clock",
-      "Actor-specific Evolved dice rolls and stress responses with seeded replay, including push eligibility",
-      "Persistent dinosaur with adjacency-constrained patrol/hearing and stress-only proximity consequences",
-      "Per-character camera and knowledge-filtered events; only scheduled actor may act",
-      "New separated browser save/load/export under dinosaur-party-incident-007c, old 006.2 save remains independent",
-      "Original solo engine and Cloudflare Worker files untouched"
+      "1–8 manually/auto/hybrid-created Evolved-valid survivors share one scenario, seeded rolls and objective state",
+      "Party mode human controls all future survivor actions with no unsolicited party AI actions",
+      "Character/focus mode human selects exactly one actor while bounded autonomous companion AI decides other turns",
+      "Spectator mode autonomous director makes all character decisions on the same deterministic world; Pause/Step/Resume with selectable display delay",
+      "Mode/focus and camera/viewpoint independent; atomic mid-incident switching never alters previously committed RNG, world or character consequences",
+      "Knowledge-bounded offline companion observation restricts dinosaurs to those locally visible, personal memory, equipment and location",
+      "Saved AI action plans with actor ID, goal, target, action index, control epoch for replay/audit",
+      "Atomic ownership checks at engine level reject AI actions on human-owned actors and vice versa; outdated queued proposals rejected",
+      "Version 3 party state, control history, private per-character visited rooms/attempted investigations, safe 007-C party save migration",
+      "Current browser tab hidden or page reload automatically stops or pauses spectator autoplay; no background processing",
+      "Verified end-to-end autonomous legal objective progression from physical keycard through generator, distress call and helipad beacon within 400 actions",
+      "Legacy game/checkpoint 006.2 and Cloudflare Worker v006 unmodified"
     ],
     "deferred": [
-      "Focus Mode and Spectator Mode with AI-owned character decisions",
-      "Full Evolved initiative, combat quick/full action and actual five-to-ten-minute time scale",
-      "Dinosaur attacks, critical injury, armor and death outcomes",
-      "Source-exact full panic reaction movement/interruptions/equipment drops",
-      "Complete world-targeted effects for all 27 career talents",
-      "Fully open-ended AI natural-language GM translation",
-      "Import/migration of legacy solo incident into party state",
-      "Actual manual live-browser QA"
+      "Full generative LLM companion roleplay, persistent conversational relationships, sophisticated agendas and free-form natural-language Game Mother",
+      "Source-complete Alien Evolved combat timing/initiative, stealth, critical injuries, armor, lethal dinosaur attacks and full panic behavior",
+      "All world-dependent career talent effects, cinematic acts and long-term campaign simulation",
+      "Omniscient director camera and fully private multi-party communications; public mission flags still shared by abstract party HUD",
+      "Migration from legacy solo 006.2 into party; only earlier party checkpoint 007-C is upgraded",
+      "Manual end-to-end graphical browser smoke test (automated deterministic tests validated)"
     ],
     "party_save_kind": "dinosaur-party-incident",
-    "party_engine_version": 2,
+    "party_engine_version": 3,
     "legacy_version": "006.2",
     "worker_version": "006",
     "starting_roster_recovery": "Validated immutable original roster saved in Party Incident, ensuring restart doesn't rewrite characters or reuse newer draft.",
-    "launch_priority": "Explicit new Character Lab launch overrides existing party autosave and consumes one-time launch session marker. Normal reload restores current party."
-  }
+    "launch_priority": "Explicit new Character Lab launch overrides existing party autosave and consumes one-time launch session marker. Normal reload restores current party.",
+    "migration": "Explicit upgradePartySave accepts valid checkpoint 007-C party schema v2 and reconstructs per-actor memories; old solo 006.2 save remains untouched"
+  },
+  "party_director_engine": "src/party-director.mjs",
+  "party_control_milestone": "docs/CONTROL-MODES-007D.md"
 }
