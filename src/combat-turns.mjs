@@ -3,7 +3,7 @@
 // actor health, world position, inventory, Evolved rolls and consequences.
 import {rollInitiative,createActionBudget,spendActionBudget} from './evolved-encounters.mjs';
 import {woundModifiers} from './evolved-injuries.mjs';
-export const COMBAT_SCHEDULER_VERSION='007-F';
+export const COMBAT_SCHEDULER_VERSION='007-H';
 export const COMBAT_COST=Object.freeze({
  move:'quick',take:'quick',give:'quick',guard:'quick',rally:'quick',
  attack:'full',hide:'full',aid:'full',use:'full',investigate:'full'
@@ -17,24 +17,56 @@ export function activeTurnId(s){
  const turn=activeCombatSlot(s);
  return turn?(turn.kind==='dinosaur'?s.dinosaurs[0].id:turn.actorId):s.actors[s.cursor].id;
 }
-export function drawCombatRound(s){
+export function drawCombatRound(s,{surpriseActorIds=[]}={}){
  const actors=inScene(s);
  if(s.dinosaurs[0].defeated||!actors.length)return null;
  const cards=rollInitiative({
-  actorIds:actors.map(a=>a.id),dinosaurTurns:2,seed:s.rng
+  actorIds:actors.map(a=>a.id),dinosaurTurns:2,seed:s.rng,surpriseActorIds
  });
  // Random draw advances the durable world RNG at the caller's boundary.
  return {order:cards,index:0,budgets:Object.fromEntries(actors.map(a=>[a.id,createActionBudget()])),
   cardDrawSeed:s.rng};
 }
-export function beginCombat(s,seed){
+export function beginCombat(s,seed,{surpriseActorId=null,ambush=false}={}){
  if(s.combat?.active)return false;
  if(s.dinosaurs[0].defeated||!inScene(s).length)return false;
- const initial=drawCombatRound({...s,rng:seed});
+ const priority=surpriseActorId?[surpriseActorId]:[];
+ const initial=drawCombatRound({...s,rng:seed},{surpriseActorIds:priority});
  if(!initial)return false;
  s.combat={active:true,round:1,room:s.dinosaurs[0].location,
-  ...initial,roundHistory:[{round:1,seed,order:cloning(initial.order)}]};
+  ...initial,roundHistory:[{round:1,seed,order:cloning(initial.order)}],
+  ...(surpriseActorId?{surprise:{actorId:surpriseActorId,ambush:Boolean(ambush),consumed:false,round:1}}:{}) ,
+  holds:[]};
  return true;
+}
+/** Holding off swaps this turn's card with any later card. It uses no action
+ * budget or random draw. The other combatant acts immediately. */
+export function holdOff(s,actorId,targetCard){
+ const c=s.combat,slot=activeCombatSlot(s);
+ if(!c?.active||slot?.kind!=='human'||slot.actorId!==actorId)
+  return {accepted:false,reason:'Only the active survivor may hold initiative.'};
+ if(!Number.isInteger(targetCard))
+  return {accepted:false,reason:'Choose a numbered card from a later turn.'};
+ const index=c.order.findIndex((v,i)=>i>c.index&&v.card===targetCard);
+ if(index<0)return {accepted:false,reason:'Only a combatant who has not acted may receive your current card.'};
+ const later=c.order[index];
+ if(later.kind==='human'){
+  const a=s.actors.find(a=>a.id===later.actorId);
+  if(!a||a.dead||a.location!==s.dinosaurs[0].location)
+   return {accepted:false,reason:'The chosen survivor has no eligible upcoming turn.'};
+ }
+ const earlier={...slot},after={...later};
+ // Swap combatant identities, never the numbered cards or saved action budgets.
+ c.order[c.index]={...slot,actorId:after.actorId,kind:after.kind};
+ c.order[index]={...later,actorId:earlier.actorId,kind:earlier.kind};
+ c.holds??=[];
+ c.holds.push({round:c.round,fromCard:earlier.card,toCard:after.card,
+   actorId,recipientId:after.actorId,beat:s.beat});
+ c.holds=c.holds.slice(-120);
+ if(after.kind==='human')
+  s.cursor=s.actors.findIndex(a=>a.id===after.actorId);
+ return {accepted:true,fromCard:earlier.card,toCard:after.card,
+  recipientId:after.actorId,actorId};
 }
 export function combatCost(kind) {return COMBAT_COST[kind]||null;}
 export function checkCombatAction(s,actorId,kind){
@@ -127,7 +159,11 @@ export function validCombatState(s){
  if(!Number.isInteger(c.round)||c.round<1||!Number.isInteger(c.index)||
     !Array.isArray(c.order)||c.order.length<1||c.order.length>10||
     c.index<0||c.index>=c.order.length||typeof c.budgets!=='object'||
-    !Array.isArray(c.roundHistory))return false;
+    !Array.isArray(c.roundHistory)||
+    (c.holds!==undefined&&!Array.isArray(c.holds))||
+    (c.surprise!==undefined&&(!c.surprise||typeof c.surprise.actorId!=='string'||
+       typeof c.surprise.ambush!=='boolean'||typeof c.surprise.consumed!=='boolean'||
+       c.surprise.round!==1)))return false;
  const cards=new Set();
  for(const slot of c.order){
   if(!slot||!Number.isInteger(slot.card)||slot.card<1||slot.card>10||
