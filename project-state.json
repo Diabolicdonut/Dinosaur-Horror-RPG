@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.1",
-  "checkpoint": "007-B",
-  "state": "evolved_check_and_talent_lab_implemented_live_incident_remains_006_2",
+  "version": "0.7.2",
+  "checkpoint": "007-C",
+  "state": "multi_character_party_incident_alpha_implemented_legacy_0062_preserved",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,22 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 100,
+  "automated_tests": 118,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify Character Lab 007-B in an actual browser, including all skill-check controls, same-seed reproducibility, and talent-specific contexts.",
-    "Implement a multi-actor engine state with stable character ID, Health/Resolve/stress, talents, equipment, position and actor actions; preserve old one-player saves via migration.",
-    "Add Evolved source-correct environmental/time-cost/combat/injury protocols before enabling all world-dependent talent actions.",
-    "Connect validated character draft roster to new incident creation, then schedule independent turns for Party/Focus/Spectator decision ownership.",
-    "Keep AI rule proposals bounded by actor-specific world knowledge and deterministic outcomes.",
-    "Do not redeploy Cloudflare until Worker code actually needs changed; continue older 006.2 user debug gate separately."
+    "Complete browser smoke-test for 007-C via Party Incident link: launch validated party, act with separate survivors, save/load, transfer keycard, restore generator and radio, confirm scenario progression.",
+    "Implement Evolved action and exploration-time scheduler with separate decision ownership and safe queued mode switching between Party, Focus and Spectator.",
+    "Add actor-grounded AI companion policy with persistent agendas, limited knowledge, and validated proposals; expose Pause/Step/Resume to observer.",
+    "Complete dinosaur stealth, chase, combat, injuries and full panic world effects before claiming faithful all-weather Evolved survival play.",
+    "Implement validated source-specified career talent procedures requiring real world state and add test fixtures for each role.",
+    "Develop opt-in legacy solo save importer rather than silently reinterpreting old 006.2 state; preserve older game and private Worker."
   ],
   "acceptance_criteria": [
-    "100 automated Node regression tests pass with original live incident unchanged.",
-    "Exactly 27 themed starting talents accounted for in mechanical metadata; activated modifiers tested, world-dependent talent effects explicitly deferred.",
-    "Stress-response + Resolve, pushes, extra successes, separate panic roll, story points, passive and opposed skill checks have seeded replay tests.",
-    "Isolated Character Lab displays user-friendly outcomes while keeping individual dice hidden by default and allowing debug reveal.",
-    "Character Lab tests do not alter existing game saves, RNG, player progress or Cloudflare Worker; no claim of full Evolved RAW-complete game."
+    "118 automated tests pass including 18 party-engine and browser contract tests.",
+    "New party simulator runs 1–8 validated Evolved-style survivors, one turn each, shared time and deterministic replay.",
+    "A staff card belongs to exactly one room or actor and can only pass into the shed by its carrier; radio/beacon require durable flags.",
+    "Party scene information is actor-specific and dinosaur does not teleport or expose hidden location via view.",
+    "Original 006.2 save key, engine and Cloudflare Worker are unchanged; 007-C uses isolated save format.",
+    "Focus/Spectator/AI companion automation are not yet present; known scope documented."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -238,5 +239,38 @@
     ],
     "browser": "characters.html?revision=007b",
     "actual_live_game": "index.html continues Checkpoint 006.2 and Worker v006"
+  },
+  "party_incident_page": "party.html",
+  "party_incident_engine": "src/party-engine.mjs",
+  "party_incident_ui": "src/party-app.mjs",
+  "party_incident_spec": "docs/PARTY-INCIDENT-007C.md",
+  "party_incident": {
+    "status": "working multi-character party-control alpha with independent browser save and scenario progression",
+    "source": "Evolved-style character mechanics in src/characters.mjs and actual hidden d6 resolution in src/evolved-checks.mjs",
+    "implemented": [
+      "1–8 Evolved-valid manual, hybrid, or automatic party characters launch from Character Lab via session storage",
+      "Persistent independent actors with career, skills, talent, stress, Health, inventory, location, observations and concealment",
+      "Shared room items, physical keycard ownership, inventoried transfer to colocated survivor, single power/radio/beacon objectives",
+      "One authoritative round-robin party scheduler and one shared action-beat clock",
+      "Actor-specific Evolved dice rolls and stress responses with seeded replay, including push eligibility",
+      "Persistent dinosaur with adjacency-constrained patrol/hearing and stress-only proximity consequences",
+      "Per-character camera and knowledge-filtered events; only scheduled actor may act",
+      "New separated browser save/load/export under dinosaur-party-incident-007c, old 006.2 save remains independent",
+      "Original solo engine and Cloudflare Worker files untouched"
+    ],
+    "deferred": [
+      "Focus Mode and Spectator Mode with AI-owned character decisions",
+      "Full Evolved initiative, combat quick/full action and actual five-to-ten-minute time scale",
+      "Dinosaur attacks, critical injury, armor and death outcomes",
+      "Source-exact full panic reaction movement/interruptions/equipment drops",
+      "Complete world-targeted effects for all 27 career talents",
+      "Fully open-ended AI natural-language GM translation",
+      "Import/migration of legacy solo incident into party state",
+      "Actual manual live-browser QA"
+    ],
+    "party_save_kind": "dinosaur-party-incident",
+    "party_engine_version": 2,
+    "legacy_version": "006.2",
+    "worker_version": "006"
   }
 }
