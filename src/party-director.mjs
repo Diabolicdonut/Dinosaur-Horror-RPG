@@ -3,6 +3,7 @@
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs';
 import { isPartySave, partyView, partyStep } from './party-engine.mjs';
+import {activeTurnId,activeCombatSlot} from './combat-turns.mjs';
 
 export const CONTROL_MODES=Object.freeze(['party','focus','spectator']);
 export const SPEED_OPTIONS=Object.freeze([400,800,1200,2000]);
@@ -12,14 +13,15 @@ function insist(s){if(!isPartySave(s))throw new RangeError('Invalid party incide
 function noChange(s,reason){return {accepted:false,state:s,reason};}
 export function currentOwner(s){
  insist(s);
- const id=s.actors[s.cursor].id;
+ const id=activeTurnId(s);
+ if(activeCombatSlot(s)?.kind==='dinosaur')return 'ai';
  return s.control.mode==='party'||
    (s.control.mode==='focus'&&s.control.focusedActorId===id)?'human':'ai';
 }
 export function cameraActorId(s){
  insist(s);
  return s.control.cameraMode==='follow' ?
-   s.actors[s.cursor].id : s.control.cameraActorId;
+   (activeCombatSlot(s)?.kind==='dinosaur'?s.control.cameraActorId:activeTurnId(s)) : s.control.cameraActorId;
 }
 /** Mode switches apply only between completed actions, no simulation time or RNG. */
 export function setControlMode(previous,{mode,focusedActorId=null}={}){
@@ -199,22 +201,25 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    return noChange(previous,'Outdated AI decision rejected.');
  if(expectedEpoch!==null&&expectedEpoch!==previous.control.epoch)
    return noChange(previous,'AI control changed before this decision.');
- const actor=previous.actors[previous.cursor];
- const observation=actorObservation(previous,actor.id);
- const choice=chooseCompanionAction(observation);
- let resolved=partyStep(previous,{kind:choice.kind,target:choice.target},{actorId:actor.id,source:'ai'});
+ const predator=activeCombatSlot(previous)?.kind==='dinosaur';
+ const actor=predator?null:previous.actors.find(a=>a.id===activeTurnId(previous));
+ const choice=predator?
+  {kind:'predator',target:'',goal:'hunt',reason:'Creature initiative turn.'}:
+  chooseCompanionAction(actorObservation(previous,actor.id));
+ let resolved=partyStep(previous,{kind:choice.kind,target:choice.target},
+  {actorId:predator?previous.dinosaurs[0].id:actor.id,source:'ai'});
  if(!resolved.accepted){
    // A safe, deterministic fallback never forges a success or spends an invalid check.
+   if(predator)return resolved;
    resolved=partyStep(previous,{kind:'wait',target:''},{actorId:actor.id,source:'ai'});
  }
  if(!resolved.accepted)return resolved;
  const s=resolved.state;
- const record={beat:previous.beat,actorId:actor.id,
+ const record={beat:previous.beat,actorId:predator?previous.dinosaurs[0].id:actor.id,
    proposed:{...choice},acceptedAction:s.actions.at(-1)?.kind||'wait',
    actionIndex:s.actions.length-1,controlEpoch:previous.control.epoch};
  s.aiDecisions.push(record);
  s.aiDecisions=s.aiDecisions.slice(-200);
- const target=s.actors.find(a=>a.id===actor.id);
- target.aiGoal=choice.goal;
+ if(actor){const target=s.actors.find(a=>a.id===actor.id);target.aiGoal=choice.goal;}
  return {accepted:true,state:s,decision:record,result:resolved.result};
 }
