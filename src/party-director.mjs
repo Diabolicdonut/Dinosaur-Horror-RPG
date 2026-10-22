@@ -98,7 +98,8 @@ export function actorObservation(s,actorId){
  const view=partyView(s,{actorId});
  return {
   actorId,career:actor.career,agenda:actor.agenda,location:actor.location,
-  hidden:actor.hidden,stress:actor.stress,health:actor.health,
+  hidden:actor.hidden,stress:actor.stress,health:actor.health,broken:Boolean(actor.broken),dead:Boolean(actor.dead),
+  panicState:actor.panicState||null,
   inventory:[...actor.inventory],
   visitedRooms:[...actor.visitedRooms],
   attemptedObservations:[...actor.attemptedObservations],
@@ -107,7 +108,7 @@ export function actorObservation(s,actorId){
   observations:view.observations.map(x=>x.id),
   dinosaurs:[...view.visibleDinosaurs],
   nearbyAllies:s.actors.filter(a=>a.id!==actorId&&a.location===actor.location)
-    .map(a=>({id:a.id,name:a.name,career:a.career})),
+    .map(a=>({id:a.id,name:a.name,career:a.career,broken:Boolean(a.broken),dead:Boolean(a.dead)})),
   mission:{...view.flags}
  };
 }
@@ -126,9 +127,15 @@ function to(observation,destination,goal){
  */
 export function chooseCompanionAction(observation){
  const o=observation;
+ if(o.dead||o.broken)return proposal('wait','','incapacitated','This survivor cannot act.');
+ const patient=o.nearbyAllies.find(a=>a.broken&&!a.dead);
+ if(patient&&o.career==='medic')
+   return proposal('aid',patient.id,'stabilize_ally','Treat a nearby incapacitated survivor.');
  if(o.dinosaurs.length){
-   return o.hidden ? proposal('wait','','avoid_dinosaur','Remain concealed while a dinosaur is nearby.') :
-     proposal('hide','','avoid_dinosaur','An animal is immediately visible.');
+   if(o.hidden)return proposal('wait','','avoid_dinosaur','Remain concealed from the dinosaur.');
+   if(o.inventory.includes('service carbine')||o.inventory.includes('tranquilizer launcher'))
+     return proposal('attack','dinosaur','protect_survivors','Use a carried weapon against an immediately visible predator.');
+   return proposal('hide','','avoid_dinosaur','Try to find concealment from a nearby dinosaur.');
  }
  if(o.items.includes('keycard')&&!o.inventory.includes('keycard'))
    return proposal('take','keycard','recover_access','Recover the visible staff access card.');
