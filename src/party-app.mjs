@@ -1,81 +1,111 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007c';
-import {newPartyIncident,isPartySave,partyView,partyStep,PARTY_SAVE_KIND} from './party-engine.mjs?v=007c';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007d';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007d';
+import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007d';
 
 const $=id=>document.getElementById(id);
-const STORE='dinosaur-party-incident-007c';
+const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
 const LAUNCH='dinosaur-party-launch-007c';
 const LAB='dinosaur-character-lab-007';
-const esc=v=>String(v??'').replace(/[&<>"']/g,x=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
-let state=null,viewed=null,setup=null,lastRoll=null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,x=>
+  ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
+let state=null,setup=null,timer=null;
 function announce(t){$('party-status').textContent=t;}
+function cancelAuto(){if(timer!==null){clearTimeout(timer);timer=null;}}
 function loadSetup(){
- let source=null;
  try{
-  const launch=JSON.parse(sessionStorage.getItem(LAUNCH)||'null');
-  if(launch&&validateParty(launch.characters||[]).length===0)
-   source={seed:launch.seed??1993,roster:launch.characters};
- }catch{}
- if(source)return source;
- try{
-  const lab=JSON.parse(localStorage.getItem(LAB)||'null');
-  if(lab&&validateParty(lab.party||[]).length===0)
-   return {seed:lab.seed??1993,roster:lab.party};
+  const draft=JSON.parse(localStorage.getItem(LAB)||'null');
+  if(draft&&validateParty(draft.party||[]).length===0)
+   return {seed:draft.seed??1993,roster:draft.party};
  }catch{}
  return {seed:1993,roster:makeParty({seed:1993,size:3})};
 }
-function restore(){
- try{
-  const loaded=JSON.parse(localStorage.getItem(STORE)||'null');
-  if(isPartySave(loaded)){
-   state=loaded;viewed=state.actors[state.cursor].id;
-   announce('Saved party incident restored. Legacy solo saves were not changed.');
-   return true;
-  }
- }catch{}
- return false;
-}
 function save(){
  try{localStorage.setItem(STORE,JSON.stringify(state));return true;}
- catch{announce('Browser storage unavailable. Export the party incident to retain progress.');return false;}
+ catch {announce('Browser storage unavailable; export the incident to keep progress.');return false;}
 }
-function create(){
- const original=state?.startingRoster&&validateParty(state.startingRoster).length===0 ?
-   {seed:state.initialSeed,roster:state.startingRoster} : (setup??loadSetup());
- setup=original;
+function restore(){
+ cancelAuto();
+ try{
+  const loaded=JSON.parse(localStorage.getItem(STORE)||'null');
+  if(loaded){
+   const migrated=upgradePartySave(loaded);
+   state=migrated;setup={seed:migrated.initialSeed,roster:migrated.startingRoster};
+   // A reload is always paused: an unseen tab must not simulate events.
+   if(!state.control.paused)state=setPlayback(state,{paused:true}).state;
+   save();
+   announce(loaded.version===2?
+     'Existing 007-C party save migrated safely to 007-D, with all events retained.' :
+     'Saved multi-character incident restored. AI playback is paused.');
+   return true;
+  }
+ }catch(error){announce('Saved party is unavailable: '+error.message);}
+ return false;
+}
+function create({roster=null,seed=null}={}){
+ cancelAuto();
+ if(roster)setup={seed:seed??1993,roster};
+ else setup=state?.startingRoster&&validateParty(state.startingRoster).length===0?
+   {seed:state.initialSeed,roster:state.startingRoster}:(setup??loadSetup());
  state=newPartyIncident(setup);
- viewed=state.actors[0].id;
- save();
- announce('Party incident ready. Each survivor will act in sequence, one action beat at a time.');
+ save();announce('New party incident started. Choose a control mode at any time.');
+}
+function selectedOption(id,label,selected){
+ return '<option value="'+esc(id)+'"'+(id===selected?' selected':'')+'>'+esc(label)+'</option>';
 }
 function show(){
  if(!state||!isPartySave(state))return;
- if(!state.actors.some(a=>a.id===viewed))viewed=state.actors[state.cursor].id;
- const v=partyView(state,{actorId:viewed});
- const active=state.actors[state.cursor];
+ const watching=cameraActorId(state),v=partyView(state,{actorId:watching});
+ const active=state.actors[state.cursor],owner=currentOwner(state);
+ const ownHuman=owner==='human'&&state.outcome==='playing';
  $('beat').textContent=String(v.beat).padStart(3,'0');
  $('round').textContent=String(v.round).padStart(2,'0');
  $('active').textContent=active.name;
+ $('owner').textContent=owner==='human'?'PLAYER':'COMPUTER';
  $('party-count').textContent=state.actors.length+' SURVIVORS';
+ $('control-mode').value=state.control.mode;
+ $('control-summary').textContent=state.control.mode.toUpperCase()+' · '+owner.toUpperCase()+' TO ACT';
+ $('focus-actor').innerHTML=state.actors.map(a=>selectedOption(a.id,a.name,state.control.focusedActorId)).join('');
+ $('focus-actor').disabled=state.control.mode!=='focus';
+ $('camera-mode').value=state.control.cameraMode;
+ $('camera-actor').innerHTML=state.actors.map(a=>selectedOption(a.id,a.name,state.control.cameraActorId)).join('');
+ $('camera-actor').disabled=state.control.cameraMode!=='actor';
+ $('playback-speed').value=String(state.control.speedMs);
+ const running=state.control.mode!=='party'&&!state.control.paused&&state.outcome==='playing';
+ $('playback-status').textContent=state.control.mode==='party'?'ALL SURVIVORS PLAYER-CONTROLLED':
+   (running?'AI PLAYBACK ACTIVE':'AI PLAYBACK PAUSED');
+ $('sim-resume').disabled=state.control.mode==='party'||running||state.outcome!=='playing';
+ $('sim-pause').disabled=state.control.mode==='party'||!running||state.outcome!=='playing';
+ $('sim-step').disabled=state.control.mode==='party'||owner!=='ai'||state.outcome!=='playing';
  $('party-roster').innerHTML=state.actors.map(a=>{
-  const selected=a.id===viewed,turn=a.id===active.id;
-  return '<button type="button" data-view="'+esc(a.id)+'" class="roster-item'+(selected?' selected':'')+(turn?' active':'')+'">'+
-   '<span><strong>'+esc(a.name)+'</strong><small>'+esc(CAREERS[a.career]?.label||a.career)+
-   ' · '+esc(a.location)+'<br>HP '+a.health+'/'+a.healthMax+' · Stress '+a.stress+'</small></span>'+
-   '<span class="chip">'+(turn?'TO ACT':selected?'VIEW':'WATCH')+'</span></button>';
+  const selected=a.id===watching,turn=a.id===active.id;
+  const human=state.control.mode==='party'||
+    (state.control.mode==='focus'&&state.control.focusedActorId===a.id);
+  // A focus or spectator camera cannot automatically know separated survivors' stats/positions.
+  const nearby=state.control.mode==='party'||a.id===watching||
+    a.location===state.actors.find(x=>x.id===watching).location;
+  const details=nearby?(esc(a.location)+' · HP '+a.health+'/'+a.healthMax+' · Stress '+a.stress):
+    'Status unknown from this viewpoint';
+  return '<button type="button" data-view="'+esc(a.id)+'" class="roster-item'+
+    (selected?' selected camera-actor':'')+(turn?' active':'')+'">'+
+    '<span><strong>'+esc(a.name)+'</strong><small>'+esc(CAREERS[a.career]?.label||a.career)+
+    '<br>'+details+'</small></span><span class="chip '+(human?'player-owned':'ai-owned')+'">'+
+    (turn?(human?'TO ACT':'AI TURN'):(human?'PLAYER':'AI'))+'</span></button>';
  }).join('');
  $('location-title').textContent=v.roomName;
  $('sector').textContent=v.location.toUpperCase();
  $('room-description').textContent=v.description;
- $('viewed-character').textContent='Viewing '+v.actorName+' · '+(v.actorId===v.activeActorId?'ACTING NOW':'not acting')+
-  ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+
-  (v.hidden?' · Concealed':'');
+ $('viewed-character').textContent='Watching '+v.actorName+
+   (v.actorId===v.activeActorId?' · CURRENT TURN':' · NOT CURRENT TURN')+
+   ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'');
  const flags=v.flags;
  $('objectives').innerHTML=[
-  ['keycard','Recover the staff access card',state.actors.some(a=>a.inventory.includes('keycard'))],
-  ['power','Restore auxiliary power',flags.power],
-  ['distress','Send distress call',flags.distress],
-  ['beacon','Activate helipad beacon',flags.beacon]
- ].map(([key,title,done])=>'<div class="objective '+(done?'done':'not-done')+'"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
+   ['Recover the staff access card',state.actors.some(a=>a.inventory.includes('keycard'))],
+   ['Restore auxiliary power',flags.power],
+   ['Send distress call',flags.distress],
+   ['Activate helipad beacon',flags.beacon]
+ ].map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
+   '"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
  const scene=[];
  if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
@@ -83,55 +113,99 @@ function show(){
  if(v.inventory.length)scene.push('Carried: '+v.inventory.map(x=>x.name).join(', '));
  if(v.visibleDinosaurs.length)scene.push('DANGER — '+v.visibleDinosaurs.join(', ')+' in this room');
  if(!scene.length)scene.push('No listed equipment or loose supplies in reach.');
- $('local-scene').innerHTML=scene.map(x=>'<div class="scene-thing'+(x.startsWith('DANGER')?' scene-danger':'')+'">'+esc(x)+'</div>').join('');
- $('travel-buttons').innerHTML=v.exits.map(x=>'<button type="button" data-order="move '+esc(x.id)+'"'+(v.actorId!==v.activeActorId?' disabled':'')+'>'+esc(x.name)+'</button>').join('');
- const buttons=[
+ $('local-scene').innerHTML=scene.map(x=>'<div class="scene-thing'+
+   (x.startsWith('DANGER')?' scene-danger':'')+'">'+esc(x)+'</div>').join('');
+ const canScene=ownHuman&&v.actorId===v.activeActorId;
+ $('travel-buttons').innerHTML=v.exits.map(x=>
+   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene?' disabled':'')+'>'+esc(x.name)+'</button>').join('');
+ const actions=[
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
   ['hide','Find cover'],['wait','Wait / Listen']
  ];
- $('world-buttons').innerHTML=buttons.map(([order,label])=>
-  '<button type="button" data-order="'+esc(order)+'"'+(v.actorId!==v.activeActorId?' disabled':'')+'>'+esc(label)+'</button>').join('');
- $('party-events').innerHTML=v.events.length?v.events.map(e=>'<p class="event-entry '+esc(e.category)+
-  '"><small>BEAT '+e.beat+'</small>'+esc(e.message)+'</p>').join(''):'<p class="note">No events observed by this survivor yet.</p>';
+ $('world-buttons').innerHTML=actions.map(([order,label])=>
+  '<button type="button" data-order="'+esc(order)+'"'+(!canScene?' disabled':'')+'>'+esc(label)+'</button>').join('');
+ $('party-events').innerHTML=v.events.length?v.events.map(e=>
+  '<p class="event-entry '+esc(e.category)+'"><small>BEAT '+e.beat+'</small>'+esc(e.message)+'</p>').join(''):
+  '<p class="note">No observations from this camera yet.</p>';
  $('party-events').scrollTop=$('party-events').scrollHeight;
- $('party-command').disabled=v.actorId!==v.activeActorId||state.outcome!=='playing';
- $('party-submit').disabled=$('party-command').disabled;
- if(state.outcome!=='playing')announce('RESCUE SIGNAL ACTIVE — the party incident objectives are complete.');
+ $('party-command').disabled=!ownHuman;
+ $('party-submit').disabled=!ownHuman;
+ $('party-command').placeholder=ownHuman?
+   'Order for '+active.name+' (e.g. go lobby, inspect consoles)':
+   'The computer currently controls '+active.name;
+ if(state.outcome!=='playing')announce('Rescue objectives complete; this incident has ended.');
+ queueAutoplay();
+}
+function commit(result,label){
+ if(!result.accepted){announce(result.reason||'Decision was not accepted.');return false;}
+ state=result.state;
+ save();show();
+ if(label)announce(label);
+ return true;
 }
 function issue(command){
  if(!state||state.outcome!=='playing')return;
- if(viewed!==state.actors[state.cursor].id){
-  announce('Select the highlighted acting survivor to give an order.');
-  return;
- }
+ if(currentOwner(state)!=='human'){announce('This actor is computer-controlled. Pause and take over a character to intervene.');return;}
  const input=String(command||'').trim();
  if(!input){announce('Describe an action.');return;}
+ cancelAuto();
  const parsed=input.startsWith('push ')?input:$('party-push').checked?'push '+input:input;
- const response=partyStep(state,parsed,{actorId:viewed});
- if(!response.accepted){announce(response.reason||'Action unavailable.');return;}
- state=response.state;
- const roll=response.result;
- lastRoll=roll&&Array.isArray(roll.base)?roll:null;
- const resultMessage=lastRoll ? (roll.success?'Skill check succeeded':'Skill check failed')+
-  ' · '+roll.successes+' successes'+(roll.pushRefused?' · Push not permitted: '+roll.pushRefused:'') : 'Action recorded';
- const diceInfo=lastRoll&&$('party-show-roll').checked?
-  ' · Base ['+roll.base.join(', ')+'] Stress ['+roll.stressDice.join(', ')+'] · Seed '+roll.seed:'';
- announce(resultMessage+diceInfo+' · Shared action beat '+state.beat);
- viewed=state.actors[state.cursor].id;
- $('party-command').value='';
- $('party-push').checked=false;
- save();show();
- // Keep the latest action outcome readable when the camera follows the next actor.
- if(state.outcome==='playing')announce(resultMessage+diceInfo+' · Next: '+state.actors[state.cursor].name);
+ const acting=state.actors[state.cursor];
+ const r=partyStep(state,parsed,{actorId:acting.id,source:'human'});
+ if(!r.accepted){announce(r.reason);queueAutoplay();return;}
+ const roll=r.result;
+ const rolled=roll&&Array.isArray(roll.base);
+ const message=rolled?(roll.success?'Skill success':'Skill failure')+' · '+roll.successes+
+   ' successes'+(roll.pushRefused?' · Push unavailable: '+roll.pushRefused:'')+
+   ($('party-show-roll').checked?' · Base ['+roll.base.join(', ')+'] Stress ['+
+     roll.stressDice.join(', ')+'] · Seed '+roll.seed:''):'Action committed';
+ $('party-command').value='';$('party-push').checked=false;
+ commit(r,message+' · Next: '+r.state.actors[r.state.cursor].name);
+}
+function autoOnce({singleStep=false}={}){
+ if(!state||currentOwner(state)!=='ai'||state.outcome!=='playing')return false;
+ cancelAuto();
+ const expectedBeat=state.beat,expectedEpoch=state.control.epoch;
+ const result=runAutonomousTurn(state,{singleStep,expectedBeat,expectedEpoch});
+ if(!result.accepted){
+  if(result.reason!=='The current survivor awaits player input.'){
+   state=setPlayback(state,{paused:true}).state;save();show();
+   announce('Simulation paused: '+result.reason);
+  }
+  return false;
+ }
+ const who=state.actors[state.cursor].name;
+ const statement=who+' (AI): '+result.decision.acceptedAction+
+   (result.decision.proposed.target?' '+result.decision.proposed.target:'');
+ commit(result,statement);
+ return true;
+}
+function queueAutoplay(){
+ cancelAuto();
+ if(!state||state.control.paused||state.control.mode==='party'||
+   state.outcome!=='playing'||currentOwner(state)!=='ai'||document.hidden)return;
+ const expectedBeat=state.beat,expectedEpoch=state.control.epoch;
+ timer=setTimeout(()=>{
+   timer=null;
+   if(!state||state.beat!==expectedBeat||state.control.epoch!==expectedEpoch||
+      state.control.paused||document.hidden||currentOwner(state)!=='ai')return;
+   autoOnce();
+ },state.control.speedMs);
+}
+function applyControl(result,message){
+ cancelAuto();
+ if(result.accepted){
+  state=result.state;save();show();
+  announce(message);
+ }else announce(result.reason);
 }
 $('party-roster').addEventListener('click',e=>{
- const button=e.target.closest('[data-view]');
- if(!button)return;
- viewed=button.dataset.view;
- show();announce(viewed===state.actors[state.cursor].id?
-  'Now viewing the acting survivor.':'Viewing another survivor; switching views does not advance time.');
+ const button=e.target.closest('[data-view]');if(!button)return;
+ applyControl(setCamera(state,{mode:'actor',actorId:button.dataset.view}),
+   'Camera switched to '+state.actors.find(a=>a.id===button.dataset.view)?.name+
+   '. This did not change character control or world time.');
 });
 for(const id of ['travel-buttons','world-buttons'])
  $(id).addEventListener('click',e=>{
@@ -140,35 +214,72 @@ for(const id of ['travel-buttons','world-buttons'])
 $('party-command-form').addEventListener('submit',e=>{
  e.preventDefault();issue($('party-command').value);
 });
+$('control-mode').addEventListener('change',e=>{
+ applyControl(setControlMode(state,{mode:e.target.value}),
+   'Control switched to '+e.target.value+'. AI is paused; resume when ready.');
+});
+$('focus-actor').addEventListener('change',e=>{
+ applyControl(setFocusActor(state,e.target.value),
+   'Player focus changed. All prior actions and dice are preserved.');
+});
+$('camera-mode').addEventListener('change',e=>{
+ applyControl(setCamera(state,{mode:e.target.value}),
+   'Camera changed without changing control or game time.');
+});
+$('camera-actor').addEventListener('change',e=>{
+ applyControl(setCamera(state,{mode:'actor',actorId:e.target.value}),
+   'Watching another survivor. Character knowledge is unchanged.');
+});
+$('playback-speed').addEventListener('change',e=>{
+ applyControl(setPlayback(state,{speedMs:Number(e.target.value)}),
+   'AI display pace updated; action costs and dice remain identical.');
+});
+$('sim-resume').addEventListener('click',()=>{
+ applyControl(setPlayback(state,{paused:false}),
+   'AI simulation resumed. You can pause or take control at any time.');
+});
+$('sim-pause').addEventListener('click',()=>{
+ applyControl(setPlayback(state,{paused:true}),
+   'AI paused at an action boundary. World and RNG are unchanged.');
+});
+$('sim-step').addEventListener('click',()=>{
+ if(currentOwner(state)!=='ai'){announce('A human-controlled survivor is due to act.');return;}
+ if(!state.control.paused) {
+  state=setPlayback(state,{paused:true}).state;save();
+ }
+ autoOnce({singleStep:true});
+});
 $('save-incident').addEventListener('click',()=>{
- announce(save()?'Party incident saved in separate local browser storage.':'Save failed.');
+ announce(save()?'Party incident saved with control mode and spectator state.':'Save failed.');
 });
 $('load-incident').addEventListener('click',()=>{
  if(restore())show();else announce('No valid saved party incident found.');
 });
 $('restart-incident').addEventListener('click',()=>{
- if(!confirm('Restart this party incident? Current party incident progress will be replaced. Your legacy game save is untouched.'))return;
+ if(!confirm('Restart the current party? Existing party progress will be replaced. Legacy solo saves stay untouched.'))return;
  create();show();
 });
 $('export-incident').addEventListener('click',()=>{
- if(!isPartySave(state)){announce('Invalid party state; cannot export.');return;}
+ if(!isPartySave(state)){announce('Invalid party state; export unavailable.');return;}
  const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});
  const url=URL.createObjectURL(blob),a=document.createElement('a');
- a.href=url;a.download='party-incident-007c-beat-'+state.beat+'.json';
+ a.href=url;a.download='party-incident-007d-beat-'+state.beat+'.json';
  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
- announce('Party incident exported.');
+ announce('Party incident and complete control/AI journal exported.');
 });
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden&&state?.control.mode!=='party'&&!state.control.paused){
+  cancelAuto();state=setPlayback(state,{paused:true}).state;save();
+ }else if(!document.hidden)show();
+});
+window.addEventListener('pagehide',cancelAuto);
 let incoming=null;
 try{
  const raw=sessionStorage.getItem(LAUNCH);
  if(raw){incoming=JSON.parse(raw);sessionStorage.removeItem(LAUNCH);}
 }catch{incoming=null;}
 if(incoming&&validateParty(incoming.characters||[]).length===0){
- // A deliberate new launch must not silently load a previous party's save.
- setup={seed:incoming.seed??1993,roster:incoming.characters};
- state=newPartyIncident(setup);
- viewed=state.actors[0].id;
- save();
- announce('New validated party launched. Older legacy solo saves were not touched.');
+ try {create({seed:incoming.seed??1993,roster:incoming.characters});}
+ catch(error){announce('Cannot launch party: '+error.message);if(!restore())create();}
 }else if(!restore())create();
 show();
