@@ -211,7 +211,7 @@ test('safe stretch recovers correct stress and limited lingering stress effects'
  const normal=restStress({...c,talent:'Careful Aim'});
  assert.equal(normal.after.stress,3);
  const friend={...actor('medic'),stress:3,stressResponses:['shakes','jumpy']};
- const group=restStress(c,{nearby:[friend]});
+ const group=restStress({...c,talent:'Steady Under Fire'},{nearby:[friend]});
  assert.equal(group.nearbyAfter[0].stress,1);
  assert.equal(group.nearbyAfter[0].stressResponses.length,0);
  assert.equal(friend.stress,3,'input nearby actor remains unchanged');
