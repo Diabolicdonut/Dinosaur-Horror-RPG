@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
 import {makeParty} from '../src/characters.mjs';
 import {newGame,isValidSave} from '../src/engine.mjs';
 import {PARTY_SAVE_KIND, PARTY_ENGINE_VERSION, newPartyIncident,partyStep,partyView,isPartySave,parsePartyAction} from '../src/party-engine.mjs';
@@ -131,4 +133,46 @@ test('parse commands and supported verbs into deterministic typed intents',()=>{
  assert.deepEqual(parsePartyAction('go to utility'),{kind:'move',target:'utility',push:0});
  assert.deepEqual(parsePartyAction('give keycard to pc-2'),{kind:'give',target:'keycard',recipientId:'pc-2',push:0});
  assert.deepEqual(parsePartyAction('take cover'),{kind:'hide',target:'',push:0});
+});
+
+test('two survivors can hand over the one physical keycard only when colocated',()=>{
+ let s=setup();
+ for(const command of ['move lobby','move lobby','wait','take keycard','wait','wait','give keycard to pc-2'])
+  s=doAction(s,command);
+ assert(!s.actors[0].inventory.includes('keycard'));
+ assert(s.actors[1].inventory.includes('keycard'));
+ assert(!s.rooms.lobby.items.includes('keycard'));
+ assert.equal(s.actions.at(-1).recipientId,'pc-2');
+});
+test('personal viewpoint does not reveal another survivor investigation result',()=>{
+ let s=doAction(setup(),'investigate consoles');
+ const ranger=partyView(s,{actorId:'pc-1'});
+ const maintenance=partyView(s,{actorId:'pc-2'});
+ assert(ranger.events.some(e=>e.message.includes('consoles')));
+ assert(!maintenance.events.some(e=>e.message.includes('consoles')));
+});
+test('refuse unsupported objective features instead of claiming a world change',()=>{
+ const s=setup();
+ const result=act(s,'use terminal');
+ assert.equal(result.accepted,false);
+ assert.equal(s.beat,0);
+});
+test('multi-character incident browser and validated roster transfer have isolated storage and syntax',async()=>{
+ const page=await readFile(new URL('../party.html',import.meta.url),'utf8');
+ const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
+ const lab=await readFile(new URL('../src/characters-app.mjs',import.meta.url),'utf8');
+ for(const id of ['party-roster','beat','round','active','party-command','party-command-form',
+   'party-events','world-buttons','travel-buttons','save-incident','load-incident','export-incident'])
+  assert(page.includes('id="'+id+'"'),id);
+ assert(page.includes('./src/party-app.mjs?v=007c'));
+ assert(app.includes("dinosaur-party-incident-007c"));
+ assert(app.includes('isPartySave'));
+ assert(app.includes("partyStep("));
+ assert(lab.includes('dinosaur-party-launch-007c'));
+ assert(lab.includes('validateParty(party)'));
+ assert(!app.includes('dinosaur-rpg-save'),'must not overwrite legacy saved games');
+ for(const file of ['../src/party-engine.mjs','../src/party-app.mjs']){
+  const result=spawnSync(process.execPath,['--check',new URL(file,import.meta.url).pathname],{encoding:'utf8'});
+  assert.equal(result.status,0,file+' '+result.stderr);
+ }
 });
