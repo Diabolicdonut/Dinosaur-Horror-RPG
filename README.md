@@ -20,6 +20,14 @@ The same Evolved-inspired **character sheets, hidden seeded rolls, action econom
 
 See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **This is a planned architecture, not a deployed gameplay feature**; checkpoint 006.2 still models one playable character. Do not redeploy Cloudflare for this documentation update.
 
+## Character creation: manual, automatic or hybrid (planned)
+
+Create **any or all playable survivors** manually, automatically, or with a mixed/hybrid approach. Each party member can use a different method. Choose a career, lock chosen skills/attributes/talent/background fields, generate the remaining details, preview the Evolved-valid character sheet, and selectively reroll individual members or the entire unlocked party. A separate character creation seed preserves reproducibility without consuming the live game's random stream.
+
+Profession, 12-skill training, talents, gear, stress/Resolve and derived attributes use a common Evolved-compatible rule validator. Generate original Jurassic Park backgrounds and motivations without adding unauthorized mechanical advantages. Character creation is separate from Party/Focus/Spectator control modes: any character may be manually or AI controlled later. Once play starts, advancement and equipment changes follow the game rules rather than retconning the character.
+
+See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **This feature is not yet implemented in the checkpoint 006.2 browser.**
+
 ## Design contract
 
 - The **deterministic engine** owns dice, character state, locations, items, predator positions, injury, stress, panic, victory and death.
