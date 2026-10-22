@@ -127,7 +127,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
 }
 export function isPartySave(s) {
  if(!s||s.kind!==PARTY_SAVE_KIND||s.version!==PARTY_ENGINE_VERSION||
-    !s.control||!['party','focus','spectator'].includes(s.control.mode)||
+    !Array.isArray(s.actors)||!s.control||!['party','focus','spectator'].includes(s.control.mode)||
     !['follow','actor'].includes(s.control.cameraMode)||
     !s.actors?.some(a=>a.id===s.control.focusedActorId)||
     !s.actors?.some(a=>a.id===s.control.cameraActorId)||
