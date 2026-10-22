@@ -214,7 +214,7 @@ export function reduceDamage(character,{seed=1993,damage}={}){
  requiredCharacter(character);
  if(!isInt(damage,0,99))throw new RangeError('Invalid damage.');
  if(character.talent!=='Resilient Worker')return {damage,prevented:0,roll:null};
- const roll=resolveSkillCheck(character,{attributeOnly:true,attribute:'strength',seed,passive:true});
+ const roll=resolveSkillCheck(character,{attributeOnly:true,attribute:'strength',seed,push:0});
  const prevented=Math.min(damage,roll.successes);
  return {damage:damage-prevented,prevented,roll};
 }
