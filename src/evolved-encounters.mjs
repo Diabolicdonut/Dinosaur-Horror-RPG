@@ -22,8 +22,9 @@ export function rollInitiative({actorIds=[],dinosaurTurns=2,seed=1993}={}) {
     actorIds.length+dinosaurTurns<1||actorIds.length+dinosaurTurns>10)
    throw new RangeError('Initiative requires 1–10 card assignments.');
  const deck=Array.from({length:10},(_,i)=>i+1),roll=d6(seed),cards=[];
+ const unbiasedIndex=size=>{let x,limit=36-36%size;do{x=(roll.rollD6()-1)*6+(roll.rollD6()-1);}while(x>=limit);return x%size;};
  for(const id of [...actorIds,...Array.from({length:dinosaurTurns},(_,i)=>'dinosaur-'+(i+1))]){
-  const n=(roll.rollD6()-1+6*(roll.rollD6()-1))%deck.length;
+  const n=unbiasedIndex(deck.length);
   cards.push({actorId:id,card:deck.splice(n,1)[0],kind:id.startsWith('dinosaur-')?'dinosaur':'human'});
  }
  return cards.sort((a,b)=>a.card-b.card);
