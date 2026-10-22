@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Mixed manual / automatic / hybrid character creation — 2026-10-22
+
+**User decision:** Allow each playable character to be fully auto-generated, entirely custom-built, or a hybrid using locked/preferred components. The player may use this for **any or all** characters in a party, independently of three accepted Party/Focus/Spectator runtime control modes.
+
+**Specification committed:** `docs/CHARACTER-GENERATION-MODES.md`, `docs/MULTI-CHARACTER-CONTROL-MODES.md`, `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, project controller and README. Preserve career-specific Evolved Edition starting limits, all twelve skills, legal starting talent/gear, derived Health/Resolve and clear manual/automatic/hybrid validation. Generate setting-appropriate individual identity, background and agenda without arbitrary mechanical bonuses. Use separate seed for character generation; only unlocked/unfilled slots/fields regenerate. During live game, control changes never rewrite character statistics or remembered events; advancement replaces retcon.
+
+**Implementation status:** This is a committed product design and Phase B implementation requirement, **not a deployed character creator**. No engine, save, web UI, AI Worker or mechanical validation test code changed. Current released 006.2 still controls one fixed player character and requires a future schema migration.
+
+**Recommended implementation gate:** Finish Evolved character schema and validator, then support seeded manual, automatic and hybrid party setup before building AI companions or spectator simulations.
+
+
 ## Party / Focus / Spectator dynamic-control requirement — 2026-10-22
 
 **New user-approved gameplay direction:** Three modes are switchable during the *same* continuous dinosaur incident: **PARTY** (human decisions for all playable human characters), **FOCUS** (human decisions for one active selected character, AI companions for the others), **SPECTATOR** (AI decisions for all, with pause, step and takeover). Separate decision **agency** from UI **viewpoint**; changing camera must not grant new world knowledge to characters.
