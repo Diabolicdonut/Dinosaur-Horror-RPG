@@ -5,29 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#09130f"/>
 <meta name="description" content="Dinosaur Horror RPG, experimental multi-character incident with shared world time."/>
-<title>Party Incident 007-C — Dinosaur Horror RPG</title>
-<link rel="stylesheet" href="./src/characters.css?v=007c"/>
-<link rel="stylesheet" href="./src/party.css?v=007c"/>
+<title>Party Incident 007-D — Dinosaur Horror RPG</title>
+<link rel="stylesheet" href="./src/characters.css?v=007d"/>
+<link rel="stylesheet" href="./src/party.css?v=007d"/>
 </head>
 <body>
 <main class="lab">
 <header class="mast">
   <div><p class="eyebrow">ISLA NUBLAR / 1993 / EMERGENCY TEAM SIMULATION</p>
     <h1>CONTAINMENT <span>LOST</span></h1>
-    <p>CHECKPOINT 007-C · PARTY INCIDENT ALPHA</p>
+    <p>CHECKPOINT 007-D · DYNAMIC PARTY SIMULATION</p>
   </div>
   <nav class="nav"><a class="secondary" href="./characters.html">← Personnel Registry</a>
     <a class="secondary" href="./index.html">Legacy solo incident</a></nav>
 </header>
 <section class="notice">
  <strong>Playable multi-character development build.</strong>
- Your generated survivors share one island, one item supply, one dinosaur and one action clock.
- Party control works now; AI companions, spectator mode, full combat and completely free-form referee actions are not yet available. Original saved incidents remain separate.
+ Your survivors share one persistent incident. Switch between Party Control, one-character control with autonomous companions, or Spectator Mode at any time. Computer companions use an offline, rules-bounded decision policy; full AI Game Master improvisation, combat and injuries remain in development. Original solo saves remain separate.
 </section>
 <section class="panel control-strip" aria-label="Party incident controls">
  <div><small>ACTION BEAT</small><strong id="beat">000</strong></div>
  <div><small>ROSTER ROUND</small><strong id="round">01</strong></div>
  <div><small>ACTIVE SURVIVOR</small><strong id="active">–</strong></div>
+ <div><small>DECISION OWNER</small><strong id="owner">–</strong></div>
  <div class="control-buttons">
   <button type="button" id="save-incident" class="secondary">Save</button>
   <button type="button" id="load-incident" class="secondary">Load</button>
@@ -35,12 +35,41 @@
   <button type="button" id="export-incident" class="secondary">Export incident</button>
  </div>
 </section>
+<section class="panel agency-panel" aria-label="Control mode and camera">
+ <div class="agency-heading"><h2>COMMAND & OBSERVATION</h2><span id="control-summary">MODE: PARTY</span></div>
+ <div class="agency-fields">
+   <label>Control mode<select id="control-mode">
+     <option value="party">Party — direct every survivor</option>
+     <option value="focus">Character — direct one, AI runs others</option>
+     <option value="spectator">Spectator — AI runs all survivors</option>
+   </select></label>
+   <label>My character<select id="focus-actor"></select></label>
+   <label>Camera<select id="camera-mode">
+     <option value="follow">Follow whoever acts</option>
+     <option value="actor">Follow selected survivor</option>
+   </select></label>
+   <label>Watch survivor<select id="camera-actor"></select></label>
+   <label>AI pace<select id="playback-speed">
+      <option value="400">Fast</option>
+      <option value="800">Normal</option>
+      <option value="1200">Dramatic</option>
+      <option value="2000">Slow</option>
+   </select></label>
+ </div>
+ <div class="agency-playback">
+   <button id="sim-resume" type="button">Resume AI</button>
+   <button id="sim-pause" type="button" class="secondary">Pause AI</button>
+   <button id="sim-step" type="button" class="secondary">One AI action</button>
+   <span id="playback-status">AUTOPLAY PAUSED</span>
+ </div>
+ <p class="note">Control mode determines who decides actions; the camera only determines what you see. Switching never rerolls or resets an action. All modes use the same hidden dice and world state.</p>
+</section>
 <p id="party-status" class="status" role="status" aria-live="polite"></p>
 <div class="workspace party-workspace">
   <aside class="panel roster">
     <div class="section-head"><h2>Personnel</h2><span id="party-count">0</span></div>
     <div class="roster-list" id="party-roster"></div>
-    <p class="note">Select any survivor to view their location and knowledge. Only the highlighted active survivor may take the next action. Each accepted action advances shared time.</p>
+    <p class="note">Select any survivor to watch independently of control. In Character mode, use My character to take over a different survivor; switching never advances game time.</p>
     <div class="section"><h3>Shared objectives</h3><div id="objectives" class="objectives"></div></div>
   </aside>
   <section class="panel incident-main">
@@ -60,7 +89,7 @@
       <div id="world-buttons" class="action-choices"></div>
     </div>
     <div class="section">
-      <h3>Orders to the active survivor</h3>
+      <h3>Orders to the human-controlled survivor</h3>
       <form id="party-command-form" autocomplete="off">
         <label for="party-command" class="note">Describe an action (currently bounded verbs; expanded AI referee is a later milestone)</label>
         <div class="command-row">
@@ -80,8 +109,8 @@
     </div>
   </section>
 </div>
-<footer>007-C is an independently saved prototype. Dinosaur encounters currently increase stress; complete attack, injury and combat procedures are not yet implemented.</footer>
+<footer>007-D adds deterministic autonomous companions and spectator playback. Dinosaur encounters still cause stress only; full injuries, creature attacks and open-ended AI adjudication remain future work.</footer>
 </main>
-<script type="module" src="./src/party-app.mjs?v=007c"></script>
+<script type="module" src="./src/party-app.mjs?v=007d"></script>
 </body>
 </html>
