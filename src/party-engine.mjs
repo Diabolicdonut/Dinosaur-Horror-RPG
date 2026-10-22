@@ -99,7 +99,8 @@ function dinoTick(s,noise,at) {
     gameEvent(s,person.name+' drops '+itemLabel(panic.event.dropped)+' in panic.',person.id,'danger');
    }
    if(panic.event.flee){
-    const exits=SCENARIO.rooms[person.location].exits;
+    const exits=SCENARIO.rooms[person.location].exits.filter(dest=>
+     !(person.location==='utility'&&dest==='shed'&&!person.inventory.includes('keycard')));
     if(exits.length){
      person.location=exits[nextSeed(s)%exits.length];
      person.visitedRooms??=[];
@@ -118,7 +119,8 @@ function dinoTick(s,noise,at) {
   if(s.beat-last<Math.max(2,s.actors.length))continue;
   d.lastStrikes??={};d.lastStrikes[person.id]=s.beat;
   const strike=applyCreatureAttack(person,{seed:nextSeed(s),
-    attackerDice:species.attack,baseDamage:species.baseDamage});
+    attackerDice:species.attack,baseDamage:species.baseDamage,dodge:Boolean(person.guarding)});
+  person.guarding=false;
   person.health=strike.after.health;
   person.broken=strike.after.broken;
   person.dead=strike.after.dead;
@@ -256,7 +258,7 @@ export function partyView(s,{actorId=null}={}) {
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
-  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location)
+  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated)
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
