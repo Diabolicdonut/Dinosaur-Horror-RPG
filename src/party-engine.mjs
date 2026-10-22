@@ -181,6 +181,8 @@ function predatorStep(previous,{actorId,source}){
    victim.criticalInjuries=(strike.after.criticalInjuries||[]).map(w=>({...w}));
    const updated=enrichInjuries(victim,medicalFrom,nextSeed(s));
    Object.assign(victim,updated);
+   if(TRAUMA[strike.critical.code]?.stressRelief)victim.stress=0;
+   if(TRAUMA[strike.critical.code]?.stressGain)victim.stress=Math.min(30,victim.stress+1);
   }
   if(strike.evade){
    victim.stress=strike.evade.after.stress;
@@ -482,7 +484,7 @@ export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
   const self=patient.id===a.id;
   if(self&&a.broken)return rejected(previous,'A broken survivor cannot give themselves first aid.');
   const help=resolveClinicalAid(a,patient,{seed:nextSeed(s),self,
-   medicalGear:equippedMedicalGear(a)});
+   medicalGear:equippedMedicalGear(a),time:worldSeconds(s)});
   if(!help.accepted)return rejected(previous,help.reason);
   a.stress=help.medicAfter.stress;
   a.stressResponses=help.medicAfter.stressResponses;
