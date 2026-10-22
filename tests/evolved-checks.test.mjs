@@ -4,7 +4,7 @@ import {spawnSync} from 'node:child_process';
 import {generateCharacter,CAREERS} from '../src/characters.mjs';
 import {
  createDiceStream,SKILL_ATTRIBUTE,CHECK_ENGINE_VERSION,TALENT_MECHANICS,ALL_TALENT_NAMES,
- resolveSkillCheck, resolvePanic, reduceDamage, restStress, talentRule
+ resolveSkillCheck, resolveOpposedCheck, resolvePanic, reduceDamage, restStress, talentRule
 } from '../src/evolved-checks.mjs';
 const actor=(career,seed=71)=>generateCharacter({career,index:0,seed});
 const run=(a,p)=>resolveSkillCheck(a,{skill:'observation',seed:1993,...p});
@@ -228,4 +228,28 @@ test('invalid rolls reject bad modifiers, forged stats, unknown attributes and i
  assert.throws(()=>run(c,{seed:-1}),RangeError);
  assert.throws(()=>run(c,{attribute:'invented'}),RangeError);
  assert.throws(()=>run({...c,resolve:100}),RangeError);
+});
+
+test('opposed checks resolve both actor sheets with separate reproducible seeded rolls',()=>{
+ const a=actor('ranger'),b=actor('visitor');
+ const first=resolveOpposedCheck(a,b,{seed:1987,activeSkill:'observation',opponentSkill:'mobility'});
+ const second=resolveOpposedCheck(a,b,{seed:1987,activeSkill:'observation',opponentSkill:'mobility'});
+ assert.deepEqual(first,second);
+ assert.equal(first.active.actorId,a.id);
+ assert.equal(first.opponent.skill,'mobility');
+ assert.equal(first.activeSucceeds,first.active.success&&first.active.successes>first.opponent.successes);
+ assert.equal(first.margin,first.active.successes-first.opponent.successes);
+ assert(['active','opponent','tie'].includes(first.winner));
+});
+test('opposed ties never count as success for the active party',()=>{
+ const a=actor('ranger'),b=actor('visitor');
+ let found=false;
+ for(let seed=1;seed<300;seed++){
+  const r=resolveOpposedCheck(a,b,{seed,activeSkill:'observation',opponentSkill:'mobility'});
+  if(r.winner==='tie'){
+   assert.equal(r.activeSucceeds,false);
+   found=true;break;
+  }
+ }
+ assert(found);
 });
