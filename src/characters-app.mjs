@@ -1,7 +1,8 @@
 import {
   ATTRIBUTES, SKILLS, CAREERS, CAREER_IDS, RULE_VERSION, generateCharacter,
   editCharacter, makeParty, validateCharacter, validateParty
-} from './characters.mjs?v=007';
+} from './characters.mjs?v=007b';
+import {resolveSkillCheck} from './evolved-checks.mjs?v=007b';
 
 const $ = id => document.getElementById(id);
 const STORE = 'dinosaur-character-lab-007';
@@ -42,6 +43,7 @@ function draw() {
   $('party-seed').value=String(seed);
   $('party-size').value=String(party.length);
   $('roster-count').textContent=party.length+' / 8';
+  $('roll-actor').textContent=party[chosen]?.name || 'Unknown';
   $('roster-list').innerHTML=party.map((c,i)=>{
     const issues=validateCharacter(c);
     return '<button type="button" data-select="'+i+'" class="roster-item'+(i===chosen?' selected':'')+'"><span><strong>'+esc(c.name||'Unnamed survivor')+'</strong><small>'+esc(CAREERS[c.career]?.label||'Unknown career')+'</small></span><span class="chip">'+(issues.length?issues.length+' ISSUE'+(issues.length>1?'S':''):'VALID')+'</span></button>';
@@ -178,3 +180,66 @@ try {
   }
 } catch {notify('Could not load prior draft; a new roster was created.');}
 ensure();persist();draw();
+
+const skillMenu=$('roll-skill');
+skillMenu.innerHTML=Object.entries(SKILLS).map(([k,label])=>option(k,label,'observation')).join('');
+let lastCheck=null;
+let testIndex=0;
+let lastTestSeed=null;
+function runMechanicalPreview({repeat=false}={}) {
+  const c=party[chosen];
+  const errors=validateCharacter(c);
+  if(errors.length){
+    $('roll-result').textContent='Fix the selected character sheet before resolving checks: '+errors.join(' ');
+    return;
+  }
+  const seedInput=Number($('roll-seed').value);
+  const stress=Number($('roll-stress').value),modifier=Number($('roll-modifier').value);
+  const push=Number($('roll-push').value);
+  if(!Number.isInteger(seedInput)||seedInput<0||seedInput>4294967295||
+      !Number.isInteger(stress)||stress<0||stress>12||
+      !Number.isInteger(modifier)||modifier< -10||modifier>10) {
+    $('roll-result').textContent='Enter a valid seed, stress (0–12), and adjustment (−10 to +10).';
+    return;
+  }
+  const useSeed=repeat&&lastTestSeed!==null?lastTestSeed:
+    (seedInput+testIndex++)>>>0;
+  lastTestSeed=useSeed;
+  try {
+    const result=resolveSkillCheck(c,{
+      skill:skillMenu.value,context:$('roll-context').value,stress,modifier,push,seed:useSeed
+    });
+    lastCheck={result,name:c.name,seed:useSeed};
+    showCheckResult();
+  }catch(error){
+    lastCheck=null;
+    $('roll-result').textContent='Cannot resolve this check: '+error.message;
+  }
+}
+function showCheckResult(){
+  if(!lastCheck)return;
+  const {result:r,name,seed}=lastCheck;
+  const status=r.success?'SUCCESS':'FAILURE';
+  const messages=[
+    name+': '+status+' — '+r.successes+' success'+(r.successes===1?'':'es')+'.',
+    'Using '+SKILLS[r.skill]+' with '+r.attribute+'. '+r.baseCount+' base dice and '+r.stressDiceInitially+' stress dice. Seed '+seed+'.'
+  ];
+  if(r.extraSuccesses)messages.push(r.extraSuccesses+' additional success'+(r.extraSuccesses===1?'':'es')+'.');
+  if(r.notes.length)messages.push('Talent/effect: '+r.notes.join(', ').replace(/_/g,' ')+'.');
+  if(r.pushRefused)messages.push('Push declined by rules: '+r.pushRefused.replace(/_/g,' ')+'.');
+  if(r.pushes.length)messages.push('Pushed '+r.pushes.length+' time'+(r.pushes.length===1?'':'s')+'.');
+  if(r.responseEvents.length){
+    messages.push('Stress response: '+r.responseEvents.map(e=>(e.kind||'Composed')+' ('+e.value+')').join('; ')+'.');
+  }
+  if(r.after.stress!==r.initial.stressLevel)messages.push('Stress after check: '+r.after.stress+'.');
+  if($('roll-show-dice').checked){
+    messages.push('DEBUG dice — initial base ['+r.initial.base.join(', ')+'], stress ['+r.initial.stress.join(', ')+'].');
+    r.pushes.forEach((p,i)=>messages.push('Push '+(i+1)+': base ['+p.base.join(', ')+'], stress ['+p.stress.join(', ')+'].'));
+    r.responseEvents.forEach((e,i)=>messages.push('Response roll '+(i+1)+': '+e.d6+'.'));
+  }
+  $('roll-result').textContent=messages.join('\n');
+}
+$('run-check').addEventListener('click',()=>runMechanicalPreview());
+$('rerun-check').addEventListener('click',()=>runMechanicalPreview({repeat:true}));
+$('roll-show-dice').addEventListener('change',showCheckResult);
+
