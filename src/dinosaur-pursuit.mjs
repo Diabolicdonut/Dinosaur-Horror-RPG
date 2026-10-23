@@ -76,5 +76,5 @@ export function actorHasLight(actor){
 // one legal, unobstructed map exit. No remote or through-door vision.
 export function visibleLampZone(dinosaurZone,actors,options={}){
  const zones=new Set([dinosaurZone,...exitsForCreature(dinosaurZone,options)]);
- return actors.find(a=>!a.dead&&roomIsDark(a.location)&&zones.has(a.location)&&actorHasLight(a))?.location||null;
+ return actors.find(a=>!a.dead&&zones.has(a.location)&&actorHasLight(a))?.location||null;
 }
