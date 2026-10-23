@@ -431,7 +431,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
-  dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:'jungle',lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
+  dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
   actions:[]
  };
