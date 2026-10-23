@@ -5,8 +5,8 @@ export const VISUAL_LINKS=Object.freeze({
  control:Object.freeze(['lobby','utility']),
  lobby:Object.freeze(['control']),
  utility:Object.freeze(['control']), // the reinforced service door obstructs the shed
- shed:Object.freeze([]), // jungle exit is bent around dense vegetation
- jungle:Object.freeze(['helipad']),
+ shed:Object.freeze(['jungle']), // doorway faces the jungle service path
+ jungle:Object.freeze(['shed','helipad']),
  paddock:Object.freeze([]), // fence vegetation blocks paddock-to-path vision
  helipad:Object.freeze(['jungle'])
 });
