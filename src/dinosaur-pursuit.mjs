@@ -66,7 +66,8 @@ export function roomIsDark(id){return ZONE_LIGHTING[id]==='dark';}
 export const LIGHT_CAPACITY_STRETCHES=12;
 export function actorOwnsLight(actor){
  return [...(actor?.inventory||[]),...(actor?.gear||[])].some(x=>
-  x==='flashlight'||x==='working flashlight'||x==='headlamp');
+  x==='flashlight'||x==='working flashlight'||x==='headlamp'||
+  x==='pocket flashlight'||x==='small flashlight');
 }
 // Old v3 saves had automatically lit carried lamps. Preserve that until toggled.
 export function actorHasLight(actor){
