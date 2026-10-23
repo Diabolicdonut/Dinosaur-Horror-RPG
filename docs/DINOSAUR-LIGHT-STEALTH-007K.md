@@ -1,0 +1,38 @@
+# Checkpoint 007-K — Dynamic Lighting, Timed Stealth and Predator Search
+
+**Status:** implemented and deterministic Node validation required before promotion. **Primary reference:** user's privately supplied *Alien RPG — Evolved Edition*, exploration / stealth / darkness / searching, printed pp. 54–58; combat action costs pp. 59–67. These citations identify source authority only. The park map, batteries, animal AI, hearing/visual limits and original equipment are **Jurassic adaptations**, not verbatim Evolved procedures or published dinosaur statistics.
+
+## Playable additions
+
+**Individual lamps:** A survivor carrying a flashlight, pocket flashlight, small flashlight, working flashlight or headlamp can order **turn flashlight on/off**, **switch on/off my headlamp** or select **Switch light ON/OFF** in the Party Incident. New party saves initialize a carried lamp off with **12 ten-minute exploration stretches (120 minutes)** of power; every completed active stretch costs one charge to each lit lamp. Power-out lamps switch off and cannot reactivate. Switching in combat costs a quick action. Existing party-v3 saves missing `light` preserve their previous automatically illuminated-carried-lamp interpretation until a valid toggle changes the actor's light state; no party-save version bump. Lamps do not increase other survivors' Observation pools. A lit lamp restores its carrier's two dice in dark-zone Observation. Lamp visibility to a dinosaur requires the light source to be in its own or a directly map-adjacent zone across a **physically passable** exit; a locked shed/utility door does not grant sight. The predator retains a source-zone clue, not character coordinates. Neither the UI nor an actor's autonomous observation receives the private tracking state. Darkness does not permit stale `seenThreats` memory to generate a new visible dinosaur sighting.
+
+**Ten-minute searches:** The existing Evolved-inspired ten-minute *stretch* clock is authoritative for deliberate hunting. An alerted raptor at its last audible/visible source starts a `search:{zone,startedAtStretch,dueStretch}` rather than making an instant discovery. It remains in that zone, rolls one seeded creature Observation pool at the end of the next complete stretch, and reveals at most one concealed survivor per success. Even an empty-zone search consumes one logged search and a seeded roll. All tested movement uses the existing authored seven-room graph; searching does not relocate the dinosaur through obstacles or locked service doors. New sound or visible light can interrupt an unfinished search, redirecting the creature to another physically reachable clue. On completing a fruitless or successful search, the trail is cleared and alertness drops; residual alert decays on subsequent patrol ticks. Search history is world-private, persists in valid version-3 saves and participates in replay. Medical and injury clocks continue to use the established world time.
+
+**Individual and group movement:** Normal movement remains a quick combat action and generates 1 noise; `sneak` costs a full action and uses the actor's actual seeded Mobility result (0 noise on success, 2 on failure); `rush` costs a quick action and generates 3 noise. A leader may issue `lead group quietly to utility`, `group normal to utility`, or `everyone rush to utility` only toward an existing connected exit. The leader resolves and travels on their own turn, then co-located living able companions receive a persistent local route plan; **they do not teleport**. Each participant follows on their own legal turn with their own injuries, Mobility pool, gear, concealment, sound and knowledge. Players may split up by issuing other actions; autonomous companions only see a matching local plan in their own actor projection. No free turns, free dice or remote knowledge are granted by a group order.
+
+**Control modes:** Party, Character/Focus and Spectator call the same validated `partyStep` mechanics and action budgets. The bounded offline companion director can follow a local group plan and, with an owned charged lamp in a dark zone, switch it on. Pause/Step/Resume and mode/camera changes do not modify the event clock or seeded RNG.
+
+## Source and adaptation ledger
+
+| Procedure | Mechanical authority | Jurassic-specific adaptation |
+| --- | --- | --- |
+| Observation in darkness | Evolved stealth and lighting, pp. 55–58 | Existing individual -2 dice in authored dark park zones; switched-on own lamps negate penalty |
+| Quiet travel, group secrecy | Evolved stealth / group action principles, pp. 55–58 | Individual Mobility resolution on connected seven-zone graph; quiet/normal/rush noise 0/2, 1, or 3; sequential participant actions |
+| Search interval | Evolved exploration stretches and hiding / active searches, pp. 54–58 | Exactly one ten-minute stretch stationary search of one real source zone, seeded per-zone creature Observation, capped reveal by successes |
+| Creature attention | Original park-zone AI, *not* Evolved species RAW | Alert 0–6, physically audible/visible source clues, legal one-exit patrol, interruption, gradual decay |
+| Lighting battery | Original park resource rule, *not* Evolved RAW | 12 ten-minute stretches, one unit per active stretch, cannot toggle depleted device |
+| Combat light switch and movement cost | Evolved-style quick/full action budgets | Switch light = quick; rush = quick; sneak = full; no combat group teleportation |
+| Private knowledge | Dinosaur project engine authority | Character-local vision/events; search, lastClue, lastHeard, seed remain private |
+
+## Validation and compatibility
+
+- Previous **257** deterministic tests retained and **23** new positive, negative, seeded replay, private-state, darkness, search timing, group routing, switch, battery and control-mode tests added (**280** expected overall). Consult GitHub Actions and report the exact green result before marking accepted.
+- No edits to 006.2 `src/engine.mjs`, the legacy singleton browser or Cloudflare Worker `worker/index.mjs`. No Worker deployment required.
+- The party save kind and version **3** remain unchanged; additional actor light, groupTravel, dinosaur search/lastClue/searchHistory fields are optional and strictly validated where provided. Existing v2-to-v3 party migration retained.
+- No proprietary rulebook text, illustrations, creature tables or private uploads included in GitHub.
+
+## Known limitations / release gate
+
+The island still uses seven abstract zones, not continuous physical sightlines, individual cone angles or ray-traced occlusion. Battery capacity and dinosaur light-attraction behavior are explicit, testable Jurassic house rules. There are no pickups or recharging batteries, sophisticated group consent UI, alternative routes around newly modeled obstacles, wind/scent tracking, full creature signature attacks, or broad arbitrary natural-language referee in the party game. This is an Evolved-inspired playable **subset** and does not claim complete rules parity. Browser gameplay QA on desktop/mobile, especially simultaneous group plans, predator searches, lamp switching, save/reload and spectator encounters, is **not yet performed** and remains a separate acceptance task after CI and GitHub Pages checks.
+
+**Next checkpoint 007-L:** species-specific senses/pursuit tactics and visible cones/occluding geometry, portable lighting power and field batteries, group communications/coordination, richer park ecology and physically grounded combat encounter consequences.
