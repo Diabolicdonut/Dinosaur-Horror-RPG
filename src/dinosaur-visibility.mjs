@@ -53,7 +53,7 @@ export function sensoryBehavior(creature,{sourceVisible=false,sourceAudible=fals
  if(sourceVisible&&creature.location===creature.lastHeard)return 'engage';
  if(creature.search)return 'search';
  if(sourceVisible||sourceAudible)return 'investigate';
- if(creature.alert>0&&creature.lastHeard)return
-  creature.alert>=4?'investigate':'stalk';
+ if(creature.alert>0&&creature.lastHeard)
+  return creature.alert>=4?'investigate':'stalk';
  return 'patrol';
 }
