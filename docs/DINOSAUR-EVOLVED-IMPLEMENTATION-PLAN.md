@@ -1,104 +1,166 @@
-# Dinosaur Horror RPG — Faithful Evolved Mechanics / Jurassic Park Content Plan
+# Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Approved direction:** 2026-10-22. Primary private authority: *Alien RPG — Evolved Edition* (Free League, user's Library). Reference policy: [EVOLVED-RULES-AUTHORITY.md](EVOLVED-RULES-AUTHORITY.md).
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-23 (reconciled through accepted Checkpoint 007-L1). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
-## Non-negotiable design rules
+**Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. Keep scenario/franchise data separate so a future original dinosaur-survival setting can reuse the underlying game. The desired finished experience is a persistent, story-rich island with believable animals, beautiful discovery, human dilemmas, real survival consequences and an AI Game Master—not merely a raptor combat simulator.
 
-1. **Mechanics-first fidelity:** Implement the Evolved Edition's attribute + skill dice pools, individual base/stress dice outcomes, stress response and panic timing, Resolve, pushes, extra successes, careers, talents, equipment, action economy, passive/opposed checks, injuries and other survival procedures as written wherever the park setting supports them. Do not replace d6 procedures with an invented single percentage engine at this stage.
-2. **Original themed content:** Dinosaur Horror's human archetypes, park equipment, geography, missions and species-specific threats are bespoke implementations patterned after mechanical roles in Evolved. The uploaded rulebook stays private; no copyrighted text/tables/artwork is copied wholesale into this repository.
-3. **Natural-language first:** Players describe objectives and physical methods in ordinary language. The AI translates to a bounded, semantically validated rule request. **Players never need to know or type skill names, dice notation, talent IDs or coded action verbs.**
-4. **Transparent mechanical provenance:** The engine stores character stats, skill, talent triggers, modifiers, dice (individual rolls), stress and panic effects, opposed checks, time costs and applied world deltas; the UI can keep rolls hidden by default with debug visibility. AI prose cannot alter the committed outcome or expose hidden dinosaur state.
-5. **No arbitrary invention:** All scene objects, equipment, character capabilities and dinosaurs are validated against the persistent world. Unsupported requests are clarified or resolved as physically possible improvisations through tested effect primitives; no LLM-selected dice, damage or creature position.
-6. **Source hierarchy:** Explicit newly accepted Dinosaur Horror rules > Evolved Edition mechanics > original 2019 Alien rules for comparison > Year Zero Mini for tertiary context > legacy checkpoint 006.2 code only as an accurate description of current behavior.
+## 1. Permanent experience and creative pillars
 
-## Careers are themed role packages, not exclusive skill locks
+**Wonder and Dread are equally foundational.** The park is magnificent *before* it becomes terrifying. Dinosaurs are animals with ecology, needs, intelligence and variable dispositions, not universally hostile enemies or video-game monsters. A peaceful sighting may remain peaceful. Awe, curiosity, stillness, beauty, study, animal welfare and natural history are legitimate experiences independent of combat rewards or jump scares. Danger grows from believable ecology, breakdowns, human decisions and circumstance. Never force every scenic moment into a threat.
 
-The Evolved Edition's Core Concepts (p. 26) uses twelve broadly available skills ranked 0–5. A starting character receives 10 skill points; their career skills can begin at up to rank 3, other skills at up to rank 1, and they choose one of their career's starting talents. A skill can be attempted without any ranks. The GM may pair a skill with a non-default attribute when the method supports it (*Using Skills*, p. 43).
+Build toward four complementary emotions: **wonder, curiosity, unease and dread**, without requiring each scene to follow that order. Preserve time for silence, ordinary conversation, beautiful landscapes, grazing herds, nesting behavior, field observations and difficult ethical choices as well as concealment, pursuit, injury, escape and dread.
 
-**Initial candidate Jurassic Park archetypes (fictional mapping only; no mechanics presumed until edition-specific audit):**
+**Permanent creative authority:** [Wonder and Dread Design](WONDER-AND-DREAD-DESIGN.md). Its animal-ecology, player-perspective, journal, nonviolent and narration constraints apply to all playable modes and to generative GM proposals. Distant cinematic herbivore vistas are presently **ambient scenery**, not simulated position-bearing creatures. Future interactable animals must have durable identity, location, behavior, needs and causal histories.
 
-| Evolved narrative role | Proposed original park-themed career |
-| --- | --- |
-| Colonial Marine | Tactical Response Specialist |
-| Colonial Marshal | Park Ranger / Security Officer |
-| Company Agent | InGen Corporate Representative |
-| Kid | Young Park Visitor |
-| Medic | Field Medic / Veterinary Technician |
-| Officer | Park Operations Supervisor |
-| Pilot | Helicopter / Vehicle Pilot |
-| Roughneck | Park Maintenance Technician |
-| Scientist | Paleontologist / Geneticist |
+**The target game loop:** Create a survivor or party; enter a living park with meaningful personal motives; navigate physical places and changing conditions; freely describe plausible actions and conversations; encounter animals, people and ecological discoveries; make hard tradeoffs around supplies, risk, cooperation and stewardship; survive or fail according to the rules; and carry character knowledge, relationships, injuries and discoveries through a consistent saved story. This is a destination, not a claim of current feature completeness.
 
-Start with Evolved's twelve skill **mechanical categories** as internal canonical IDs so all training and talents have an unambiguous specification: Heavy Machinery, Stamina, Close Combat, Mobility, Ranged Combat, Piloting, Observation, Comtech, Survival, Command, Manipulation, Medical Aid. Each candidate career must receive original Jurassic Park background, skill emphases, gear, initial talent options and progression, with source-to-adaptation mapping reviewed individually. For example, Comtech includes park electronics, radios and security systems; Piloting includes plausible park vehicles; medical care and veterinary treatment need explicit species and equipment restrictions rather than assuming full interchangeability.
+## 2. Non-negotiable mechanical and AI doctrine
 
-Keep Evolved's talent timing, activation conditions and dice/stress consequences when creating setting-specific equivalents. Never silently grant unlimited ability to an archetype because its description suggests it is an expert.
+1. **Source fidelity.** The privately supplied *Alien RPG — Evolved Edition* is the primary authority for applicable mechanics: four attributes, 12 broadly usable skills, seeded d6 base/stress pools, pushes, extra successes/stunts, Resolve, stress responses/panic, talents, passive/opposed checks, exploration/combat timing, initiative/action budgets, injuries, equipment and recovery. Keep source dice internally even when hidden in the interface; do not substitute a percentage-only resolver. Use original 2019 Alien rules for historical comparison and Year Zero Mini as tertiary background. All deviations are specifically accepted, documented and tested Jurassic adaptations.
+2. **Original thematic implementation.** Park careers, animals, equipment, scenarios, prose and creature capabilities are original adaptations, not wholesale copies of published character descriptions, creature tables, pages or art. Never commit or redistribute the user's private rulebook or secrets.
+3. **Natural-language first.** The eventual player interface accepts objective, target and physical method in ordinary language, not a required command list or tabletop skill vocabulary. Buttons/debug action names can coexist as accessibility shortcuts while the full interface is built.
+4. **One authoritative deterministic world.** Pure engine code validates physical reality, ownership, timing, skill/talent eligibility, state transitions, dice, injuries, item use, world creatures and victory/failure. Random results, seeded state and accepted proposals are journaled for replay; no model writes arbitrary state.
+5. **AI GM, bounded by validation.** AI interprets intention, suggests suitable rule/attribute/skill/typed effects, portrays dialogue and narrates only committed, visible outcomes. The GM is intended to be a full conversational referee, not merely a parser or flavor generator, but must not fabricate inventory, roll outcomes, dinosaur positions or secret observations.
+6. **Information security inside the fiction.** Each survivor and computer-controlled companion uses only own sight, hearing, memory, known plans and believable communication. Separately filter authoritative world, bounded adjudication context and player-facing narration; no omniscient companion decisions or narrator spoilers.
+7. **Stable replay and compatibility.** Keep save migrations explicit, preserve accepted events, record changing control owners and action costs, and test replay across actor modes. Browser, Worker, private model tokens, legacy solo and party incident have separate compatibility/deployment boundaries.
+8. **Consequences without compulsory dice.** Routine possible acts do not require rolls; impossibilities do not become possible because an AI proposes them. Uncertain consequential acts use exact eligible mechanics, valid resources and real time/action costs.
 
-## Party-control, character-control and spectator requirement (new acceptance)
+**Authority order for mechanical conflicts:** newer explicitly accepted Dinosaur Horror decisions and documented house rules → Evolved Edition → 2019 Alien for approved comparisons only → Year Zero Mini for tertiary context → old prototype solely as evidence of its implemented behavior. This plan cannot silently supersede a newly accepted decision or declare an unimplemented rule complete.
 
-The game supports three player-switchable **decision authority** modes over the same persisted Jurassic Park incident: (1) control all playable characters, (2) control exactly one selectable character while AI controls the others, (3) spectate while AI controls all playable characters. The player can change modes during play (at safe action commit boundaries), and can change **camera/viewpoint** independently of who controls actions. Preserve per-character statistics, resources, injuries, stress, personal knowledge, relationships and goals regardless of mode.
+Read [Evolved Rules Authority](EVOLVED-RULES-AUTHORITY.md), [Hybrid AI GM Architecture](ARCHITECTURE-AI-GM.md), [Referee Contract](REFEREE-CONTRACT.md) and [Model Routing](MODEL-ROUTING.md) for finer distinctions. Specific model assignments are implementation policy and may change after evaluation; their names are not part of the game vision.
 
-**This is a Dinosaur Horror game extension, not a mechanic copied from Alien Evolved.** The character skill, talent, dice, timing and combat mechanics are the same in every mode. The engine remains authoritative over decisions' consequences. See [multi-character control modes](MULTI-CHARACTER-CONTROL-MODES.md) for exact ownership rules, scheduling, spectator controls, security/knowledge boundaries, and testing.
+## 3. Characters, agency and creation contract
 
-**Implementation order change:** Build a roster of independently modeled playable actors and an actor-ID-based scheduler *alongside the Evolved character system* in Phase B. Do **not** build the main engine around a permanent single `state.player` assumption. Implement mode/viewpoint switching on top of the scheduler, followed by AI companions, and finally spectator autonomous play. Guard old saves with a migration.
+**Character mechanics:** Keep the four Evolved attributes (Strength, Agility, Wits, Empathy) and the 12 internal broadly accessible skills: Heavy Machinery, Stamina, Close Combat, Mobility, Ranged Combat, Piloting, Observation, Comtech, Survival, Command, Manipulation and Medical Aid. Untrained skill attempts are allowed. Starting characters use the accepted Evolved 10-point skill allocation, career starting caps and a career talent, with separate character-validating code. Method can justify a non-default attribute/skill pairing; career never functions as an exclusive class lock.
 
-## Manual, automatic and hybrid character creator (new acceptance)
+**Original park career mappings** currently include Tactical Response Specialist, Park Ranger/Security Officer, InGen Representative, Young Visitor, Field Medic/Veterinary Technician, Park Operations Supervisor, Pilot, Park Maintenance Technician and Paleontologist/Geneticist. Preserve the accepted nine-career mapping and 27 adapted career talents; audit each world-dependent talent effect before claiming it works in live play. Long-term advancement, relationships, fears, agendas and story consequences must be persisted—not replaced by character regeneration.
 
-Provide per-slot choice of **manually create**, **auto-generate**, or **hybrid generate/edit** for **any or all** playable party members. Players may lock career/attribute/skill/talent/equipment/identity fields, selectively reroll the unlocked parts, auto-fill missing roster slots or generate a whole party, and preview/validate all character sheets. All options use the same Evolved Edition character creation validator and a distinct seeded generation stream, with no silent changes to already-approved characters or to incident RNG.
+**Any/all-character creation:** A player may manually construct, automatically generate or hybrid-edit any or every slot in a 1–8 person party. Lock or reroll chosen attributes, careers, talents, inventory and identity as allowed; one shared Evolved-based validator approves all variants. Character-generation RNG is separate from live scenario RNG. Characters are approved before play, then change only through legitimate progression and consequences.
 
-This is independent of Party/Focus/Spectator decision ownership. Generator output is mechanically indistinguishable from manually selected legal careers/skills/talents, with original Jurassic Park identity and biographies. During play, characters evolve only through established progression, injury and equipment rules—not retroactive regeneration. See [character-generation design contract](CHARACTER-GENERATION-MODES.md).
+**Three runtime-switchable agency modes—one simulation:**
+- **Party:** Human controls all playable survivors' decisions; dinosaur and outside NPC behavior remains simulated.
+- **Character/Focus:** Human controls one chosen survivor; bounded AI directs the others. Human can switch controlled survivor without rewriting world events.
+- **Spectator:** AI directs the playable party through the same scheduler, with Pause/Step/Resume and viewing pace; this is active browser simulation, not a background-running service.
 
-## Work phases with validation gates
+Control mode and camera/viewpoint are independent. Mid-play changes apply at safe action boundaries; they never grant free actions, reroll results, reset initiative or leak another character's knowledge. AI companions should eventually make differentiated decisions based on relationships, objectives, fears and curiosity, but the existing offline bounded director is **not yet generative companion roleplay**.
 
-### Phase A: Evolved mechanical rules inventory
+Reference: [Character Generation Modes](CHARACTER-GENERATION-MODES.md), [Evolved Character Matrix](EVOLVED-CHARACTER-MATRIX.md), [Multi-Character Control Modes](MULTI-CHARACTER-CONTROL-MODES.md).
 
-Build a **source-to-engine matrix** against the private book with: rule name, page, inputs, output, timing, exceptions, test fixture, adaptation decision, implementation status. Minimum coverage:
-- Character creation: four attributes, career key attribute, 12 skills, skill rank caps, talents, starting gear, backgrounds, Health and Resolve.
-- Skill resolution: threshold/extra successes, modifiers, assistance, untrained attempts, switching attribute, opposed and passive checks.
-- Push restrictions (including existing stress faces), stress responses vs panic, Resolve, stress recovery, and lasting consequences.
-- Action timing: stealth exploration, encounter transition, combat initiative and quick/full actions, interruption and time/resource costs.
-- Injury/Health/armor/critical injury/healing/recovery, supplies/gear and survival.
-- Encounter mechanics appropriate for humans, dinosaurs, vehicles and other park threats.
+## 4. Honest implementation snapshot (2026-10-23)
 
-**Gate:** no rule marked implemented without positive, negative and deterministic replay tests.
+**Authoritative development state at this revision:** `main` commit `81b9d49f56c470cb33208ba94a0d642710ce1429`, Checkpoint **007-L1**, app version **0.7.11**, **307/307** Node regression tests, successful main GitHub Actions validation and Pages deployment. **Interactive desktop/mobile graphical gameplay smoke remains unperformed**. Always consult [../project-state.json](../project-state.json), the newest accepted [../audit.md](../audit.md) and current GitHub HEAD for a newer state; do not treat this dated snapshot as a frozen test count.
 
-### Phase B: Mechanical foundation / character system
+| Domain | Accepted playable subset | Open work / honest limits |
+| --- | --- | --- |
+| Character Lab and roster | Nine Jurassic career mappings; 12 skills; Evolved-inspired seeded individual d6/stress checks; manual/auto/hybrid 1–8 character setup and launch | Several of 27 talent hooks have no world effects; source-complete advancement, panic and specialist capabilities remain partial |
+| Party/Character/Spectator | Independent 007-series party incident, shared persistent world, knowledge-bounded offline director, atomic mode/camera switches, spectator controls | Generative companion conversation, richer agendas/relationships, complete NPC simulation and full free-form actions not yet live |
+| Combat and injuries | Seeded initiative, quick/full budgets, raptor slots, defense choice, surprise/ambush, wounds and medical clocks in growing Evolved-inspired subset | Species-specific attacks, complete equipment/armor/ammunition, environmental complications and complete edition parity remain |
+| Pursuit, stealth and vision | Zone-bound routes and sound; individually controlled finite lamps; timed searches; individual/group movement; directional short-range sightlines, named physical cover, raptor sensory profile | True stalking tactics, moving occluders/facing, scent/wind, additional simulated species and realistic range/visibility remain |
+| Wonder and discovery | Four optional world-anchored scenes, each saved to one survivor's private journal without time/dice cost | Herbivores are ambient-only; no durable peaceful population, herds, animal social behavior, field-guide progression or wonder-aware autonomous AI yet |
+| AI Game Master | Separate legacy 006.2 browser/Cloudflare Worker v006 supports bounded parsing, narration and four typed improvised actions | New party incident is primarily offline/deterministic; fully conversational multi-actor GM, compound actions, persistent dialogue and Worker integration are pending |
+| Scenarios and presentation | Playable seven-zone island incident; park systems and survivor objectives; browser UI and export/replay | Rich island geography, vehicles, alternate incidents, sustained campaign-scale narrative and hands-on graphical QA still pending |
 
-- Introduce data-driven character careers, attributes, skills and talent definitions; implement character creation validation and advancement.
-- Build a **shared mechanical character validator** and party-roster creator with per-character manual, seeded random and hybrid/locked-field generation, including Evolved rule caps, derived values, selected talents and starting gear. Keep creation RNG independent from gameplay RNG.
-- Model a **roster of playable actors by stable ID** from the outset, with each character's independent skills, talents, stress, injury, inventory, location, agenda and knowledge; implement one deterministic scheduling and action-ownership service for all three modes. Preserve existing save behavior with migration.
-- Port Evolved-style dice pool resolution **with every die result retained**, seed replay, stress dice distinguished from base dice, push and stress-response semantics and conditional effects.
-- Add skill and talent hooks in original game code and verify the probability distribution against mathematical expectations as a diagnostic, **without replacing dice**.
-- Audit the current `check()` and `RULESET` as legacy only; fix deviations in new engine version while maintaining migration/saved-game handling.
+**Technical nuance:** The legacy 006.2 solo game and manually deployed Worker v006 are *separate from* the newer 007 party game; neither inherits new 007 mechanics automatically. Party save kind `dinosaur-party-incident` remains schema **v3** with v2→v3 migration and optional later fields. Old solo saves remain isolated. The private Evolved PDF is never committed to GitHub. Source parity is incremental, not complete.
 
-**Gate:** test character build edge cases, untrained attempts, career caps, talent effects, attribute switching, stress, pushing, passive/opposed checks and deterministic replays. Document any purposeful Jurassic Park house rules.
+Detailed feature truth lives in the latest accepted audit and implementation reports—not in older individual checkpoint summaries, which are historical records. An older paragraph using "planned" does not overturn a newer validated checkpoint.
 
-### Phase C: Combat, stealth and survival parity
+## 5. Near-term milestone roadmap and dependency gates
 
-- Add Evolved encounter action economy, stealth procedures, critical damage, armor, recovery, supply and timed activity rules.
-- Create dinosaur species data with verified sensory, pursuit, defensive and signature-attack procedures; align creature pacing to Evolved encounter risks without simply renaming Xenomorphs.
-- Support original park situations: power outages, electrified fences, tropical storms, veterinary care, evacuation, vehicles and environmental barriers.
+Milestone labels below express the current accepted order, **not immutable dates**. Before work, inspect newer `main` and adjust if later validated work has already advanced the plan. Never replay completed milestones.
 
-**Gate:** replay representative multi-round pursuits, hiding, injuries and recovery; no dinosaur omniscience or magical disappearing props.
+### 007-L — Spatial and species-grounded survival (IN PROGRESS)
 
-### Phase D: Natural-language Game Master
+- **007-L1 complete in automated acceptance:** Authored directional one-exit sightlines separate from travel/hearing; solid foliage/door occlusion; local named cover checked with seeded Mobility; actor-only glimpses; one Velociraptor sensory profile with saved `patrol / investigate / stalk / search / engage` stages. Wonder and Dread personal discoveries preserved. **307/307** tests and CI/Pages passed; manual browser verification remains outstanding.
+- **007-L2 next:** Convert stalking from a stored label into legal creature decisions and approach/ambush tradeoffs; model facing, relevant dynamic obstructions and changing weather/conditions without treating sound as vision; add grounded, original creature-specific attack and pursuit consequences; validate physical reach, target choice, injuries and visible clues.
+- **Gate:** Successful legal/blocked passage and line-of-sight tests, seeded search/pursuit/cover/attack replay, no leaked hidden animal information, compatibility across all three modes, saves and previous tests. Test quiet/violent and nonviolent animal behavior where actually implemented. Report manual graphical testing honestly, separately from CI.
 
-- Interpret user intent and method, source objects, goal, stakes and action sequence without a player-facing verb list.
-- Implement distinct **Party / Character / Spectator** mode control and independent **camera/viewpoint** selection; give each playable AI character bounded character-specific proposals for autonomous decisions and preserve selected focus, pending plans and mode switches in a journal.
-- Spectator autonomously advances the same real game simulation with Pause/Step/Resume and single-actor takeover; prevent unauthorized omniscience, double turns, stale AI actions and fabricated story outcomes.
-- Translate to **actual Evolved-compatible skill checks and talent triggers** behind the screen. Request a different attribute with a given skill when justified, subject to deterministic approval.
-- Split or sequence compound actions using real time/action costs and interruptions; resolve success/failure and secondary outcomes using recorded dice.
-- Narrate from committed, player-visible events only. Expose optional explain-ruling/debug mode, not obligatory checks to player.
+Reference: [Spatial / Velociraptor 007-L1](DINOSAUR-SPATIAL-007L1.md), [Lighting and Timed Search 007-K](DINOSAUR-LIGHT-STEALTH-007K.md), [Pursuit 007-J](DINOSAUR-PURSUIT-007J.md).
 
-**Gate:** original prompts such as "get past the fence", "signal the helicopter", "keep the raptor away", "patch her leg", "use the park's camera system", "move the cabinet and hide" each translate appropriately without pre-programmed player command forms.
+### 007-M — Physical resources, equipment and park systems (AFTER 007-L VALIDATION)
 
-### Phase E: Cinematic incident and transition
+- Replace abstract or implied consumables where appropriate with owned, finite, transferable physical batteries, replacements, charging and pickup opportunities, without invalidating legacy lamp saves.
+- Add authored tools, repairs, equipment scarcity and interactions with damaged doors, fences, generators, radios, medical supplies and weather; respect electricity, barriers and physical objects.
+- Require valid tools, actors, materials, Evolved skills, real time and meaningful setbacks; item transfer/spending must persist and replay.
+- **Gate:** Resource conservation, time/accounting, replay and failure-safe inventory tests; no conjured objects, free battery charge, implausible repairs, rule bypasses or forced hazards. All-mode and legacy save regression.
 
-- Construct original park careers, NPC agendas, growing pressure, information, escape objectives and dinosaur encounters.
-- Retest saves and worker API. No breaking change to stable v006.2 save schema without explicit migrations and archived replay fixtures.
-- Keep the Cloudflare Worker source manually deployable; only ask user to repaste/deploy when `worker/index.mjs` actually changes.
+### 007-N — Bounded multi-actor natural-language Game Master (AFTER VERIFIED MECHANICAL PRIMITIVES)
 
-## Change-management rule
+- Extend intent recognition from one command to goals/methods and actor-specific **compound** plans, e.g., "switch off my light, wedge the cabinet against the door, then hide behind it".
+- Validate real entities, sequence, actor ownership, skill/attribute/talent eligibility, action costs, stale proposals, interruptions and legal typed effect primitives *before* seeded resolution.
+- Narrate committed actor-visible outcomes; model consequential speech and NPC interaction using validated state-change proposals separate from free dialogue. Preserve companion agency, curiosity and secrecy.
+- Evaluate/refine the Cloudflare Worker protocol and model routing only when the party engine actually needs integration. GitHub commits do not deploy an existing manually pasted Worker; document and verify deployment independently when Worker source changes.
+- **Gate:** End-to-end tests for novel, ambiguous, impossible, routine and multi-actor requests; exact dice/state replays, no fabricated facts, no hidden-state leaks, bounded cost/error handling, three control modes and interruption/rollback safety.
 
-Any deviation from an Evolved mechanic requires a line in the adaptation matrix specifying: **Evolved baseline behavior → Jurassic Park revision → rationale → numerical/procedural differences → regression tests → approval status**. Until then, rules remain Evolved-default.
+**Sequencing policy:** Do not rush into general generative adjudication before its physical/environmental effects have deterministic definitions. Nonetheless, retain full conversational GM as an essential destination, not an optional cosmetic layer.
 
-**This document is a roadmap, not evidence that Phase A–E are complete.** Existing Checkpoint 006.2 browser and Worker behavior remains unchanged by documentation decisions.
+## 6. Longer-term parallel product tracks (scope, not yet numbered checkpoints)
+
+These streams extend the original A–E phases and may be scheduled into future milestones once their prerequisites exist:
+
+### Living dinosaur ecology and nonviolent encounters
+
+- Add durable position-bearing herbivores and eventually additional carnivores with species-specific senses, needs, feeding, nesting, territoriality, social groups, rest, migration, weather response and habitat constraints. Animal behavior should be coherent and repeatable, not simplistic guaranteed attacks.
+- Allow peaceful encounters, observation, respectful distance, environmental protection, photography/sketches/field notes, caring for wildlife and plausible responses to human actions. Characters may recognize species, signs and individual behavior without omniscient knowledge.
+- Make the personal field journal and eventually appropriately communicated shared knowledge meaningful without mandatory XP, stress-recovery or combat bonuses; peaceful encounters may stay peaceful over extended play.
+- Test non-hostile sessions, herd persistence, per-character knowledge, ecological consequences, and AI-companion curiosity. This **must not be postponed indefinitely** just because predator/combat plumbing is easier to test.
+
+### Human NPCs and persistent interpersonal stories
+
+- Create grounded park staff, visitors, researchers and antagonists with location, resources, agendas, relationships, memories, fears and limited observations. Their decisions and conversations can cause real events only through validated engine effects.
+- Support cooperation, disagreement, command limitations, trust, rescuing others, ethical conflict and consequences for human choices in Party, Character and Spectator.
+- Provide credible quiet narrative beats and social scenes between crises.
+
+### Richer park, incidents and campaign continuity
+
+- Expand beyond the starter seven-zone map into park geography with accurate routes, visibility, habitats, facilities, fences, weather, power networks, vehicles, communications, evacuation and multiple scenario objectives.
+- Make island exploration/scenic diversity, rescue/escape, scientific investigation, conservation and human responsibility important alongside survival.
+- Support authored or generated incidents through reusable content schemas, clear advancement/save migration, persistent history and replayable consequences. Keep initial Jurassic Park-inspired data separable from a later original setting.
+
+### Evolved parity and advanced survival
+
+- Complete priority gaps in stress/panic and action interruption, context-valid talents, armor/gear/ammunition, specific critical/infection consequences, healing and long-term injury, vehicle actions, complex cooperative/opposed checks, source-compatible progression and difficult combat cases.
+- Record each deliberate Jurassic deviation with numerical/procedural differences and test fixtures. Do not claim whole-book fidelity merely because the core dice engine works.
+
+### UI, safety and practical release quality
+
+- Make manual party creation, mode switching, scene perception, equipment and natural-language interaction intuitive on desktop/mobile. Preserve accessible status/logs and opt-in developer dice visibility.
+- Provide robust save/export/import, recovery, reproducible debug, safety around API credentials/costs, client↔Worker version reporting and graceful fallbacks if the model is unavailable.
+- Verify real interactive browser flows; syntax checks and unit tests are necessary but not substitutes for graphical play.
+
+## 7. Original A–E implementation phases — revised status
+
+Keep the original phase structure as a long-range *work breakdown*, not a claim that each phase must be completed serially or that early accepted features need rebuilding.
+
+| Phase | Original objective | Status at 007-L1 | Remaining exit work |
+| --- | --- | --- | --- |
+| **A — Rules inventory and source mapping** | Source-to-engine matrix of Evolved timing, dice, skills, stress, injuries, equipment, combat and deviations | **Partially established** through rules authority and feature-specific parity reports | Consolidate/audit uncovered and intentionally adapted cases; fixtures for each accepted rule |
+| **B — Characters and core engine** | Careers, 12 skills, manual/auto/hybrid party creator, actor IDs, seeded rolls, stable saves, control ownership | **Substantially playable alpha** in Character Lab and 007 party incident | Complete world-dependent talent hooks, progression, panic effects, stronger shared simulation contract |
+| **C — Combat, stealth and survival** | Full action economy, predator perception, injuries, supplies and park-specific constraints | **Active** through 007-L1; initiative, wounds, lighting and physical cover implemented as bounded subsets | 007-L2 predator behavior; 007-M resources/hazards; advanced Evolved parity and ecology |
+| **D — Natural-language GM and autonomous actors** | Multi-actor conversation, validated typed effects, NPC dialogue, actor-limited narration and decisions | **Partially playable:** three modes and offline companion policy; separate legacy 006 Worker only | 007-N integration, compound decisions, genuinely conversational GM, persistent social NPCs |
+| **E — Cinematic living incident and transition** | Original park missions, scenes, NPCs, story continuity, alternate setting and reliable deployment | **Early alpha:** starter island incident and personal wonder discoveries | Larger living ecosystem, social/narrative arcs, scenario variety, field journal, QA and final-release gates |
+
+**Original Phase A coverage checklist:** character creation and Health/Resolve; skill rank/attribute pairing; base/stress dice and pushes; Resolve/panic/stunts; active/passive/opposed checks; exploration/combat clock and actions; stealth/detection; armor/injury/death/healing; gear/supplies/vehicles; creatures/NPCs. Each entry should eventually specify: private source page, rule, inputs/outputs, timing, exception, adaptation decision, implementation file, tests and status. This is not permission to publish source text.
+
+## 8. Release-quality definition of done
+
+A finished milestone is not "green" merely because an agent says it implemented something. Require:
+- Code and data changes supported by testable source/house-rule decisions, with positive, negative, RNG-seeded/replay and invalid-input cases.
+- Physically grounded simulation: durable objects and animals, consistent movement/time, deterministic dice, no free actions, no invisible resource creation and no unearned omniscience.
+- Save/restore and migration tests for earlier valid party states (party schema v3 and v2→v3), continued isolation of legacy 006.2 solo saves, and integrity under mode/camera switches.
+- Separate reporting of local/CI automation, GitHub Pages deployment, Cloudflare Worker deployment where applicable, and **actual desktop/mobile interactive graphical smoke**. Do not mark the last category passed without doing it.
+- Updated feature-fidelity/house-rule report, `project-state.json`, newest `audit.md` entry and `README.md` as needed. Include exact accepted commit SHA and outstanding limitations.
+
+**Target-game acceptance (future, not current):** A user can generate/customize a party, explore a beautiful living island, meet peaceful and dangerous simulated dinosaurs, converse with NPCs, describe novel compound actions without engine verbs, experience real source-grounded risks, injuries and character motives, switch among Party/Character/Spectator in mid-story, and resume or replay the same causal world. A full playthrough must permit wonder to stay wonder; drama and danger must emerge from the simulation, not a forced scare cadence. Test prolonged noncombat sessions as well as survival/escape and catastrophic failure.
+
+## 9. Continuity and change management
+
+**Read order before any new work:** current GitHub `main` and recent commits → `project-state.json` → newest/topmost accepted `audit.md` → this living roadmap → relevant domain contracts/reports and current tests. Do not confuse older checkpoint reports with current implementation status. If `main` has advanced, preserve the newer accepted work and reconcile rather than rollback.
+
+- The roadmap describes **where we're heading**, not the currently deployed version; `project-state.json` records current machine-readable status, and `audit.md` preserves accepted historical evidence.
+- New approved design directions (mechanics, Wonder and Dread, scope, agency, narrative doctrine) must be reflected here in the appropriate *permanent* section, with links to detailed contracts. Do not just append them to a transient checkpoint.
+- Newly completed features update the dated status snapshot or its references and the affected A–E row. Avoid duplicate, stale "not implemented" claims after acceptance; distinguish accepted in tests vs manual QA.
+- A deviation from Evolved requires: **source behavior → Jurassic revision → rationale → exact mechanical/numeric changes → regression tests → approval status**. Unless explicitly approved, keep Evolved default.
+- Never erase source rationale or validated historical audit entries, change old saves silently, invent future milestone acceptance or publish the private rulebooks.
+- If dependencies or milestone numbers change, revise this plan transparently, preserve accepted checkpoints and write an audit entry identifying the decision and why.
+
+**Scope boundaries:** No claim of complete Evolved RAW, continuous free-roaming 3D park, simulated herbivore population or fully integrated OpenAI GM until individually implemented and verified. No mandatory multiplayer or server-backed saves is assumed for this personal-use single-player project. New capabilities can be proposed and approved without treating this document as unchangeable law.
