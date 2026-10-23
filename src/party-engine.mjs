@@ -3,6 +3,7 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight} from './dinosaur-pursuit.mjs?v=007j';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007i';
@@ -81,19 +82,27 @@ function nextTurn(s){
 function dinoTick(s,noise,at) {
  const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
  if(d.defeated||s.combat?.active)return;
- if(noise>0&&dist(d.location,at)<=noise){
-  d.lastHeard=at;d.alert=Math.min(4,d.alert+noise);
+ const breach=Boolean(s.flags.shedBarrierBreached);
+ const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach});
+ if(signal.heard){
+  d.lastHeard=at;
+  d.lastHeardBeat=s.beat;
+  d.alert=Math.min(6,Math.max(d.alert,noise+2));
  }
- // Secret patrol during exploration stretches; no creature combat attacks
- // occur here. Once contact is established, drawn initiative governs attacks.
+ // Only map-connected movement occurs on exploration patrol ticks. A secured
+ // reinforced staff door blocks the animal even if it can faintly hear noise.
  if((s.beat+1)%2===0){
-  if(d.alert>0&&d.lastHeard&&d.location!==d.lastHeard){
-   d.location=stepToward(d.location,d.lastHeard);d.alert--;
-  }else if(d.alert>0)d.alert--;
-  else if(nextSeed(s)%3===0){
-   const exits=SCENARIO.rooms[d.location].exits;
-   d.location=exits[nextSeed(s)%exits.length];
+  if(d.alert>0&&d.lastHeard){
+   const path=pursuitStep(d,{shedDoorBreached:breach});
+   if(path.tracking&&!path.blocked){
+    d.location=path.location;
+    d.alert=Math.max(0,d.alert-1);
+   }else d.alert=Math.max(0,d.alert-1);
+  }else if(nextSeed(s)%3===0){
+   const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
+   if(exits.length)d.location=exits[nextSeed(s)%exits.length];
   }
+  if(d.alert===0)d.lastHeard=null;
  }
  // An active search uses one Observation roll for the zone. Each success
  // may uncover one concealed survivor; entering alone never reveals cover.
@@ -114,7 +123,8 @@ function dinoTick(s,noise,at) {
  const newcomers=s.actors.filter(a=>!a.dead&&!a.broken&&a.health>0&&
   a.location===d.location&&!a.hidden&&!(a.seenThreats||[]).includes(d.id));
  const sight=newcomers.length?detectGroupCreature(newcomers,{
-  seed:nextSeed(s),observationDice:species.observation}):null;
+  seed:nextSeed(s),observationDice:species.observation,
+  darkness:roomIsDark(d.location)}):null;
  let exposed=false,predatorAmbush=false,humanAlerted=false;
  for(const person of s.actors){
   if(person.dead||person.broken||person.health<=0||person.location!==d.location)continue;
@@ -436,6 +446,7 @@ export function partyView(s,{actorId=null}={}) {
    pendingReaction:s.combat.pendingReaction?{...s.combat.pendingReaction}:null,
    remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
   location:actor.location,roomName:place.name,description:place.description,
+  lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal light available':'dark — low visibility'):'partially lit',
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
@@ -462,6 +473,8 @@ export function parsePartyAction(input) {
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
  if(['wait','stay'].includes(line))return {kind:'wait',target:'',push:0};
+ const quiet=line.match(/^(?:sneak|creep|move quietly|move silently)\s+(?:to\s+)?(.+)$/);
+ if(quiet)return {kind:'sneak',target:quiet[1].replace(/^the /,'').trim(),push};
  const hold=line.match(/^(?:hold|hold off|defer)\s+(?:to\s+)?(?:card\s+)?(\d{1,2})$/);
  if(hold)return {kind:'hold',target:hold[1],push:0};
  if(line==='hold')return {kind:'wait',target:'',push:0};
@@ -503,7 +516,7 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','hold','end','move','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
+ if(!['wait','hold','end','move','sneak','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
   if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
@@ -660,7 +673,8 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
     (d.defeated?' It collapses.':''),a.id,'danger');
   return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated,ambush:covertStrike},ranged?3:2);
  }
- if(action.kind==='move'){
+ if(action.kind==='move'||action.kind==='sneak'){
+   const quiet=action.kind==='sneak';
    const limitations=woundModifiers(a,'mobility');
    if(limitations.immobile)return rejected(previous,'This injury prevents movement until treated.');
    const room=matchRoom(action.target,a.location);
@@ -674,10 +688,17 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
      return accepted(s,a,'escape_fail',room,escape,2);
     }
    }
-   a.location=room;a.hidden=false;
+   const hadCover=a.hidden;
+   const stealth=quiet?result('mobility','stealth_travel'):null;
+   const sound=quiet?(stealth.success?0:2):1;
+   a.location=room;
+   a.hidden=Boolean(quiet&&hadCover&&stealth.success&&
+     (SCENARIO.rooms[room].affordances||[]).length);
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
-   gameEvent(s,a.name+' enters '+SCENARIO.rooms[room].name+'.',a.id);
-   return accepted(s,a,'move',room,{},1);
+   gameEvent(s,a.name+(quiet?(stealth.success?' slips quietly into ':' makes a noise entering '):
+     ' enters ')+SCENARIO.rooms[room].name+'.',a.id,quiet&&!stealth.success?'risk':'action');
+   return accepted(s,a,quiet?'sneak':'move',room,
+     quiet?{...stealth,noise:sound}: {},sound);
  }
  if(action.kind==='take'){
    const item=matchItem(action.target,s.rooms[a.location].items);
