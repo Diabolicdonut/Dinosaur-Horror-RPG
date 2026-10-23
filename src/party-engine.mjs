@@ -3,10 +3,10 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs';
-import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight} from './dinosaur-pursuit.mjs?v=007j';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007k';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007i';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007k';
 import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007i';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
@@ -79,21 +79,66 @@ function nextTurn(s){
  s.beat++;
  if(s.cursor===0)s.round++;
 }
+function advanceLightClock(s,fromStretch){
+ const elapsed=(s.clock?.explorationStretches||0)-fromStretch;
+ if(elapsed<=0)return;
+ for(const a of s.actors){
+  if(!a.light?.on)continue;
+  a.light.charge=Math.max(0,a.light.charge-elapsed);
+  if(a.light.charge===0){
+   a.light.on=false;
+   gameEvent(s,a.name+"'s carried light dies as its battery is exhausted.",a.id,'risk');
+  }
+ }
+}
+// One full exploration stretch per active zone search, including empty zones.
+// Only seeded checks alter concealment; no location leak to distant survivors.
+function advancePredatorSearch(s){
+ const d=s.dinosaurs[0],search=d.search;
+ if(!search||d.defeated||s.combat?.active||
+    s.clock.explorationStretches<search.dueStretch)return;
+ if(d.location!==search.zone){d.search=null;return;}
+ const hidden=s.actors.filter(a=>a.location===search.zone&&a.hidden&&!a.dead&&!a.broken);
+ const seed=nextSeed(s);
+ const found=searchHiddenGroup(hidden.map(a=>a.id),{
+  seed,observationDice:DINO_SPECIES.velociraptor.observation});
+ d.searchHistory??=[];
+ d.searchHistory.push({zone:search.zone,startedAtStretch:search.startedAtStretch,
+  resolvedAtStretch:s.clock.explorationStretches,seed,
+  successes:found.search.successes,revealed:[...found.revealed]});
+ d.searchHistory=d.searchHistory.slice(-40);
+ for(const id of found.revealed){
+  const person=s.actors.find(a=>a.id===id);
+  person.hidden=false;
+  gameEvent(s,'The velociraptor uncovers '+person.name+'.',id,'danger');
+ }
+ d.search=null;d.lastHeard=null;d.alert=Math.max(0,d.alert-2);
+}
 function dinoTick(s,noise,at) {
  const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
  if(d.defeated||s.combat?.active)return;
  const breach=Boolean(s.flags.shedBarrierBreached);
  const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach});
- if(signal.heard){
-  d.lastHeard=at;
-  d.lastHeardBeat=s.beat;
-  d.alert=Math.min(6,Math.max(d.alert,noise+2));
- }
+if(signal.heard){
+   d.lastHeard=at;
+   d.lastHeardBeat=s.beat;d.lastClue='sound';
+   d.alert=Math.min(6,Math.max(d.alert,noise+2));
+   if(d.search&&d.search.zone!==at)d.search=null;
+  }else{
+   const lamp=visibleLampZone(d.location,s.actors,{shedDoorBreached:breach});
+   if(lamp){
+    d.lastHeard=lamp;d.lastClue='light';
+    d.alert=Math.min(6,Math.max(d.alert,4));
+    if(d.search&&d.search.zone!==lamp)d.search=null;
+   }
+  }
  // Only map-connected movement occurs on exploration patrol ticks. A secured
  // reinforced staff door blocks the animal even if it can faintly hear noise.
  const predatorPreviousZone=d.location;
- if((s.beat+1)%2===0){
-  if(d.alert>0&&d.lastHeard){
+if((s.beat+1)%2===0){
+   if(d.search){
+    // Committed zone search prevents patrol movement until completion.
+   }else if(d.alert>0&&d.lastHeard){
    const path=pursuitStep(d,{shedDoorBreached:breach});
    if(path.tracking&&!path.blocked){
     d.location=path.location;
@@ -103,30 +148,20 @@ function dinoTick(s,noise,at) {
    const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
    if(exits.length)d.location=exits[nextSeed(s)%exits.length];
   }
-  if(d.alert===0)d.lastHeard=null;
- }
- if(d.location!==predatorPreviousZone){
+if(d.alert===0&&!d.search)d.lastHeard=null;
+  }
+  if(!d.search&&d.alert>0&&d.lastHeard===d.location){
+   const start=s.clock?.explorationStretches||0;
+   d.search={zone:d.location,startedAtStretch:start,dueStretch:start+1};
+  }
+  if(d.location!==predatorPreviousZone){
   for(const listener of s.actors){
    if(listener.dead||listener.location===d.location)continue;
    if(hearNoise(listener.location,d.location,1,{shedDoorBreached:breach}).heard)
     gameEvent(s,'Heavy footfalls sound somewhere nearby.',listener.id,'danger');
   }
  }
- // An active search uses one Observation roll for the zone. Each success
- // may uncover one concealed survivor; entering alone never reveals cover.
- if(d.alert>0&&s.beat%Math.max(2,s.actors.length)===0){
-  const hidden=s.actors.filter(a=>a.location===d.location&&a.hidden&&!a.dead&&!a.broken);
-  if(hidden.length){
-   const located=searchHiddenGroup(hidden.map(a=>a.id),{
-    seed:nextSeed(s),observationDice:species.observation});
-   for(const id of located.revealed){
-    const found=s.actors.find(a=>a.id===id);
-    found.hidden=false;
-    gameEvent(s,'The velociraptor uncovers '+found.name+'.',found.id,'danger');
-   }
-  }
- }
- // Allies in one visible zone compare their strongest passive Observation
+// Allies in one visible zone compare their strongest passive Observation
  // against the same creature result. They do not sum their successes.
  const newcomers=s.actors.filter(a=>!a.dead&&!a.broken&&a.health>0&&
   a.location===d.location&&!a.hidden&&!(a.seenThreats||[]).includes(d.id));
@@ -321,8 +356,9 @@ function matchObservation(target,location) {
 }
 function accepted(s,actor,kind,target,extra={},noise=0,additionalStretches=0,{safeRestFor=null,nurseFor=null}={}) {
  if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
- const medicalFrom=worldSeconds(s);
- const wasCombat=Boolean(s.combat?.active),slot=activeCombatSlot(s);
+const medicalFrom=worldSeconds(s);
+  const fromStretch=s.clock.explorationStretches;
+  const wasCombat=Boolean(s.combat?.active),slot=activeCombatSlot(s);
  s.actions.push({beat:s.beat,actorId:actor.id,kind,target,...extra,
   ...(wasCombat?{combatRound:s.combat.round,card:slot?.card??null}: {})});
  s.actions=s.actions.slice(-200);
@@ -342,7 +378,11 @@ function accepted(s,actor,kind,target,extra={},noise=0,additionalStretches=0,{sa
   s.clock.explorationActions+=additionalStretches*s.actors.length;
   s.clock.explorationStretches+=additionalStretches;
  }
- medicalTick(s,medicalFrom,{safeRestFor,nurseFor,deferRoundDeath:wasCombat});
+ if(!wasCombat){
+   advanceLightClock(s,fromStretch);
+   advancePredatorSearch(s);
+  }
+  medicalTick(s,medicalFrom,{safeRestFor,nurseFor,deferRoundDeath:wasCombat});
  return {accepted:true,state:s,result:extra};
 }
 function rejected(before,why){
@@ -354,7 +394,8 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  if(issues.length)throw new RangeError(issues.join(' '));
  const actors=deep(party).map(c=>({
   ...c,location:SCENARIO.start,health:c.healthMax,
-  inventory:[],hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
+  inventory:[],light:{on:false,charge:actorOwnsLight(c)?LIGHT_CAPACITY_STRETCHES:0},
+   hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
   armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
   medicalRest:false,lastAction:null
@@ -393,6 +434,14 @@ export function isPartySave(s) {
     s.actors.length>8||s.cursor>=s.actors.length||
     !Number.isInteger(s.rng)||!s.rooms||!s.flags||!Array.isArray(s.actions)||
     !Array.isArray(s.events)||!Array.isArray(s.dinosaurs)||
+     (s.groupTravel!==undefined&&s.groupTravel!==null&&
+      (!SCENARIO.rooms[s.groupTravel.from]||!SCENARIO.rooms[s.groupTravel.to]||
+       !['quiet','normal','noisy'].includes(s.groupTravel.approach)||
+       !Array.isArray(s.groupTravel.awaiting)||
+       s.groupTravel.awaiting.some(id=>!s.actors.some(a=>a.id===id))))||
+     (s.dinosaurs[0]?.search!==undefined&&s.dinosaurs[0]?.search!==null&&
+       (!SCENARIO.rooms[s.dinosaurs[0].search.zone]||
+       !Number.isSafeInteger(s.dinosaurs[0].search.dueStretch)))||
     !Array.isArray(s.startingRoster)||validateParty(s.startingRoster).length!==0||
     !SCENARIO.rooms[s.dinosaurs[0]?.location])return false;
  if(validateParty(s.actors).length)return false;
@@ -401,7 +450,10 @@ export function isPartySave(s) {
    a.visitedRooms.every(r=>Boolean(SCENARIO.rooms[r]))&&
    Array.isArray(a.attemptedObservations)&&
    typeof a.health==='number'&&a.health>=0&&
-   Number.isInteger(a.stress)&&a.stress>=0&&a.stress<=30)&&
+   Number.isInteger(a.stress)&&a.stress>=0&&a.stress<=30&&
+    (a.light===undefined||(typeof a.light?.on==='boolean'&&
+      Number.isSafeInteger(a.light.charge)&&a.light.charge>=0&&
+      a.light.charge<=LIGHT_CAPACITY_STRETCHES)))&&
    Object.keys(SCENARIO.rooms).every(id=>
      Array.isArray(s.rooms[id]?.items));
 }
@@ -454,11 +506,17 @@ export function partyView(s,{actorId=null}={}) {
    pendingReaction:s.combat.pendingReaction?{...s.combat.pendingReaction}:null,
    remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
   location:actor.location,roomName:place.name,description:place.description,
-  lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal light available':'dark — low visibility'):'partially lit',
+  lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
+   personalLight:{carried:actorOwnsLight(actor),on:actorHasLight(actor),
+    charge:actor.light?.charge??(actorOwnsLight(actor)?LIGHT_CAPACITY_STRETCHES:0)},
+   groupTravel:s.groupTravel?.awaiting?.includes(actor.id)&&
+    actor.location===s.groupTravel.from?
+      {to:s.groupTravel.to,approach:s.groupTravel.approach}:null,
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
-  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated)
+  visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated&&
+     (!roomIsDark(actor.location)||actorHasLight(actor)||(actor.seenThreats||[]).includes(d.id)))
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
@@ -481,6 +539,16 @@ export function parsePartyAction(input) {
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
  if(['wait','stay'].includes(line))return {kind:'wait',target:'',push:0};
+  const lamp=line.match(/^(?:(?:turn|switch)\s+(?:my |the )?(?:flashlight|headlamp|light)\s+(on|off)|(?:turn|switch)\s+(on|off)\s+(?:my |the )?(?:flashlight|headlamp|light)|light\s+(on|off))$/);
+  if(lamp)return {kind:'light',target:lamp[1]||lamp[2]||lamp[3],push:0};
+  const group=line.match(/^(?:lead (?:the )?group|group|everyone)\s+(?:(quietly|silently|sneak|normal|together|noisily|run|rush)\s+)?(?:to\s+)?(.+)$/);
+  if(group){
+   const style=['quietly','silently','sneak'].includes(group[1])?'quiet':
+    ['noisily','run','rush'].includes(group[1])?'noisy':'normal';
+   return {kind:'group',target:style+'|'+group[2].trim(),push:0};
+  }
+  const rush=line.match(/^(?:rush|run|sprint)\s+(?:to\s+)?(.+)$/);
+  if(rush)return {kind:'rush',target:rush[1].trim(),push:0};
  const quiet=line.match(/^(?:sneak|creep|move quietly|move silently)\s+(?:to\s+)?(.+)$/);
  if(quiet)return {kind:'sneak',target:quiet[1].replace(/^the /,'').trim(),push};
  const hold=line.match(/^(?:hold|hold off|defer)\s+(?:to\s+)?(?:card\s+)?(\d{1,2})$/);
@@ -511,7 +579,15 @@ export function parsePartyAction(input) {
 }
 export function partyStep(previous,raw,{actorId=null,source='human',reactionPrompt=false}={}) {
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
- const action=parsePartyAction(raw),slot=activeCombatSlot(previous);
+ let action=parsePartyAction(raw);
+  if(action.kind==='group'){
+   const [approach,...parts]=action.target.split('|');
+   if(!['quiet','normal','noisy'].includes(approach)||!parts.join('|'))
+    return rejected(previous,'Choose a valid group destination and pace.');
+   action={...action,kind:approach==='quiet'?'sneak':approach==='noisy'?'rush':'move',
+    target:parts.join('|'),groupApproach:approach};
+  }
+  const slot=activeCombatSlot(previous);
  const activeId=activeTurnId(previous);
  if(slot?.kind==='dinosaur')return predatorStep(previous,{actorId,source,reactionPrompt,action});
  const actor=previous.actors.find(a=>a.id===activeId);
@@ -524,7 +600,7 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
- if(!['wait','hold','end','move','sneak','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
+ if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
   if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
@@ -597,7 +673,18 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
    gameEvent(s,a.name+' waits and listens.',a.id);
    return accepted(s,a,'wait','',{},0);
  }
- if(action.kind==='guard'){
+ if(action.kind==='light'){
+   if(!actorOwnsLight(a))return rejected(previous,'This survivor has no working flashlight or headlamp.');
+   const current=a.light??{on:true,charge:LIGHT_CAPACITY_STRETCHES};
+   const on=action.target==='on';
+   if(!['on','off'].includes(action.target))return rejected(previous,'Choose light on or off.');
+   if(current.on===on)return rejected(previous,'The carried light is already '+action.target+'.');
+   if(on&&current.charge<=0)return rejected(previous,'The carried light has no remaining charge.');
+   a.light={...current,on};
+   gameEvent(s,a.name+' switches their carried light '+action.target+'.',a.id,'action');
+   return accepted(s,a,'light',action.target,{on,charge:a.light.charge},0);
+  }
+  if(action.kind==='guard'){
   a.guarding=true;
   gameEvent(s,a.name+' keeps watch for movement.',a.id);
   return accepted(s,a,'guard','',{},0);
@@ -681,8 +768,8 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
     (d.defeated?' It collapses.':''),a.id,'danger');
   return accepted(s,a,'attack',d.id,{...check,damage,defeated:d.defeated,ambush:covertStrike},ranged?3:2);
  }
- if(action.kind==='move'||action.kind==='sneak'){
-   const quiet=action.kind==='sneak';
+if(['move','sneak','rush'].includes(action.kind)){
+    const quiet=action.kind==='sneak';
    const limitations=woundModifiers(a,'mobility');
    if(limitations.immobile)return rejected(previous,'This injury prevents movement until treated.');
    const room=matchRoom(action.target,a.location);
@@ -696,17 +783,31 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
      return accepted(s,a,'escape_fail',room,escape,2);
     }
    }
-   const hadCover=a.hidden;
-   const stealth=quiet?result('mobility','stealth_travel'):null;
-   const sound=quiet?(stealth.success?0:2):1;
-   a.location=room;
+const origin=a.location;
+    const companions=action.groupApproach?s.actors.filter(p=>
+     p.id!==a.id&&p.location===origin&&!p.dead&&!p.broken):[];
+    if(action.groupApproach&&!companions.length)
+     return rejected(previous,'No mobile teammates are colocated for a group order.');
+    const hadCover=a.hidden;
+    const stealth=quiet?result('mobility','stealth_travel'):null;
+    const sound=quiet?(stealth.success?0:2):action.kind==='rush'?3:1;
+    a.location=room;
    a.hidden=Boolean(quiet&&hadCover&&stealth.success&&
      (SCENARIO.rooms[room].affordances||[]).length);
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
-   gameEvent(s,a.name+(quiet?(stealth.success?' slips quietly into ':' makes a noise entering '):
-     ' enters ')+SCENARIO.rooms[room].name+'.',a.id,quiet&&!stealth.success?'risk':'action');
-   return accepted(s,a,quiet?'sneak':'move',room,
-     quiet?{...stealth,noise:sound}: {},sound);
+if(action.groupApproach){
+     s.groupTravel={leaderId:a.id,from:origin,to:room,approach:action.groupApproach,
+      awaiting:companions.map(p=>p.id)};
+    }else if(s.groupTravel?.awaiting?.includes(a.id)){
+     s.groupTravel.awaiting=s.groupTravel.awaiting.filter(id=>id!==a.id);
+     if(!s.groupTravel.awaiting.length)s.groupTravel=null;
+    }
+    gameEvent(s,a.name+(quiet?(stealth.success?' slips quietly into ':' makes a noise entering '):
+      action.kind==='rush'?' rushes noisily into ':' enters ')+SCENARIO.rooms[room].name+'.',
+      a.id,quiet&&!stealth.success?'risk':'action');
+    return accepted(s,a,action.kind,room,
+      {...(quiet?stealth:{}),noise:sound,...(action.groupApproach?{groupApproach:action.groupApproach,
+       groupedWith:companions.map(p=>p.id)}:{})},sound);
  }
  if(action.kind==='take'){
    const item=matchItem(action.target,s.rooms[a.location].items);
