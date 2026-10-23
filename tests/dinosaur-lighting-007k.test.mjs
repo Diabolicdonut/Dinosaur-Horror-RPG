@@ -212,3 +212,26 @@ test('new interaction controls are present and older solo/Worker files remain un
  assert(app.includes('Lead group quietly'));
  assert(app.includes('Rush to'));
 });
+
+test('pocket and small flashlight gear are recognized as independently powered supplies',()=>{
+ for(const item of ['flashlight','pocket flashlight','small flashlight','headlamp']){
+  const a={gear:[item],inventory:[],light:{on:true,charge:2}};
+  assert(actorOwnsLight(a));assert(actorHasLight(a));
+ }
+});
+test('alert expires on patrol ticks after searching an empty zone; deterministic replay persists',()=>{
+ let s=game(102);s.dinosaurs[0].location='paddock';
+ s.dinosaurs[0].alert=3;s.dinosaurs[0].lastHeard=null;
+ const first=JSON.parse(JSON.stringify(s));
+ for(let i=0;i<12;i++)s=act(s,'wait').state;
+ for(let i=0;i<12;i++)first=act(first,'wait').state;
+ assert.equal(s.dinosaurs[0].alert,0);
+ assert.deepEqual(s,first);
+});
+test('prior knowledge of a dinosaur does not become new physical vision in darkness',()=>{
+ const s=game(103),a=s.actors[0],d=s.dinosaurs[0];
+ a.location='jungle';d.location='jungle';a.seenThreats=[d.id];a.light.on=false;
+ assert.deepEqual(partyView(s,{actorId:a.id}).visibleDinosaurs,[]);
+ a.light.on=true;
+ assert.equal(partyView(s,{actorId:a.id}).visibleDinosaurs.length,1);
+});
