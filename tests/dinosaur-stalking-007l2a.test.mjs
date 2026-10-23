@@ -148,3 +148,23 @@ test('spectator actions use the same hunt planner and preserve personal wonder j
  assert.deepEqual(out.state.actors[0].wonderJournal,s.actors[0].wonderJournal);
  assert(isPartySave(out.state));
 });
+
+test('a remembered flashlight sighting does not count as currently visible after switch-off',()=>{
+ const s=game(415),d=s.dinosaurs[0];
+ d.location='jungle';d.facing='shed';d.lastHeard='shed';d.lastClue='light';d.alert=4;
+ // Light is off; the animal retains a finite clue but no active visual target.
+ s.actors[0].location='shed';s.actors[0].light.on=false;
+ const r=act(s,'wait');
+ assert(r.accepted);
+ assert.equal(r.state.dinosaurs[0].behavior,'investigate');
+ assert.notEqual(r.state.dinosaurs[0].behavior,'engage');
+});
+test('save validation rejects fabricated nonlocal hunt steps and future decisions',()=>{
+ const s=game(416);
+ s.dinosaurs[0].lastHunt={beat:0,from:'control',to:'paddock',behavior:'stalk',blocked:false};
+ assert.equal(isPartySave(s),false);
+ s.dinosaurs[0].lastHunt={beat:100,from:'paddock',to:'paddock',behavior:'stalk',blocked:false};
+ assert.equal(isPartySave(s),false);
+ s.dinosaurs[0].lastHunt={beat:0,from:'paddock',to:'jungle',behavior:'stalk',blocked:false};
+ assert(isPartySave(s));
+});
