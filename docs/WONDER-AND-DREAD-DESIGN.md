@@ -3,21 +3,19 @@
 **Accepted creative direction:** October 23, 2026  
 **Status:** Permanent narrative design requirement. First optional scenic discoveries have been implemented in the 007-K browser party incident. Other ecological and story systems described below are future requirements, not claims of implemented game mechanics.
 
-## Creative premise
+## Creative premise — Alien RPG's existing Sense of Wonder
 
-The park and the island are extraordinary **before** they are dangerous. Dinosaurs are animals with their own beauty, behaviors, ecological roles and needs—not just moving combat encounters. The game should preserve a sense of childhood-scale astonishment at impossible life, and let awe coexist with the responsibility, ethical complications, tension and genuine hazards that accompany such an environment.
+Alien RPG already names **Space Horror, Sci-Fi Action and Sense of Wonder** as major themes. Dinosaur Horror RPG directly maps them to **Dinosaur Horror, Sci-Fi Action and Sense of Wonder**; this is not an invented fourth design pillar or a separate ecology game.
 
-**Four complementary emotions:**
-1. **Wonder:** an encounter with something vast, beautiful, unexpected, ancient, or alive
-2. **Curiosity:** the impulse to study, follow, remember, understand and protect it
-3. **Unease:** realizing that humans cannot fully predict or control these animals and their environment
-4. **Dread:** the eventual danger, loss, violence or hard moral choice if circumstances turn against the party
+The park can be magnificent before, during and after danger. A gentle Brachiosaurus or distant Parasaurolophus can produce unforced awe; a Triceratops or Stegosaurus can be peaceful, wary or extremely dangerous when startled, cornered or confronted with a predator. Herbivores are not necessarily safe, predators are not necessarily always hunting people, and GM-created complications must have credible local circumstances.
 
-These are not four mandatory phases in every scene. Peaceful moments should be allowed to remain peaceful. A tranquil herbivore does not need to become an attacking monster to justify its existence.
+**What wonder requires:** Believable scenes and choices, authentic animal reactions when interacted with, quiet character moments, contrast with terror, and meaningful discoveries. **What it does not require:** simulated island populations, feeding schedules, mating, herd migrations or ongoing animal-needs AI. Those are optional enhancements only if independently justified.
+
+A campaign can remain about rescuing stranded people and leaving Nublar/Sorna, while individual scenes alternate calm, action, beauty, danger, injury and recovery without following a fixed fear escalation curve. The deterministic Evolved rules resolve outcomes; the Game Mother presents opportunities through scene/events and encounter procedure, not a compulsory 24/7 wildlife simulation. See [Cinematic and Campaign Scenes](CINEMATIC-SCENE-CONTRACT.md).
 
 ## Design constraints
 
-**The animals are animals.** Herbivores may graze, socialize, migrate, guard young, bask, drink, or ignore the visitors. Carnivores should not be depicted as malicious; hunting, curiosity, territorial behavior, stress and opportunism are more appropriate than arbitrary evil. Animals should remain grounded in a persistent, observable world, with a species-specific ecology rather than arbitrary scripted scares.
+**Animal encounters are credible, not zoologically exhaustive.** A herbivore may graze, guard young, ignore a visitor or charge when startled; a carnivore may hunt, investigate, flee or ignore the party. The GM can provide these behaviors through an encounter without running a permanent herd simulation. During an active physical encounter, preserve causal position, perception and Evolved effects; other cinematic vistas may remain ambient descriptions.
 
 **Beauty has agency.** Let players voluntarily linger, observe, sketch, record field notes, identify calls, compare tracks, help an animal, or simply sit in a clearing. In a future nonviolent encounters system, the player can choose whether to approach, remain distant, retreat, or avoid interfering. Respect knowledge and viewing perspective; characters cannot know what they have not seen or been told.
 
@@ -48,22 +46,22 @@ Narrative voice: sensory and grounded, not relentlessly purple. Specify light, s
 - Distant herbivores are **ambient-only** (not simulated, moveable or attackable animals); that fact is preserved in scenario metadata. The only physical persistent dinosaur in this prototype remains the existing velociraptor
 - Older party saves without the optional journal property remain valid; the separate solo 006.2 game and Cloudflare Worker remain unchanged
 
-## Explicit future implementation gates
+## Practical future development goals (scene-led)
 
-1. **Peaceful fauna simulation:** add a small variety of durable herbivores, with species-defined needs, family/herd behavior, habitat, rest, feeding and reactions to humans. Test that they can remain safe and nonhostile for a full session.
-2. **Persistent field journal:** support sketches/photos, known species, observations and shared stories with optional character-to-character communication. Do not leak remote knowledge.
-3. **Ecological cadence:** mix scenic vistas, tracks, songs, quiet encounters and dangerous sightings in an authored/director-driven pacing model, without forcing a fixed ratio or a terror beat after each peaceful scene.
-4. **AI Game Master narrative contract:** explicitly require moments of beauty, respect for animal ecology, optional curiosity, and factual narration bound to established world events. Keep the deterministic rules engine authoritative. Worker deployment is separate from this documentation.
-5. **Scenario authoring and coverage:** ensure a content audit checks that an adventure has a living ecosystem, nonthreatening moments and meaningful discoveries, as well as clear suspense/horror stakes.
+1. **Peaceful and defensive animal encounters:** Add scenario-ready herbivores with original, tested Evolved-adapted reactions to distance, disturbance, threat or predator appearance. Their behavior should be coherent within the scene, but no global herd AI is required.
+2. **Campaign framing:** Preserve optional scenic observations and character-specific records. Include quiet scenes, human conversation, science and awe between tension and action in connected scenarios.
+3. **Encounter direction:** Give the Game Mother conditional events and source-grounded encounter/danger procedures. Scenes may begin quietly and escalate for understandable reasons—or remain quiet.
+4. **Narrative restraint:** Do not force every dinosaur to attack, and do not treat every herbivore as cuddly. The director cannot narrate mechanically consequential facts that the deterministic engine has not committed.
+5. **Scenario coverage:** A short cinematic adventure should demonstrably exercise Dinosaur Horror, Sci-Fi Action and Sense of Wonder, with meaningful player choices and compatible saves. See [Scene Contract](CINEMATIC-SCENE-CONTRACT.md).
 
 ## Acceptance criteria for future milestones
 
 - A full playthrough can include a memorable peaceful dinosaur sighting that *stays peaceful*
 - There are grounded, quiet player choices in exploration
 - Character-specific wonder discoveries and known animal facts survive save/load
-- Spectator AI can discover ecology without always escalating to combat
-- No ambient-only species is mistaken for an interactable, persistent dinosaur
+- Spectator AI can take part in quiet or wondrous scenes without constantly escalating to combat
+- Ambient-only scene wildlife is never misrepresented as a physical interactable creature
 - Danger remains consequential and not visually, emotionally or narratively neutered
 - The model narrator does not claim unseen creatures, change map state or invent mechanics
 
-**Guiding question:** *Would someone still want to visit this island if they knew there were no combat encounters?* If the answer is no, the adaptation has lost essential Jurassic wonder.
+**Guiding question:** *Does this feel like Alien Evolved transported into Jurassic Park, with a credible balance of danger, action, character drama and magnificent encounters?* If not, improve the scenes, not the complexity of the wildlife simulator.
