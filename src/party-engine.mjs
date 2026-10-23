@@ -812,8 +812,8 @@ const origin=a.location;
     const stealth=quiet?result('mobility','stealth_travel'):null;
     const sound=quiet?(stealth.success?0:2):action.kind==='rush'?3:1;
     a.location=room;
-   a.hidden=Boolean(quiet&&hadCover&&stealth.success&&
-     (SCENARIO.rooms[room].affordances||[]).length);
+   a.hidden=Boolean(quiet&&hadCover&&stealth.success&&localCover(room).length);
+   a.coverId=a.hidden?localCover(room)[0].id:null;
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
 if(action.groupApproach){
      s.groupTravel={leaderId:a.id,from:origin,to:room,approach:action.groupApproach,
@@ -848,12 +848,17 @@ if(action.groupApproach){
    return accepted(s,a,'give',item,{recipientId:target.id},0);
  }
  if(action.kind==='hide'){
-   if(!(SCENARIO.rooms[a.location].affordances||[]).length)
-    return rejected(previous,'This open zone has no usable concealment.');
+   const cover=action.target?
+    localCover(a.location).find(x=>x.id===action.target||
+     x.label.toLowerCase()===action.target.replace(/^the /,'').toLowerCase()||
+     x.id.replaceAll('_',' ')===action.target.replace(/^the /,'').toLowerCase()):
+    localCover(a.location)[0];
+   if(!cover)return rejected(previous,'This zone has no matching physical cover.');
    const rolled=result('mobility');
-   a.hidden=rolled.success;
-   gameEvent(s,a.name+(rolled.success?' finds concealment.':' fails to conceal themselves.'),a.id,rolled.success?'action':'risk');
-   return accepted(s,a,'hide','',rolled,0);
+   a.hidden=rolled.success;a.coverId=rolled.success?cover.id:null;
+   gameEvent(s,a.name+(rolled.success?' takes cover behind '+cover.label+'.':
+     ' cannot conceal themselves behind '+cover.label+'.'),a.id,rolled.success?'action':'risk');
+   return accepted(s,a,'hide',cover.id,{...rolled,coverId:a.coverId},0);
  }
  if(action.kind==='investigate'){
    const observation=matchObservation(action.target,a.location);
