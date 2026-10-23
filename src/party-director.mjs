@@ -14,15 +14,16 @@ function insist(s){if(!isPartySave(s))throw new RangeError('Invalid party incide
 function noChange(s,reason){return {accepted:false,state:s,reason};}
 export function currentOwner(s){
  insist(s);
- const id=activeTurnId(s);
- if(activeCombatSlot(s)?.kind==='dinosaur')return 'ai';
+ const id=s.combat?.pendingReaction?.victimId||activeTurnId(s);
+ if(activeCombatSlot(s)?.kind==='dinosaur'&&!s.combat?.pendingReaction)return 'ai';
  return s.control.mode==='party'||
    (s.control.mode==='focus'&&s.control.focusedActorId===id)?'human':'ai';
 }
 export function cameraActorId(s){
  insist(s);
  return s.control.cameraMode==='follow' ?
-   (activeCombatSlot(s)?.kind==='dinosaur'?s.control.cameraActorId:activeTurnId(s)) : s.control.cameraActorId;
+   (s.combat?.pendingReaction?.victimId||
+    (activeCombatSlot(s)?.kind==='dinosaur'?s.control.cameraActorId:activeTurnId(s))) : s.control.cameraActorId;
 }
 /** Mode switches apply only between completed actions, no simulation time or RNG. */
 export function setControlMode(previous,{mode,focusedActorId=null}={}){
@@ -212,19 +213,29 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    return noChange(previous,'Outdated AI decision rejected.');
  if(expectedEpoch!==null&&expectedEpoch!==previous.control.epoch)
    return noChange(previous,'AI control changed before this decision.');
+ const pending=previous.combat?.pendingReaction;
  const predator=activeCombatSlot(previous)?.kind==='dinosaur';
  const actor=predator?null:previous.actors.find(a=>a.id===activeTurnId(previous));
- const choice=predator?
-  {kind:'predator',target:'',goal:'hunt',reason:'Creature initiative turn.'}:
-  chooseCompanionAction(actorObservation(previous,actor.id));
+ const choice=pending?
+  {kind:'react',target:'defend',goal:'survive',reason:'Use an available quick action to defend before the attack.'}:
+  predator?
+   {kind:'predator',target:'',goal:'hunt',reason:'Creature initiative turn.'}:
+   chooseCompanionAction(actorObservation(previous,actor.id));
  let resolved=partyStep(previous,{kind:choice.kind,target:choice.target},
-  {actorId:predator?previous.dinosaurs[0].id:actor.id,source:'ai'});
+  {actorId:pending?.victimId||(predator?previous.dinosaurs[0].id:actor.id),
+   source:'ai',reactionPrompt:true});
  if(!resolved.accepted){
    // A safe, deterministic fallback never forges a success or spends an invalid check.
    if(predator)return resolved;
    resolved=partyStep(previous,{kind:'wait',target:''},{actorId:actor.id,source:'ai'});
  }
  if(!resolved.accepted)return resolved;
+ if(resolved.awaitingReaction)return {
+  accepted:true,state:resolved.state,awaitingReaction:true,
+  decision:{acceptedAction:'predator_declare',
+    proposed:{kind:'predator_declare',target:resolved.result?.target||''}},
+  result:resolved.result
+ };
  const s=resolved.state;
  const record={beat:previous.beat,actorId:predator?previous.dinosaurs[0].id:actor.id,
    proposed:{...choice},acceptedAction:s.actions.at(-1)?.kind||'wait',
