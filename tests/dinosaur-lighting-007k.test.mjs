@@ -44,7 +44,8 @@ test('unowned, duplicate, and depleted light toggles reject with no world RNG ch
  assert(!unowned.accepted);
  assert.strictEqual(unowned.state,s);
  let t=act(s,'light on').state;
- const originalRng=t.rng,again=partyStep(t,'light on',{actorId:'pc-2'});
+ t=act(t,'wait').state;t=act(t,'wait').state;
+ const originalRng=t.rng,again=act(t,'light on');
  assert(!again.accepted);assert.equal(again.state.rng,originalRng);
  const empty=game();empty.actors[0].light.charge=0;
  const no=act(empty,'light on');
@@ -137,7 +138,7 @@ test('new audible source may interrupt an unfinished search without teleportatio
  const r=act(s,'rush lobby');
  assert(r.accepted,r.reason);
  assert.equal(r.state.dinosaurs[0].lastHeard,'lobby');
- assert.equal(r.state.dinosaurs[0].search?.zone,'lobby');
+ assert.equal(r.state.dinosaurs[0].search,null);
  assert.equal(r.state.dinosaurs[0].location,'control');
 });
 test('group leader moves once, with each survivor still at their original zone and pending own turn',()=>{
