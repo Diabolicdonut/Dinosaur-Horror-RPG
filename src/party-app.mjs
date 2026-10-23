@@ -131,6 +131,9 @@ function show(){
  if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
  if(v.observations.length)scene.push('Inspectable: '+v.observations.map(x=>x.id).join(', '));
+ if(v.wonder)scene.push('A moment of wonder: '+v.wonder.title+
+   (v.wonder.discovered?' (remembered)':' (available to appreciate)'));
+ if(v.wonderJournal.length)scene.push('Personal discoveries remembered: '+v.wonderJournal.length);
  if(v.inventory.length)scene.push('Carried: '+v.inventory.map(x=>x.name).join(', '));
   if(v.personalLight.carried)scene.push('Personal light: '+(v.personalLight.on?'ON':'OFF')+
     ' · '+v.personalLight.charge+' exploration stretches remaining');
@@ -164,6 +167,8 @@ function show(){
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
+  ...(v.wonder&&!v.wonder.discovered&&!v.combat?[
+    ['wonder '+v.wonder.id,'Take in the view · '+v.wonder.title]]:[]),
   ...(v.visibleDinosaurs.length?[['attack dinosaur','Fight the dinosaur']]:[]),
   ...state.actors.filter(a=>a.location===v.location&&!a.dead&&
       (a.broken||pendingLethal(a).length))
