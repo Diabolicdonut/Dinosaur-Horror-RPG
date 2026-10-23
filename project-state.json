@@ -474,7 +474,7 @@
       "previous": 257,
       "new": 23,
       "total": 280,
-      "ci": "Green GitHub Actions required for promotion; check commit head"
+      "ci": "280/280 GitHub Actions green, workflow run 39907713408 on audited candidate f3e26be41c683cdf721fbd845345ad8c521f3037; final merge/head and Pages verification still required."
     },
     "limits": [
       "Manual interactive browser/visual QA of party play and mobile devices remains outstanding",
