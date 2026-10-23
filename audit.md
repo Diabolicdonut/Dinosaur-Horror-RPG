@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 007-K Wonder Pass — Beauty, living ecology, and personal discoveries — 2026-10-23
+
+**Design decision:** Wonder and beauty must be equal creative pillars with suspense, survival and horror. Dinosaurs are living animals with natural behaviors, not merely hostile monsters. Peaceful observations should sometimes remain peaceful. See `docs/WONDER-AND-DREAD-DESIGN.md` for the durable creative and future ecology contract.
+
+**Implemented authored slice:** Four optional in-world discoveries were added to the existing location-specific scenario: rainforest vistas from the control room; awe at the lobby's vast skeletal natural history; the living fern/epiphyte ecology along the jungle path; and a distant herbivore vista from the helipad. The latter is explicitly ambient, **not** an added position-bearing combatant. `partyStep` handles a voluntary `wonder`/admire/take-in action outside combat. It saves a personal, persistent journal and an actor-scoped wonder event while leaving beat, dice seed, dinosaur movement, stress, medical clocks, inventory and flags unchanged. Duplicate discoveries and remote observations are rejected. Older party v3 saves without the optional journal remain valid. The Party browser presents a quiet-scene button and personal memories.
+
+**Validation:** Ten new `tests/wonder-and-dread.test.mjs` cases cover original natural history, scenic wildlife boundaries, no time/RNG/world mutation, per-actor private journal, save/load compatibility, noncombat safety, actor incapacitation, parser and UI. Total target **290 automated cases**; final CI verifies accepted count.
+
+**Release safety:** 007-K remains the accepted mechanical checkpoint; this is a small thematic/content pass, not an unvalidated new mechanical checkpoint. Browser script/module/CSS query revision `007kw` prevents stale version display. The isolated solo game and manually deployed Cloudflare Worker are unchanged. The User's private Evolved rulebook is not committed or copied.
+
+**Next:** Implement meaningful *persistent* herbivore ecology and wonder-aware companion/director behaviors, with full actor-specific sight and memory; keep the 007-L spatial/predator development track intact. Peaceful animals must never become arbitrary combat hazards merely to produce tension. Manual graphical gameplay QA remains outstanding.
+
+
 ## Checkpoint 007-K — Active survivor lighting, timed dinosaur searches and group movement — 2026-10-23
 
 **Recovery and authority:** Inspected authoritative GitHub `main` at accepted commit `3e8c9f5ed3728d94df6db3492b95fc0c59593775` (007-J, v0.7.9; 257 passing Node tests; successful GitHub Actions and earlier Pages deployment). No newer accepted work existed. Retained the primary *Alien RPG — Evolved Edition* private-source hierarchy: time, stealth, hiding, darkness and searching from printed pp. 54–58, movement/quick-full action budgets pp. 59–67, with an explicit Jurassic-original battery model, light-visible predator search heuristics and sound levels. Did **not** commit or reproduce any private rulebook contents.
