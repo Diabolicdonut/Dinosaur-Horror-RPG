@@ -13,7 +13,7 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 280,
+  "automated_tests": 290,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
     "Complete manual graphical browser smoke for 007-K on desktop/mobile: lamp on/off and depletion, hidden predator search in occupied and empty rooms, group movement/solo splits, modes and camera privacy, active pursuit save/reload.",
@@ -21,7 +21,8 @@
     "Implement species-specific dinosaur vision, scent and chase rules, signature attacks and physically grounded encounter consequences.",
     "Add itemized portable lamp batteries and recharging/pickups with durable resource accounting.",
     "Expand Evolved-fidelity creature behaviors, grouped stealth planning, survival hazards and bounded natural-language AI adjudication without leaking private knowledge.",
-    "Keep party save v3, 006.2 solo game and manually deployed Cloudflare Worker backward compatible."
+    "Keep party save v3, 006.2 solo game and manually deployed Cloudflare Worker backward compatible.",
+    "Develop persistent, non-hostile dinosaur wildlife and wonder-oriented exploration as a parallel design pillar; see docs/WONDER-AND-DREAD-DESIGN.md."
   ],
   "acceptance_criteria": [
     "All 257 prior automated tests retained; 23 new deterministic positive, negative, replay, privacy, lighting, searching, group movement and mode tests; 280/280 total passing in GitHub Actions.",
@@ -484,5 +485,28 @@
       "Battery capacity, animal visual attraction and sound volumes are original documented Jurassic design numbers rather than claims of Evolved RAW"
     ],
     "compatibility": "Party save version 3 optional light/groupTravel/search; old v2 migration and 006.2 solo unchanged; Worker v006 unchanged"
+  },
+  "narrative_pillars": {
+    "accepted": "2026-10-23",
+    "doctrine": "docs/WONDER-AND-DREAD-DESIGN.md",
+    "principles": [
+      "Wonder and beauty stand alongside suspense, survival and dread",
+      "Dinosaurs are living animals, not simply monsters",
+      "Peaceful animal and ecosystem scenes may remain peaceful; never force a horror reversal",
+      "Character-specific wonder and discovery require perceptual grounding",
+      "Distant background wildlife remains ambient-only until simulated as durable world entities"
+    ],
+    "implemented": [
+      "Four authored nature and natural-history wonder scenes in established rooms",
+      "Optional zero-roll zero-time take-in-the-view action, preserving time/RNG/supplies/stress",
+      "Personal per-actor discovery journal saved in party v3; no cross-character knowledge leaks",
+      "Visible optional scene control and personal event journal, no changes to solo 006.2 or Cloudflare Worker"
+    ],
+    "deferred": [
+      "Persistent nonthreatening herbivores with herds, feeding, migrations and behaviors",
+      "AI companion curiosity and autonomous peaceful discoveries in Spectator mode",
+      "Species field guide, sketches and animal welfare choices",
+      "Narration and scenario balancing of wonder and horror against actual world events"
+    ]
   }
 }
