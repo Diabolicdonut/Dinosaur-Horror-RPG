@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.12",
   "checkpoint": "007-L2a",
-  "state": "physical_stalking_facing_and_reproducible_visual_hunting_validated_in_automated_tests_pending_browser_smoke",
+  "state": "physical_stalking_and_first_local_cinematic_scene_framing_validated_in_tests_pending_manual_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 324,
+  "automated_tests": 333,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete manual graphical smoke for 007-L2a on desktop/mobile: real stalking, facing light detection, blocked doors, losses of stale visual clues and active search, including save/load during pursuit.",
-    "Implement 007-L2b as an independent validated subcheckpoint: physically grounded attack eligibility and original raptor tactics, dynamic relevant cover/lighting obstructions and limited environmental perception.",
-    "Preserve all 324 tests, accepted Wonder and Dread personal discovery journals, three control modes, Character Lab, initiative, critical injuries and older party v3 saves.",
-    "Complete full 007-L before 007-M physical batteries, repairs, equipment transfers and persistent park hazards.",
-    "Proceed to 007-N only after a typed proposal/effect boundary is validated and Cloudflare Worker changes are warranted."
+    "Complete actual desktop/mobile graphical QA across 007-L2a stalking and new character-local scene framing, all three control modes, saving and Wonder journals.",
+    "Proceed with separately validated 007-L2b physically eligible Velociraptor attack tactics and relevant physical obstructions, preserving existing Evolved mechanics.",
+    "Develop typed, optional/conditional scene events and Alien-inspired encounter/danger pressure in parallel, then a short connected Jurassic Cinematic adventure before full campaign expansion.",
+    "Only build 007-M physical batteries/tools/repairs and 007-N bounded multi-actor AI Game Mother on grounded effects; no permanent wildlife-population simulator prerequisite.",
+    "Preserve the full accepted 324-test baseline, plus 9 new scene tests, all saves and legacy solo/Worker isolation; use GitHub current main as source of truth."
   ],
   "acceptance_criteria": [
-    "Checkpoint 007-L1 on accepted main retains 290 earlier deterministic tests (including 10 Wonder and Dread cases) and adds 17 spatial/sensory tests: 307/307 passing in final main GitHub Actions validation.",
-    "Directional one-exit visibility is independent from travel and audibility; authored foliage and closed staff door prevent impossible sight and lighting clues.",
-    "Cover is a real named local physical affordance; concealment uses seeded Mobility, invalid cover rejects without consuming dice/time, and fixed cover does not teleport.",
-    "Personal powered lighting and nearby animal glimpses respect authored line of sight; no remote predator location, private search state or RNG is exposed to other actors or AI companions.",
-    "One Velociraptor sensory profile persists patrol/investigate/stalk/search/engage awareness stages; stalk is a label and advanced 007-L2 tactics remain unimplemented.",
-    "007-K timed battery, stealth, predator searching and sequential group travel; combat, injuries, defense, control/camera and character-specific Wonder journals remain intact.",
-    "Party schema v3 and v2→v3 migration, old 006.2 solo game and separate manually deployed Worker v006 remain backward compatible.",
-    "Final accepted main GitHub Actions and Pages deployment succeeded; manual desktop/mobile interactive browser QA is still pending and must not be claimed as passed."
+    "007-L2a stalking and facing at accepted commit e10d7f8971ff0194d138633438a7204aac0d8897 retained; 324/324 accepted main Node tests and successful Actions/Pages.",
+    "Read-only scene framing provides one local cue for each existing zone plus conditional, publicly grounded mission progress; no creature creation, time, RNG or save-schema mutation.",
+    "Scene cues may support Dinosaur Horror, Sci-Fi Action and Sense of Wonder without imposing a forced battle, fabricated NPC or permanent herd simulation.",
+    "Nine new scene regression tests added, targeting 333/333 total. Require final GitHub Actions confirmation and report it separately from manual graphical QA.",
+    "Party/Focus/Spectator, camera privacy, actual Evolved dice/combat/injuries, starter mission and per-actor Wonder journals preserved.",
+    "007-L2b raptor attack/obstruction milestone and 007-M equipment remain pending; scene event/danger timer and generative Game Mother are not claimed implemented.",
+    "Manual desktop/mobile interactive browser gameplay QA remains outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "007-L2a Pages deploy not yet independently checked on final main; earlier accepted 007-L1 Pages green. Manual graphical gameplay QA outstanding.",
+  "pages_deployment": "Baseline 007-L2a main e10d7f8971ff0194d138633438a7204aac0d8897 passed Pages workflow 39980703721; new scene slice final deployment must be verified after its merge. Manual browser testing outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -578,5 +577,44 @@
       "007-M and 007-N both remain gated"
     ],
     "compatibility": "Party save version 3 optional fields; v2 migration, 006.2 solo and Cloudflare Worker v006 retained without source edits"
+  },
+  "cinematic_scene_contract": "docs/CINEMATIC-SCENE-CONTRACT.md",
+  "scope_reconciliation": {
+    "date": "2026-10-23",
+    "canonical_goal": "Faithful Alien RPG Evolved Edition cinematic and campaign adaptation set in Jurassic Park.",
+    "themes": [
+      "Dinosaur Horror",
+      "Sci-Fi Action",
+      "Sense of Wonder"
+    ],
+    "campaign_policy": "Connected player-responsive scenes with local changes in dramatic intensity; not a single continuously escalating scare or a mandatory wildlife-population simulator.",
+    "scope_exclusions": [
+      "Island-wide persistent population simulation is not required",
+      "No mandatory feeding, breeding, migration or herd-life-cycle systems",
+      "Creature behavior needs to be credible during actual encounters, not continuously simulated for its own sake"
+    ],
+    "accepted_docs": [
+      "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
+      "docs/CINEMATIC-SCENE-CONTRACT.md",
+      "docs/WONDER-AND-DREAD-DESIGN.md"
+    ]
+  },
+  "scene_framing": {
+    "status": "Read-only actor-local scene cues integrated into existing playable party island; not a full event or encounter director.",
+    "implementation": "src/cinematic-scenes.mjs",
+    "source": "Original Jurassic scenario situation framing, preserving Evolved gameplay authority",
+    "ui": "src/party-app.mjs local scene",
+    "scenes": 7,
+    "mechanics_changed": false,
+    "tests": {
+      "previous": 324,
+      "new": 9,
+      "total": 333,
+      "ci": "New scene and all prior tests pending final branch/main verification"
+    },
+    "no_new_creature_spawns": true,
+    "no_time_rng_or_save_mutation": true,
+    "compatibility": "Existing party v3, all three modes, user knowledge, 006.2 solo and Worker v006 unaffected.",
+    "next": "Typed optional/conditional scene event + encounter/danger pressure contract followed by playable connected cinematic adventure."
   }
 }
