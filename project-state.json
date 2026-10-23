@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.8",
-  "checkpoint": "007-I",
-  "state": "defensive_reaction_choice_and_group_stealth_playable_validated_pending_final_browser_smoke",
+  "version": "0.7.9",
+  "checkpoint": "007-J",
+  "state": "physically_constrained_raptor_pursuit_acoustics_and_quiet_darkness_stealth_validated_pending_final_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,25 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 241,
+  "automated_tests": 257,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Perform manual browser smoke of 007-I: incoming raptor declaration, human defend/decline buttons, reload mid-reaction, Focus and Spectator switches, cover/group detection, saving and correct event time.",
-    "Implement detailed map-constrained stealth pursuit with actor group movement choices, a source-faithful encounter clock, lights/sightline and noise effects.",
-    "Expand dinosaur-specific attack signatures, barriers, ammunition, fleeing and legal ranged defensive reactions.",
-    "Implement infection/sickness and remaining source-critical injury complications, with consent-gated mental trauma where appropriate.",
-    "Add typed generative AI Game Mother interaction, grounded companion dialogue and original cinematic Jurassic adventure material only after action/effect rules are safe.",
-    "Preserve deterministic validation of 241+ tests, party save versioning and strict isolation of legacy solo engine/Worker."
+    "Perform browser graphical QA of the 007-J island in all three control modes: stealth routes, visible lighting, local raptor footsteps, sound range, saved pursuit and old v3 party saves.",
+    "Add interactive on/off lighting and authored vision cones plus battery consumption, ensuring dark-zone Observation remains actor-specific.",
+    "Add source-grounded stealth stretches and one-stretch active predator searches with tested awareness decay.",
+    "Model dinosaur species-specific pursuit, visual/scent tracking, physical obstacles and source-checked signature attack procedures.",
+    "Expand character/AI tactics around coordinated cover, group movement and legal noise-based distractions without revealing hidden world positions.",
+    "Preserve deterministic worlds, party v2/v3 migration, accepted medical/initiative and current Cloudflare Worker deployment."
   ],
   "acceptance_criteria": [
-    "241/241 Node automated tests pass, including 13 new pre-roll defensive reaction and 7 group-stealth tests.",
-    "Human victim chooses actual Close Combat defense before a seeded predator strike, consuming one eligible quick action; declining consumes no quick action.",
-    "An announced strike saves/reloads with the same victim/round/card and forbids invalid responders or retroactive damage.",
-    "Party/Focus/Spectator mode changes correctly reassign pending victim choice without changing target seed or earlier world consequences.",
-    "True surprise ambush or exhausted quick action never offers a defense and preserves prior source-grounded ambush rules.",
-    "Exposed group uses best individual passive Observation and searches reveal up to actual successes, never every hidden actor automatically.",
-    "GitHub Pages frontend and nested imports version 007i; prior 007-C..007-H party saves and 006.2 solo incident/Worker unaffected.",
-    "Complete Evolved stealth and combat still have gaps, and graphical browser QA is not claimed on CI alone."
+    "257 automated tests pass, retaining previous 241 and adding 16 stealth pursuit/visibility regressions.",
+    "Raptor cannot teleport or cross the locked utility/shed barrier; all pursuer moves follow legal authored park exits.",
+    "Noise propagation depends on source-zone graph and reinforced-door attenuation, never on hidden character coordinates.",
+    "Player sneaking uses actual seeded Mobility; failure can alert creature while success suppresses noise and respects prior cover.",
+    "Darkness penalty applies individually and is canceled by own carried flashlight, not another person's lamp; creature dice unchanged.",
+    "Footfall warnings are character-local and disclose no hidden creature location.",
+    "Party, Focus, Spectator, old party saves, previous combat and injury behavior and solo 006.2/Worker remain isolated and validated."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -131,7 +130,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007i",
+  "browser_asset_cache_revision": "007j",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -425,5 +424,33 @@
     ],
     "save_policy": "Existing party v3 with optional validated combat.pendingReaction; original solo 006.2 and Worker untouched",
     "external_services": "No new Cloudflare Worker deployment or new API credentials"
+  },
+  "pursuit_mechanics": "src/dinosaur-pursuit.mjs",
+  "pursuit_audit": "docs/DINOSAUR-PURSUIT-007J.md",
+  "pursuit_implementation": {
+    "status": "Playable seven-zone movement, persistent pursuit and sensory stealth across Party, Character and Spectator",
+    "rulebook_basis": "Privately supplied Alien RPG Evolved Edition stealth, group Observation, darkness and hiding pp 55–58",
+    "implemented": [
+      "Map-constrained creature route search; one physically legal room per pursuit step; maintained source-based alert and last-heard memory",
+      "Reinforced utility/shed staff door cannot be crossed by unaided animal, even when weak sound travels through",
+      "Sound reach derived from authored connected rooms, muffled across locked maintenance door",
+      "Stealth travel action on adjacent route uses Mobility roll; success zeroes noise, failure is audible; preserves valid prior concealment when moving into cover",
+      "Normal movement uses a quick action in combat and deliberate stealth movement spends one full action",
+      "Outdoor dark zones reduce individual survivor Observation pools by two dice unless personally carrying light",
+      "Group observation still uses best individual result and does not alter creature dice",
+      "Character-local audible footsteps warn about nearby motion without exposing predator zone coordinates",
+      "Grounded autonomous survivor chooses quiet travel in exposed outdoor park regions",
+      "Browser offers separate Sneak to controls and local light status with cache revision 007j",
+      "Original actor control modes, initiative, held cards, explicit defenses, medical recovery, old party saves and legacy 006.2 remain unchanged"
+    ],
+    "limits": [
+      "Simplified seven-zone sound/door abstraction, not a full source-exact stealth stretch clock",
+      "No dynamic flashlight on/off controls or variable torch battery; a carried light counts as available",
+      "Door breach flag exists as future capability but no hidden or invented dinosaur break action",
+      "No full species scent tracking, wind shifts, human ambush coordination, ammo, ranged cover or cross-zone combat chase",
+      "No universal conversational AI Game Mother or complete campaign content",
+      "Manual graphical browser smoke remains an independent verification gate"
+    ],
+    "compatibility": "Party v3 saves load unchanged; optional heardAtBeat metadata; no Worker or singleton solo save edits"
   }
 }
