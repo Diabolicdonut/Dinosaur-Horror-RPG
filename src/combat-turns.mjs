@@ -5,7 +5,7 @@ import {rollInitiative,createActionBudget,spendActionBudget} from './evolved-enc
 import {woundModifiers,pendingLethal,deathRoll,worldSeconds} from './evolved-injuries.mjs';
 export const COMBAT_SCHEDULER_VERSION='007-H';
 export const COMBAT_COST=Object.freeze({
- move:'quick',sneak:'full',take:'quick',give:'quick',guard:'quick',rally:'quick',
+ move:'quick',sneak:'full',rush:'quick',light:'quick',take:'quick',give:'quick',guard:'quick',rally:'quick',
  attack:'full',hide:'full',aid:'full',use:'full',investigate:'full'
 });
 const cloning=x=>JSON.parse(JSON.stringify(x));

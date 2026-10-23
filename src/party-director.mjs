@@ -2,7 +2,7 @@
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs';
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007i';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007k';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007i';
 
@@ -111,6 +111,8 @@ export function actorObservation(s,actorId){
   roomName:view.roomName,exits:view.exits.map(x=>x.id),
   items:view.items.map(x=>x.id),features:[...view.features],
   observations:view.observations.map(x=>x.id),
+  personalLight:{...view.personalLight},
+  groupTravel:view.groupTravel?{...view.groupTravel}:null,
   dinosaurs:[...view.visibleDinosaurs],
   nearbyAllies:s.actors.filter(a=>a.id!==actorId&&a.location===actor.location)
     .map(a=>({id:a.id,name:a.name,career:a.career,broken:Boolean(a.broken),dead:Boolean(a.dead),
@@ -155,6 +157,13 @@ export function chooseCompanionAction(observation){
      return proposal('attack','dinosaur','protect_survivors','Use a carried weapon against an immediately visible predator.');
    return proposal('hide','','avoid_dinosaur','Try to find concealment from a nearby dinosaur.');
  }
+ if(o.groupTravel&&o.exits.includes(o.groupTravel.to))
+   return proposal(o.groupTravel.approach==='quiet'?'sneak':
+     o.groupTravel.approach==='noisy'?'rush':'move',o.groupTravel.to,
+    'follow_formation','Follow the locally agreed route on this survivor’s own turn.');
+ if(o.personalLight.carried&&!o.personalLight.on&&o.personalLight.charge>0&&
+    ['jungle','paddock','helipad'].includes(o.location)&&!o.hidden)
+   return proposal('light','on','light_the_way','Illuminate this dark zone with a carried lamp.');
  if(o.items.includes('keycard')&&!o.inventory.includes('keycard'))
    return proposal('take','keycard','recover_access','Recover the visible staff access card.');
  if(o.location==='shed'){

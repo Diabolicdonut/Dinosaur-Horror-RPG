@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint **007-J — Dinosaur Pursuit and Quiet Travel (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint **007-K — Dynamic Lighting, Timed Predator Searching and Group Movement (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Rules authority and free-form roleplaying (accepted October 22, 2026)
 
@@ -18,7 +18,7 @@ The future Dinosaur Horror RPG supports switching among **PARTY** (player contro
 
 The same Evolved-inspired **character sheets, hidden seeded rolls, action economy, combat, injuries and deterministic world state** govern all three modes. Computer companions have independent objectives, personalities, memories and knowledge limitations; accepted decisions are recorded so actions can be replayed. Spectator includes Pause/Step/Resume and can return control to the human at any time.
 
-See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **All three controls are available in the Party Incident 007-J alpha**. Camera selection, safe takeover and pause/step/resume are working. Drawn initiative, two raptor turns per round and full/quick action budgets now run in the same persistent world; source-complete injury recovery, surprise/ambush and conversational AI remain incomplete. The separate solo 006.2 build still models one playable character. No Cloudflare redeployment is required for the offline party modes.
+See the [complete multi-character control-mode contract](docs/MULTI-CHARACTER-CONTROL-MODES.md) and [updated mechanical development plan](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). **All three controls are available in the Party Incident 007-K alpha**. Camera selection, safe takeover and pause/step/resume are working. Drawn initiative, two raptor turns per round and full/quick action budgets now run in the same persistent world; source-complete injury recovery, surprise/ambush and conversational AI remain incomplete. The separate solo 006.2 build still models one playable character. No Cloudflare redeployment is required for the offline party modes.
 
 ## Character creation: manual, automatic or hybrid (working Personnel Registry)
 
@@ -28,7 +28,7 @@ Profession, 12-skill training, talents, gear, stress/Resolve and derived attribu
 
 See [complete character generation requirements](docs/CHARACTER-GENERATION-MODES.md). **Creation works in the separate Personnel Registry and launches Party Incident 007-F**; the original 006.2 solo page intentionally retains its old fixed character.
 
-**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. Generated parties can now be played in the separate 007-J party incident, using supported Evolved-style skill/talent mechanics; several world-dependent talent effects are still pending. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
+**[Open the working Personnel Registry](characters.html)** to create parties of 1–8 survivors, lock details, edit careers/skills, reroll and export validated drafts. Generated parties can now be played in the separate 007-K party incident, using supported Evolved-style skill/talent mechanics; several world-dependent talent effects are still pending. [Rules fidelity and gaps](docs/EVOLVED-CHARACTER-MATRIX.md).
 
 ## Checkpoint 007-B — mechanical Field Assessment
 
@@ -45,6 +45,14 @@ The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based b
 Supported actions include traveling along valid exits, picking up and handing over physical items, concealing oneself, investigating listed scene details, and operating objective equipment. Actions not yet modeled are rejected instead of invented. A limited natural-language parser accepts common phrasing, but **full improvisational AI GM actions and the intended Character/Spectator autonomy are still pending**. Predator proximity currently causes stress rather than full combat or injury.
 
 Party game saves use `dinosaur-party-incident-007c` and never overwrite the old checkpoint 006.2 solo save. No Cloudflare Worker update or API key is required. See [precise playable scope and test ledger](docs/PARTY-INCIDENT-007C.md).
+
+## Checkpoint 007-K — Active Flashlights, Ten-Minute Searches and Group Movement
+
+The [playable Party Incident](party.html) now lets survivors switch owned flashlights/headlamps on/off, see remaining battery power, and choose quiet, regular or noisy movement. Lamps begin off in new parties and consume one of **12 charges per elapsed ten-minute exploration stretch** while on. In dark areas, a lit device restores **only its carrier's** Observation dice; a nearby predator can pursue a visible light only within a physically accessible map sightline. A source-tracking predator initiates a deliberate, one-stretch search of the source zone, expends a seeded Observation check even when nobody is hiding there, and eventually loses interest if no new sound or light appears.
+
+You may order `lead group quietly to utility`, `group normal to lobby` or `everyone rush to utility`. The leader moves immediately, but the other survivors **must spend their own turns** and roll their own stealth checks; Character and Spectator AI can follow the same locally known route plan. Switching control or camera never advances dice/time. Existing version-3 saves still load, including old automatically lit carried lamps until toggled. The 006.2 solo incident and Cloudflare Worker are untouched.
+
+The complete deterministic suite now includes **280 tests (257 retained + 23 new)**; see CI for the latest verified run. The mechanics and precise Evolved-versus-original rule boundaries are explained in [007-K implementation and rules fidelity](docs/DINOSAUR-LIGHT-STEALTH-007K.md). **Manual graphical browser gameplay QA remains outstanding**, and this is not full Alien Evolved parity or a generative open-world Game Mother.
 
 ## Checkpoint 007-J — Physical Dinosaur Pursuit, Sound and Darkness
 

@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.9",
-  "checkpoint": "007-J",
-  "state": "physically_constrained_raptor_pursuit_acoustics_and_quiet_darkness_stealth_validated_pending_final_browser_smoke",
+  "version": "0.7.10",
+  "checkpoint": "007-K",
+  "state": "interactive_actor_lighting_stealth_stretches_predator_search_and_group_travel_automated_validation",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,25 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 257,
+  "automated_tests": 280,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Perform browser graphical QA of the 007-J island in all three control modes: stealth routes, visible lighting, local raptor footsteps, sound range, saved pursuit and old v3 party saves.",
-    "Add interactive on/off lighting and authored vision cones plus battery consumption, ensuring dark-zone Observation remains actor-specific.",
-    "Add source-grounded stealth stretches and one-stretch active predator searches with tested awareness decay.",
-    "Model dinosaur species-specific pursuit, visual/scent tracking, physical obstacles and source-checked signature attack procedures.",
-    "Expand character/AI tactics around coordinated cover, group movement and legal noise-based distractions without revealing hidden world positions.",
-    "Preserve deterministic worlds, party v2/v3 migration, accepted medical/initiative and current Cloudflare Worker deployment."
+    "Complete manual graphical browser smoke for 007-K on desktop/mobile: lamp on/off and depletion, hidden predator search in occupied and empty rooms, group movement/solo splits, modes and camera privacy, active pursuit save/reload.",
+    "Extend park spatial map with physical sightlines, cover, obstacles, and lighting direction before making predator vision more realistic.",
+    "Implement species-specific dinosaur vision, scent and chase rules, signature attacks and physically grounded encounter consequences.",
+    "Add itemized portable lamp batteries and recharging/pickups with durable resource accounting.",
+    "Expand Evolved-fidelity creature behaviors, grouped stealth planning, survival hazards and bounded natural-language AI adjudication without leaking private knowledge.",
+    "Keep party save v3, 006.2 solo game and manually deployed Cloudflare Worker backward compatible."
   ],
   "acceptance_criteria": [
-    "257 automated tests pass, retaining previous 241 and adding 16 stealth pursuit/visibility regressions.",
-    "Raptor cannot teleport or cross the locked utility/shed barrier; all pursuer moves follow legal authored park exits.",
-    "Noise propagation depends on source-zone graph and reinforced-door attenuation, never on hidden character coordinates.",
-    "Player sneaking uses actual seeded Mobility; failure can alert creature while success suppresses noise and respects prior cover.",
-    "Darkness penalty applies individually and is canceled by own carried flashlight, not another person's lamp; creature dice unchanged.",
-    "Footfall warnings are character-local and disclose no hidden creature location.",
-    "Party, Focus, Spectator, old party saves, previous combat and injury behavior and solo 006.2/Worker remain isolated and validated."
+    "All 257 prior automated tests retained; 23 new deterministic positive, negative, replay, privacy, lighting, searching, group movement and mode tests; 280/280 total passing in GitHub Actions.",
+    "Each survivor controls only their possessed charged flashlight/headlamp, with a finite per-stretch 12-charge resource and legacy save behavior.",
+    "Lighting modifies only the owner's darkness Observation pool and may attract a predator only across authored traversable sightlines.",
+    "Creature stays in zone for a completed 10-minute search and uses a seeded pool even in empty zones; no teleportation or stale hidden-world projection.",
+    "Predator last-heard/last-light clue, search timing, lost interest and alert decay persist and replay.",
+    "Group leader uses one real action; other members move on individual turns, obeying movement barriers and skill checks; no free action or knowledge sharing.",
+    "All three modes and camera/ownership changes preserve clock, RNG and action state; old party save 3 and migration from party 2 remain valid.",
+    "Manual browser graphical QA is outstanding and not included in automated acceptance."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +44,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "GitHub Actions successfully deployed 006.1 at a977b6f; 006.2 adds versioned browser assets and visible build label to diagnose stale loading; published 006.2 and real browser test pending",
+  "pages_deployment": "GitHub Pages deployment for 007-K requires successful final main CI / Pages build; manual interactive browser QA remains outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -130,7 +131,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007j",
+  "browser_asset_cache_revision": "007k",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -428,7 +429,7 @@
   "pursuit_mechanics": "src/dinosaur-pursuit.mjs",
   "pursuit_audit": "docs/DINOSAUR-PURSUIT-007J.md",
   "pursuit_implementation": {
-    "status": "Playable seven-zone movement, persistent pursuit and sensory stealth across Party, Character and Spectator",
+    "status": "007-J map/sonic baseline retained and extended by 007-K lighting, timing and group movement",
     "rulebook_basis": "Privately supplied Alien RPG Evolved Edition stealth, group Observation, darkness and hiding pp 55–58",
     "implemented": [
       "Map-constrained creature route search; one physically legal room per pursuit step; maintained source-based alert and last-heard memory",
@@ -445,12 +446,43 @@
     ],
     "limits": [
       "Simplified seven-zone sound/door abstraction, not a full source-exact stealth stretch clock",
-      "No dynamic flashlight on/off controls or variable torch battery; a carried light counts as available",
       "Door breach flag exists as future capability but no hidden or invented dinosaur break action",
       "No full species scent tracking, wind shifts, human ambush coordination, ammo, ranged cover or cross-zone combat chase",
       "No universal conversational AI Game Mother or complete campaign content",
-      "Manual graphical browser smoke remains an independent verification gate"
+      "Manual graphical browser smoke remains an independent verification gate",
+      "Earlier 007-J lack of lamp controls superseded by Checkpoint 007-K, see lighting_stealth_audit."
     ],
     "compatibility": "Party v3 saves load unchanged; optional heardAtBeat metadata; no Worker or singleton solo save edits"
+  },
+  "lighting_stealth_audit": "docs/DINOSAUR-LIGHT-STEALTH-007K.md",
+  "lighting_stealth_implementation": {
+    "status": "Playable deterministic 007-K lighting, timed search and multi-character group travel",
+    "source_basis": "Privately supplied Alien RPG Evolved Edition exploration/stealth pp 54–58 and action budgets pp 59–67, with explicit original Jurassic house rules",
+    "implemented": [
+      "Flashlight/headlamp on/off per survivor with ten-minute-stretch charge tracking; battery depletion is persistent",
+      "Old party v3 saves without explicit light field retain previous carried-light behavior",
+      "Darkness Observation light bonus applies to own illuminated device only; others' equipment cannot boost another person's pool",
+      "Nearby switched-on light attracts predator only through one legal map exit or in its same zone, excluding reinforced locked barrier",
+      "Predator last source clue, alertness, investigative search lasting one exploration stretch, seeded active Observation even for empty zones",
+      "Search results/seed stored in hidden world history, concealed survivors revealed only on real successes, alert decays after lost clues",
+      "Quiet/normal/noisy movement with distinct sound and action costs plus group leader formation orders",
+      "Group participants consume individual turns and seeded checks rather than receiving free movement or shared observations",
+      "Character and spectator AI use actor-local route plans and the same authoritative partyStep rules",
+      "Existing initiative, defense, injuries, migration, private per-actor perspective, solo 006.2 and Worker unchanged"
+    ],
+    "tests": {
+      "previous": 257,
+      "new": 23,
+      "total": 280,
+      "ci": "280/280 GitHub Actions green, workflow run 39907713408 on audited candidate f3e26be41c683cdf721fbd845345ad8c521f3037; final merge/head and Pages verification still required."
+    },
+    "limits": [
+      "Manual interactive browser/visual QA of party play and mobile devices remains outstanding",
+      "Seven-zone graph lacks detailed visibility cones, facing, weather/scent, portable spare batteries, species-specific vision/attack tactics",
+      "Group plans are per-survivor sequential instructions, not simultaneous movement or full offscreen consenting coordination",
+      "Party game still uses bounded command interpreter and offline AI, not full conversational generative GM",
+      "Battery capacity, animal visual attraction and sound volumes are original documented Jurassic design numbers rather than claims of Evolved RAW"
+    ],
+    "compatibility": "Party save version 3 optional light/groupTravel/search; old v2 migration and 006.2 solo unchanged; Worker v006 unchanged"
   }
 }

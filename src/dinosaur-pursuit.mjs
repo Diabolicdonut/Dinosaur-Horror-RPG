@@ -63,7 +63,19 @@ export function pursuitStep(dinosaur,{shedDoorBreached=false}={}){
    blocked:false,tracking:true};
 }
 export function roomIsDark(id){return ZONE_LIGHTING[id]==='dark';}
-export function actorHasLight(actor){
+export const LIGHT_CAPACITY_STRETCHES=12;
+export function actorOwnsLight(actor){
  return [...(actor?.inventory||[]),...(actor?.gear||[])].some(x=>
-  x==='flashlight'||x==='working flashlight'||x==='headlamp');
+  x==='flashlight'||x==='working flashlight'||x==='headlamp'||
+  x==='pocket flashlight'||x==='small flashlight');
+}
+// Old v3 saves had automatically lit carried lamps. Preserve that until toggled.
+export function actorHasLight(actor){
+ return actorOwnsLight(actor)&&(!actor.light||(actor.light.on===true&&actor.light.charge>0));
+}
+// A luminous device is detectable only in the predator's dark zone or across
+// one legal, unobstructed map exit. No remote or through-door vision.
+export function visibleLampZone(dinosaurZone,actors,options={}){
+ const zones=new Set([dinosaurZone,...exitsForCreature(dinosaurZone,options)]);
+ return actors.find(a=>!a.dead&&zones.has(a.location)&&actorHasLight(a))?.location||null;
 }
