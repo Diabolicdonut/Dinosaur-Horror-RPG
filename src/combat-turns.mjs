@@ -196,6 +196,13 @@ export function validCombatState(s){
     (c.surprise!==undefined&&(!c.surprise||typeof c.surprise.actorId!=='string'||
        typeof c.surprise.ambush!=='boolean'||typeof c.surprise.consumed!=='boolean'||
        c.surprise.round!==1)))return false;
+ if(c.pendingReaction!==undefined){
+  const p=c.pendingReaction,slot=c.order[c.index];
+  if(!p||!slot||slot.kind!=='dinosaur'||slot.card!==p.card||
+     !s.actors.some(a=>a.id===p.victimId&&!a.dead&&!a.broken&&a.location===s.dinosaurs[0].location)||
+     p.round!==c.round||p.declaredAtBeat!==s.beat||
+     p.attackKind!=='close_combat')return false;
+ }
  const cards=new Set();
  for(const slot of c.order){
   if(!slot||!Number.isInteger(slot.card)||slot.card<1||slot.card>10||
