@@ -1,9 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007i';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007i';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007j';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007j';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007i';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007i';
-import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007i';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007j';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007j';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007j';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -107,7 +107,7 @@ function show(){
  }).join('');
  $('location-title').textContent=v.roomName;
  $('sector').textContent=v.location.toUpperCase();
- $('room-description').textContent=v.description;
+ $('room-description').textContent=v.description+'  ['+v.lighting+']';
  $('viewed-character').textContent='Watching '+v.actorName+
    (v.actorId===v.activeActorId?' · CURRENT TURN':' · NOT CURRENT TURN')+
    ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'')+
@@ -147,7 +147,10 @@ function show(){
    impairment.immobile||(travelCost==='full'?(moveBudget.fullSpent||moveBudget.quickSpent>=2):
    (moveBudget.quickSpent>=2||(moveBudget.fullSpent&&moveBudget.quickSpent>=1)))));
  $('travel-buttons').innerHTML=v.exits.map(x=>
-   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene||exhaustedMove?' disabled':'')+'>'+esc(x.name)+'</button>').join('');
+   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene||exhaustedMove?' disabled':'')+'>'+esc(x.name)+'</button>'+
+   '<button type="button" data-order="sneak '+esc(x.id)+'"'+(!canScene||
+     Boolean(v.combat?.remaining&&(v.combat.remaining.fullSpent||v.combat.remaining.quickSpent>=2))?' disabled':'')+
+     '>Sneak to '+esc(x.name)+'</button>').join('');
  const actions=[
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,'Operate '+f]),
