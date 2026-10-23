@@ -222,7 +222,7 @@ test('pocket and small flashlight gear are recognized as independently powered s
 test('alert expires on patrol ticks after searching an empty zone; deterministic replay persists',()=>{
  let s=game(102);s.dinosaurs[0].location='paddock';
  s.dinosaurs[0].alert=3;s.dinosaurs[0].lastHeard=null;
- const first=JSON.parse(JSON.stringify(s));
+ let first=JSON.parse(JSON.stringify(s));
  for(let i=0;i<12;i++)s=act(s,'wait').state;
  for(let i=0;i<12;i++)first=act(first,'wait').state;
  assert.equal(s.dinosaurs[0].alert,0);
