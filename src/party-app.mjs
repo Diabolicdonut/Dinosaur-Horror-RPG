@@ -1,9 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007k';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007k';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l1';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007k';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007k';
-import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007k';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l1';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l1';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l1';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -137,6 +137,11 @@ function show(){
   if(v.groupTravel)scene.push('Group plan: '+v.groupTravel.approach+' travel toward '+
     v.groupTravel.to+' (each survivor moves on their own turn)');
  if(v.visibleDinosaurs.length)scene.push('DANGER — '+v.visibleDinosaurs.join(', ')+' in this room');
+  if(v.distantSightings?.length)scene.push('DANGER — '+v.distantSightings.map(d=>d.kind).join(', ')+
+    ' glimpsed down an unobstructed sightline; not within attack range');
+  if(v.cover)scene.push('Current cover: '+v.cover.label);
+  if(v.availableCover?.length)scene.push('Physical concealment: '+
+    v.availableCover.map(x=>x.label).join(', '));
  if(v.medicalUrgency?.length)
   scene.push('MEDICAL EMERGENCY — '+v.medicalUrgency.map(x=>'Wound #'+x.code+
     ': '+x.deadline+' interval to next survival check').join('; '));
@@ -179,6 +184,7 @@ function show(){
    ...(v.groupTravel?[[
     (v.groupTravel.approach==='quiet'?'sneak ':v.groupTravel.approach==='noisy'?'rush ':'move ')+v.groupTravel.to,
     'Follow group to '+v.groupTravel.to]]:[]),
+   ...v.availableCover.map(x=>['hide behind '+x.id,'Hide behind '+x.label]),
    ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
   ...(v.combat&&canScene?v.combat.order.slice(v.combat.index+1).map(slot=>
    ['hold '+slot.card,'Hold for '+(slot.kind==='dinosaur'?'Velociraptor':
