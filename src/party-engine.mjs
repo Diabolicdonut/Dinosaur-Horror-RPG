@@ -3,10 +3,11 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs';
-import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007k';
+import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l1';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l1';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007k';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l1';
 import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007i';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
@@ -94,14 +95,14 @@ function advanceLightClock(s,fromStretch){
 // One full exploration stretch per active zone search, including empty zones.
 // Only seeded checks alter concealment; no location leak to distant survivors.
 function advancePredatorSearch(s){
- const d=s.dinosaurs[0],search=d.search;
+ const d=s.dinosaurs[0],search=d.search,profile=speciesSensoryProfile(d);
  if(!search||d.defeated||s.combat?.active||
     s.clock.explorationStretches<search.dueStretch)return;
  if(d.location!==search.zone){d.search=null;return;}
  const hidden=s.actors.filter(a=>a.location===search.zone&&a.hidden&&!a.dead&&!a.broken);
  const seed=nextSeed(s);
  const found=searchHiddenGroup(hidden.map(a=>a.id),{
-  seed,observationDice:DINO_SPECIES.velociraptor.observation});
+  seed,observationDice:profile.observation});
  d.searchHistory??=[];
  d.searchHistory.push({zone:search.zone,startedAtStretch:search.startedAtStretch,
   resolvedAtStretch:s.clock.explorationStretches,seed,
@@ -109,16 +110,18 @@ function advancePredatorSearch(s){
  d.searchHistory=d.searchHistory.slice(-40);
  for(const id of found.revealed){
   const person=s.actors.find(a=>a.id===id);
-  person.hidden=false;
+  person.hidden=false;person.coverId=null;
   gameEvent(s,'The velociraptor uncovers '+person.name+'.',id,'danger');
  }
- d.search=null;d.lastHeard=null;d.alert=Math.max(0,d.alert-2);
+ d.search=null;d.lastHeard=null;d.alert=Math.max(0,d.alert-profile.alertDecay*2);
+ d.behavior=d.alert?'stalk':'patrol';
 }
 function dinoTick(s,noise,at) {
- const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor,profile=speciesSensoryProfile(d);
+ if(!profile)throw new RangeError('Creature sensory profile is missing.');
  if(d.defeated||s.combat?.active)return;
  const breach=Boolean(s.flags.shedBarrierBreached);
- const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach});
+ const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach,species:profile.key});
 if(signal.heard){
    d.lastHeard=at;
    d.lastHeardBeat=s.beat;d.lastClue='sound';
@@ -142,11 +145,11 @@ if((s.beat+1)%2===0){
    const path=pursuitStep(d,{shedDoorBreached:breach});
    if(path.tracking&&!path.blocked){
     d.location=path.location;
-    d.alert=Math.max(0,d.alert-1);
-   }else d.alert=Math.max(0,d.alert-1);
+    d.alert=Math.max(0,d.alert-profile.alertDecay);
+   }else d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(d.alert>0){
    // An unrefreshed clue fades even when no further route is available.
-   d.alert=Math.max(0,d.alert-1);
+   d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(nextSeed(s)%3===0){
    const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
    if(exits.length)d.location=exits[nextSeed(s)%exits.length];
@@ -155,9 +158,11 @@ if(d.alert===0&&!d.search)d.lastHeard=null;
   }
   if(!d.search&&d.alert>0&&d.lastHeard===d.location){
    const start=s.clock?.explorationStretches||0;
-   d.search={zone:d.location,startedAtStretch:start,dueStretch:start+1};
+   d.search={zone:d.location,startedAtStretch:start,dueStretch:start+profile.searchStretches};
   }
-  if(d.location!==predatorPreviousZone){
+  d.behavior=sensoryBehavior(d,{sourceVisible:d.lastClue==='light'&&d.alert>0,
+   sourceAudible:signal.heard})||'patrol';
+ if(d.location!==predatorPreviousZone){
   for(const listener of s.actors){
    if(listener.dead||listener.location===d.location)continue;
    if(hearNoise(listener.location,d.location,1,{shedDoorBreached:breach}).heard)
@@ -210,6 +215,7 @@ if(d.alert===0&&!d.search)d.lastHeard=null;
   exposed=true;
  }
  if(exposed){
+   d.behavior='engage';
   const seed=nextSeed(s);
   const ambush=predatorAmbush&&!humanAlerted;
   if(beginCombat(s,seed,ambush?{surpriseActorId:'dinosaur-1',ambush:true}:{})){
@@ -398,7 +404,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  const actors=deep(party).map(c=>({
   ...c,location:SCENARIO.start,health:c.healthMax,
   inventory:[],wonderJournal:[],light:{on:false,charge:actorOwnsLight(c)?LIGHT_CAPACITY_STRETCHES:0},
-   hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
+   hidden:false,coverId:null,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
   armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
   medicalRest:false,lastAction:null
@@ -414,7 +420,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
-  dinosaurs:[{...SCENARIO.initialDinosaur,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
+  dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
   actions:[]
  };
@@ -447,7 +453,8 @@ export function isPartySave(s) {
        (!SCENARIO.rooms[s.dinosaurs[0].search.zone]||
        !Number.isSafeInteger(s.dinosaurs[0].search.dueStretch)))||
     !Array.isArray(s.startingRoster)||validateParty(s.startingRoster).length!==0||
-    !SCENARIO.rooms[s.dinosaurs[0]?.location])return false;
+    !SCENARIO.rooms[s.dinosaurs[0]?.location]||
+    (s.dinosaurs[0].behavior!==undefined&&!['patrol','investigate','stalk','search','engage','inactive'].includes(s.dinosaurs[0].behavior)))return false;
  if(validateParty(s.actors).length)return false;
  return s.actors.every(a=>SCENARIO.rooms[a.location]&&Array.isArray(a.inventory)&&
    Array.isArray(a.observed)&&Array.isArray(a.visitedRooms)&&
@@ -458,6 +465,7 @@ export function isPartySave(s) {
        SCENARIO.rooms[w.room]?.wonder?.id===w.id)))&&
    typeof a.health==='number'&&a.health>=0&&
    Number.isInteger(a.stress)&&a.stress>=0&&a.stress<=30&&
+    (a.coverId===undefined||a.coverId===null||Boolean(physicalCover(a.location,a.coverId)))&&
     (a.light===undefined||(typeof a.light?.on==='boolean'&&
       Number.isSafeInteger(a.light.charge)&&a.light.charge>=0&&
       a.light.charge<=LIGHT_CAPACITY_STRETCHES)))&&
@@ -516,6 +524,12 @@ export function partyView(s,{actorId=null}={}) {
   lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
    personalLight:{carried:actorOwnsLight(actor),on:actorHasLight(actor),
     charge:actor.light?.charge??(actorOwnsLight(actor)?LIGHT_CAPACITY_STRETCHES:0)},
+   cover:actor.coverId&&physicalCover(actor.location,actor.coverId)?
+    {id:actor.coverId,label:physicalCover(actor.location,actor.coverId).label}:null,
+   availableCover:localCover(actor.location).map(c=>({id:c.id,label:c.label})),
+   distantSightings:s.dinosaurs.filter(d=>!d.defeated&&d.location!==actor.location&&
+     visualLine(actor.location,d.location,{shedDoorBreached:Boolean(s.flags.shedBarrierBreached)})&&
+     actorHasLight(actor)).map(d=>({kind:d.kind})),
    groupTravel:s.groupTravel?.awaiting?.includes(actor.id)&&
     actor.location===s.groupTravel.from?
       {to:s.groupTravel.to,approach:s.groupTravel.approach}:null,
@@ -578,6 +592,8 @@ export function parsePartyAction(input) {
  if(/^(?:attack|strike|fight|hit)(?:\s+.*)?$/.test(line))return {kind:'attack',target:'dinosaur',push};
  const aid=line.match(/^(?:aid|treat|first aid|stabilize)\s+(pc-[1-8])$/);
  if(aid)return {kind:'aid',target:aid[1],push:0};
+ const cover=line.match(/^(?:hide|conceal|crouch|take cover)\s+(?:behind|under|in)\s+(.+)$/);
+ if(cover)return {kind:'hide',target:cover[1].trim(),push};
  if(/^(?:hide|conceal|crouch|take cover)(?:\s+.*)?$/.test(line))return {kind:'hide',target:'',push};
  const regex=[
   [/^(?:go|move|walk|head|run|sneak|creep)\s+(?:to\s+)?(.+)$/,'move'],
@@ -831,8 +847,8 @@ const origin=a.location;
     const stealth=quiet?result('mobility','stealth_travel'):null;
     const sound=quiet?(stealth.success?0:2):action.kind==='rush'?3:1;
     a.location=room;
-   a.hidden=Boolean(quiet&&hadCover&&stealth.success&&
-     (SCENARIO.rooms[room].affordances||[]).length);
+   a.hidden=Boolean(quiet&&hadCover&&stealth.success&&localCover(room).length);
+   a.coverId=a.hidden?localCover(room)[0].id:null;
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
 if(action.groupApproach){
      s.groupTravel={leaderId:a.id,from:origin,to:room,approach:action.groupApproach,
@@ -852,7 +868,7 @@ if(action.groupApproach){
    const item=matchItem(action.target,s.rooms[a.location].items);
    if(!item)return rejected(previous,'That object is not available here.');
    s.rooms[a.location].items.splice(s.rooms[a.location].items.indexOf(item),1);
-   a.inventory.push(item);a.hidden=false;
+   a.inventory.push(item);a.hidden=false;a.coverId=null;
    gameEvent(s,a.name+' picks up '+itemLabel(item)+'.',a.id);
    return accepted(s,a,'take',item,{},1);
  }
@@ -867,12 +883,17 @@ if(action.groupApproach){
    return accepted(s,a,'give',item,{recipientId:target.id},0);
  }
  if(action.kind==='hide'){
-   if(!(SCENARIO.rooms[a.location].affordances||[]).length)
-    return rejected(previous,'This open zone has no usable concealment.');
+   const cover=action.target?
+    localCover(a.location).find(x=>x.id===action.target||
+     x.label.toLowerCase()===action.target.replace(/^the /,'').toLowerCase()||
+     x.id.replaceAll('_',' ')===action.target.replace(/^the /,'').toLowerCase()):
+    localCover(a.location)[0];
+   if(!cover)return rejected(previous,'This zone has no matching physical cover.');
    const rolled=result('mobility');
-   a.hidden=rolled.success;
-   gameEvent(s,a.name+(rolled.success?' finds concealment.':' fails to conceal themselves.'),a.id,rolled.success?'action':'risk');
-   return accepted(s,a,'hide','',rolled,0);
+   a.hidden=rolled.success;a.coverId=rolled.success?cover.id:null;
+   gameEvent(s,a.name+(rolled.success?' takes cover behind '+cover.label+'.':
+     ' cannot conceal themselves behind '+cover.label+'.'),a.id,rolled.success?'action':'risk');
+   return accepted(s,a,'hide',cover.id,{...rolled,coverId:a.coverId},0);
  }
  if(action.kind==='investigate'){
    const observation=matchObservation(action.target,a.location);
