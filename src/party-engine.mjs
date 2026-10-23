@@ -5,7 +5,7 @@
 import { SCENARIO } from './scenario.mjs';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs';
 import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs';
@@ -95,24 +95,33 @@ function dinoTick(s,noise,at) {
    d.location=exits[nextSeed(s)%exits.length];
   }
  }
+ // An active search uses one Observation roll for the zone. Each success
+ // may uncover one concealed survivor; entering alone never reveals cover.
+ if(d.alert>0&&s.beat%Math.max(2,s.actors.length)===0){
+  const hidden=s.actors.filter(a=>a.location===d.location&&a.hidden&&!a.dead&&!a.broken);
+  if(hidden.length){
+   const located=searchHiddenGroup(hidden.map(a=>a.id),{
+    seed:nextSeed(s),observationDice:species.observation});
+   for(const id of located.revealed){
+    const found=s.actors.find(a=>a.id===id);
+    found.hidden=false;
+    gameEvent(s,'The velociraptor uncovers '+found.name+'.',found.id,'danger');
+   }
+  }
+ }
+ // Allies in one visible zone compare their strongest passive Observation
+ // against the same creature result. They do not sum their successes.
+ const newcomers=s.actors.filter(a=>!a.dead&&!a.broken&&a.health>0&&
+  a.location===d.location&&!a.hidden&&!(a.seenThreats||[]).includes(d.id));
+ const sight=newcomers.length?detectGroupCreature(newcomers,{
+  seed:nextSeed(s),observationDice:species.observation}):null;
  let exposed=false,predatorAmbush=false,humanAlerted=false;
  for(const person of s.actors){
   if(person.dead||person.broken||person.health<=0||person.location!==d.location)continue;
   person.seenThreats??=[];
-  if(person.hidden){
-   if(d.alert>0&&s.beat%Math.max(2,s.actors.length)===0){
-    const search=rollDicePool(species.observation,nextSeed(s));
-    if(search.successes>=2){
-     person.hidden=false;
-     gameEvent(s,'The velociraptor uncovers '+person.name+'.',person.id,'danger');
-    }
-   }
-   if(person.hidden)continue;
-  }
+  if(person.hidden)continue;
   if(!person.seenThreats.includes(d.id)){
-   const observation=detectCreature(person,{seed:nextSeed(s),observationDice:species.observation,
-    guarding:Boolean(person.guarding),
-    cluttered:(SCENARIO.rooms[person.location].affordances||[]).length>0});
+   const observation=sight;
    person.seenThreats.push(d.id);
    if(observation.margin<0)predatorAmbush=true;
    if(observation.margin>0)humanAlerted=true;
