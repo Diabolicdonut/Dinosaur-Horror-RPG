@@ -2,6 +2,7 @@
 // Original park-zone model; it adapts Evolved stealth principles without
 // copying a licensed creature's sensory or movement profile.
 import {SCENARIO} from './scenario.mjs';
+import {visualZones,canSeeIlluminatedActor,speciesSensoryProfile} from './dinosaur-visibility.mjs';
 const room=id=>SCENARIO.rooms[id];
 const soundGate=(from,to)=>new Set([from,to]).has('utility')&&new Set([from,to]).has('shed');
 export const ZONE_LIGHTING=Object.freeze({
@@ -47,11 +48,13 @@ export function effectiveNoiseDistance(from,to,{shedDoorBreached=false}={}){
  }
  return Infinity;
 }
-export function hearNoise(creatureLocation,sourceLocation,loudness,{shedDoorBreached=false}={}){
+export function hearNoise(creatureLocation,sourceLocation,loudness,{shedDoorBreached=false,species='velociraptor'}={}){
  if(!Number.isInteger(loudness)||loudness<0||loudness>8)throw new RangeError('Invalid sound intensity.');
+ const profile=speciesSensoryProfile({species});
+ if(!profile)throw new RangeError('Unknown species sensory profile.');
  const distance=effectiveNoiseDistance(creatureLocation,sourceLocation,{shedDoorBreached});
- return {heard:loudness>0&&distance<=loudness,distance,
-   intensity:Math.max(0,loudness-distance)};
+ return {heard:loudness>0&&distance<=loudness+profile.hearingBonus,distance,
+   intensity:Math.max(0,loudness+profile.hearingBonus-distance)};
 }
 export function pursuitStep(dinosaur,{shedDoorBreached=false}={}){
  if(!room(dinosaur?.location))throw new RangeError('Unknown dinosaur zone.');
@@ -76,6 +79,6 @@ export function actorHasLight(actor){
 // A luminous device is detectable only in the predator's dark zone or across
 // one legal, unobstructed map exit. No remote or through-door vision.
 export function visibleLampZone(dinosaurZone,actors,options={}){
- const zones=new Set([dinosaurZone,...exitsForCreature(dinosaurZone,options)]);
- return actors.find(a=>!a.dead&&zones.has(a.location)&&actorHasLight(a))?.location||null;
+ const zones=new Set(visualZones(dinosaurZone,options));
+ return actors.find(a=>zones.has(a.location)&&canSeeIlluminatedActor(dinosaurZone,a,{...options,lightOn:actorHasLight(a)}))?.location||null;
 }
