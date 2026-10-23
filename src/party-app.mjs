@@ -1,9 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007h';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007h';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007i';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007i';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007h';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007h';
-import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007h';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007i';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007i';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007i';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
@@ -62,11 +62,17 @@ function show(){
  const active=predatorTurn?{name:'Velociraptor',id:state.dinosaurs[0].id}:
    state.actors.find(a=>a.id===activeTurnId(state));
  const owner=currentOwner(state);
+ const pending=state.combat?.pendingReaction;
  const ownHuman=owner==='human'&&state.outcome==='playing';
  $('beat').textContent=String(v.beat).padStart(3,'0');
  $('round').textContent=String(v.round).padStart(2,'0');
  $('active').textContent=active.name;
- $('owner').textContent=predatorTurn?'DINOSAUR':owner==='human'?'PLAYER':'COMPUTER';
+ $('owner').textContent=pending?(owner==='human'?'DEFEND / DECLINE':'AI DEFENSE'):predatorTurn?'DINOSAUR':owner==='human'?'PLAYER':'COMPUTER';
+ $('reaction-panel').hidden=!(pending&&ownHuman);
+ if(pending){
+  const target=state.actors.find(a=>a.id===pending.victimId);
+  $('reaction-target').textContent=target.name+' — velociraptor attack declared';
+ }
  $('party-count').textContent=state.actors.length+' SURVIVORS';
  $('control-mode').value=state.control.mode;
  $('control-summary').textContent=state.control.mode.toUpperCase()+' · '+owner.toUpperCase()+' TO ACT';
@@ -178,15 +184,15 @@ function show(){
   '<p class="event-entry '+esc(e.category)+'"><small>BEAT '+e.beat+'</small>'+esc(e.message)+'</p>').join(''):
   '<p class="note">No observations from this camera yet.</p>';
  $('party-events').scrollTop=$('party-events').scrollHeight;
- $('party-command').disabled=!ownHuman;
- $('party-submit').disabled=!ownHuman;
+ $('party-command').disabled=!ownHuman||Boolean(pending);
+ $('party-submit').disabled=!ownHuman||Boolean(pending);
  $('party-command').placeholder=ownHuman?
    'Order for '+active.name+' (e.g. go lobby, inspect consoles)':
    'The computer currently controls '+active.name;
  const actionBudget=v.combat?.remaining;
  $('combat-status').textContent=v.combat?
    'COMBAT ROUND '+v.combat.round+' · INITIATIVE CARD #'+v.combat.card+
-   ' · '+(predatorTurn?'Dinosaur turn (automatic)':(actionBudget?
+   ' · '+(pending?'ATTACK DECLARED · awaiting defense choice':predatorTurn?'Dinosaur turn (automatic)':(actionBudget?
       'Full '+(actionBudget.fullSpent?'spent':'ready')+
       ' · Quick '+Math.max(0,2-actionBudget.quickSpent)+' remaining':'No human action budget'))+
    (v.combat.surprise?.ambush&&!v.combat.surprise.consumed&&v.combat.round===1?
@@ -206,6 +212,7 @@ function commit(result,label){
 }
 function issue(command){
  if(!state||state.outcome!=='playing')return;
+ if(state.combat?.pendingReaction){announce('Resolve the incoming attack first: defend or decline.');return;}
  if(currentOwner(state)!=='human'){announce('This actor is computer-controlled. Pause and take over a character to intervene.');return;}
  const input=String(command||'').trim();
  if(!input){announce('Describe an action.');return;}
@@ -223,6 +230,20 @@ function issue(command){
  $('party-command').value='';$('party-push').checked=false;
  commit(r,message+' · Next: '+r.state.actors[r.state.cursor].name);
 }
+function reactToAttack(choice){
+ const pending=state?.combat?.pendingReaction;
+ if(!pending||state.outcome!=='playing'||currentOwner(state)!=='human'){
+  announce('No human-controlled defensive reaction is pending.');return;
+ }
+ cancelAuto();
+ const r=partyStep(state,{kind:'react',target:choice},
+  {actorId:pending.victimId,source:'human'});
+ if(!r.accepted){announce(r.reason);return;}
+ commit(r,(choice==='defend'?'Defensive Close Combat roll resolved.':
+   'The defender declined the reaction.')+' · Predator initiative completed.');
+}
+$('react-defend').addEventListener('click',()=>reactToAttack('defend'));
+$('react-decline').addEventListener('click',()=>reactToAttack('decline'));
 function autoOnce({singleStep=false}={}){
  if(!state||currentOwner(state)!=='ai'||state.outcome!=='playing')return false;
  cancelAuto();
