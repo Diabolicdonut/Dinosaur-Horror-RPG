@@ -1,8 +1,8 @@
 // Checkpoint 007-D: player agency vs. camera, knowledge-bounded AI companions,
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
-import { SCENARIO } from './scenario.mjs?v=007kw';
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007kw';
+import { SCENARIO } from './scenario.mjs?v=007l1';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007l1';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007i';
 
@@ -111,6 +111,8 @@ export function actorObservation(s,actorId){
   roomName:view.roomName,exits:view.exits.map(x=>x.id),
   items:view.items.map(x=>x.id),features:[...view.features],
   observations:view.observations.map(x=>x.id),
+  distantThreats:view.distantSightings?.map(x=>x.kind)||[],
+  availableCover:view.availableCover?.map(x=>x.id)||[],
   personalLight:{...view.personalLight},
   groupTravel:view.groupTravel?{...view.groupTravel}:null,
   dinosaurs:[...view.visibleDinosaurs],
@@ -157,7 +159,10 @@ export function chooseCompanionAction(observation){
      return proposal('attack','dinosaur','protect_survivors','Use a carried weapon against an immediately visible predator.');
    return proposal('hide','','avoid_dinosaur','Try to find concealment from a nearby dinosaur.');
  }
- if(o.groupTravel&&o.exits.includes(o.groupTravel.to))
+ if(o.distantThreats?.length&&!o.hidden&&o.availableCover?.length)
+    return proposal('hide',o.availableCover[0],'avoid_seen_predator',
+      'Take real local cover from a predator seen along an unobstructed sightline.');
+  if(o.groupTravel&&o.exits.includes(o.groupTravel.to))
    return proposal(o.groupTravel.approach==='quiet'?'sneak':
      o.groupTravel.approach==='noisy'?'rush':'move',o.groupTravel.to,
     'follow_formation','Follow the locally agreed route on this survivor’s own turn.');
