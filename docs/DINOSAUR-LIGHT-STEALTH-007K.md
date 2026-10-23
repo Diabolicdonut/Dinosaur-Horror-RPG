@@ -1,6 +1,6 @@
 # Checkpoint 007-K — Dynamic Lighting, Timed Stealth and Predator Search
 
-**Status:** implemented and deterministic Node validation required before promotion. **Primary reference:** user's privately supplied *Alien RPG — Evolved Edition*, exploration / stealth / darkness / searching, printed pp. 54–58; combat action costs pp. 59–67. These citations identify source authority only. The park map, batteries, animal AI, hearing/visual limits and original equipment are **Jurassic adaptations**, not verbatim Evolved procedures or published dinosaur statistics.
+**Status:** validated candidate; automated Node tests and syntax checks passed on GitHub Actions before merge, with interactive browser smoke outstanding. **Primary reference:** user's privately supplied *Alien RPG — Evolved Edition*, exploration / stealth / darkness / searching, printed pp. 54–58; combat action costs pp. 59–67. These citations identify source authority only. The park map, batteries, animal AI, hearing/visual limits and original equipment are **Jurassic adaptations**, not verbatim Evolved procedures or published dinosaur statistics.
 
 ## Playable additions
 
@@ -26,7 +26,7 @@
 
 ## Validation and compatibility
 
-- Previous **257** deterministic tests retained and **23** new positive, negative, seeded replay, private-state, darkness, search timing, group routing, switch, battery and control-mode tests added (**280** expected overall). Consult GitHub Actions and report the exact green result before marking accepted.
+- Previous **257** deterministic tests retained and **23** new positive, negative, seeded replay, private-state, darkness, search timing, group routing, switch, battery and control-mode tests added (**280/280 passed** in GitHub Actions run [39907713408](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/39907713408); syntax checks also passed).
 - No edits to 006.2 `src/engine.mjs`, the legacy singleton browser or Cloudflare Worker `worker/index.mjs`. No Worker deployment required.
 - The party save kind and version **3** remain unchanged; additional actor light, groupTravel, dinosaur search/lastClue/searchHistory fields are optional and strictly validated where provided. Existing v2-to-v3 party migration retained.
 - No proprietary rulebook text, illustrations, creature tables or private uploads included in GitHub.
