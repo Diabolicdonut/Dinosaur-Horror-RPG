@@ -18,7 +18,7 @@ test('grouped survivors never pool successes and do not trigger stress responses
  assert(r.best<=sum);
  for(const x of r.humans){
   assert.deepEqual(x.responseEvents,[]);
-  assert.equal(x.pushes,0);
+  assert.deepEqual(x.pushes,[]);
  }
 });
 test('keeping watch helps only that survivor, not the creature or unrelated allies',()=>{
