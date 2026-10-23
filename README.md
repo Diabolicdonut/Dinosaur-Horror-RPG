@@ -2,7 +2,7 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
-**Status:** Checkpoint **007-K — Dynamic Lighting, Timed Predator Searching and Group Movement (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
+**Status:** Checkpoint **007-L1 — Spatial Visibility, Physical Cover and Velociraptor Senses (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Foundational creative pillar — Wonder and Dread
 
@@ -53,6 +53,14 @@ The new [Evolved checks module](src/evolved-checks.mjs) implements actor-based b
 Supported actions include traveling along valid exits, picking up and handing over physical items, concealing oneself, investigating listed scene details, and operating objective equipment. Actions not yet modeled are rejected instead of invented. A limited natural-language parser accepts common phrasing, but **full improvisational AI GM actions and the intended Character/Spectator autonomy are still pending**. Predator proximity currently causes stress rather than full combat or injury.
 
 Party game saves use `dinosaur-party-incident-007c` and never overwrite the old checkpoint 006.2 solo save. No Cloudflare Worker update or API key is required. See [precise playable scope and test ledger](docs/PARTY-INCIDENT-007C.md).
+
+## Checkpoint 007-L1 — Sightlines, Physical Cover and Predator Senses
+
+The [playable Party Incident](party.html) now uses an authored seven-zone visual geometry independent of the sound and travel maps. Some passages are physically walkable while their vegetation blocks direct vision; the secured maintenance door does not permit sight through it. A survivor can use `hide behind rolling cabinet`, `hide behind fallen log`, or corresponding local buttons to attempt legitimate cover with seeded Mobility. Fixed cover stays in its own zone when a character moves. A personally powered flashlight can reveal a nearby, physically visible predator without exposing the animal's precise hidden location or search records.
+
+A reusable Velociraptor sensory profile provides perception, hearing, search duration and logged awareness states. The offline AI only reacts to the acting survivor's local scene, perceived predator glimpses and accessible named cover. All three control modes, dice/medical/combat action budgets and **per-character Wonder and Dread discoveries** remain intact. There are now **307 deterministic tests (290 retained + 17 new)**, with final GitHub Actions and Pages verification required when merged.
+
+This is **007-L1**, a bounded first part of the larger 007-L milestone. The `stalk` label is not yet a separate stalking attack algorithm; directional facing, obstacle destruction, species-specific signature attacks and environmental hazards remain for **007-L2**. Manual graphical browser gameplay smoke also remains outstanding. See [rules-fidelity and implementation report](docs/DINOSAUR-SPATIAL-007L1.md).
 
 ## Checkpoint 007-K — Active Flashlights, Ten-Minute Searches and Group Movement
 
