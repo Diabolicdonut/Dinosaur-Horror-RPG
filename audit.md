@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Alien-to-Jurassic scope correction and first Cinematic scene framing — 2026-10-23
+
+**Recovery:** Started from accepted main `e10d7f8971ff0194d138633438a7204aac0d8897`, checkpoint **007-L2a**, v**0.7.12**, **324/324** accepted tests; Actions and Pages passed, desktop/mobile manual gameplay smoke outstanding. No open PRs at start. Preserved current Velociraptor stalking/facing, accepted 007-K personal Wonder journals, Party/Focus/Spectator controls, Evolved mechanics, party saves v3/v2 migration, legacy solo 006.2 and separate Cloudflare Worker v006.
+
+**Design correction:** User clarified that the goal is a faithful *Alien RPG Evolved Edition* adaptation with **Dinosaur Horror, Sci-Fi Action and Sense of Wonder**, not Zoo Tycoon ecology. Corrected the living roadmap, Wonder design, README and added `docs/CINEMATIC-SCENE-CONTRACT.md`. Mandatory island-scale animal populations, feeding, breeding, herd migration and needs simulation are no longer acceptance gates; credible species-specific **encounter** behavior and GM-driven cinematic events/pressure remain required. Campaigns should comprise linked player-responsive scenes of varied tension, not uninterrupted escalation or scripted film reenactments.
+
+**First implemented scene slice:** Added pure `src/cinematic-scenes.mjs` with one location-based situation/opportunity for each of the seven existing zones and objective-grounded variants for restored power, radio and helipad. `partyView` now projects `cinematicScene` only for the chosen actor's present zone; `src/party-app.mjs` displays scene title, tone, current opportunity and possible approaches alongside existing physical affordances. No scene event spawning, new species, rolls, resource/time use, fight enforcement, hidden facts, migration, Worker change or save-schema change. Asset query updated to load new browser UI.
+
+**Validation target:** Retain 324 earlier tests and add nine in `tests/cinematic-scenes.test.mjs` (local projection, seven scenes, conditional objective flags, no hidden dinosaur inference, no RNG/time mutation, actor privacy, save/restore, invalid-action preservation and browser wiring), for **333 total** expected. Test on GitHub Actions candidate and final accepted main; verify Pages independently. **Manual desktop/mobile graphical QA remains unperformed** and is not included in automated results.
+
+**Next:** Continue **007-L2b** species-appropriate Velociraptor attack eligibility/constraints as the next accepted raptor milestone, while developing a typed optional/conditional scene-event and source-grounded encounter/danger pressure boundary in parallel. The first fully playable multi-scene Cinematic adventure and generative Game Mother remain future work. No mandatory virtual-ecosystem detour.
+
+
 ## Checkpoint 007-L2a — Route-Constrained Stalking and Directional Predator Vision — 2026-10-23
 
 **Recovery:** Inspected GitHub main at `f12693c3ac15f830aff1127a0b622c6ae7d8bc3a`, checkpoint 007-L1 version 0.7.11; 307 previously accepted tests, GitHub Actions and Pages successful, manual desktop/mobile browser smoke still outstanding. Read current Living Game Vision roadmap, Wonder and Dread, Evolved authority, spatial/pursuit/stealth reports, all relevant engine and regression files. No newer active PRs or accepted gameplay were present when work began. Preserved checkpoint 007-K lighting, 007-L1 physical cover, personal Wonder discovery journals and original scenario.
