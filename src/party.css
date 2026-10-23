@@ -23,3 +23,8 @@
 
 /* 007-F combat turn indicator: kept neutral in exploration, warning only in combat. */
 .combat-banner{padding:10px 14px;border:1px solid var(--line);border-left:3px solid var(--gold);background:#0d1d17;color:var(--ink);font-size:12px;letter-spacing:.3px;line-height:1.5;margin:0 0 11px}
+
+/* 007-I: an incoming creature strike waits at a strict pre-roll choice boundary. */
+.reaction-panel{margin-top:12px;border-left:4px solid #bda575;background:#253324}
+.reaction-panel p{margin:7px 0;color:var(--ink)}
+.reaction-panel[hidden]{display:none!important}
