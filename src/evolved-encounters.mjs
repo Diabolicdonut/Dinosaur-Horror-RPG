@@ -70,14 +70,16 @@ export function detectCreature(actor,{seed=1993,observationDice=5,cluttered=true
  * each side counts, not the sum of allied dice. Every actor is rolled with
  * their own Wits/Observation and a deterministic per-actor derived seed.
  */
-export function detectGroupCreature(actors,{seed=1993,observationDice=5}={}){
+export function detectGroupCreature(actors,{seed=1993,observationDice=5,darkness=false}={}){
  if(!Array.isArray(actors)||actors.length<1||actors.length>8||
     actors.some(a=>!a||typeof a.id!=='string')||
     new Set(actors.map(a=>a.id)).size!==actors.length)
   throw new RangeError('A stealth group needs 1–8 distinct survivors.');
  const humans=actors.map((actor,i)=>({
   actorId:actor.id,...resolveSkillCheck(actor,{skill:'observation',
-   passive:true,modifier:actor.guarding?2:0,
+   passive:true,modifier:(actor.guarding?2:0)-
+     (darkness&&![...(actor.inventory||[]),...(actor.gear||[])].some(item=>
+       ['flashlight','working flashlight','headlamp'].includes(item))?2:0),
    seed:(seed^(0x9e3779b9*(i+1)))>>>0})
  }));
  const best=Math.max(...humans.map(a=>a.successes));
