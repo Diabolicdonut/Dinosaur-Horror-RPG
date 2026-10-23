@@ -89,13 +89,15 @@ export function rollCriticalInjury(seed=1993,previous=[]){
  * Attack outcome is never narrated as a full signature-attack table.
  */
 export function applyCreatureAttack(actor,{seed=1993,attackerDice=6,baseDamage=2,
-   armor=null,dodge=false,defenderSeed=null}={}){
+   armor=null,dodge=false,defend=false,defenderSeed=null}={}){
  if(!actor||!Number.isInteger(actor.health)||!Number.isInteger(actor.healthMax))
   throw new RangeError('Target requires valid health state.');
  if(!Number.isInteger(baseDamage)||baseDamage<0||baseDamage>12)
   throw new RangeError('Invalid attack damage.');
  const strike=rollDicePool(attackerDice,seed);
- const evade=dodge?resolveSkillCheck(actor,{skill:'mobility',seed:defenderSeed??((seed^0x920aca3a)>>>0)}):null;
+ if(dodge&&defend)throw new RangeError('Choose only one defense method.');
+ const evade=(dodge||defend)?resolveSkillCheck(actor,{skill:defend?'close_combat':'mobility',
+   seed:defenderSeed??((seed^0x920aca3a)>>>0)}):null;
  const remaining=Math.max(0,strike.successes-(evade?.successes||0));
  const armorValue=armor===null?(actor.armorLevel||0):armor;
  if(!Number.isInteger(armorValue)||armorValue<0||armorValue>10)throw new RangeError('Invalid armor.');
