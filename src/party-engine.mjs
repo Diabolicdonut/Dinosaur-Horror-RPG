@@ -158,35 +158,86 @@ function dinoTick(s,noise,at) {
  }
 }
 /** Only the active dinosaur slot may resolve a creature turn. */
-function predatorStep(previous,{actorId,source}){
+/** Declare the creature's target before dice are rolled; human players
+ * receive an atomic, persistent chance to choose a Close Combat defense. */
+function predatorStep(previous,{actorId,source,reactionPrompt=false,action=null}){
  const slot=activeCombatSlot(previous),d=previous.dinosaurs[0];
- if(slot?.kind!=='dinosaur'||source!=='ai'||actorId!==d.id)
+ if(slot?.kind!=='dinosaur')
+  return rejected(previous,'There is no active creature initiative.');
+ const pending=previous.combat?.pendingReaction;
+ if(pending){
+  const victim=previous.actors.find(a=>a.id===pending.victimId);
+  if(!victim||actorId!==victim.id||!['defend','decline'].includes(action?.target)||
+     action.kind!=='react')
+   return rejected(previous,'Resolve the declared attack as its named defender.');
+  const owned=previous.control.mode==='party'||
+    (previous.control.mode==='focus'&&previous.control.focusedActorId===victim.id);
+  if(source!==(owned?'human':'ai'))
+   return rejected(previous,'The declared defender is controlled by '+(owned?'the player.':'the computer.'));
+  const s=deep(previous),target=s.actors.find(a=>a.id===pending.victimId);
+  const defend=action.target==='defend';
+  if(defend&&!reactionEligible(s,target,slot))
+   return rejected(previous,'No eligible quick action remains to defend.');
+  delete s.combat.pendingReaction;
+  return resolvePredatorStrike(s,target,slot,{defend,declared:true});
+ }
+ if(source!=='ai'||actorId!==d.id)
   return rejected(previous,'The predator does not currently have initiative.');
- const s=deep(previous),beast=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
- const medicalFrom=worldSeconds(s);
- if(!s.clock)s.clock={explorationActions:s.beat,explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
+ const s=deep(previous),beast=s.dinosaurs[0];
  const targets=s.actors.filter(a=>a.location===beast.location&&!a.hidden&&!a.dead&&!a.broken);
+ if(!targets.length)return resolvePredatorStrike(s,null,slot,{defend:false});
+ const victim=targets[nextSeed(s)%targets.length];
+ const surprising=predatorSurprise(s,slot);
+ const human=s.control.mode==='party'||
+   (s.control.mode==='focus'&&s.control.focusedActorId===victim.id);
+ if(reactionPrompt&&human&&!surprising&&reactionEligible(s,victim,slot)){
+  s.combat.pendingReaction={victimId:victim.id,round:s.combat.round,
+   card:slot.card,declaredAtBeat:s.beat,attackKind:'close_combat'};
+  gameEvent(s,'The velociraptor lunges at '+victim.name+
+    '. Choose DEFEND (quick action) or ALLOW the attack before the strike is rolled.',
+    victim.id,'danger');
+  return {accepted:true,state:s,awaitingReaction:true,
+    result:{kind:'attack_declared',target:victim.id}};
+ }
+ // Legacy direct engine callers keep the previously accepted prepared-dodge
+ // contract. Runtime AI uses an actual opposed Close Combat defend, even if
+ // its actor was not previously ordered to stand watch.
+ const legacy=!reactionPrompt;
+ const reactive=(!surprising&&reactionEligible(s,victim,slot)&&
+   (legacy?Boolean(victim.guarding):true));
+ return resolvePredatorStrike(s,victim,slot,{
+   defend:reactive&&!legacy,dodge:reactive&&legacy,declared:false});
+}
+function predatorSurprise(s,slot){
+ return Boolean(s.combat.surprise?.ambush&&!s.combat.surprise.consumed&&
+   s.combat.surprise.actorId===slot.actorId&&s.combat.round===1);
+}
+function reactionEligible(s,victim,slot){
+ const b=s.combat?.budgets?.[victim.id];
+ return Boolean(slot?.kind==='dinosaur'&&victim.health>0&&!victim.dead&&!victim.broken&&
+   victim.location===s.dinosaurs[0].location&&!victim.hidden&&b&&
+   b.quickSpent<2&&!(b.fullSpent&&b.quickSpent>=1)&&!predatorSurprise(s,slot));
+}
+function resolvePredatorStrike(s,victim,slot,{defend=false,dodge=false,declared=false}={}){
+ const beast=s.dinosaurs[0],species=DINO_SPECIES.velociraptor;
+ const medicalFrom=worldSeconds(s);
+ if(!s.clock)s.clock={explorationActions:s.beat,
+   explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  let detail={kind:'predator_wait',target:''};
- if(targets.length){
-  // Deterministic target selection; the creature does not perceive characters
-  // hidden in another room or behind unsearched cover.
-  const victim=targets[nextSeed(s)%targets.length];
-  const budget=s.combat.budgets[victim.id];
-  const surprising=Boolean(s.combat.surprise?.ambush&&!s.combat.surprise.consumed&&
-    s.combat.surprise.actorId===slot.actorId&&s.combat.round===1);
-  const canDodge=Boolean(!surprising&&victim.guarding&&budget&&budget.quickSpent<2&&
-   !(budget.fullSpent&&budget.quickSpent>=1));
-  if(canDodge){
-   const paid=checkDodgeInterrupt(s,victim.id);
-   if(paid)gameEvent(s,victim.name+' uses a reserved quick action to dodge.',victim.id,'danger');
+ if(victim&&victim.location===beast.location&&!victim.hidden&&!victim.dead&&!victim.broken){
+  const surprising=predatorSurprise(s,slot);
+  if(defend||dodge){
+   if(!reactionEligible(s,victim,slot)||!checkDodgeInterrupt(s,victim.id))
+    throw new Error('Reaction eligibility changed before a validated strike.');
+   gameEvent(s,victim.name+' spends a quick action to '+
+     (defend?'defend with Close Combat.':'dodge with Mobility.'),victim.id,'danger');
   }
   const strike=applyCreatureAttack(victim,{seed:nextSeed(s),
-   attackerDice:species.attack+(surprising?2:0),
-   baseDamage:species.baseDamage,dodge:canDodge});
+    attackerDice:species.attack+(surprising?2:0),
+    baseDamage:species.baseDamage,defend,dodge});
   if(surprising)s.combat.surprise.consumed=true;
-  victim.guarding=false;
-  victim.health=strike.after.health;victim.broken=strike.after.broken;
-  victim.dead=strike.after.dead;
+  victim.guarding=false;victim.health=strike.after.health;
+  victim.broken=strike.after.broken;victim.dead=strike.after.dead;
   if(strike.critical){
    victim.criticalInjuries=(strike.after.criticalInjuries||[]).map(w=>({...w}));
    const updated=enrichInjuries(victim,medicalFrom,nextSeed(s));
@@ -199,14 +250,16 @@ function predatorStep(previous,{actorId,source}){
    victim.stressResponses=strike.evade.after.stressResponses;
   }
   gameEvent(s,strike.damage?
-   'Velociraptor strikes '+victim.name+' for '+strike.damage+' damage'+
-     (strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''):
-   victim.name+' survives the velociraptor’s strike without injury.',victim.id,'danger');
-  detail={kind:'predator_attack',target:victim.id,damage:strike.damage,evaded:canDodge,
-   ambush:surprising,attackDice:species.attack+(surprising?2:0),
-   critical:strike.critical?.code||null};
+    'Velociraptor strikes '+victim.name+' for '+strike.damage+' damage'+
+      (strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''):
+    victim.name+' survives the velociraptor’s strike without injury.',victim.id,'danger');
+  detail={kind:'predator_attack',target:victim.id,damage:strike.damage,
+    evaded:defend||dodge,defense:defend?'close_combat':dodge?'mobility':'none',
+    declared,ambush:surprising,attackDice:species.attack+(surprising?2:0),
+    critical:strike.critical?.code||null};
  }else gameEvent(s,'The velociraptor searches for exposed prey.',null,'danger');
- s.actions.push({beat:s.beat,actorId:beast.id,...detail,combatRound:s.combat.round,card:slot.card});
+ s.actions.push({beat:s.beat,actorId:beast.id,...detail,
+   combatRound:s.combat.round,card:slot.card});
  s.actions=s.actions.slice(-200);
  s.beat++;
  finishDinosaurAction(s,nextSeed);
@@ -371,6 +424,7 @@ export function partyView(s,{actorId=null}={}) {
   combat:s.combat?.active?{round:s.combat.round,card:activeCombatSlot(s)?.card,
    index:s.combat.index,owner:activeCombatSlot(s)?.kind,order:s.combat.order.map(t=>({...t})),
    surprise:s.combat.surprise?{...s.combat.surprise}:null,
+   pendingReaction:s.combat.pendingReaction?{...s.combat.pendingReaction}:null,
    remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
   location:actor.location,roomName:place.name,description:place.description,
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
@@ -425,11 +479,11 @@ export function parsePartyAction(input) {
  if(give)return {kind:'give',target:give[1],recipientId:give[2],push:0};
  return {kind:'',target:line,push:0};
 }
-export function partyStep(previous,raw,{actorId=null,source='human'}={}) {
+export function partyStep(previous,raw,{actorId=null,source='human',reactionPrompt=false}={}) {
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
  const action=parsePartyAction(raw),slot=activeCombatSlot(previous);
  const activeId=activeTurnId(previous);
- if(slot?.kind==='dinosaur')return predatorStep(previous,{actorId,source});
+ if(slot?.kind==='dinosaur')return predatorStep(previous,{actorId,source,reactionPrompt,action});
  const actor=previous.actors.find(a=>a.id===activeId);
  if(!actor)throw new RangeError('Scheduled survivor missing.');
  if(actorId!==null&&actor.id!==actorId)
