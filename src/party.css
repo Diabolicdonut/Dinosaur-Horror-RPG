@@ -28,3 +28,7 @@
 .reaction-panel{margin-top:12px;border-left:4px solid #bda575;background:#253324}
 .reaction-panel p{margin:7px 0;color:var(--ink)}
 .reaction-panel[hidden]{display:none!important}
+
+/* Wonder belongs beside survival: quiet personal discoveries, not danger alerts. */
+.event-entry.wonder{border-left:2px solid #9aa880;padding-left:10px;color:var(--ink)}
+.event-entry.wonder small{color:#c4cb9a}
