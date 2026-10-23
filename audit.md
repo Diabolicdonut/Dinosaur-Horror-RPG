@@ -1,5 +1,24 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-I — Player-Chosen Close Defense and Group Stealth — 2026-10-22
+
+**Recovery:** Inspected authoritative `Diabolicdonut/Dinosaur-Horror-RPG` `main` at accepted 007-H `4102352974bfb7110cc577051d97e5f19278856a`, then source combat engine, director, browser UI, tests and project state. Used the user's private *Alien RPG — Evolved Edition* for stealth (printed pp. 55–58), melee defend (p. 62) and ranged dodge distinction (p. 65). No private pages or copyrighted published creature tables entered GitHub.
+
+**World mechanics:** `src/party-engine.mjs` permits the scheduled velociraptor to select an actually colocated victim **before** the strike roll, then persist a validated `combat.pendingReaction` until the defender acts. On human-owned victim initiative interruptions, the player chooses **Defend** (one quick action; opposed CLOSE COMBAT cancels attacker successes) or **Do not defend** (save action budget). Neither option can alter a previously rolled strike: the target selection is saved independently of the attack die roll. Ambushes and exhausted quick budgets never offer an illegal reaction. The pending state validates its round/card/beat/actor, survives save/reload and keeps one creature action rather than inventing free predator strikes.
+
+**Control modes:** `src/party-director.mjs` routes response ownership to the actual targeted survivor. Party and human-focused Character mode require human choice, while AI-owned companions in Character/Spectator make a deterministic close-combat defense if legal. Mid-reaction mode switch changes future control but does not reroll target or reset state; the Follow camera shifts to the endangered survivor. Existing direct engine callers retain their previous prepared Mobility-dodge fallback when not opting into player-reaction mode, preserving prior accepted deterministic test contracts; **the playable app uses explicit Close Combat response rules**.
+
+**Stealth:** New `detectGroupCreature` in `src/evolved-encounters.mjs` makes each present survivor roll passive OBSERVATION, using only the highest result in the group against one creature pool; a guard's +2 applies to their own roll. A zone's active hidden search makes a single OBSERVATION roll, revealing no more than one hidden survivor per success. It does not expose remote actors or grant a detection roll just for entering concealment. Shared dinosaur world remains single and map-constrained, with individual knowledge and stealth state.
+
+**Browser:** Added `#reaction-panel` with human **Defend / Do not defend** before-roll buttons, target label, safe command lock and status, integrated `007i` versioned HTML/JS/styles and matching nested imports. Original Character Lab launches Checkpoint 007-I. The original solo 006.2 engine/save and Cloudflare Worker v006 are untouched and require no redeployment.
+
+**Validation:** `tests/defensive-reactions.test.mjs` adds **13** cases for declare-first timing, selected defense/decline, quick-payment, false-responder rejection, ambush and exhaustion, Focus/Spectator takeover, AI policy, deterministic saved response and UI contract. `tests/grouped-stealth.test.mjs` adds **7** cases for best-of-group detection, passive rolls without stress/pushing, guarded bonuses, proper search-success reveals and seeded live scene fidelity. These augment the previous **221** to **241 Node tests**. During verification, one new passive-dice regression initially asserted a numeric count where the resolver returns an empty push event array; this was corrected. The implementation has subsequently passed the full 241-test CI on main.
+
+**Limits:** This is still **not** complete Evolved RAW: explicit ranged dodge interaction, more complicated defensive special attacks, source-exact lighting/crawlspaces, party movement modes and creature signature attacks remain incomplete. The game uses a current room-based map and deterministic offline AI; no manual graphical browser smoke testing has been performed in this session. Source-parity and save handling are recorded in `docs/DEFENSE-STEALTH-007I.md`.
+
+**Next checkpoint:** 007-J detailed park stealth pursuit/encounter timer, coordinated party movement, environmental sight/noise and species-specific behavior, without destabilizing the legacy 006.2 game or existing Party/Character/Spectator saved incident.
+
+
 ## Checkpoint 007-H — Surprise, ambush, held initiative, survivor-turn death rolls — 2026-10-22
 
 **Recovery:** Inspected authoritative GitHub `main` at the accepted 007-G commit `e3cb7a2ea12a98fbc43846b3cb3d2343ab7ed58a`; confirmed existing 209-test injury/clinical release, its successful GitHub Actions and GitHub Pages deployment. Grounded new procedures in the privately supplied *Alien RPG — Evolved Edition* printed pp. 59–61 (surprise, ambush, holding off) and p. 68 (round-lethal death checks). No private rulebook contents, files or illustrations published.
