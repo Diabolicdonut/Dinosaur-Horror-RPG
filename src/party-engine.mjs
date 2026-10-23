@@ -3,11 +3,12 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
-import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l1';
-import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l1';
+import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2a';
+import {huntDecision,faceClue,validCreatureFacing} from './dinosaur-hunt.mjs?v=007l2a';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l2a';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l1';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l2a';
 import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007i';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
@@ -125,12 +126,14 @@ function dinoTick(s,noise,at) {
 if(signal.heard){
    d.lastHeard=at;
    d.lastHeardBeat=s.beat;d.lastClue='sound';
+   d.facing=faceClue(d,{shedDoorBreached:breach});
    d.alert=Math.min(6,Math.max(d.alert,noise+2));
    if(d.search&&d.search.zone!==at)d.search=null;
   }else{
-   const lamp=visibleLampZone(d.location,s.actors,{shedDoorBreached:breach});
+   const lamp=visibleLampZone(d.location,s.actors,{shedDoorBreached:breach,facing:d.facing});
    if(lamp){
     d.lastHeard=lamp;d.lastClue='light';
+    d.facing=lamp;
     d.alert=Math.min(6,Math.max(d.alert,4));
     if(d.search&&d.search.zone!==lamp)d.search=null;
    }
@@ -142,17 +145,25 @@ if((s.beat+1)%2===0){
    if(d.search){
     // Committed zone search prevents patrol movement until completion.
    }else if(d.alert>0&&d.lastHeard){
-   const path=pursuitStep(d,{shedDoorBreached:breach});
-   if(path.tracking&&!path.blocked){
-    d.location=path.location;
-    d.alert=Math.max(0,d.alert-profile.alertDecay);
-   }else d.alert=Math.max(0,d.alert-profile.alertDecay);
+   const hunt=huntDecision(d,{beat:s.beat,shedDoorBreached:breach});
+   if(!hunt.blocked){
+    d.location=hunt.location;
+    if(validCreatureFacing(d.location,hunt.facing))d.facing=hunt.facing;
+   }
+   d.lastHunt={beat:s.beat,from:predatorPreviousZone,to:d.location,
+    behavior:hunt.behavior,blocked:hunt.blocked};
+   // Predator interest decays while tracking, including when a quiet
+   // approach holds position or a physical barrier blocks a route.
+   d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(d.alert>0){
    // An unrefreshed clue fades even when no further route is available.
    d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(nextSeed(s)%3===0){
    const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
-   if(exits.length)d.location=exits[nextSeed(s)%exits.length];
+   if(exits.length){
+    d.location=exits[nextSeed(s)%exits.length];
+    if(d.location!==predatorPreviousZone)d.facing=predatorPreviousZone;
+   }
   }
 if(d.alert===0&&!d.search)d.lastHeard=null;
   }
@@ -420,7 +431,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
-  dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
+  dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:'jungle',lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
   actions:[]
  };
@@ -454,6 +465,14 @@ export function isPartySave(s) {
        !Number.isSafeInteger(s.dinosaurs[0].search.dueStretch)))||
     !Array.isArray(s.startingRoster)||validateParty(s.startingRoster).length!==0||
     !SCENARIO.rooms[s.dinosaurs[0]?.location]||
+     !validCreatureFacing(s.dinosaurs[0]?.location,s.dinosaurs[0]?.facing)||
+     (s.dinosaurs[0]?.lastHunt!==undefined&&
+      (!s.dinosaurs[0]?.lastHunt||
+       !Number.isSafeInteger(s.dinosaurs[0].lastHunt.beat)||
+       !SCENARIO.rooms[s.dinosaurs[0].lastHunt.from]||
+       !SCENARIO.rooms[s.dinosaurs[0].lastHunt.to]||
+       typeof s.dinosaurs[0].lastHunt.blocked!=='boolean'||
+       !['patrol','stalk','investigate','search'].includes(s.dinosaurs[0].lastHunt.behavior)))||
     (s.dinosaurs[0].behavior!==undefined&&!['patrol','investigate','stalk','search','engage','inactive'].includes(s.dinosaurs[0].behavior)))return false;
  if(validateParty(s.actors).length)return false;
  return s.actors.every(a=>SCENARIO.rooms[a.location]&&Array.isArray(a.inventory)&&
