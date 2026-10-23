@@ -401,6 +401,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   medicalRest:false,lastAction:null
  }));
  actors[0].inventory.push(...SCENARIO.startItems);
+ for(const survivor of actors)if(actorOwnsLight(survivor))survivor.light.charge=LIGHT_CAPACITY_STRETCHES;
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
