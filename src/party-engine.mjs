@@ -2,7 +2,7 @@
 // Legacy src/engine.mjs is intentionally not imported or changed.
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
-import { SCENARIO } from './scenario.mjs';
+import { SCENARIO } from './scenario.mjs?v=007kw';
 import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007k';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
