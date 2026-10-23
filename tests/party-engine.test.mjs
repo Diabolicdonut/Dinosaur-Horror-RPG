@@ -179,7 +179,7 @@ test('multi-character incident browser and validated roster transfer have isolat
  assert(app.includes('sessionStorage.removeItem(LAUNCH)'));
  assert(app.includes('state.startingRoster'));
  assert(app.includes('newPartyIncident(setup)'));
- assert(page.includes('ACTIVE LIGHTING · TIMED SEARCHES · GROUP MOVEMENT'));
+ assert(page.includes('SIGHTLINES · PHYSICAL COVER · PREDATOR SENSES'));
  const characters=await readFile(new URL('../characters.html',import.meta.url),'utf8');
  assert(characters.includes('id="start-party"'));
 
