@@ -1,7 +1,7 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007k';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007k';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007kw';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007k';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007kw';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007k';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007k';
 
