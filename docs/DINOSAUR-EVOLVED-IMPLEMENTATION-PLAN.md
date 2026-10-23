@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-23 (reconciled through accepted Checkpoint 007-L1). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-23 (aligned to Checkpoint 007-L2a candidate and remaining 007-L2b scope). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. Keep scenario/franchise data separate so a future original dinosaur-survival setting can reuse the underlying game. The desired finished experience is a persistent, story-rich island with believable animals, beautiful discovery, human dilemmas, real survival consequences and an AI Game Master—not merely a raptor combat simulator.
 
@@ -48,14 +48,14 @@ Reference: [Character Generation Modes](CHARACTER-GENERATION-MODES.md), [Evolved
 
 ## 4. Honest implementation snapshot (2026-10-23)
 
-**Authoritative development state at this revision:** `main` commit `81b9d49f56c470cb33208ba94a0d642710ce1429`, Checkpoint **007-L1**, app version **0.7.11**, **307/307** Node regression tests, successful main GitHub Actions validation and Pages deployment. **Interactive desktop/mobile graphical gameplay smoke remains unperformed**. Always consult [../project-state.json](../project-state.json), the newest accepted [../audit.md](../audit.md) and current GitHub HEAD for a newer state; do not treat this dated snapshot as a frozen test count.
+**Development snapshot at this roadmap edit:** Checkpoint **007-L2a**, app version **0.7.12**, **324 tests (307 retained and 17 new)** in the active validation/release process. The last recovered fully accepted base was 007-L1, commit `f12693c3ac15f830aff1127a0b622c6ae7d8bc3a`, with successful Actions and Pages. Only treat 007-L2a as accepted **after final main-branch CI and Pages verification**. **Interactive desktop/mobile graphical gameplay smoke remains unperformed**. Always consult [../project-state.json](../project-state.json), newest [../audit.md](../audit.md) and GitHub main for the latest actual release.
 
 | Domain | Accepted playable subset | Open work / honest limits |
 | --- | --- | --- |
 | Character Lab and roster | Nine Jurassic career mappings; 12 skills; Evolved-inspired seeded individual d6/stress checks; manual/auto/hybrid 1–8 character setup and launch | Several of 27 talent hooks have no world effects; source-complete advancement, panic and specialist capabilities remain partial |
 | Party/Character/Spectator | Independent 007-series party incident, shared persistent world, knowledge-bounded offline director, atomic mode/camera switches, spectator controls | Generative companion conversation, richer agendas/relationships, complete NPC simulation and full free-form actions not yet live |
 | Combat and injuries | Seeded initiative, quick/full budgets, raptor slots, defense choice, surprise/ambush, wounds and medical clocks in growing Evolved-inspired subset | Species-specific attacks, complete equipment/armor/ammunition, environmental complications and complete edition parity remain |
-| Pursuit, stealth and vision | Zone-bound routes and sound; individually controlled finite lamps; timed searches; individual/group movement; directional short-range sightlines, named physical cover, raptor sensory profile | True stalking tactics, moving occluders/facing, scent/wind, additional simulated species and realistic range/visibility remain |
+| Pursuit, stealth and vision | Zone-bound routes/sound, finite individual lamps, timed searches, individual/group movement, directional short-range sightlines, named physical cover, and **007-L2a route-constrained slow stalking plus creature-facing light perception** | Dynamic physical occluders, changeable weather, distinctive raptor attack/pursuit tactics, scent/wind, additional simulated species and finer geometry remain |
 | Wonder and discovery | Four optional world-anchored scenes, each saved to one survivor's private journal without time/dice cost | Herbivores are ambient-only; no durable peaceful population, herds, animal social behavior, field-guide progression or wonder-aware autonomous AI yet |
 | AI Game Master | Separate legacy 006.2 browser/Cloudflare Worker v006 supports bounded parsing, narration and four typed improvised actions | New party incident is primarily offline/deterministic; fully conversational multi-actor GM, compound actions, persistent dialogue and Worker integration are pending |
 | Scenarios and presentation | Playable seven-zone island incident; park systems and survivor objectives; browser UI and export/replay | Rich island geography, vehicles, alternate incidents, sustained campaign-scale narrative and hands-on graphical QA still pending |
@@ -71,10 +71,11 @@ Milestone labels below express the current accepted order, **not immutable dates
 ### 007-L — Spatial and species-grounded survival (IN PROGRESS)
 
 - **007-L1 complete in automated acceptance:** Authored directional one-exit sightlines separate from travel/hearing; solid foliage/door occlusion; local named cover checked with seeded Mobility; actor-only glimpses; one Velociraptor sensory profile with saved `patrol / investigate / stalk / search / engage` stages. Wonder and Dread personal discoveries preserved. **307/307** tests and CI/Pages passed; manual browser verification remains outstanding.
-- **007-L2 next:** Convert stalking from a stored label into legal creature decisions and approach/ambush tradeoffs; model facing, relevant dynamic obstructions and changing weather/conditions without treating sound as vision; add grounded, original creature-specific attack and pursuit consequences; validate physical reach, target choice, injuries and visible clues.
+- **007-L2a completed in code (final release gates apply):** Velociraptor low-alert stalking now differs from high-alert investigation by physical movement cadence (one legal zone per four vs two exploration actions); actual creature-facing constraints and sound-guided turning, finite clue decay and validated, persistent hunt records are implemented without changing attack tables. **324** deterministic tests cover the retained mechanics and new cases; final main CI/Pages and manual graphical QA are separate.
+- **007-L2b next:** Complete environmental perception with relevant changing obstructions/weather; implement grounded and tested approach-versus-attack choices, original Velociraptor encounter tactics and consequences without cheating Evolved combat/defense or target knowledge. Do not call the whole 007-L milestone complete until this follow-up is accepted.
 - **Gate:** Successful legal/blocked passage and line-of-sight tests, seeded search/pursuit/cover/attack replay, no leaked hidden animal information, compatibility across all three modes, saves and previous tests. Test quiet/violent and nonviolent animal behavior where actually implemented. Report manual graphical testing honestly, separately from CI.
 
-Reference: [Spatial / Velociraptor 007-L1](DINOSAUR-SPATIAL-007L1.md), [Lighting and Timed Search 007-K](DINOSAUR-LIGHT-STEALTH-007K.md), [Pursuit 007-J](DINOSAUR-PURSUIT-007J.md).
+Reference: [Stalking and Facing 007-L2a](DINOSAUR-STALKING-007L2A.md), [Spatial / Velociraptor 007-L1](DINOSAUR-SPATIAL-007L1.md), [Lighting and Timed Search 007-K](DINOSAUR-LIGHT-STEALTH-007K.md), [Pursuit 007-J](DINOSAUR-PURSUIT-007J.md).
 
 ### 007-M — Physical resources, equipment and park systems (AFTER 007-L VALIDATION)
 
@@ -131,11 +132,11 @@ These streams extend the original A–E phases and may be scheduled into future 
 
 Keep the original phase structure as a long-range *work breakdown*, not a claim that each phase must be completed serially or that early accepted features need rebuilding.
 
-| Phase | Original objective | Status at 007-L1 | Remaining exit work |
+| Phase | Original objective | Status at 007-L2a | Remaining exit work |
 | --- | --- | --- | --- |
 | **A — Rules inventory and source mapping** | Source-to-engine matrix of Evolved timing, dice, skills, stress, injuries, equipment, combat and deviations | **Partially established** through rules authority and feature-specific parity reports | Consolidate/audit uncovered and intentionally adapted cases; fixtures for each accepted rule |
 | **B — Characters and core engine** | Careers, 12 skills, manual/auto/hybrid party creator, actor IDs, seeded rolls, stable saves, control ownership | **Substantially playable alpha** in Character Lab and 007 party incident | Complete world-dependent talent hooks, progression, panic effects, stronger shared simulation contract |
-| **C — Combat, stealth and survival** | Full action economy, predator perception, injuries, supplies and park-specific constraints | **Active** through 007-L1; initiative, wounds, lighting and physical cover implemented as bounded subsets | 007-L2 predator behavior; 007-M resources/hazards; advanced Evolved parity and ecology |
+| **C — Combat, stealth and survival** | Full action economy, predator perception, injuries, supplies and park-specific constraints | **Active** through 007-L2a; initiative, wounds, lighting, cover, slow actual stalking and facing-aware perception implemented as bounded subsets | 007-L2b attack/occlusion behavior; 007-M resources/hazards; advanced Evolved parity and ecology |
 | **D — Natural-language GM and autonomous actors** | Multi-actor conversation, validated typed effects, NPC dialogue, actor-limited narration and decisions | **Partially playable:** three modes and offline companion policy; separate legacy 006 Worker only | 007-N integration, compound decisions, genuinely conversational GM, persistent social NPCs |
 | **E — Cinematic living incident and transition** | Original park missions, scenes, NPCs, story continuity, alternate setting and reliable deployment | **Early alpha:** starter island incident and personal wonder discoveries | Larger living ecosystem, social/narrative arcs, scenario variety, field journal, QA and final-release gates |
 
