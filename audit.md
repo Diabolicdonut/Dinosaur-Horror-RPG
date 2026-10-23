@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Roadmap reconciliation — Living vision and status normalization — 2026-10-23
+
+**Recovery:** Inspected GitHub `main` at accepted 007-L1 commit `81b9d49f56c470cb33208ba94a0d642710ce1429` (v0.7.11; 307/307 Node tests; final main CI [39957604441](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/39957604441) and Pages [39957604697](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/39957604697) successful). No new mechanics, private materials, Worker, solo game or save-schema changes were introduced by this documentation task.
+
+**Living plan:** Revised `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md` into the shared long-range vision and roadmap: preserved Evolved source authority, exact seeded dice and three ownership modes; added permanent Wonder and Dread/ecology requirements, current implemented-vs-pending truth, 007-L1 current state, 007-L2 → 007-M → 007-N gated milestones, longer-term animals/NPCs/campaign systems, user-facing end-to-end acceptance and agent-friendly change-management/read order. `README.md` now links the living plan. `project-state.json` now points to the roadmap and corrects stale top-level implementation, milestone acceptance (307 tests, not 280) and already successful 007-L1 Pages status. Historic checkpoint reports are retained as historical snapshots.
+
+**Validation boundary:** Documentation/state consistency update only; test/Pages runs for the docs change must be checked on the final accepted commit. Actual desktop/mobile interactive gameplay smoke is **still outstanding**; no new gameplay claims or release-version bump. Further mechanical work continues at **007-L2**.
+
+
 ## Checkpoint 007-L1 — Spatial Visibility, Physical Cover and Velociraptor Senses — 2026-10-23
 
 **Recovery and concurrency:** Began from authoritative 007-K `5bcf9f169b7e222fc40e890f24efd51b087c3ea7` (280/280 CI and Pages green, manual smoke outstanding). During this development the project's other validated Wonder and Dread additions reached `fdc7e77e84ae8f371fa18007f665f8bda50ae5b5`, adding 10 personal ecology-discovery tests (290 total). Rather than overwrite the new features, rebuilt this milestone on that newer validated head and preserved authored wonder scenes, personal journal and browser UI. Earlier conflicting draft PRs #2 and #3 are superseded by the reconciled PR #4.

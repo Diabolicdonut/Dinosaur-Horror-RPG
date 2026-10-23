@@ -2,6 +2,9 @@
 
 A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
 
+**Shared living roadmap:** [Dinosaur Horror RPG — Game Vision and Evolved Implementation Roadmap](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). This is the long-term design and development reference for future GitHub sessions, including Wonder and Dread, Evolved rules fidelity, multi-character agency, the AI Game Master, living dinosaur ecology, current and future milestones, and release gates. Before developing, consult the latest `project-state.json` and newest `audit.md` record for the actual accepted checkpoint; older sections below are historical feature reports.
+
+
 **Status:** Checkpoint **007-L1 — Spatial Visibility, Physical Cover and Velociraptor Senses (alpha)**. Launch 1–8 manually or automatically generated survivors into the same saved island incident; freely change who controls future actions, take over any survivor, watch AI companions decide their turns, or pause/step/resume fully computer-directed play. The three modes share the same grounded world and seeded hidden Evolved-style dice. **AI companions currently use a bounded deterministic offline policy**, not full generative roleplaying. The legacy 006.2 solo game and its saves remain separate. Checkpoint 006 — bounded AI GM adjudication for improvised investigations, distractions, cover and barricades. The new Cloudflare Worker source must be pasted/deployed manually for live Sol adjudication. This is a Year Zero-inspired proof of concept, not complete Alien RPG RAW.
 
 ## Foundational creative pillar — Wonder and Dread

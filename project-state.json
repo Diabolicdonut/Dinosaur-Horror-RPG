@@ -24,14 +24,14 @@
     "Perform mobile/desktop manual graphical gameplay QA; do not claim it passed without testing."
   ],
   "acceptance_criteria": [
-    "All 257 prior automated tests retained; 23 new deterministic positive, negative, replay, privacy, lighting, searching, group movement and mode tests; 280/280 total passing in GitHub Actions.",
-    "Each survivor controls only their possessed charged flashlight/headlamp, with a finite per-stretch 12-charge resource and legacy save behavior.",
-    "Lighting modifies only the owner's darkness Observation pool and may attract a predator only across authored traversable sightlines.",
-    "Creature stays in zone for a completed 10-minute search and uses a seeded pool even in empty zones; no teleportation or stale hidden-world projection.",
-    "Predator last-heard/last-light clue, search timing, lost interest and alert decay persist and replay.",
-    "Group leader uses one real action; other members move on individual turns, obeying movement barriers and skill checks; no free action or knowledge sharing.",
-    "All three modes and camera/ownership changes preserve clock, RNG and action state; old party save 3 and migration from party 2 remain valid.",
-    "Manual browser graphical QA is outstanding and not included in automated acceptance."
+    "Checkpoint 007-L1 on accepted main retains 290 earlier deterministic tests (including 10 Wonder and Dread cases) and adds 17 spatial/sensory tests: 307/307 passing in final main GitHub Actions validation.",
+    "Directional one-exit visibility is independent from travel and audibility; authored foliage and closed staff door prevent impossible sight and lighting clues.",
+    "Cover is a real named local physical affordance; concealment uses seeded Mobility, invalid cover rejects without consuming dice/time, and fixed cover does not teleport.",
+    "Personal powered lighting and nearby animal glimpses respect authored line of sight; no remote predator location, private search state or RNG is exposed to other actors or AI companions.",
+    "One Velociraptor sensory profile persists patrol/investigate/stalk/search/engage awareness stages; stalk is a label and advanced 007-L2 tactics remain unimplemented.",
+    "007-K timed battery, stealth, predator searching and sequential group travel; combat, injuries, defense, control/camera and character-specific Wonder journals remain intact.",
+    "Party schema v3 and v2→v3 migration, old 006.2 solo game and separate manually deployed Worker v006 remain backward compatible.",
+    "Final accepted main GitHub Actions and Pages deployment succeeded; manual desktop/mobile interactive browser QA is still pending and must not be claimed as passed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -44,7 +44,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "GitHub Pages deployment for 007-K requires successful final main CI / Pages build; manual interactive browser QA remains outstanding.",
+  "pages_deployment": "Checkpoint 007-L1 main commit 81b9d49f56c470cb33208ba94a0d642710ce1429 passed GitHub Pages build/deployment (run 39957604697); desktop/mobile graphical play smoke remains outstanding. Future docs-only changes require their own final checks.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -142,7 +142,7 @@
     "engine_role": "Perform seeded base and stress d6 rolls, apply exact Evolved skill/push/Resolve/stress/panic/stunt/health/action-economy logic, validate physical reality, inventory, characters and hidden dinosaur state, persist events and results.",
     "checks": "Only uncertain actions with meaningful stakes; handle routine and impossible actions without RNG, and composite action sequences with transparent time/action costs",
     "probability": "REPLACED: Preserve actual Evolved dice procedures under the screen. May compute numeric success probabilities for QA/debug without changing the original distribution; arbitrary percent-based probability engine postponed until after faithful Evolved parity and only by approval.",
-    "current_implementation": "Character generation/control modes are accepted design only. Legacy browser 006.2 still supports one fixed player.",
+    "current_implementation": "As of 007-L1: Character Lab creates and launches manually/automatically/hybrid-built 1–8 survivor parties; Party/Character/Spectator modes and independent camera run in the 007-series game with knowledge-bounded deterministic offline companions. Legacy 006.2 remains separate; full generative GM, world-dependent talents and Evolved parity remain incomplete.",
     "character_creation": "Player can manually create, automatically generate, or mix both per party member, including whole party/partial generation, selective rerolls and locks, Evolved rule validation and separate seeded generator. Valid before incident; character progression afterward only via rules."
   },
   "rules_adaptation_plan": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
@@ -157,7 +157,7 @@
     "viewpoint": "Follow active or watch selected survivor independently; remote stats suppressed in non-party modes; no default omniscience.",
     "action_economy": "All modes share same Evolved dice, initiative, timed action costs and deterministic state transition engine.",
     "ai_boundary": "Accepted NPC/companion decisions replay from journal; stale requests dropped if mode/focus/world version changed.",
-    "current_implementation": "Party, Focus/Character and Spectator running in independent 007-D party game. AI uses deterministic knowledge-bounded offline companion policy; source-complete Evolved combat and general free-form AI adjudication remain pending.",
+    "current_implementation": "As of 007-L1: Party, Character/Focus and Spectator operate in the independent 007-series party game with shared seeded state, action budgets, physical cover and limited offline companion AI; live generative party GM and fully modeled persistent NPC relationships remain future work.",
     "save_migration": "Party v2 to v3 with validated original roster, preserved dice/rng and records, legacy singleton untouched."
   },
   "character_generation_contract": "docs/CHARACTER-GENERATION-MODES.md",
@@ -534,7 +534,7 @@
       "previous": 290,
       "new": 17,
       "total": 307,
-      "ci": "Candidate green at workflow 39957104770, final documented HEAD/merge and Pages to verify"
+      "ci": "307/307 candidate validated at run 39957104770; final accepted 007-L1 main commit 81b9d49f56c470cb33208ba94a0d642710ce1429 passed validation run 39957604441 and Pages run 39957604697; manual browser smoke pending."
     },
     "limitations": [
       "Stalk is currently a persistent awareness state, not a special pursuit-speed decision or attack signature",
@@ -543,5 +543,8 @@
       "No Worker changes or proprietary Evolved book text"
     ],
     "compatibility": "Party v3 optional coverId/behavior, v2 migration, solo 006.2, Cloudflare Worker v006 unchanged"
-  }
+  },
+  "living_roadmap": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
+  "living_roadmap_last_reconciled": "2026-10-23 / 007-L1 / 0.7.11",
+  "living_roadmap_policy": "Long-range living vision and A-E phase plan; consult current main, this state and newest audit for accepted implementation and test truth. Wonder and Dread is a permanent creative requirement."
 }
