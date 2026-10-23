@@ -144,6 +144,9 @@ if((s.beat+1)%2===0){
     d.location=path.location;
     d.alert=Math.max(0,d.alert-1);
    }else d.alert=Math.max(0,d.alert-1);
+  }else if(d.alert>0){
+   // An unrefreshed clue fades even when no further route is available.
+   d.alert=Math.max(0,d.alert-1);
   }else if(nextSeed(s)%3===0){
    const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
    if(exits.length)d.location=exits[nextSeed(s)%exits.length];
@@ -517,7 +520,7 @@ export function partyView(s,{actorId=null}={}) {
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
   visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated&&
-     (!roomIsDark(actor.location)||actorHasLight(actor)||(actor.seenThreats||[]).includes(d.id)))
+     (!roomIsDark(actor.location)||actorHasLight(actor)))
    .map(d=>d.kind),
   inventory:actor.inventory.map(id=>({id,name:itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
