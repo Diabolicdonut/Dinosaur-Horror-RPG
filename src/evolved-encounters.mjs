@@ -4,6 +4,7 @@
 // The animal stats, injuries' descriptive labels, and scenario are original.
 // Not a transcription of source narrative, artwork, or published creatures.
 import {createDiceStream,resolveSkillCheck,resolvePanic} from './evolved-checks.mjs';
+import {actorHasLight} from './dinosaur-pursuit.mjs';
 export const SURVIVAL_RULES_VERSION='007-E';
 export const STRETCH_MINUTES=10;
 export const ROUND_SECONDS=10;
@@ -78,8 +79,7 @@ export function detectGroupCreature(actors,{seed=1993,observationDice=5,darkness
  const humans=actors.map((actor,i)=>({
   actorId:actor.id,...resolveSkillCheck(actor,{skill:'observation',
    passive:true,modifier:(actor.guarding?2:0)-
-     (darkness&&![...(actor.inventory||[]),...(actor.gear||[])].some(item=>
-       ['flashlight','working flashlight','headlamp'].includes(item))?2:0),
+     (darkness&&!actorHasLight(actor)?2:0),
    seed:(seed^(0x9e3779b9*(i+1)))>>>0})
  }));
  const best=Math.max(...humans.map(a=>a.successes));
