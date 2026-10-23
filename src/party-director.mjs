@@ -124,8 +124,10 @@ function proposal(kind,target,goal,reason){
 }
 function to(observation,destination,goal){
  const step=shortestNext(observation.location,destination);
+ const exposed=['jungle','paddock','helipad'].includes(observation.location);
  return step&&observation.exits.includes(step)?
-   proposal('move',step,goal,'Navigate the known park corridors.') :
+   proposal(exposed?'sneak':'move',step,goal,
+    exposed?'Move carefully along an exposed outdoor route.':'Navigate the known park corridors.') :
    proposal('wait','',goal,'There is no safe modeled route forward.');
 }
 /**
