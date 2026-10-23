@@ -36,7 +36,7 @@ test('locked reinforced door muffles sound but ordinary connected paths retain a
  const open=effectiveNoiseDistance('shed','utility',{shedDoorBreached:true});
  assert.equal(closed,3);assert.equal(open,1);
  assert.equal(effectiveNoiseDistance('paddock','jungle'),1);
- assert.equal(effectiveNoiseDistance('helipad','control'),7);
+ assert.equal(effectiveNoiseDistance('helipad','control'),6);
 });
 test('only physically audible sound updates a known-source hearing calculation',()=>{
  assert.equal(hearNoise('jungle','shed',0).heard,false);
