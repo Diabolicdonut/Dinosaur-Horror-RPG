@@ -4,10 +4,10 @@
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l1';
-import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007k';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l1';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
-import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007k';
+import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l1';
 import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007i';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
