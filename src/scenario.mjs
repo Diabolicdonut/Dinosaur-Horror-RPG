@@ -10,6 +10,8 @@ export const SCENARIO = Object.freeze({
   rooms: {
     control: {
       name: 'Visitor Center Control Room',
+      wonder: {id:'rainforest-horizon',title:'The rainforest endures',kind:'landscape',
+        description:'Beyond the reinforced glass, layered green ridgelines run toward the clouded horizon. Waterfalls thread through the trees; the island is much larger and more alive than the failing control screens suggest.'},
       description: 'Emergency lamps blink across abandoned consoles. The park network is offline. Rain beats against the reinforced windows.',
       exits: ['lobby', 'utility'],
       aliases: ['control room', 'control', 'operations'],
@@ -39,6 +41,8 @@ export const SCENARIO = Object.freeze({
     },
     lobby: {
       name: 'Visitor Center Lobby',
+      wonder: {id:'scale-of-life',title:'An impossible scale of life',kind:'natural-history',
+        description:'Rainwater gleams along the ribs of the towering skeletons. Their size is almost impossible to grasp from floor level; for a moment the exhibits convey the extraordinary history of living things, not the park\'s failed machinery.'},
       description: 'Water runs beneath the dinosaur skeleton displays. A staff access card lies behind the reception desk.',
       exits: ['control'],
       aliases: ['lobby', 'reception', 'visitor center'],
@@ -97,6 +101,8 @@ export const SCENARIO = Object.freeze({
     },
     jungle: {
       name: 'Jungle Service Path',
+      wonder: {id:'living-canopy',title:'Life beneath the canopy',kind:'ecosystem',
+        description:'Rain beads on the immense fern fronds. Orchid roots, moss, and new shoots crowd every patch of fallen wood; countless small living things continue their work, indifferent to the park\'s alarms.'},
       description: 'Ferns crowd the muddy path. The fence line disappears into the dark. Something has bent the warning signs.',
       exits: ['shed', 'paddock', 'helipad'],
       aliases: ['jungle', 'path', 'service path'],
@@ -134,6 +140,8 @@ export const SCENARIO = Object.freeze({
     },
     helipad: {
       name: 'Emergency Helipad',
+      wonder: {id:'herbivores-at-distance',title:'Giants beyond the valley',kind:'distant-wildlife',ambientOnly:true,
+        description:'Through a brief opening in the rain, immense long-necked herbivores move slowly along a far valley beyond the park roads. One pauses to feed from the treetops. Their easy, deliberate movements make it almost impossible to look away. They are distant scenery, not creatures in this encounter zone.'},
       description: 'A circle of cracked concrete stands above the canopy. Its emergency locator beacon is unlit.',
       exits: ['jungle'],
       aliases: ['helipad', 'landing pad', 'landing zone'],
