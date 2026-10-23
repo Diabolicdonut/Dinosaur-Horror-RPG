@@ -1,5 +1,20 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 007-J — Map-constrained predator pursuit, sound and stealth travel — 2026-10-23
+
+**Recovery first:** Inspected current GitHub main at commit `e5dcd0f34d9163ed9479a8bba6a614899c4c048d`. That state already contained a validated **007-I** defense-choice and group-stealth implementation (**241/241 tests**, successful GitHub Pages deployment). Continued forward without replaying 007-I or disturbing its authoritative defense/reaction, wound, surprise and party save logic. Consulted the privately supplied *Alien RPG — Evolved Edition* stealth sections on printed pp. 55–58. Sound reach, reinforced barriers and Jurassic animal pursuit are deliberately original zone-level extensions, not claimed as verbatim source rules.
+
+**New gameplay and files:** Added `src/dinosaur-pursuit.mjs` with graph-validated velociraptor exits, shortest-route source pursuit, locked staff door blocking, door-attenuated sound range and authored lighting states. Integrated hearing/alert and last-noise memory into `src/party-engine.mjs` instead of omniscient pursuit. When the animal moves one real zone near a survivor, that survivor hears a private unlocated footstep warning. Ordinary player travel remains available; **sneak/creep/move silently** is now a bounded Mobility skill action, zero noise on success and audibly failed on a miss, preserving concealment only if it was earned and the destination has cover. `src/combat-turns.mjs` assigns quiet movement a full action. `src/evolved-encounters.mjs` incorporates -2 human group Observation dice in dark outdoor zones, canceled by each actor's own light but not by a companion's light. Creature dice remain unchanged. `src/party-director.mjs` chooses quieter approaches across exposed outdoor paths without consulting hidden dinosaur coordinates. `party.html` and `src/party-app.mjs` add Sneak to choices, local lighting and client revision 007j.
+
+**Validation:** New `tests/dinosaur-pursuit.test.mjs` contains **16 tests** for legal animal graph movements, unbreached/barrier-open paths, muffled sound, character-specific darkness, actor-local warnings, valid/invalid quiet travel, Mobility-based success/failure, seeded state compatibility and spectator stepping. Existing **241 tests** retained, making **257** total. Implementation CI recorded **257/257 pass, 0 failures** on GitHub Actions; latest docs/audit HEAD requires the final verification. No manual graphical browser testing claimed.
+
+**Compatibility:** Party saves remain version 3; the optional `lastHeardBeat` is backward compatible. The old 007-C party migration, manual/generated Character Lab, three control modes, explicit pending defense reactions, actor-owned medical intervals, surprise and initiative holds remain unchanged. No modifications to original 006.2 solo engine/save or Cloudflare Worker. No Worker redeployment is necessary.
+
+**Boundaries:** The reinforced door is not magically breached by animals; a future authored action must do so explicitly. Carried flashlights are assumed available; on/off illumination, batteries, changing sightlines, wind/scent, an exact stealth stretch scheduler and species-specific signature attacks are still unimplemented. This checkpoint is a bounded park-zone hearing/pursuit simulation, not full Evolved RAW or the ultimate freeform AI GM.
+
+**Next:** 007-K should implement controllable lighting and exact-time stealth searches, then expand dinosaur ecology, pursuit and hazards, with full deterministic regression coverage.
+
+
 ## Checkpoint 007-I — Player-Chosen Close Defense and Group Stealth — 2026-10-22
 
 **Recovery:** Inspected authoritative `Diabolicdonut/Dinosaur-Horror-RPG` `main` at accepted 007-H `4102352974bfb7110cc577051d97e5f19278856a`, then source combat engine, director, browser UI, tests and project state. Used the user's private *Alien RPG — Evolved Edition* for stealth (printed pp. 55–58), melee defend (p. 62) and ranged dodge distinction (p. 65). No private pages or copyrighted published creature tables entered GitHub.
