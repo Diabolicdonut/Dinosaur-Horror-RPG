@@ -65,6 +65,38 @@ export function detectCreature(actor,{seed=1993,observationDice=5,cluttered=true
    outcome:margin>0?(cluttered?'human_sees_first':'human_spots_first'):margin<0?'creature_sees_first':'simultaneous',
    canHide:cluttered};
 }
+/**
+ * Group stealth detection: only the strongest passive OBSERVATION result on
+ * each side counts, not the sum of allied dice. Every actor is rolled with
+ * their own Wits/Observation and a deterministic per-actor derived seed.
+ */
+export function detectGroupCreature(actors,{seed=1993,observationDice=5}={}){
+ if(!Array.isArray(actors)||actors.length<1||actors.length>8||
+    actors.some(a=>!a||typeof a.id!=='string')||
+    new Set(actors.map(a=>a.id)).size!==actors.length)
+  throw new RangeError('A stealth group needs 1–8 distinct survivors.');
+ const humans=actors.map((actor,i)=>({
+  actorId:actor.id,...resolveSkillCheck(actor,{skill:'observation',
+   passive:true,modifier:actor.guarding?2:0,
+   seed:(seed^(0x9e3779b9*(i+1)))>>>0})
+ }));
+ const best=Math.max(...humans.map(a=>a.successes));
+ const creature=rollDicePool(observationDice,(seed^0xa5b3579d)>>>0);
+ const margin=best-creature.successes;
+ return {humans,creature,best,margin,
+  outcome:margin>0?'humans_spot_first':margin<0?'creature_spots_first':'simultaneous'};
+}
+/** One active search roll reveals at most one hidden character per success.
+ * No passive check is made simply for entering an occupied hiding zone. */
+export function searchHiddenGroup(hiddenActorIds,{seed=1993,observationDice=5}={}){
+ if(!Array.isArray(hiddenActorIds)||hiddenActorIds.length>8||
+    hiddenActorIds.some(id=>typeof id!=='string'||!id)||
+    new Set(hiddenActorIds).size!==hiddenActorIds.length)
+  throw new RangeError('Hidden targets must be unique named survivors.');
+ const search=rollDicePool(observationDice,seed);
+ return {search,revealed:hiddenActorIds.slice(0,search.successes),
+  stillHidden:hiddenActorIds.slice(search.successes)};
+}
 const injuryLevel=d66=>{
  if(d66<=13)return {severity:'shock',lethal:false,deadline:null,impairment:0};
  if(d66<=36)return {severity:'wound',lethal:false,deadline:null,impairment:d66>=31?2:1};
