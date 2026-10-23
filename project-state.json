@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.11",
-  "checkpoint": "007-L1",
-  "state": "spatial_visibility_cover_and_raptor_sensory_profile_validated_pending_manual_browser_QA",
+  "version": "0.7.12",
+  "checkpoint": "007-L2a",
+  "state": "physical_stalking_facing_and_reproducible_visual_hunting_validated_in_automated_tests_pending_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,15 +13,14 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 307,
+  "automated_tests": 324,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete 007-L1 interactive browser smoke in Party/Focus/Spectator: directional visibility at doorways, named hiding places, predator sighting privacy, saved search/cover and simultaneous Wonder personal discoveries.",
-    "Continue 007-L2 with actual zone-local stalking/pursuit decisions, facing and dynamic environmental occluders, grounded approach/ambush tradeoffs and species-specific attacks.",
-    "Preserve all 307 deterministic tests and optional Wonder and Dread per-character exploration with v3 party saves and old v2 migration.",
-    "Complete 007-L before proceeding to physical battery inventory, repairs and park hazards in separately validated 007-M.",
-    "Only proceed to bounded natural-language Game Mother 007-N with validated proposal/effect schema and confirmed Worker integration requirement.",
-    "Perform mobile/desktop manual graphical gameplay QA; do not claim it passed without testing."
+    "Complete manual graphical smoke for 007-L2a on desktop/mobile: real stalking, facing light detection, blocked doors, losses of stale visual clues and active search, including save/load during pursuit.",
+    "Implement 007-L2b as an independent validated subcheckpoint: physically grounded attack eligibility and original raptor tactics, dynamic relevant cover/lighting obstructions and limited environmental perception.",
+    "Preserve all 324 tests, accepted Wonder and Dread personal discovery journals, three control modes, Character Lab, initiative, critical injuries and older party v3 saves.",
+    "Complete full 007-L before 007-M physical batteries, repairs, equipment transfers and persistent park hazards.",
+    "Proceed to 007-N only after a typed proposal/effect boundary is validated and Cloudflare Worker changes are warranted."
   ],
   "acceptance_criteria": [
     "Checkpoint 007-L1 on accepted main retains 290 earlier deterministic tests (including 10 Wonder and Dread cases) and adds 17 spatial/sensory tests: 307/307 passing in final main GitHub Actions validation.",
@@ -44,7 +43,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Checkpoint 007-L1 main commit 81b9d49f56c470cb33208ba94a0d642710ce1429 passed GitHub Pages build/deployment (run 39957604697); desktop/mobile graphical play smoke remains outstanding. Future docs-only changes require their own final checks.",
+  "pages_deployment": "007-L2a Pages deploy not yet independently checked on final main; earlier accepted 007-L1 Pages green. Manual graphical gameplay QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -131,7 +130,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007l1",
+  "browser_asset_cache_revision": "007l2a",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -510,7 +509,7 @@
   },
   "spatial_sensory_audit": "docs/DINOSAUR-SPATIAL-007L1.md",
   "spatial_sensory_implementation": {
-    "status": "Playable 007-L1 partial checkpoint, 307 Node regression tests; manual browser testing pending",
+    "status": "007-L1 retained as base of in-progress 007-L2; 007-L2a adds physical slower stalking and facing (not full 007-L).",
     "scope": "Directionally authored one-zone sightlines, locked door/foliage visual occlusion, typed cover, animal sensory profiles and current awareness states",
     "authority": "Private Alien RPG Evolved Edition stealth pp 54–58 and combat/action budget pp 59–67; named park geometry, species stats and vision rules are documented original Jurassic house rules",
     "modules": [
@@ -546,5 +545,38 @@
   },
   "living_roadmap": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
   "living_roadmap_last_reconciled": "2026-10-23 / 007-L1 / 0.7.11",
-  "living_roadmap_policy": "Long-range living vision and A-E phase plan; consult current main, this state and newest audit for accepted implementation and test truth. Wonder and Dread is a permanent creative requirement."
+  "living_roadmap_policy": "Long-range living vision and A-E phase plan; consult current main, this state and newest audit for accepted implementation and test truth. Wonder and Dread is a permanent creative requirement.",
+  "stalking_audit": "docs/DINOSAUR-STALKING-007L2A.md",
+  "stalking_implementation": {
+    "status": "007-L2a playable subcheckpoint, candidate CI validated, pending final main workflow/deployment and manual graphics",
+    "modules": [
+      "src/dinosaur-hunt.mjs",
+      "src/dinosaur-pursuit.mjs",
+      "src/party-engine.mjs",
+      "src/party-app.mjs"
+    ],
+    "implemented": [
+      "Predator low alert 1-3 stalks at most one physically legal zone every four exploration actions, versus high alert 4-6 investigation every two actions.",
+      "Predator orients toward the first traversable route leg of an audible clue and faces the next route step while approaching; no hidden actor positions consulted.",
+      "Visible flashlight attraction requires actual one-zone authored visual line and creature facing (same-zone vision retains its proper treatment).",
+      "Finite alert decay and persisted lastHunt record support lost trails, no teleportation or roll consumption by pure planning.",
+      "Saved facing and lastHunt fields are optional; legacy v3 accepted; malformed nonlocal, blocked, future or invalid-facing records rejected.",
+      "Historical light clue cannot masquerade as present vision once the source has been extinguished.",
+      "All Party, Focus and Spectator modes retain the same world state, camera/RNG isolation, existing combat injuries and recovery.",
+      "Accepted actor-owned Wonder and Dread personal journals are unchanged."
+    ],
+    "source_fidelity": "Evolved stealth/exploration and combat rules cited in audit; 2-versus-4-action cadence and facing are explicit original Jurassic house rules",
+    "tests": {
+      "previous": 307,
+      "new": 17,
+      "total": 324,
+      "ci": "324/324 green on candidate run 39980066133; validate final documented HEAD and merged main separately."
+    },
+    "deferred": [
+      "Dynamic weather/fog, line occlusion from movable obstacles, original raptor signature attacks, physically constrained pounces, scent tracking and additional species",
+      "Complete manual graphical gameplay QA on desktop/mobile",
+      "007-M and 007-N both remain gated"
+    ],
+    "compatibility": "Party save version 3 optional fields; v2 migration, 006.2 solo and Cloudflare Worker v006 retained without source edits"
+  }
 }

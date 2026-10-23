@@ -1,9 +1,9 @@
-import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l1';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l1';
+import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l2a';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l1';
-import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l1';
-import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l1';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l2a';
+import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2a';
+import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
 const $=id=>document.getElementById(id);
 const STORE='dinosaur-party-incident-007c'; // Upgrade in place; never touch legacy solo saves.
