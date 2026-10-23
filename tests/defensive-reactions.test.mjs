@@ -158,7 +158,7 @@ test('browser has distinct pre-roll defend/decline options and cache revision 00
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
  for(const id of ['reaction-panel','react-defend','react-decline','reaction-target'])
   assert(html.includes('id="'+id+'"'),id);
- assert(html.includes('party-app.mjs?v=007l2a'));
+ assert(html.includes('party-app.mjs?v=007scene1'));
  assert(app.includes('reactToAttack'));
  assert(app.includes('pendingReaction'));
  assert(app.includes("source:'human'"));

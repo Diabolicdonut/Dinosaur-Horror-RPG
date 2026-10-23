@@ -1,5 +1,5 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l2a';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007scene1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
   setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l2a';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2a';
@@ -128,6 +128,11 @@ function show(){
  ].map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
    '"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
  const scene=[];
+ if(v.cinematicScene){
+  scene.push('SCENE · '+v.cinematicScene.title+' ['+v.cinematicScene.theme+']');
+  scene.push('Situation: '+v.cinematicScene.focus);
+  scene.push('Possible approaches: '+v.cinematicScene.choices);
+ }
  if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
  if(v.observations.length)scene.push('Inspectable: '+v.observations.map(x=>x.id).join(', '));
