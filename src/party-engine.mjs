@@ -91,6 +91,7 @@ function dinoTick(s,noise,at) {
  }
  // Only map-connected movement occurs on exploration patrol ticks. A secured
  // reinforced staff door blocks the animal even if it can faintly hear noise.
+ const predatorPreviousZone=d.location;
  if((s.beat+1)%2===0){
   if(d.alert>0&&d.lastHeard){
    const path=pursuitStep(d,{shedDoorBreached:breach});
@@ -103,6 +104,13 @@ function dinoTick(s,noise,at) {
    if(exits.length)d.location=exits[nextSeed(s)%exits.length];
   }
   if(d.alert===0)d.lastHeard=null;
+ }
+ if(d.location!==predatorPreviousZone){
+  for(const listener of s.actors){
+   if(listener.dead||listener.location===d.location)continue;
+   if(hearNoise(listener.location,d.location,1,{shedDoorBreached:breach}).heard)
+    gameEvent(s,'Heavy footfalls sound somewhere nearby.',listener.id,'danger');
+  }
  }
  // An active search uses one Observation roll for the zone. Each success
  // may uncover one concealed survivor; entering alone never reveals cover.
