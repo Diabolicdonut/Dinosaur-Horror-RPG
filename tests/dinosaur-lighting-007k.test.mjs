@@ -177,7 +177,7 @@ test('a noisy approach is louder than normal travel and remains physically route
  const standard=act(game(55),'move utility');
  const rush=act(game(55),'rush utility');
  assert(standard.accepted&&rush.accepted);
- assert.equal(standard.state.actions.at(-1).noise,undefined); // prior normal action retained
+ assert.equal(standard.state.actions.at(-1).noise,1); // prior normal action retained
  assert.equal(rush.state.actions.at(-1).noise,3);
  assert.equal(rush.state.actors[0].location,'utility');
  assert.equal(rush.state.dinosaurs[0].location,standard.state.dinosaurs[0].location);
