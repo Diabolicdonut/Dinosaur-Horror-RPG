@@ -397,7 +397,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  if(issues.length)throw new RangeError(issues.join(' '));
  const actors=deep(party).map(c=>({
   ...c,location:SCENARIO.start,health:c.healthMax,
-  inventory:[],light:{on:false,charge:actorOwnsLight(c)?LIGHT_CAPACITY_STRETCHES:0},
+  inventory:[],wonderJournal:[],light:{on:false,charge:actorOwnsLight(c)?LIGHT_CAPACITY_STRETCHES:0},
    hidden:false,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
   armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
@@ -453,6 +453,9 @@ export function isPartySave(s) {
    Array.isArray(a.observed)&&Array.isArray(a.visitedRooms)&&
    a.visitedRooms.every(r=>Boolean(SCENARIO.rooms[r]))&&
    Array.isArray(a.attemptedObservations)&&
+   (a.wonderJournal===undefined||(Array.isArray(a.wonderJournal)&&
+     a.wonderJournal.every(w=>w&&typeof w.id==='string'&&
+       SCENARIO.rooms[w.room]?.wonder?.id===w.id)))&&
    typeof a.health==='number'&&a.health>=0&&
    Number.isInteger(a.stress)&&a.stress>=0&&a.stress<=30&&
     (a.light===undefined||(typeof a.light?.on==='boolean'&&
@@ -519,6 +522,9 @@ export function partyView(s,{actorId=null}={}) {
   exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
+  wonder:place.wonder?{id:place.wonder.id,title:place.wonder.title,
+    discovered:Boolean((actor.wonderJournal||[]).some(w=>w.id===place.wonder.id))}:null,
+  wonderJournal:(actor.wonderJournal||[]).map(w=>({...w})),
   visibleDinosaurs:s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated&&
      (!roomIsDark(actor.location)||actorHasLight(actor)))
    .map(d=>d.kind),
@@ -542,6 +548,10 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ if(line==='wonder'||line==='take in the view'||line==='pause and observe')
+  return {kind:'wonder',target:'',push:0};
+ const wonder=line.match(/^(?:wonder|admire|appreciate|contemplate|marvel at|take in|enjoy|pause to observe)\s+(?:the\s+)?(.+)$/);
+ if(wonder)return {kind:'wonder',target:wonder[1].trim(),push:0};
  if(['wait','stay'].includes(line))return {kind:'wait',target:'',push:0};
   const lamp=line.match(/^(?:(?:turn|switch)\s+(?:my |the )?(?:flashlight|headlamp|light)\s+(on|off)|(?:turn|switch)\s+(on|off)\s+(?:my |the )?(?:flashlight|headlamp|light)|light\s+(on|off))$/);
   if(lamp)return {kind:'light',target:lamp[1]||lamp[2]||lamp[3],push:0};
@@ -604,6 +614,31 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
+ if(action.kind==='wonder'){
+  if(slot)return rejected(previous,'This moment requires leaving combat behind.');
+  if(actor.dead||actor.broken||actor.pendingSkip)
+   return rejected(previous,'This survivor cannot pause to appreciate the surroundings right now.');
+  const moment=SCENARIO.rooms[actor.location].wonder;
+  if(!moment)return rejected(previous,'No authored quiet discovery is available here.');
+  const target=String(action.target||'').trim().toLowerCase();
+  if(target&&!([moment.id,moment.title.toLowerCase(),'view','surroundings'].includes(target)))
+   return rejected(previous,'That moment is not visible from this location.');
+  if((actor.wonderJournal||[]).some(w=>w.id===moment.id))
+   return rejected(previous,'This survivor has already recorded this discovery.');
+  const changed=deep(previous);
+  const observer=changed.actors.find(a=>a.id===actor.id);
+  observer.wonderJournal??=[];
+  observer.wonderJournal.push({id:moment.id,room:actor.location,
+   title:moment.title,description:moment.description,beat:changed.beat,kind:moment.kind});
+  gameEvent(changed,observer.name+' takes a moment to appreciate '+moment.title+
+    ': '+moment.description,observer.id,'wonder');
+  changed.actions.push({beat:changed.beat,actorId:observer.id,
+    kind:'wonder',target:moment.id});
+  changed.actions=changed.actions.slice(-200);
+  // Reflective observation is a voluntary no-roll, no-time narrative event;
+  // it does not secretly alter stress, combat, supplies or predator position.
+  return {accepted:true,state:changed,result:{kind:'wonder',id:moment.id,title:moment.title}};
+ }
  if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
