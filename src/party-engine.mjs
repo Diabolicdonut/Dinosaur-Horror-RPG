@@ -122,6 +122,9 @@ function dinoTick(s,noise,at) {
  if(!profile)throw new RangeError('Creature sensory profile is missing.');
  if(d.defeated||s.combat?.active)return;
  const breach=Boolean(s.flags.shedBarrierBreached);
+ // Establish direction from the actual current zone on first world tick.
+ // Old v3 saves and independently created combat scenes need no fixed bearing.
+ if(d.facing==null)d.facing=exitsForCreature(d.location,{shedDoorBreached:breach})[0]||d.location;
  const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach,species:profile.key});
 if(signal.heard){
    d.lastHeard=at;
