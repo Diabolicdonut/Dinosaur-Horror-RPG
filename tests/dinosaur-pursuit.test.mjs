@@ -152,3 +152,21 @@ test('new stealth controls and revised cache version are present in playable UI'
  assert(app.includes('data-order="sneak '));
  assert(app.includes('v.lighting'));
 });
+
+test('moving predator creates only local audible warnings without revealing its route',()=>{
+ let s=game(44);
+ s.actors[1].location='shed';
+ s.dinosaurs[0].location='paddock';
+ s.dinosaurs[0].lastHeard='shed';
+ s.dinosaurs[0].alert=4;
+ let r=partyStep(s,'wait',{actorId:'pc-1',source:'human'});
+ assert(r.accepted);s=r.state;
+ r=partyStep(s,'wait',{actorId:'pc-2',source:'human'});
+ assert(r.accepted);s=r.state;
+ assert.equal(s.dinosaurs[0].location,'jungle');
+ const nearby=partyView(s,{actorId:'pc-2'}).events;
+ const remote=partyView(s,{actorId:'pc-1'}).events;
+ assert(nearby.some(e=>e.message==='Heavy footfalls sound somewhere nearby.'));
+ assert(!remote.some(e=>e.message==='Heavy footfalls sound somewhere nearby.'));
+ assert(!nearby.some(e=>e.message.includes('paddock')&&e.category==='danger'));
+});
