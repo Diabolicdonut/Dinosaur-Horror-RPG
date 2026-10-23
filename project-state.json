@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.10",
-  "checkpoint": "007-K",
-  "state": "interactive_actor_lighting_stealth_stretches_predator_search_and_group_travel_automated_validation",
+  "version": "0.7.11",
+  "checkpoint": "007-L1",
+  "state": "spatial_visibility_cover_and_raptor_sensory_profile_validated_pending_manual_browser_QA",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,16 +13,15 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 290,
+  "automated_tests": 307,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete manual graphical browser smoke for 007-K on desktop/mobile: lamp on/off and depletion, hidden predator search in occupied and empty rooms, group movement/solo splits, modes and camera privacy, active pursuit save/reload.",
-    "Extend park spatial map with physical sightlines, cover, obstacles, and lighting direction before making predator vision more realistic.",
-    "Implement species-specific dinosaur vision, scent and chase rules, signature attacks and physically grounded encounter consequences.",
-    "Add itemized portable lamp batteries and recharging/pickups with durable resource accounting.",
-    "Expand Evolved-fidelity creature behaviors, grouped stealth planning, survival hazards and bounded natural-language AI adjudication without leaking private knowledge.",
-    "Keep party save v3, 006.2 solo game and manually deployed Cloudflare Worker backward compatible.",
-    "Develop persistent, non-hostile dinosaur wildlife and wonder-oriented exploration as a parallel design pillar; see docs/WONDER-AND-DREAD-DESIGN.md."
+    "Complete 007-L1 interactive browser smoke in Party/Focus/Spectator: directional visibility at doorways, named hiding places, predator sighting privacy, saved search/cover and simultaneous Wonder personal discoveries.",
+    "Continue 007-L2 with actual zone-local stalking/pursuit decisions, facing and dynamic environmental occluders, grounded approach/ambush tradeoffs and species-specific attacks.",
+    "Preserve all 307 deterministic tests and optional Wonder and Dread per-character exploration with v3 party saves and old v2 migration.",
+    "Complete 007-L before proceeding to physical battery inventory, repairs and park hazards in separately validated 007-M.",
+    "Only proceed to bounded natural-language Game Mother 007-N with validated proposal/effect schema and confirmed Worker integration requirement.",
+    "Perform mobile/desktop manual graphical gameplay QA; do not claim it passed without testing."
   ],
   "acceptance_criteria": [
     "All 257 prior automated tests retained; 23 new deterministic positive, negative, replay, privacy, lighting, searching, group movement and mode tests; 280/280 total passing in GitHub Actions.",
@@ -132,7 +131,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007k",
+  "browser_asset_cache_revision": "007l1",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -508,5 +507,41 @@
       "Species field guide, sketches and animal welfare choices",
       "Narration and scenario balancing of wonder and horror against actual world events"
     ]
+  },
+  "spatial_sensory_audit": "docs/DINOSAUR-SPATIAL-007L1.md",
+  "spatial_sensory_implementation": {
+    "status": "Playable 007-L1 partial checkpoint, 307 Node regression tests; manual browser testing pending",
+    "scope": "Directionally authored one-zone sightlines, locked door/foliage visual occlusion, typed cover, animal sensory profiles and current awareness states",
+    "authority": "Private Alien RPG Evolved Edition stealth pp 54–58 and combat/action budget pp 59–67; named park geometry, species stats and vision rules are documented original Jurassic house rules",
+    "modules": [
+      "src/dinosaur-visibility.mjs",
+      "src/dinosaur-pursuit.mjs",
+      "src/party-engine.mjs",
+      "src/party-director.mjs",
+      "src/party-app.mjs"
+    ],
+    "covered": [
+      "Sightline sight differs from sound and passable travel; reinforced staff door blocks view unless breached",
+      "Player may describe hiding behind a real locally authored cover affordance with seeded Mobility; invalid/foreign objects refuse with no time/RNG",
+      "Saved coverId validates against current room, fixed cover clears upon movement and destination cover acquired only by legal stealth",
+      "Character-personal distant threat glimpse requires illuminated own light and visualLine, reveals creature kind but not zone/hidden tracking state",
+      "Offline companion AI consumes its own sensory projection and physical cover list; no omniscience",
+      "Single Velociraptor profile defines observation, hearing, search duration and alert loss; persistent patrol/investigate/stalk/search/engage stage",
+      "Existing 007-K lamp batteries, seeded predator searches, combat, defense, medical care and 006.2 solo preserved",
+      "Optional character-owned Wonder and Dread discoveries and journal from newest accepted main preserved"
+    ],
+    "tests": {
+      "previous": 290,
+      "new": 17,
+      "total": 307,
+      "ci": "Candidate green at workflow 39957104770, final documented HEAD/merge and Pages to verify"
+    },
+    "limitations": [
+      "Stalk is currently a persistent awareness state, not a special pursuit-speed decision or attack signature",
+      "Not full ray-traced visibility, scent/wind, new dinosaur species, new hazards, battery pickups or exact 3D combat",
+      "Interactive browser smoke absent; 007-L2 required before completing entire 007-L",
+      "No Worker changes or proprietary Evolved book text"
+    ],
+    "compatibility": "Party v3 optional coverId/behavior, v2 migration, solo 006.2, Cloudflare Worker v006 unchanged"
   }
 }
