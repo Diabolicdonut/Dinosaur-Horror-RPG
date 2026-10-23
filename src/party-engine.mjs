@@ -174,7 +174,11 @@ if(d.alert===0&&!d.search)d.lastHeard=null;
    const start=s.clock?.explorationStretches||0;
    d.search={zone:d.location,startedAtStretch:start,dueStretch:start+profile.searchStretches};
   }
-  d.behavior=sensoryBehavior(d,{sourceVisible:d.lastClue==='light'&&d.alert>0,
+  // Only present illuminated sources count as vision; a historical clue
+  // cannot create omniscient engagement when the source has gone dark.
+  const freshLamp=visibleLampZone(d.location,s.actors,{
+   shedDoorBreached:breach,facing:d.facing});
+  d.behavior=sensoryBehavior(d,{sourceVisible:Boolean(freshLamp),
    sourceAudible:signal.heard})||'patrol';
  if(d.location!==predatorPreviousZone){
   for(const listener of s.actors){
@@ -474,6 +478,11 @@ export function isPartySave(s) {
        !Number.isSafeInteger(s.dinosaurs[0].lastHunt.beat)||
        !SCENARIO.rooms[s.dinosaurs[0].lastHunt.from]||
        !SCENARIO.rooms[s.dinosaurs[0].lastHunt.to]||
+       s.dinosaurs[0].lastHunt.beat>s.beat||
+       (s.dinosaurs[0].lastHunt.from!==s.dinosaurs[0].lastHunt.to&&
+        !SCENARIO.rooms[s.dinosaurs[0].lastHunt.from].exits.includes(s.dinosaurs[0].lastHunt.to))||
+       (s.dinosaurs[0].lastHunt.blocked&&
+        s.dinosaurs[0].lastHunt.from!==s.dinosaurs[0].lastHunt.to)||
        typeof s.dinosaurs[0].lastHunt.blocked!=='boolean'||
        !['patrol','stalk','investigate','search'].includes(s.dinosaurs[0].lastHunt.behavior)))||
     (s.dinosaurs[0].behavior!==undefined&&!['patrol','investigate','stalk','search','engage','inactive'].includes(s.dinosaurs[0].behavior)))return false;
