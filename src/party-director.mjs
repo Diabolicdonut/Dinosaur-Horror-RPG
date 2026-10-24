@@ -108,7 +108,7 @@ export function actorObservation(s,actorId){
   equipment:[...(actor.gear||[])],
   visitedRooms:[...actor.visitedRooms],
   attemptedObservations:[...actor.attemptedObservations],
-  roomName:view.roomName,exits:view.exits.map(x=>x.id),
+  roomName:view.roomName,exits:view.exits.filter(x=>!x.blocked).map(x=>x.id),
   items:view.items.map(x=>x.id),features:[...view.features],
   observations:view.observations.map(x=>x.id),
   distantThreats:view.distantSightings?.map(x=>x.kind)||[],
