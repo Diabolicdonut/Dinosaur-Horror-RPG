@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.13",
-  "checkpoint": "007-L2b1",
-  "state": "bounded_velociraptor_encounter_tactics_candidate_pending_final_actions_pages_and_manual_browser_smoke",
+  "version": "0.7.14",
+  "checkpoint": "007-L2b2",
+  "state": "shutter_squall_environment_gate_automated_candidate_verified_pending_final_main_and_graphical_qa",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 346,
+  "automated_tests": 362,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Validate 007-L2b1 candidate and final main 346/346 automated tests, Pages deployment and actual desktop/mobile graphical smoke (not yet performed).",
-    "Complete remaining bounded 007-L2b2: relevant dynamic environmental visibility/obstructions and any necessary encounter eligibility, without continuous ecology simulation.",
-    "Only after complete 007-L with tested acceptance, progress finite equipment/repairs in 007-M while advancing typed scene/event and Alien-style encounter/danger pressure work in parallel.",
-    "Continue toward 007-N natural-language Game Mother only through validated Evolved typed action/event effects; do not bypass private creature knowledge or dice.",
-    "Preserve all old tests, 1–8 survivor Character Lab, Party/Character/Spectator, legacy 006.2, Worker v006, saves v3 and personal Wonder discoveries."
+    "Confirm post-merge main 362/362 tests and GitHub Pages deployment, then perform actual desktop/mobile graphical QA on party/focus/spectator, shutter operations, storm visibility and save/replay.",
+    "With bounded 007-L gameplay primitives implemented, begin a scene/event and Alien Evolved encounter/danger-pressure checkpoint for the connected After the Storm Cinematic adventure; preserve believable quiet/wonder outcomes.",
+    "Advance 007-M finite physical batteries, equipment, park repairs and resource consequences with valid authored affordances, alongside scene work where helpful.",
+    "Plan 007-N multi-actor natural-language Game Mother on validated typed event/effect boundaries; do not add continuous island ecology as a dependency.",
+    "Preserve 362 accepted regression tests, save schema v3 and all compatible older saves, legacy solo 006.2, Worker v006 and private Wonder journals."
   ],
   "acceptance_criteria": [
-    "333 accepted deterministic tests at fc47d92479a7a14713f5c942d3632c8a4409842e retained; 13 new original encounter tests target 346/346 in this bounded 007-L2b1 candidate.",
-    "Physically earned Velociraptor approach pounce (7 attack dice vs 6 normal, unchanged base damage) permitted once after a legal prior stalk/investigate arrival in combat round one; independent original Evolved surprise bonus and interrupt preserved.",
-    "Defensive choices are announced before rolls and existing action budgets, armor, critical injuries, medical clocks and seeded replay remain authoritative.",
-    "No remote or blocked-door pounce, fictional creature teleport, free attack, or repeated +1 bonus; invalid/foreign/used openings do not qualify.",
-    "Lit lamp in an animal's own zone defeats concealment; truly hidden unlit survivors remain protected until discovered; invalid lit cover attempt costs no dice/time.",
-    "Three control modes, camera knowledge, physical cover, already authorized character Wonder journals and save schema v3 all remain compatible.",
-    "Manual graphical browser testing remains outstanding, and final accepted GitHub Actions and Pages must be confirmed separately."
+    "All 346 tests at accepted 007-L2b1 are retained; 16 added scene/environment cases target 362/362 deterministic tests.",
+    "An authored, locally operable service shutter blocks/reopens both directions for player and predator and physically obstructs sight while attenuating sound; denied travel costs no rolls or time.",
+    "Shutter status is persistent and validated Boolean; old v3 saves without the optional flag still open it by default and v2 migration is unchanged.",
+    "A single scripted heavy rain squall at stretches 2–3 suppresses the specific outdoor adjacent sightlines but not same-zone vision, audio, terrain movement, Evolved attack/defense or RNG.",
+    "Velociraptor stalk, pounce and flashlight-detection rules respect changing local barriers without hidden-state leaks, spawns or free actions.",
+    "Party/Focus/Spectator ownership, actor camera privacy, character creation, medical and Wonder discoveries, original solo and Worker remain unaffected.",
+    "Candidate 362-test run green; require final GitHub Actions and Pages success on exact merged main SHA and report real graphical QA separately.",
+    "No global weather or dinosaur population simulator introduced; prioritize scene/event/encounter procedures next."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +43,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "007-L2b1 candidate and accepted-main Pages status pending; last confirmed fc47d92479a7a14713f5c942d3632c8a4409842e succeeded via run 40020330832. Manual graphical QA outstanding.",
+  "pages_deployment": "007-L2b2 candidate PR Pages not applicable; latest previously accepted main beefa2a98599a3a47bd46afa75c18b83410ca726 Pages 40061545274 successful. Verify new merged main Pages separately; desktop/mobile manual graphical QA still pending.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -620,7 +621,7 @@
   "raptor_encounter_implementation": {
     "checkpoint": "007-L2b1",
     "version": "0.7.13",
-    "status": "Source-verified original bite/pounce attack tactics and light-concealment interaction; candidate automation and main acceptance pending.",
+    "status": "007-L2b1 accepted in main beefa2a98599a3a47bd46afa75c18b83410ca726; original bite/pounce completed, shutter physical eligibility added by 007-L2b2.",
     "module": "src/dinosaur-encounter.mjs",
     "rules_source": "Alien Evolved stealth/initiative/defensive reaction/damage/injury procedures remain primary; original Jurassic pounce +1 attack die earned once after physically legal approach in combat round one; base damage unchanged.",
     "additions": [
@@ -635,7 +636,7 @@
       "previous": 333,
       "new": 13,
       "total": 346,
-      "ci": "Validate candidate CI, accepted main CI and Pages separately; manual browser smoke pending"
+      "ci": "007-L2b1 accepted 346/346 final main run 40061545463 and Pages 40061545274 successful."
     },
     "compatibility": "Party schema 3; earlier v3 and v2->v3; old solo 006.2 and Worker v006 unchanged.",
     "deferred": [
@@ -644,5 +645,28 @@
       "Real desktop/mobile interactive browser smoke",
       "Additional species and sophisticated ecology (not prerequisites)"
     ]
+  },
+  "environment_implementation": {
+    "checkpoint": "007-L2b2",
+    "version": "0.7.14",
+    "module": "src/dinosaur-environment.mjs",
+    "doc": "docs/DINOSAUR-ENVIRONMENT-007L2B2.md",
+    "status": "Physical shutter and authored tropical squall implemented; 362/362 candidate validation green, final-main Actions and Pages required.",
+    "features": [
+      "One manually operated service shutter in shed and jungle; open by default; use action toggles and costs time/normal combat budget.",
+      "Closed shutter blocks two-way legal movement for survivors and Velociraptor, interrupts visual link, attenuates sound and cancels otherwise invalid pounce opening.",
+      "One bounded authored squall during exploration stretches 2 and 3 suppresses outdoor one-zone light/silhouette visibility only, not movement, same-zone contact, sound or Evolved rolls.",
+      "Survivors only see the shutter when physically near; separated AI companions don't receive distant shutter state or hidden dinosaur positions.",
+      "No additional persistent ecology, island weather engine, spontaneous creature encounters or AI adjudication."
+    ],
+    "tests": {
+      "baseline": 346,
+      "new": 16,
+      "total": 362,
+      "ci": "362/362 green on candidate PR run 40062545619; final latest candidate and accepted main must separately pass."
+    },
+    "compatibility": "Optional Boolean flags.serviceShutterClosed, legacy missing interpreted open; party save schema v3 and v2→v3 retained; solo 006.2 and Worker v006 untouched.",
+    "manual_qa": "Actual desktop/mobile graphical smoke pending.",
+    "next": "Advance focused scene/event/encounter pressure and 007-M physical resources, with manual browser QA acceptance still outstanding."
   }
 }

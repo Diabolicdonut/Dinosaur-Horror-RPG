@@ -1,7 +1,7 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l2b1';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007l2b2';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l2b1';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007l2b2';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
@@ -107,7 +107,8 @@ function show(){
  }).join('');
  $('location-title').textContent=v.roomName;
  $('sector').textContent=v.location.toUpperCase();
- $('room-description').textContent=v.description+'  ['+v.lighting+']';
+ $('room-description').textContent=v.description+'  ['+v.lighting+']'+
+    (v.weather?' · Weather: '+(v.weather==='squall'?'heavy squall':'rain'):'');
  $('viewed-character').textContent='Watching '+v.actorName+
    (v.actorId===v.activeActorId?' · CURRENT TURN':' · NOT CURRENT TURN')+
    ' · Health '+v.health+'/'+v.healthMax+' · Stress '+v.stress+(v.hidden?' · Concealed':'')+
@@ -133,7 +134,8 @@ function show(){
   scene.push('Situation: '+v.cinematicScene.focus);
   scene.push('Possible approaches: '+v.cinematicScene.choices);
  }
- if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
+ if(v.serviceShutterClosed)scene.push('PHYSICAL BARRIER — the shed storm shutter is CLOSED. It blocks the doorway and sightlines.');
+  if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
  if(v.observations.length)scene.push('Inspectable: '+v.observations.map(x=>x.id).join(', '));
  if(v.wonder)scene.push('A moment of wonder: '+v.wonder.title+
@@ -164,18 +166,18 @@ function show(){
    impairment.immobile||(travelCost==='full'?(moveBudget.fullSpent||moveBudget.quickSpent>=2):
    (moveBudget.quickSpent>=2||(moveBudget.fullSpent&&moveBudget.quickSpent>=1)))));
  $('travel-buttons').innerHTML=v.exits.map(x=>
-   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene||exhaustedMove?' disabled':'')+'>'+esc(x.name)+'</button>'+
+   '<button type="button" data-order="move '+esc(x.id)+'"'+(!canScene||exhaustedMove||x.blocked?' disabled':'')+'>'+esc(x.name)+(x.blocked?' (shutter closed)':'')+'</button>'+ 
    '<button type="button" data-order="sneak '+esc(x.id)+'"'+(!canScene||
-     Boolean(v.combat?.remaining&&(v.combat.remaining.fullSpent||v.combat.remaining.quickSpent>=2))?' disabled':'')+
+     Boolean(x.blocked||v.combat?.remaining&&(v.combat.remaining.fullSpent||v.combat.remaining.quickSpent>=2))?' disabled':'')+
      '>Sneak to '+esc(x.name)+'</button>'+
-    '<button type="button" data-order="rush '+esc(x.id)+'"'+(!canScene||exhaustedMove?' disabled':'')+
+    '<button type="button" data-order="rush '+esc(x.id)+'"'+(!canScene||exhaustedMove||x.blocked?' disabled':'')+
       '>Rush to '+esc(x.name)+'</button>'+
     (state.actors.some(a=>a.id!==v.actorId&&a.location===v.location&&!a.dead&&!a.broken)?
-      '<button type="button" data-order="group quietly to '+esc(x.id)+'"'+(!canScene?' disabled':'')+
+      '<button type="button" data-order="group quietly to '+esc(x.id)+'"'+(!canScene||x.blocked?' disabled':'')+
       '>Lead group quietly to '+esc(x.name)+'</button>':'')).join('');
  const actions=[
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
-  ...v.features.map(f=>['use '+f,'Operate '+f]),
+  ...v.features.map(f=>['use '+f,f==='shutter'?(v.serviceShutterClosed?'Open storm shutter':'Close storm shutter'):'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
   ...(v.wonder&&!v.wonder.discovered&&!v.combat?[
     ['wonder '+v.wonder.id,'Take in the view · '+v.wonder.title]]:[]),

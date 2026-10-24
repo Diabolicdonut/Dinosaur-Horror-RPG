@@ -23,7 +23,8 @@ export function validApproachPounce(state,creature,actor){
    state.combat.round!==1)return false;
  const hunt=creature.lastHunt;
  if(!hunt||hunt.blocked!==false||hunt.from===hunt.to||
-  !exitsForCreature(hunt.from,{shedDoorBreached:Boolean(state.flags?.shedBarrierBreached)}).includes(hunt.to)||
+  !exitsForCreature(hunt.from,{shedDoorBreached:Boolean(state.flags?.shedBarrierBreached),
+     serviceShutterClosed:Boolean(state.flags?.serviceShutterClosed)}).includes(hunt.to)||
   hunt.to!==creature.location||!['stalk','investigate'].includes(hunt.behavior)||
   !Number.isSafeInteger(hunt.beat)||hunt.beat>state.beat)return false;
  // A physical arrival is a one-off opening, not a permanent dice bonus.

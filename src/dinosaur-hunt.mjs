@@ -19,9 +19,9 @@ export function creatureFacesZone(creature,zone,options={}){
 }
 // Sound conveys a location cue, not a person's position. The facing direction
 // is the first traversable leg toward a heard location, never a remote guess.
-export function faceClue(creature,{shedDoorBreached=false}={}){
+export function faceClue(creature,{shedDoorBreached=false,serviceShutterClosed=false}={}){
  if(!creature?.lastHeard)return creature?.facing??null;
- const route=creatureRoute(creature.location,creature.lastHeard,{shedDoorBreached});
+ const route=creatureRoute(creature.location,creature.lastHeard,{shedDoorBreached,serviceShutterClosed});
  return route?.[1]||creature.facing||creature.location;
 }
 /**
@@ -31,14 +31,14 @@ export function faceClue(creature,{shedDoorBreached=false}={}){
  * Already-accounted alert decay makes stale cues expire instead of chasing
  * indefinitely. Planning does not roll, teleport, attack or reveal secrets.
  */
-export function huntDecision(creature,{beat,shedDoorBreached=false}={}){
+export function huntDecision(creature,{beat,shedDoorBreached=false,serviceShutterClosed=false}={}){
  const profile=speciesSensoryProfile(creature);
  if(!profile||!SCENARIO.rooms[creature?.location])throw new RangeError('Unknown predator profile or position.');
  if(!Number.isSafeInteger(beat)||beat<0)throw new RangeError('Invalid exploration beat.');
  const at=creature.location;
  if(creature.defeated||creature.alert<=0||!creature.lastHeard)
   return {behavior:'patrol',location:at,facing:creature.facing??null,moved:false,blocked:false};
- const route=creatureRoute(at,creature.lastHeard,{shedDoorBreached});
+ const route=creatureRoute(at,creature.lastHeard,{shedDoorBreached,serviceShutterClosed});
  const behavior=creature.alert>=4?'investigate':'stalk';
  if(!route)return {behavior,location:at,facing:creature.facing??null,moved:false,blocked:true};
  if(route.length===1)return {behavior:'search',location:at,facing:creature.facing??at,moved:false,blocked:false};

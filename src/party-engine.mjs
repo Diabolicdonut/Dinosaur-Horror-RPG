@@ -5,9 +5,10 @@
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
-import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2a';
-import {huntDecision,faceClue,validCreatureFacing} from './dinosaur-hunt.mjs?v=007l2a';
-import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l2a';
+import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
+import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
+import {huntDecision,faceClue,validCreatureFacing} from './dinosaur-hunt.mjs?v=007l2b2';
+import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l2b2';
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l2a';
@@ -123,19 +124,20 @@ function dinoTick(s,noise,at) {
  const d=s.dinosaurs[0],species=DINO_SPECIES.velociraptor,profile=speciesSensoryProfile(d);
  if(!profile)throw new RangeError('Creature sensory profile is missing.');
  if(d.defeated||s.combat?.active)return;
- const breach=Boolean(s.flags.shedBarrierBreached);
+ const conditions=sightContext(s);
+  const breach=conditions.shedDoorBreached;
  // Establish direction from the actual current zone on first world tick.
  // Old v3 saves and independently created combat scenes need no fixed bearing.
- if(d.facing==null)d.facing=exitsForCreature(d.location,{shedDoorBreached:breach})[0]||d.location;
- const signal=hearNoise(d.location,at,noise,{shedDoorBreached:breach,species:profile.key});
+ if(d.facing==null)d.facing=exitsForCreature(d.location,conditions)[0]||d.location;
+ const signal=hearNoise(d.location,at,noise,{...conditions,species:profile.key});
 if(signal.heard){
    d.lastHeard=at;
    d.lastHeardBeat=s.beat;d.lastClue='sound';
-   d.facing=faceClue(d,{shedDoorBreached:breach});
+   d.facing=faceClue(d,conditions);
    d.alert=Math.min(6,Math.max(d.alert,noise+2));
    if(d.search&&d.search.zone!==at)d.search=null;
   }else{
-   const lamp=visibleLampZone(d.location,s.actors,{shedDoorBreached:breach,facing:d.facing});
+   const lamp=visibleLampZone(d.location,s.actors,{...conditions,facing:d.facing});
    if(lamp){
     d.lastHeard=lamp;d.lastClue='light';
     d.facing=lamp;
@@ -150,7 +152,7 @@ if((s.beat+1)%2===0){
    if(d.search){
     // Committed zone search prevents patrol movement until completion.
    }else if(d.alert>0&&d.lastHeard){
-   const hunt=huntDecision(d,{beat:s.beat,shedDoorBreached:breach});
+   const hunt=huntDecision(d,{beat:s.beat,...conditions});
    if(!hunt.blocked){
     d.location=hunt.location;
     if(validCreatureFacing(d.location,hunt.facing))d.facing=hunt.facing;
@@ -164,7 +166,7 @@ if((s.beat+1)%2===0){
    // An unrefreshed clue fades even when no further route is available.
    d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(nextSeed(s)%3===0){
-   const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
+   const exits=exitsForCreature(d.location,conditions);
    if(exits.length){
     d.location=exits[nextSeed(s)%exits.length];
     if(d.location!==predatorPreviousZone)d.facing=predatorPreviousZone;
@@ -179,13 +181,13 @@ if(d.alert===0&&!d.search)d.lastHeard=null;
   // Only present illuminated sources count as vision; a historical clue
   // cannot create omniscient engagement when the source has gone dark.
   const freshLamp=visibleLampZone(d.location,s.actors,{
-   shedDoorBreached:breach,facing:d.facing});
+   ...conditions,facing:d.facing});
   d.behavior=sensoryBehavior(d,{sourceVisible:Boolean(freshLamp),
    sourceAudible:signal.heard})||'patrol';
  if(d.location!==predatorPreviousZone){
   for(const listener of s.actors){
    if(listener.dead||listener.location===d.location)continue;
-   if(hearNoise(listener.location,d.location,1,{shedDoorBreached:breach}).heard)
+   if(hearNoise(listener.location,d.location,1,conditions).heard)
     gameEvent(s,'Heavy footfalls sound somewhere nearby.',listener.id,'danger');
   }
  }
@@ -448,7 +450,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
   clock:{explorationActions:0,explorationStretches:0,combatRounds:0,combatSeconds:0},
-  startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false},
+  startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,
@@ -477,6 +479,7 @@ export function isPartySave(s) {
     s.actors.length>8||s.cursor>=s.actors.length||
     !Number.isInteger(s.rng)||!s.rooms||!s.flags||!Array.isArray(s.actions)||
     !Array.isArray(s.events)||!Array.isArray(s.dinosaurs)||
+     (s.flags.serviceShutterClosed!==undefined&&typeof s.flags.serviceShutterClosed!=='boolean')||
      (s.groupTravel!==undefined&&s.groupTravel!==null&&
       (!SCENARIO.rooms[s.groupTravel.from]||!SCENARIO.rooms[s.groupTravel.to]||
        !['quiet','normal','noisy'].includes(s.groupTravel.approach)||
@@ -567,6 +570,8 @@ export function partyView(s,{actorId=null}={}) {
    pendingReaction:s.combat.pendingReaction?{...s.combat.pendingReaction}:null,
    remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
   location:actor.location,roomName:place.name,description:place.description,
+   weather:outdoorWeather(s,actor.location),
+   serviceShutterClosed:serviceShutterClosed(s)&&['shed','jungle'].includes(actor.location),
    cinematicScene:sceneForActor(s,actor),
   lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
    personalLight:{carried:actorOwnsLight(actor),on:actorHasLight(actor),
@@ -575,12 +580,13 @@ export function partyView(s,{actorId=null}={}) {
     {id:actor.coverId,label:physicalCover(actor.location,actor.coverId).label}:null,
    availableCover:localCover(actor.location).map(c=>({id:c.id,label:c.label})),
    distantSightings:s.dinosaurs.filter(d=>!d.defeated&&d.location!==actor.location&&
-     visualLine(actor.location,d.location,{shedDoorBreached:Boolean(s.flags.shedBarrierBreached)})&&
+     visualLine(actor.location,d.location,sightContext(s))&&
      actorHasLight(actor)).map(d=>({kind:d.kind})),
    groupTravel:s.groupTravel?.awaiting?.includes(actor.id)&&
     actor.location===s.groupTravel.from?
       {to:s.groupTravel.to,approach:s.groupTravel.approach}:null,
-  exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name})),
+  exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name,
+    blocked:shutterBlocks(s,actor.location,id)})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
   wonder:place.wonder?{id:place.wonder.id,title:place.wonder.title,
@@ -593,7 +599,7 @@ export function partyView(s,{actorId=null}={}) {
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
   injuries:actor.criticalInjuries||[],medicalUrgency:pendingLethal(actor).map(w=>({code:w.code,deadline:w.deadline,nextDeathAt:w.nextDeathAt})),
   broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
-  hidden:actor.hidden,flags:{...s.flags},
+  hidden:actor.hidden,flags:Object.fromEntries(Object.entries(s.flags).filter(([key])=>key!=='serviceShutterClosed')),
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
    roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
    active:a.id===s.actors[s.cursor].id})),
@@ -882,7 +888,9 @@ if(['move','sneak','rush'].includes(action.kind)){
    if(!room)return rejected(previous,'That destination is not connected to this room.');
    if(a.location==='utility'&&room==='shed'&&!a.inventory.includes('keycard'))
      return rejected(previous,a.name+' needs the staff access card to enter the shed.');
-   if(s.dinosaurs[0].location===a.location&&!a.hidden&&!s.dinosaurs[0].defeated&&!a.broken){
+   if(shutterBlocks(s,a.location,room))
+     return rejected(previous,'The service shutter blocks this doorway. Open it from either side before passing.');
+    if(s.dinosaurs[0].location===a.location&&!a.hidden&&!s.dinosaurs[0].defeated&&!a.broken){
     const escape=result('mobility');
     if(!escape.success){
      gameEvent(s,a.name+' fails to break away from the velociraptor.',a.id,'risk');
@@ -963,9 +971,16 @@ if(action.groupApproach){
  if(action.kind==='use'){
    const feature=matchFeature(action.target,a.location);
    if(!feature)return rejected(previous,'That mechanism is not here.');
-   if(!['generator','radio','beacon'].includes(feature))
+   if(!['generator','radio','beacon','shutter'].includes(feature))
      return rejected(previous,'This feature cannot yet be operated through the party simulation.');
-   if(feature==='generator'&&s.flags.power)return rejected(previous,'Auxiliary power is already active.');
+   if(feature==='shutter'){
+     s.flags.serviceShutterClosed=!serviceShutterClosed(s);
+     a.hidden=false;a.coverId=null;
+     gameEvent(s,a.name+(s.flags.serviceShutterClosed?' closes ':' opens ')+
+       'the shed service shutter.',a.id,'action');
+     return accepted(s,a,'use','shutter',{closed:s.flags.serviceShutterClosed},1);
+    }
+    if(feature==='generator'&&s.flags.power)return rejected(previous,'Auxiliary power is already active.');
    if(feature==='radio'&&!s.flags.power)return rejected(previous,'The radio requires auxiliary power.');
    if(feature==='radio'&&s.flags.distress)return rejected(previous,'The distress call has already been transmitted.');
    if(feature==='beacon'&&(!s.flags.power||!s.flags.distress))
