@@ -14,7 +14,7 @@ Dinosaur Horror RPG is an Alien Evolved adaptation into Jurassic Park: **Dinosau
 - Generator's steady return in the shed **after power is actually restored** (recovery).
 - Heavy rain at the jungle service path **only during the committed squall**.
 - Failed perimeter evidence at the physical paddock.
-- Distant, ambient-only giants visible from the helipad (wonder; **not** a physical dinosaur in the encounter).
+- Distant, ambient-only giants visible from the helipad **only while rain does not obscure the valley** (wonder; **not** a physical dinosaur in the encounter).
 - Waiting for rescue at the helipad after a genuine distress signal and before activating the beacon.
 
 The browser offers **Experience scene** actions for the selected character only when all conditions hold. Text entry also accepts `scene <event-id>`. The deterministic `partyStep` validates ID, actor, local zone, mission flags, weather, mode ownership, time-of-action status, combat exclusion, injury and one-time-per-character history **before committing**. It records `sceneRecords` and an actor-specific visible event, but—like existing Wonder observations—consumes no time or dice and **cannot** spawn creatures, invent NPCs, add inventory, change stress, set rescue flags or force a combat roll. Wonder journals are independent of event history.
@@ -34,6 +34,6 @@ The accepted world still contains only the previously modeled physical Velocirap
 
 - Save kind `dinosaur-party-incident` remains **schema v3**; optional `sceneRecords` and `scenePressure` default to empty for compatible earlier v3 saves. New recordings validate a real authored ID and zone, genuine actor, unique actor-event pair, finite legal beat, bounded unique pressure record and nonnegative check count; invalid or duplicate data is rejected.
 - Party, Character/Focus and Spectator use the same `partyStep` authority. Mode/camera switches do not spend time, dice or add secret events. Solo 006.2, Cloudflare Worker v006, preexisting 362 tests, character creation, personalized Wonder journals, physical shutter/squall and accepted Velociraptor attack rules remain intact.
-- **14 new** focused tests are added, targeting **376/376** total. Candidate/main Actions and GitHub Pages must pass on their exact SHAs and remain separate from actual desktop/mobile manual graphical smoke, which is still outstanding.
+- **15 new** focused tests are added, targeting **377/377** total. Candidate/main Actions and GitHub Pages must pass on their exact SHAs and remain separate from actual desktop/mobile manual graphical smoke, which is still outstanding.
 
 **Next recommended development:** source-grounded conditional *danger* events and an actual playable connected Cinematic adventure, while developing 007-M finite physical park resources, then 007-N typed multi-actor AI Game Mother. Preserve the core Alien Evolved game experience; do not build island-wide Zoo Tycoon ecology.
