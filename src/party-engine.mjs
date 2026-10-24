@@ -6,6 +6,7 @@ import { SCENARIO } from './scenario.mjs?v=007l1';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
 import {CINEMATIC_DANGERS,currentCinematicAct,dangerAllowed,availableDangerEvents,validDangerRecords} from './cinematic-danger.mjs';
+import {generatorPreparation,localSceneConsequences} from './cinematic-continuity.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
@@ -593,6 +594,8 @@ export function partyView(s,{actorId=null}={}) {
    cinematicScene:sceneForActor(s,actor),
    cinematicAct:currentCinematicAct(s),
    availableDangerEvents:availableDangerEvents(s,actor),
+   sceneConsequences:localSceneConsequences(s,actor),
+   preparedGenerator:generatorPreparation(s,actor).ready,
    localPaddockGateBraced:actor.location==='paddock'&&s.flags.paddockGateBraced===true,
    availableSceneEvents:availableSceneEvents(s,actor),
    encounterPressure:pressureForActor(s,actor.id),
@@ -1043,7 +1046,9 @@ if(action.groupApproach){
      return rejected(previous,'The beacon needs restored power and a transmitted distress call.');
    if(feature==='beacon'&&s.flags.beacon)return rejected(previous,'The beacon is already broadcasting.');
    const skill=feature==='generator'?'heavy_machinery':'comtech';
-   const rolled=result(skill);
+   const preparation=feature==='generator'?generatorPreparation(s,a):null;
+   const rolled=result(skill,'',preparation?.modifier||0);
+   if(preparation?.ready)gameEvent(s,a.name+' follows the auxiliary generator sequence learned from the control-room diagnostic.',a.id,'action');
    a.hidden=false;
    if(rolled.success){
     if(feature==='generator')s.flags.power=true;
@@ -1051,7 +1056,10 @@ if(action.groupApproach){
     if(feature==='beacon'){s.flags.beacon=true;s.outcome='rescued';}
     gameEvent(s,a.name+' successfully operates the '+feature+'.',a.id,'milestone');
    }else gameEvent(s,a.name+' cannot get the '+feature+' working yet.',a.id,'risk');
-   return accepted(s,a,'use',feature,rolled,feature==='generator'?3:1);
+   return accepted(s,a,'use',feature,{...rolled,
+    ...(feature==='generator'?{preparationUsed:Boolean(preparation?.ready),
+      preparationBonus:preparation?.modifier||0,
+      preparationSource:preparation?.source||null}:{})},feature==='generator'?3:1);
  }
  return rejected(previous,'Unrecognized action.');
 }

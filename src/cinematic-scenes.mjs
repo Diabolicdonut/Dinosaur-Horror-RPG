@@ -4,6 +4,7 @@
 // spawner, random encounter system, new clock, or hidden-state oracle.
 // The underlying Evolved-derived engine alone commits rolls and world changes.
 import {SCENARIO} from './scenario.mjs';
+import {hasObserved,GENERATOR_DIAGNOSIS,JUNGLE_TRACK_DISCOVERY} from './cinematic-continuity.mjs';
 
 const SCENES=Object.freeze({
  control:Object.freeze({
@@ -63,6 +64,25 @@ export function sceneForActor(state,actor){
  if(actor.location==='lobby'&&(!state.rooms?.lobby?.items?.includes('keycard'))){
   focus='The reception access card is no longer on the desk. The museum remains an extraordinary place to stop and observe.';
   choices='Appreciate the exhibits, search the area, or return to the task.';
+ }
+ if(actor.location==='shed'&&!flags.power&&hasObserved(actor,GENERATOR_DIAGNOSIS)){
+  title='The Familiar Controls';
+  focus='The generator is accessible here. You remember the auxiliary start sequence found on the control-room consoles; it improves your preparation but starting the unit still makes noise.';
+  choices='Attempt the real Heavy Machinery startup check with a +1 situational die, or return to other plans.';
+ }
+ if(actor.location==='jungle'&&hasObserved(actor,JUNGLE_TRACK_DISCOVERY)){
+  focus='Your earlier investigation identified rain-softened dinosaur tracks. The footprints are evidence of past movement, not a guarantee about the animal’s present location.';
+  choices='Revisit the tracks, move carefully or choose another path without a forced encounter.';
+ }
+ if(actor.location==='paddock'&&flags.paddockGateBraced===true){
+  title='The Braced Perimeter';
+  focus='The damaged gate has been physically secured. Its previous metal clang is no longer a threat here, though the rest of the paddock remains uncontrolled.';
+  choices='Observe the repair, investigate the other damage or withdraw.';
+ }
+ if(actor.location==='paddock'&&flags.paddockGateBraced!==true&&
+    (state.dangerRecords||[]).some(r=>r.actorId===actor.id&&r.id==='brace-paddock-gate'&&!r.success)){
+  focus='The gate still hangs loose. Your previous attempt ended in a loud metal clang; you may withdraw or another survivor can attempt the repair.';
+  choices='Avoid further noise, study the fence or ask another capable survivor to help.';
  }
  if(actor.location==='shed'&&flags.power){
   title='After the Generator Starts';

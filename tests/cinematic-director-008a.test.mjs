@@ -12,7 +12,7 @@ test('008-A authored registry exposes only present and permitted actor-local sce
  assert.deepEqual(availableSceneEvents(s,actor).map(x=>x.id),['control-dead-air']);
  assert.equal(eventAllowed(s,actor,'helipad-valley'),false);
  assert.equal(eventAllowed(s,actor,'no-such-event'),false);
- assert.equal(Object.keys(CINEMATIC_EVENTS).length,7);
+ assert.equal(Object.keys(CINEMATIC_EVENTS).length,11);
  assert.equal(isPartySave(s),true);
  assert.deepEqual(parsePartyAction('scene control-dead-air'),{kind:'scene',target:'control-dead-air',push:0});
 });
@@ -175,8 +175,8 @@ test('browser includes scene choices and pressure; no new Worker or global ecolo
   readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=008b1'));
- assert(app.includes('party-engine.mjs?v=008b1'));
+ assert(html.includes('party-app.mjs?v=008b2'));
+ assert(app.includes('party-engine.mjs?v=008b2'));
  assert(app.includes('Experience scene'));
  assert(app.includes('v.encounterPressure.label'));
  assert(engine.includes('availableSceneEvents:availableSceneEvents'));
