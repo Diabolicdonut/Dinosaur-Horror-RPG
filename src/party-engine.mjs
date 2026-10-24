@@ -11,7 +11,7 @@ import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwn
 import { validateParty, makeParty } from './characters.mjs';
 import { resolveSkillCheck } from './evolved-checks.mjs';
 import {DINO_SPECIES,STRETCH_MINUTES,ROUND_SECONDS,detectCreature,detectGroupCreature,searchHiddenGroup,rollDicePool,applyCreatureAttack,applyMedicalAid,panicOnContact,rollCriticalInjury} from './evolved-encounters.mjs?v=007l2a';
-import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007i';
+import {activeCombatSlot,activeTurnId,beginCombat,holdOff,checkCombatAction,finishCombatAction,finishDinosaurAction,validCombatState} from './combat-turns.mjs?v=007l2b1';
 import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
 
