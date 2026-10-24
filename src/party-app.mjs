@@ -129,6 +129,7 @@ function show(){
  ].map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
    '"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
  const scene=[];
+ if(v.cinematicAct)scene.push('CINEMATIC ACT '+v.cinematicAct.number+' · '+v.cinematicAct.title+' — '+v.cinematicAct.objective);
  if(v.cinematicScene){
   scene.push('SCENE · '+v.cinematicScene.title+' ['+v.cinematicScene.theme+']');
   scene.push('Situation: '+v.cinematicScene.focus);
@@ -136,6 +137,7 @@ function show(){
  }
  if(v.serviceShutterClosed)scene.push('PHYSICAL BARRIER — the shed storm shutter is CLOSED. It blocks the doorway and sightlines.');
   if(v.availableSceneEvents?.length)scene.push('Cinematic opportunities: '+v.availableSceneEvents.map(e=>e.title).join(', '));
+  if(v.availableDangerEvents?.length)scene.push('Optional physical challenges: '+v.availableDangerEvents.map(e=>e.title+' ['+e.skill+']').join(', '));
   if(['jungle','paddock','helipad'].includes(v.location))scene.push('Exploration pressure: '+v.encounterPressure.label+' · '+v.encounterPressure.checks+' checks');
   if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
@@ -179,6 +181,7 @@ function show(){
       '>Lead group quietly to '+esc(x.name)+'</button>':'')).join('');
  const actions=[
   ...(v.availableSceneEvents||[]).map(e=>['scene '+e.id,'Experience scene · '+e.title]),
+  ...(v.availableDangerEvents||[]).map(e=>['danger '+e.id,'Attempt challenge · '+e.title+' ('+e.skill+')']),
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,f==='shutter'?(v.serviceShutterClosed?'Open storm shutter':'Close storm shutter'):'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
