@@ -166,7 +166,7 @@ if((s.beat+1)%2===0){
    // An unrefreshed clue fades even when no further route is available.
    d.alert=Math.max(0,d.alert-profile.alertDecay);
   }else if(nextSeed(s)%3===0){
-   const exits=exitsForCreature(d.location,{shedDoorBreached:breach});
+   const exits=exitsForCreature(d.location,conditions);
    if(exits.length){
     d.location=exits[nextSeed(s)%exits.length];
     if(d.location!==predatorPreviousZone)d.facing=predatorPreviousZone;
@@ -599,7 +599,7 @@ export function partyView(s,{actorId=null}={}) {
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
   injuries:actor.criticalInjuries||[],medicalUrgency:pendingLethal(actor).map(w=>({code:w.code,deadline:w.deadline,nextDeathAt:w.nextDeathAt})),
   broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
-  hidden:actor.hidden,flags:{...s.flags},
+  hidden:actor.hidden,flags:Object.fromEntries(Object.entries(s.flags).filter(([key])=>key!=='serviceShutterClosed')),
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
    roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
    active:a.id===s.actors[s.cursor].id})),
