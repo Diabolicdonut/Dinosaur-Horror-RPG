@@ -2,9 +2,9 @@
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs?v=007l2a';
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007l2a';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=007l2b1';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
-import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007i';
+import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
 
 export const CONTROL_MODES=Object.freeze(['party','focus','spectator']);
 export const SPEED_OPTIONS=Object.freeze([400,800,1200,2000]);

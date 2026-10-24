@@ -2,6 +2,7 @@
 // This module only manages turn scheduling; party-engine is authoritative for
 // actor health, world position, inventory, Evolved rolls and consequences.
 import {rollInitiative,createActionBudget,spendActionBudget} from './evolved-encounters.mjs';
+import {actorHasLight} from './dinosaur-pursuit.mjs';
 import {woundModifiers,pendingLethal,deathRoll,worldSeconds} from './evolved-injuries.mjs';
 export const COMBAT_SCHEDULER_VERSION='007-H';
 export const COMBAT_COST=Object.freeze({
@@ -9,7 +10,8 @@ export const COMBAT_COST=Object.freeze({
  attack:'full',hide:'full',aid:'full',use:'full',investigate:'full'
 });
 const cloning=x=>JSON.parse(JSON.stringify(x));
-const inScene=s=>s.actors.filter(a=>a.location===s.dinosaurs[0].location&&!a.dead&&!a.hidden);
+const inScene=s=>s.actors.filter(a=>a.location===s.dinosaurs[0].location&&!a.dead&&
+ (!a.hidden||actorHasLight(a)));
 export function activeCombatSlot(s){
  return s.combat?.active?s.combat.order[s.combat.index]||null:null;
 }
@@ -120,7 +122,8 @@ export function advanceCombatSlot(s,nextSeed=null){
   if(!slot)throw new Error('Initiative schedule became invalid.');
   if(slot.kind==='dinosaur'&&!s.dinosaurs[0].defeated)return true;
   const actor=s.actors.find(a=>a.id===slot.actorId);
-  if(actor&&actor.location===s.dinosaurs[0].location&&!actor.dead&&!actor.hidden){
+  if(actor&&actor.location===s.dinosaurs[0].location&&!actor.dead&&
+   (!actor.hidden||actorHasLight(actor))){
    s.cursor=s.actors.indexOf(actor);
    return true;
   }
