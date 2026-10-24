@@ -4,6 +4,7 @@
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {sceneForActor} from './cinematic-scenes.mjs';
+import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2a';
 import {huntDecision,faceClue,validCreatureFacing} from './dinosaur-hunt.mjs?v=007l2a';
 import {hearNoise,pursuitStep,exitsForCreature,roomIsDark,actorHasLight,actorOwnsLight,visibleLampZone,LIGHT_CAPACITY_STRETCHES} from './dinosaur-pursuit.mjs?v=007l2a';
@@ -188,7 +189,15 @@ if(d.alert===0&&!d.search)d.lastHeard=null;
     gameEvent(s,'Heavy footfalls sound somewhere nearby.',listener.id,'danger');
   }
  }
-// Allies in one visible zone compare their strongest passive Observation
+// A lit lamp in the animal's own zone defeats concealment without
+ // implying any remote perception of other actors.
+ for(const person of s.actors){
+  if(person.hidden&&person.location===d.location&&!person.dead&&actorHasLight(person)){
+   person.hidden=false;person.coverId=null;
+   gameEvent(s,person.name+' is exposed by their own lamp near the velociraptor.',person.id,'danger');
+  }
+ }
+ // Allies in one visible zone compare their strongest passive Observation
  // against the same creature result. They do not sum their successes.
  const newcomers=s.actors.filter(a=>!a.dead&&!a.broken&&a.health>0&&
   a.location===d.location&&!a.hidden&&!(a.seenThreats||[]).includes(d.id));
@@ -274,7 +283,7 @@ function predatorStep(previous,{actorId,source,reactionPrompt=false,action=null}
  if(source!=='ai'||actorId!==d.id)
   return rejected(previous,'The predator does not currently have initiative.');
  const s=deep(previous),beast=s.dinosaurs[0];
- const targets=s.actors.filter(a=>a.location===beast.location&&!a.hidden&&!a.dead&&!a.broken);
+ const targets=s.actors.filter(a=>creatureCanTargetActor(beast,a));
  if(!targets.length)return resolvePredatorStrike(s,null,slot,{defend:false});
  const victim=targets[nextSeed(s)%targets.length];
  const surprising=predatorSurprise(s,slot);
@@ -283,7 +292,7 @@ function predatorStep(previous,{actorId,source,reactionPrompt=false,action=null}
  if(reactionPrompt&&human&&!surprising&&reactionEligible(s,victim,slot)){
   s.combat.pendingReaction={victimId:victim.id,round:s.combat.round,
    card:slot.card,declaredAtBeat:s.beat,attackKind:'close_combat'};
-  gameEvent(s,'The velociraptor lunges at '+victim.name+
+  gameEvent(s,'The velociraptor '+(raptorAttackPlan(s,victim)?.id==='pounce'?'pounces toward ':'lunges at ')+victim.name+
     '. Choose DEFEND (quick action) or ALLOW the attack before the strike is rolled.',
     victim.id,'danger');
   return {accepted:true,state:s,awaitingReaction:true,
@@ -305,7 +314,7 @@ function predatorSurprise(s,slot){
 function reactionEligible(s,victim,slot){
  const b=s.combat?.budgets?.[victim.id];
  return Boolean(slot?.kind==='dinosaur'&&victim.health>0&&!victim.dead&&!victim.broken&&
-   victim.location===s.dinosaurs[0].location&&!victim.hidden&&b&&
+   creatureCanTargetActor(s.dinosaurs[0],victim)&&b&&
    b.quickSpent<2&&!(b.fullSpent&&b.quickSpent>=1)&&!predatorSurprise(s,slot));
 }
 function resolvePredatorStrike(s,victim,slot,{defend=false,dodge=false,declared=false}={}){
@@ -314,8 +323,13 @@ function resolvePredatorStrike(s,victim,slot,{defend=false,dodge=false,declared=
  if(!s.clock)s.clock={explorationActions:s.beat,
    explorationStretches:Math.floor(s.beat/s.actors.length),combatRounds:0,combatSeconds:0};
  let detail={kind:'predator_wait',target:''};
- if(victim&&victim.location===beast.location&&!victim.hidden&&!victim.dead&&!victim.broken){
+ if(victim&&creatureCanTargetActor(beast,victim)){
+  const plan=raptorAttackPlan(s,victim);
   const surprising=predatorSurprise(s,slot);
+  if(victim.hidden&&actorHasLight(victim)){
+   victim.hidden=false;victim.coverId=null;
+   gameEvent(s,victim.name+' is illuminated and cannot remain concealed from the velociraptor.',victim.id,'danger');
+  }
   if(defend||dodge){
    if(!reactionEligible(s,victim,slot)||!checkDodgeInterrupt(s,victim.id))
     throw new Error('Reaction eligibility changed before a validated strike.');
@@ -323,8 +337,8 @@ function resolvePredatorStrike(s,victim,slot,{defend=false,dodge=false,declared=
      (defend?'defend with Close Combat.':'dodge with Mobility.'),victim.id,'danger');
   }
   const strike=applyCreatureAttack(victim,{seed:nextSeed(s),
-    attackerDice:species.attack+(surprising?2:0),
-    baseDamage:species.baseDamage,defend,dodge});
+    attackerDice:species.attack+plan.attackDiceBonus+(surprising?2:0),
+    baseDamage:species.baseDamage+plan.baseDamageBonus,defend,dodge});
   if(surprising)s.combat.surprise.consumed=true;
   victim.guarding=false;victim.health=strike.after.health;
   victim.broken=strike.after.broken;victim.dead=strike.after.dead;
@@ -340,12 +354,12 @@ function resolvePredatorStrike(s,victim,slot,{defend=false,dodge=false,declared=
    victim.stressResponses=strike.evade.after.stressResponses;
   }
   gameEvent(s,strike.damage?
-    'Velociraptor strikes '+victim.name+' for '+strike.damage+' damage'+
+    'Velociraptor '+(plan.id==='pounce'?'pounces on ':'bites ')+victim.name+' for '+strike.damage+' damage'+
       (strike.broken?' — incapacitated.':'')+(strike.dead?' Fatal.':''):
-    victim.name+' survives the velociraptor’s strike without injury.',victim.id,'danger');
-  detail={kind:'predator_attack',target:victim.id,damage:strike.damage,
+    victim.name+' survives the velociraptor’s '+plan.label.toLowerCase()+' without injury.',victim.id,'danger');
+  detail={kind:'predator_attack',target:victim.id,tactic:plan.id,damage:strike.damage,
     evaded:defend||dodge,defense:defend?'close_combat':dodge?'mobility':'none',
-    declared,ambush:surprising,attackDice:species.attack+(surprising?2:0),
+    declared,ambush:surprising,attackDice:species.attack+plan.attackDiceBonus+(surprising?2:0),
     critical:strike.critical?.code||null};
  }else gameEvent(s,'The velociraptor searches for exposed prey.',null,'danger');
  s.actions.push({beat:s.beat,actorId:beast.id,...detail,
@@ -769,6 +783,10 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
    if(current.on===on)return rejected(previous,'The carried light is already '+action.target+'.');
    if(on&&current.charge<=0)return rejected(previous,'The carried light has no remaining charge.');
    a.light={...current,on};
+   if(on&&a.hidden&&s.dinosaurs[0].location===a.location&&!s.dinosaurs[0].defeated){
+    a.hidden=false;a.coverId=null;
+    gameEvent(s,a.name+' gives away their concealed position by switching on a lamp.',a.id,'danger');
+   }
    gameEvent(s,a.name+' switches their carried light '+action.target+'.',a.id,'action');
    return accepted(s,a,'light',action.target,{on,charge:a.light.charge},0);
   }
@@ -916,6 +934,8 @@ if(action.groupApproach){
    return accepted(s,a,'give',item,{recipientId:target.id},0);
  }
  if(action.kind==='hide'){
+   if(s.dinosaurs[0].location===a.location&&!s.dinosaurs[0].defeated&&actorHasLight(a))
+    return rejected(previous,'Switch off your exposed light before hiding from the nearby dinosaur.');
    const cover=action.target?
     localCover(a.location).find(x=>x.id===action.target||
      x.label.toLowerCase()===action.target.replace(/^the /,'').toLowerCase()||
