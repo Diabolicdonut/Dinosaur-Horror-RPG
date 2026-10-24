@@ -6,20 +6,29 @@ import {SCENARIO} from './scenario.mjs';
 import {weatherAt,sightContext} from './dinosaur-environment.mjs';
 import {creatureRoute,hearNoise} from './dinosaur-pursuit.mjs';
 import {rollDicePool} from './evolved-encounters.mjs';
+import {hasObserved,GENERATOR_DIAGNOSIS,JUNGLE_TRACK_DISCOVERY} from './cinematic-continuity.mjs';
 
 export const CINEMATIC_EVENTS=Object.freeze({
  'control-dead-air':Object.freeze({zone:'control',title:'Dead Air',theme:'investigation',condition:'power_off',
   text:'Beyond the reinforced windows, rain has swallowed the jungle. The silent consoles offer no answers until someone restores power.'}),
  'lobby-exhibits':Object.freeze({zone:'lobby',title:'An Impossible History',theme:'wonder',condition:'always',
   text:'Water trickles between the towering fossil displays. For a moment, their scale inspires curiosity rather than fear.'}),
+ 'shed-startup-protocol':Object.freeze({zone:'shed',title:'A Familiar Startup Sequence',theme:'investigation',condition:'generator_diagnosed',
+  text:'You recognize the backup generator steps from the control-room diagnostic. The sequence can guide your hands, but the repair still demands an actual Heavy Machinery check.'}),
  'shed-power-hum':Object.freeze({zone:'shed',title:'The Power Returns',theme:'recovery',condition:'power_on',
   text:'The generator hum steadies. This small island of electric light offers a chance to confer before moving on.'}),
+ 'jungle-tracks-reviewed':Object.freeze({zone:'jungle',title:'What the Tracks Can Tell Us',theme:'investigation',condition:'tracks_studied',
+  text:'The impressions you examined tell you that something powerful passed this way, not when it will return or where it is now.'}),
  'jungle-squall':Object.freeze({zone:'jungle',title:'Curtain of Rain',theme:'suspense',condition:'squall',
   text:'A sudden sheet of rain blurs the canopy beyond the path. The storm conceals the distance; it does not reveal what might be there.'}),
  'paddock-fence':Object.freeze({zone:'paddock',title:'The Failed Perimeter',theme:'investigation',condition:'always',
   text:'The torn mesh and empty warning signs show how much of the park depended on electricity. Nothing in the marks tells you where an animal is now.'}),
+ 'paddock-repaired':Object.freeze({zone:'paddock',title:'A Safer Perimeter',theme:'recovery',condition:'gate_braced',
+  text:'The service gate no longer swings in the rain. The repair matters here, even though it cannot make the entire island safe.'}),
  'helipad-valley':Object.freeze({zone:'helipad',title:'Giants in the Valley',theme:'wonder',condition:'valley_visible',
   text:'Across the distant valley, long-necked herbivores browse above the treeline. They remain far beyond this encounter zone; the sight is worth remembering.'}),
+ 'control-call-confirmation':Object.freeze({zone:'control',title:'A Message Beyond the Island',theme:'recovery',condition:'distress_sent',
+  text:'The distress transmission is logged. For the first time since the outage, help may know where to look; the landing beacon remains your next task.'}),
  'helipad-readiness':Object.freeze({zone:'helipad',title:'Awaiting a Rescue',theme:'recovery',condition:'signal_sent',
   text:'The distress call has been sent. The beacon still needs to be activated; the open pad offers a moment to prepare.'})
 });
@@ -34,6 +43,10 @@ export function eventAllowed(state,actor,id){
   case 'always':return true;
   case 'power_off':return !state.flags?.power;
   case 'power_on':return state.flags?.power===true;
+  case 'generator_diagnosed':return !state.flags?.power&&hasObserved(actor,GENERATOR_DIAGNOSIS);
+  case 'tracks_studied':return hasObserved(actor,JUNGLE_TRACK_DISCOVERY);
+  case 'gate_braced':return state.flags?.paddockGateBraced===true;
+  case 'distress_sent':return state.flags?.distress===true;
   case 'squall':return weatherAt(state)==='squall';
   case 'valley_visible':return weatherAt(state)!=='squall';
   case 'signal_sent':return state.flags?.distress===true&&!state.flags?.beacon;
