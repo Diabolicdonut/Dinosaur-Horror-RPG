@@ -13,24 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 376,
+  "automated_tests": 377,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify accepted 008-A main 376/376 CI and Pages, then perform true desktop/mobile interactive QA of scenes, Wonder, pressure, modes, predator encounters, shutter/squall and save/reload.",
+    "Verify accepted 008-A main 377/377 CI and Pages, then perform true desktop/mobile interactive QA of scenes, Wonder, pressure, modes, predator encounters, shutter/squall and save/reload.",
     "Add a bounded, source-grounded typed scene effect/danger event gate and connected After the Storm Cinematic adventure with optional peaceful and frightening outcomes; full Evolved Last Survivor timer parity must be separately verified.",
     "Develop finite 007-M supplies/tools/batteries/repair actions as gameplay-significant physical resources, without introducing arbitrary ecology simulation.",
     "Expand 007-N conversational Game Mother only after typed effect/event proposals are deterministic and validated; never grant model direct state mutation.",
     "Keep old and new regression tests, all existing party v3 saves, v2 migration, legacy 006.2 solo, Worker v006 and per-character Wonder discoveries."
   ],
   "acceptance_criteria": [
-    "All 362 accepted main regression cases retained, 14 new typed cinematic/pressure tests added, 376 total.",
+    "All 362 accepted main regression cases retained, 15 new typed cinematic/pressure tests added, 377 total.",
     "Validated seven original conditional scene events with explicit real-room and actual flag/weather preconditions; a player may ignore, skip or activate them without forced outcomes.",
     "Each actor may commit each authored event once; journal, actual beat and no time/RNG changes preserved, invalid forged events rejected before mutation.",
     "Original bounded per-actor d6 encounter-pressure checks on relevant committed outdoor exploration; a die showing one raises pressure; stealth reduces pool and rushing increases it.",
     "No automatic animal spawns, ambush teleports, stress/damage penalties or manufactured animal cues; near-footfall cue requires actual reachable and audible creature.",
     "Actor and AI perspective privacy, Party/Focus/Spectator controls, physical visibility, shutter/squall/pounce, save v3 and v2 migration all maintained.",
     "Manual desktop/mobile graphical gameplay and complete Evolved Solo/Cinematic timer parity remain explicitly outstanding.",
-    "Require separate final PR and main 376/376 Actions and Pages success on exact accepted head SHA."
+    "Require separate final PR and main 377/377 Actions and Pages success on exact accepted head SHA."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -678,19 +678,20 @@
       "src/party-app.mjs"
     ],
     "source": "Original Jurassic first scene/pressure adaptation inspired by private Alien Evolved Cinematic/Last Survivor structure; not exact Solo timer parity.",
-    "status": "Seven typed local optional narrative events and bounded actor-specific original d6 pressure implemented; candidate 376-test run passed, final-main Actions/Pages must verify independently.",
+    "status": "Seven typed, gated, optional local scenes and actor-specific d6 pressure implemented; 377-test final candidate validation pending.",
     "behavior": [
       "Seven authored room-conditional scene events offer optional player actions, validated for real actor, local room, event prerequisites, active status and one-time per-character history.",
       "Event selections add an actor-owned log without consuming time/dice or changing creatures, inventory, stress or scenario objectives; existing personalized Wonder journal remains independent.",
       "Accepted outdoor exploration actions check a bounded actor-local d6 pressure clock. On a face of one, pressure advances; sneaking reduces the check pool and rushing increases it.",
       "Pressure never forces encounters or spawns animals. At most, an actor-only heavy-movement sound cue can appear at threshold if a real, physically audible Velociraptor is nearby.",
-      "Camera/controller switches preserve event and pressure state. Old v3 party saves missing optional fields remain valid; invalid entries reject."
+      "Camera/controller switches preserve event and pressure state. Old v3 party saves missing optional fields remain valid; invalid entries reject.",
+      "Distant herbivore scene is unavailable during the authored sight-obscuring squall; it becomes selectable when the storm clears."
     ],
     "tests": {
       "baseline": 362,
-      "new": 14,
-      "total": 376,
-      "ci": "Candidate 376/376 green on run 40063985601, final latest PR and merged main checks outstanding."
+      "new": 15,
+      "total": 377,
+      "ci": "Earlier 376-test PR run 40063985601 passed before the valley visibility amendment; new 377-test final PR/main checks pending."
     },
     "manual_qa": "Actual desktop/mobile graphical QA, full three-mode testing and save/load remain outstanding.",
     "deferred": [
