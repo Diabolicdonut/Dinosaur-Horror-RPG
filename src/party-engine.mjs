@@ -5,6 +5,7 @@
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
+import {CINEMATIC_DANGERS,currentCinematicAct,dangerAllowed,availableDangerEvents,validDangerRecords} from './cinematic-danger.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
@@ -466,10 +467,10 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
   clock:{explorationActions:0,explorationStretches:0,combatRounds:0,combatSeconds:0},
-  startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false},
+  startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false,paddockGateBraced:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],
+  controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -486,7 +487,7 @@ export function isPartySave(s) {
     !Number.isInteger(s.control.epoch)||s.control.epoch<0||
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
-    !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||
+    !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||!validDangerRecords(s)||
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
@@ -496,6 +497,7 @@ export function isPartySave(s) {
     !Number.isInteger(s.rng)||!s.rooms||!s.flags||!Array.isArray(s.actions)||
     !Array.isArray(s.events)||!Array.isArray(s.dinosaurs)||
      (s.flags.serviceShutterClosed!==undefined&&typeof s.flags.serviceShutterClosed!=='boolean')||
+     (s.flags.paddockGateBraced!==undefined&&typeof s.flags.paddockGateBraced!=='boolean')||
      (s.groupTravel!==undefined&&s.groupTravel!==null&&
       (!SCENARIO.rooms[s.groupTravel.from]||!SCENARIO.rooms[s.groupTravel.to]||
        !['quiet','normal','noisy'].includes(s.groupTravel.approach)||
@@ -589,6 +591,8 @@ export function partyView(s,{actorId=null}={}) {
    weather:outdoorWeather(s,actor.location),
    serviceShutterClosed:serviceShutterClosed(s)&&['shed','jungle'].includes(actor.location),
    cinematicScene:sceneForActor(s,actor),
+   cinematicAct:currentCinematicAct(s),
+   availableDangerEvents:availableDangerEvents(s,actor),
    availableSceneEvents:availableSceneEvents(s,actor),
    encounterPressure:pressureForActor(s,actor.id),
   lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
@@ -633,6 +637,8 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ const danger=line.match(/^(?:danger|attempt danger|resolve danger)\s+([a-z0-9-]+)$/);
+ if(danger)return {kind:'danger',target:danger[1],push};
  const scene=line.match(/^(?:scene|experience scene|play scene)\s+([a-z0-9-]+)$/);
  if(scene)return {kind:'scene',target:scene[1],push:0};
  if(line==='wonder'||line==='take in the view'||line==='pause and observe')
@@ -740,7 +746,9 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   // it does not secretly alter stress, combat, supplies or predator position.
   return {accepted:true,state:changed,result:{kind:'wonder',id:moment.id,title:moment.title}};
  }
- if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest'].includes(action.kind))
+ if(action.kind==='danger'&&!dangerAllowed(previous,actor,action.target))
+  return rejected(previous,'This physical danger challenge is not available here or was already resolved or attempted.');
+ if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest','danger'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
   if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
@@ -805,6 +813,21 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
      pushRefused:rolled.pushRefused};
  };
+ if(action.kind==='danger'){
+  const hazard=CINEMATIC_DANGERS[action.target];
+  const rolled=result(hazard.skill,hazard.context);
+  const success=rolled.success;
+  if(success)s.flags[hazard.successFlag]=true;
+  a.hidden=false;a.coverId=null;
+  s.dangerRecords??=[];
+  s.dangerRecords.push({id:hazard.id,zone:a.location,actorId:a.id,beat:s.beat,
+   success,successes:rolled.successes});
+  gameEvent(s,a.name+': '+(success?hazard.success:hazard.failure),a.id,
+   success?'milestone':'risk');
+  return accepted(s,a,'danger',hazard.id,{...rolled,success,
+   consequence:success?'secured':'loud_failure',noise:success?hazard.successNoise:hazard.failureNoise},
+   success?hazard.successNoise:hazard.failureNoise);
+ }
  if(action.kind==='end'){
   gameEvent(s,a.name+' ends their combat turn.',a.id);
   return accepted(s,a,'end','',{},0);
