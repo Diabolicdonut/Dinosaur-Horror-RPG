@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.12",
-  "checkpoint": "007-L2a",
-  "state": "physical_stalking_and_first_local_cinematic_scene_framing_validated_in_tests_pending_manual_browser_smoke",
+  "version": "0.7.13",
+  "checkpoint": "007-L2b1",
+  "state": "bounded_velociraptor_encounter_tactics_candidate_pending_final_actions_pages_and_manual_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 333,
+  "automated_tests": 346,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete actual desktop/mobile graphical QA across 007-L2a stalking and new character-local scene framing, all three control modes, saving and Wonder journals.",
-    "Proceed with separately validated 007-L2b physically eligible Velociraptor attack tactics and relevant physical obstructions, preserving existing Evolved mechanics.",
-    "Develop typed, optional/conditional scene events and Alien-inspired encounter/danger pressure in parallel, then a short connected Jurassic Cinematic adventure before full campaign expansion.",
-    "Only build 007-M physical batteries/tools/repairs and 007-N bounded multi-actor AI Game Mother on grounded effects; no permanent wildlife-population simulator prerequisite.",
-    "Preserve the full accepted 324-test baseline, plus 9 new scene tests, all saves and legacy solo/Worker isolation; use GitHub current main as source of truth."
+    "Validate 007-L2b1 candidate and final main 346/346 automated tests, Pages deployment and actual desktop/mobile graphical smoke (not yet performed).",
+    "Complete remaining bounded 007-L2b2: relevant dynamic environmental visibility/obstructions and any necessary encounter eligibility, without continuous ecology simulation.",
+    "Only after complete 007-L with tested acceptance, progress finite equipment/repairs in 007-M while advancing typed scene/event and Alien-style encounter/danger pressure work in parallel.",
+    "Continue toward 007-N natural-language Game Mother only through validated Evolved typed action/event effects; do not bypass private creature knowledge or dice.",
+    "Preserve all old tests, 1–8 survivor Character Lab, Party/Character/Spectator, legacy 006.2, Worker v006, saves v3 and personal Wonder discoveries."
   ],
   "acceptance_criteria": [
-    "007-L2a stalking and facing at accepted commit e10d7f8971ff0194d138633438a7204aac0d8897 retained; 324/324 accepted main Node tests and successful Actions/Pages.",
-    "Read-only scene framing provides one local cue for each existing zone plus conditional, publicly grounded mission progress; no creature creation, time, RNG or save-schema mutation.",
-    "Scene cues may support Dinosaur Horror, Sci-Fi Action and Sense of Wonder without imposing a forced battle, fabricated NPC or permanent herd simulation.",
-    "Nine new scene regression tests added, targeting 333/333 total. Require final GitHub Actions confirmation and report it separately from manual graphical QA.",
-    "Party/Focus/Spectator, camera privacy, actual Evolved dice/combat/injuries, starter mission and per-actor Wonder journals preserved.",
-    "007-L2b raptor attack/obstruction milestone and 007-M equipment remain pending; scene event/danger timer and generative Game Mother are not claimed implemented.",
-    "Manual desktop/mobile interactive browser gameplay QA remains outstanding."
+    "333 accepted deterministic tests at fc47d92479a7a14713f5c942d3632c8a4409842e retained; 13 new original encounter tests target 346/346 in this bounded 007-L2b1 candidate.",
+    "Physically earned Velociraptor approach pounce (7 attack dice vs 6 normal, unchanged base damage) permitted once after a legal prior stalk/investigate arrival in combat round one; independent original Evolved surprise bonus and interrupt preserved.",
+    "Defensive choices are announced before rolls and existing action budgets, armor, critical injuries, medical clocks and seeded replay remain authoritative.",
+    "No remote or blocked-door pounce, fictional creature teleport, free attack, or repeated +1 bonus; invalid/foreign/used openings do not qualify.",
+    "Lit lamp in an animal's own zone defeats concealment; truly hidden unlit survivors remain protected until discovered; invalid lit cover attempt costs no dice/time.",
+    "Three control modes, camera knowledge, physical cover, already authorized character Wonder journals and save schema v3 all remain compatible.",
+    "Manual graphical browser testing remains outstanding, and final accepted GitHub Actions and Pages must be confirmed separately."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Baseline 007-L2a main e10d7f8971ff0194d138633438a7204aac0d8897 passed Pages workflow 39980703721; new scene slice final deployment must be verified after its merge. Manual browser testing outstanding.",
+  "pages_deployment": "007-L2b1 candidate and accepted-main Pages status pending; last confirmed fc47d92479a7a14713f5c942d3632c8a4409842e succeeded via run 40020330832. Manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -547,7 +547,7 @@
   "living_roadmap_policy": "Long-range living vision and A-E phase plan; consult current main, this state and newest audit for accepted implementation and test truth. Wonder and Dread is a permanent creative requirement.",
   "stalking_audit": "docs/DINOSAUR-STALKING-007L2A.md",
   "stalking_implementation": {
-    "status": "007-L2a playable subcheckpoint, candidate CI validated, pending final main workflow/deployment and manual graphics",
+    "status": "007-L2a accepted on main e10d7f8971ff0194d138633438a7204aac0d8897; 007-L2b1 extends legally approached attacks without replacing stalking.",
     "modules": [
       "src/dinosaur-hunt.mjs",
       "src/dinosaur-pursuit.mjs",
@@ -569,7 +569,7 @@
       "previous": 307,
       "new": 17,
       "total": 324,
-      "ci": "324/324 green on candidate run 39980066133; validate final documented HEAD and merged main separately."
+      "ci": "007-L2a 324/324 main validation 39980705069 and Pages 39980703721 successful."
     },
     "deferred": [
       "Dynamic weather/fog, line occlusion from movable obstacles, original raptor signature attacks, physically constrained pounces, scent tracking and additional species",
@@ -610,11 +610,39 @@
       "previous": 324,
       "new": 9,
       "total": 333,
-      "ci": "New scene and all prior tests pending final branch/main verification"
+      "ci": "333/333 main validation run 40020330579 and Pages run 40020330832 successful at fc47d92479a7a14713f5c942d3632c8a4409842e; manual graphical smoke still outstanding."
     },
     "no_new_creature_spawns": true,
     "no_time_rng_or_save_mutation": true,
     "compatibility": "Existing party v3, all three modes, user knowledge, 006.2 solo and Worker v006 unaffected.",
     "next": "Typed optional/conditional scene event + encounter/danger pressure contract followed by playable connected cinematic adventure."
+  },
+  "raptor_encounter_implementation": {
+    "checkpoint": "007-L2b1",
+    "version": "0.7.13",
+    "status": "Source-verified original bite/pounce attack tactics and light-concealment interaction; candidate automation and main acceptance pending.",
+    "module": "src/dinosaur-encounter.mjs",
+    "rules_source": "Alien Evolved stealth/initiative/defensive reaction/damage/injury procedures remain primary; original Jurassic pounce +1 attack die earned once after physically legal approach in combat round one; base damage unchanged.",
+    "additions": [
+      "Only real co-located exposed actors are eligible for raptor attacks. A concealed actor carrying a lit lamp can be exposed and targeted; unlit cover remains effective pending legitimate active search.",
+      "First encounter strike after physically legal single-edge stalk/investigation movement can use original pounce (+1 attack die), no extra attack slot, no bonus damage or mandatory hit.",
+      "No pounce from blocked, nonadjacent, stationary, stale, prior-round or already-used approach history; shut reinforced utility/shed door prevents false pounces.",
+      "Defender is informed before rolling, using pre-existing Close Combat choice; source-consistent surprise bonus remains separate.",
+      "Recorded committed attack includes tactic and exact attackDice, and all existing seeded RNG, health, armor and trauma procedures continue.",
+      "Party, Character and Spectator modes and older party v3 saves retain deterministic state and individual perspective."
+    ],
+    "tests": {
+      "previous": 333,
+      "new": 13,
+      "total": 346,
+      "ci": "Validate candidate CI, accepted main CI and Pages separately; manual browser smoke pending"
+    },
+    "compatibility": "Party schema 3; earlier v3 and v2->v3; old solo 006.2 and Worker v006 unchanged.",
+    "deferred": [
+      "Changing physical occluders / suitable storm and environmental visibility in 007-L2b2",
+      "Full cinematic scene/event director and Evolved encounter/danger timers",
+      "Real desktop/mobile interactive browser smoke",
+      "Additional species and sophisticated ecology (not prerequisites)"
+    ]
   }
 }
