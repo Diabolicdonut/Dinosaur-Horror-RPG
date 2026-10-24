@@ -137,6 +137,7 @@ function show(){
  }
  if(v.serviceShutterClosed)scene.push('PHYSICAL BARRIER — the shed storm shutter is CLOSED. It blocks the doorway and sightlines.');
  if(v.localPaddockGateBraced)scene.push('PERIMETER — the damaged service gate has been braced; loose metal no longer swings in the wind.');
+ if(v.sceneConsequences?.length)scene.push(...v.sceneConsequences.map(c=>'CONTINUITY · '+c.text));
   if(v.availableSceneEvents?.length)scene.push('Cinematic opportunities: '+v.availableSceneEvents.map(e=>e.title).join(', '));
   if(v.availableDangerEvents?.length)scene.push('Optional physical challenges: '+v.availableDangerEvents.map(e=>e.title+' ['+e.skill+']').join(', '));
   if(['jungle','paddock','helipad'].includes(v.location))scene.push('Exploration pressure: '+v.encounterPressure.label+' · '+v.encounterPressure.checks+' checks');
