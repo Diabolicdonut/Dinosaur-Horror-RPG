@@ -128,6 +128,8 @@ test('act indicator and hazard availability honor character camera and control s
  assert.deepEqual(remote.availableDangerEvents,[]);
  assert.equal(s.rng,rng);
  assert(!('dangerRecords' in remote));
+ assert(!('paddockGateBraced' in remote.flags));
+ assert(!('paddockGateBraced' in nearby.flags));
  assert(isPartySave(s));
 });
 test('repeat seed and action yield exactly the same Evolved outcome and world consequence',()=>{
