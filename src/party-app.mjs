@@ -135,6 +135,8 @@ function show(){
   scene.push('Possible approaches: '+v.cinematicScene.choices);
  }
  if(v.serviceShutterClosed)scene.push('PHYSICAL BARRIER — the shed storm shutter is CLOSED. It blocks the doorway and sightlines.');
+  if(v.availableSceneEvents?.length)scene.push('Cinematic opportunities: '+v.availableSceneEvents.map(e=>e.title).join(', '));
+  if(['jungle','paddock','helipad'].includes(v.location))scene.push('Exploration pressure: '+v.encounterPressure.label+' · '+v.encounterPressure.checks+' checks');
   if(v.items.length)scene.push('Objects: '+v.items.map(x=>x.name).join(', '));
  if(v.features.length)scene.push('Equipment: '+v.features.join(', '));
  if(v.observations.length)scene.push('Inspectable: '+v.observations.map(x=>x.id).join(', '));
@@ -176,6 +178,7 @@ function show(){
       '<button type="button" data-order="group quietly to '+esc(x.id)+'"'+(!canScene||x.blocked?' disabled':'')+
       '>Lead group quietly to '+esc(x.name)+'</button>':'')).join('');
  const actions=[
+  ...(v.availableSceneEvents||[]).map(e=>['scene '+e.id,'Experience scene · '+e.title]),
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,f==='shutter'?(v.serviceShutterClosed?'Open storm shutter':'Close storm shutter'):'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
