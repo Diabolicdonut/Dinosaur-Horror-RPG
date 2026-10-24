@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.15",
-  "checkpoint": "008-A",
-  "state": "typed_local_cinematic_events_and_d6_pressure_validated_candidate_pending_final_main_and_browser_smoke",
+  "version": "0.7.16",
+  "checkpoint": "008-B1",
+  "state": "bounded_conditional_credibly_noisy_paddock_danger_and_derived_cinematic_acts_pending_main_validation_and_manual_qa",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 377,
+  "automated_tests": 389,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify accepted 008-A main 377/377 CI and Pages, then perform true desktop/mobile interactive QA of scenes, Wonder, pressure, modes, predator encounters, shutter/squall and save/reload.",
-    "Add a bounded, source-grounded typed scene effect/danger event gate and connected After the Storm Cinematic adventure with optional peaceful and frightening outcomes; full Evolved Last Survivor timer parity must be separately verified.",
-    "Develop finite 007-M supplies/tools/batteries/repair actions as gameplay-significant physical resources, without introducing arbitrary ecology simulation.",
-    "Expand 007-N conversational Game Mother only after typed effect/event proposals are deterministic and validated; never grant model direct state mutation.",
-    "Keep old and new regression tests, all existing party v3 saves, v2 migration, legacy 006.2 solo, Worker v006 and per-character Wonder discoveries."
+    "Verify final accepted 008-B1 main CI 389/389 and Pages deployment, then perform actual desktop/mobile browser smoke, including challenge, act changes, mode/camera privacy, old saves, replay, shutter, squall and raptor pursuit.",
+    "Continue 008-B2 typed danger-event consequences and genuine connected Cinematic scene transitions, while preserving peaceful/wondrous passages and non-forced outcomes.",
+    "Prioritize 007-M finite physical resources/tools/recharge and park-system repairs as needed by meaningful rescue scenes; do not add full island ecology.",
+    "Build 007-N typed/natural-language multi-character Game Mother only after effect proposals are validated and Evolved mechanics remain deterministic.",
+    "Preserve the 389 regression tests, Party v3 save compatibility, older v2 migration, per-character Wonder, legacy solo 006.2 and Worker v006."
   ],
   "acceptance_criteria": [
-    "All 362 accepted main regression cases retained, 15 new typed cinematic/pressure tests added, 377 total.",
-    "Validated seven original conditional scene events with explicit real-room and actual flag/weather preconditions; a player may ignore, skip or activate them without forced outcomes.",
-    "Each actor may commit each authored event once; journal, actual beat and no time/RNG changes preserved, invalid forged events rejected before mutation.",
-    "Original bounded per-actor d6 encounter-pressure checks on relevant committed outdoor exploration; a die showing one raises pressure; stealth reduces pool and rushing increases it.",
-    "No automatic animal spawns, ambush teleports, stress/damage penalties or manufactured animal cues; near-footfall cue requires actual reachable and audible creature.",
-    "Actor and AI perspective privacy, Party/Focus/Spectator controls, physical visibility, shutter/squall/pounce, save v3 and v2 migration all maintained.",
-    "Manual desktop/mobile graphical gameplay and complete Evolved Solo/Cinematic timer parity remain explicitly outstanding.",
-    "Require separate final PR and main 377/377 Actions and Pages success on exact accepted head SHA."
+    "Retain all 377 accepted 008-A tests and add 12 cases, target 389/389 automated Node tests.",
+    "Three-act Cinematic scene labels derive only from committed power/distress/beacon rescue state; they add no plot rails, time, RNG or hidden knowledge.",
+    "One authored paddock gate danger is available only to the actor physically at the damaged gate, while capable, out of combat, and before prior personal attempt or final repair.",
+    "Attempt uses existing Evolved Heavy Machinery/seeded base and stress dice, permissible pushes, wound/medical effects and action time; no inventing items or roleplaying a guaranteed success.",
+    "Success secures the gate without disturbing player mission; failure creates consequential physically propagated noise, not automatic monster spawn or hit.",
+    "Typed danger record validates actual actor, authored zone, unique prior attempt, legal beat and successes; old party v3 saves lacking fields remain compatible.",
+    "Player/AI view of gate repair is local only. Party, Character/Focus and Spectator mode, 008-A scenes and Wonder, raptor/squall/shutter, character creation and all saves remain functional.",
+    "Candidate PR 389/389 green. Require exact latest PR, final main Actions and Pages acceptance separately; manual graphical QA remains unperformed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +43,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "008-A final-main Pages pending; prior accepted 007-L2b2 main c2dc99ec329b5ff23f3be8a81a585825df1a2d77 passed Actions 40062731738 and Pages 40062731838. Manual browser QA outstanding.",
+  "pages_deployment": "Previous 008-A main f8b4e42bdb2c7302f3dd2e6e1f9a03520b5f7d21 Pages successful via 40064428629; 008-B1 final main deployment must be verified after merge, and graphical QA separately.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -678,7 +678,7 @@
       "src/party-app.mjs"
     ],
     "source": "Original Jurassic first scene/pressure adaptation inspired by private Alien Evolved Cinematic/Last Survivor structure; not exact Solo timer parity.",
-    "status": "Seven typed, gated, optional local scenes and actor-specific d6 pressure implemented; 377-test final candidate validation pending.",
+    "status": "008-A accepted on main f8b4e42bdb2c7302f3dd2e6e1f9a03520b5f7d21 with 377/377; 008-B1 adds a bounded original physical danger using the same Evolved engine.",
     "behavior": [
       "Seven authored room-conditional scene events offer optional player actions, validated for real actor, local room, event prerequisites, active status and one-time per-character history.",
       "Event selections add an actor-owned log without consuming time/dice or changing creatures, inventory, stress or scenario objectives; existing personalized Wonder journal remains independent.",
@@ -691,7 +691,7 @@
       "baseline": 362,
       "new": 15,
       "total": 377,
-      "ci": "Earlier 376-test PR run 40063985601 passed before the valley visibility amendment; new 377-test final PR/main checks pending."
+      "ci": "008-A main Actions 40064428874 and Pages 40064428629 successful, 377/377 accepted; hands-on browser QA outstanding."
     },
     "manual_qa": "Actual desktop/mobile graphical QA, full three-mode testing and save/load remain outstanding.",
     "deferred": [
@@ -702,5 +702,34 @@
       "007-N conversational AI Game Mother"
     ],
     "compatibility": "Party v3, existing 007-L2b2 pounce/shutter/rain, Character Lab, Wonder, legacy 006.2 solo, Worker v006 unchanged."
+  },
+  "cinematic_danger_implementation": {
+    "checkpoint": "008-B1",
+    "version": "0.7.16",
+    "module": "src/cinematic-danger.mjs",
+    "source": "Private Alien Evolved heavy_machinery/stress/push mechanics plus original Jurassic physically authored paddock-gate scenario; not a published Evolved danger table.",
+    "status": "Evolved-checked, player-optional gate-bracing danger and derived cinematic act progression implemented; final main CI/Pages and manual QA pending.",
+    "features": [
+      "A read-only act indicator reflects actual power/restored distress/beacon stage without forcing scene order, monster appearance or cutscenes.",
+      "A physically present broken paddock gate offers one per-survivor optional Heavy Machinery challenge, rejecting remote/repeated/incapable/in-combat attempts without spending time or dice.",
+      "Successful Evolved check permanently braces the gate; failure creates loud noise via existing dinosaur hearing/pursuit with no guaranteed attack or injury.",
+      "All accepted checks use Evolved seeded skill/stress/push/wound resolution and spend an exploration action; journal records real actor, gate, beat, outcome, successes.",
+      "Optional party-v3 danger journal and optional paddockGateBraced flag preserve old saves; repaired status visible only locally, not in distant mission flags."
+    ],
+    "tests": {
+      "baseline": 377,
+      "new": 12,
+      "total": 389,
+      "ci": "Initial PR run 40064947979 passed 389/389; final candidate PR and merged-main checks required."
+    },
+    "manual_qa": "Real interactive desktop/mobile browser smoke remains outstanding.",
+    "deferred": [
+      "Additional conditional danger-event types and mechanically consequential scene outcome options",
+      "Multi-scene campaign with NPCs, nonviolent physical herbivore encounters and player-responsive exits",
+      "Full Evolved Last Survivor/Cinematic source procedure parity",
+      "007-M finite park tools, resources and repairs",
+      "007-N multi-character natural-language Game Mother"
+    ],
+    "compatibility": "Party save kind/schema v3, valid old v3 and v2 migration, Evolved combat and 008-A actor-specific Wonder and pressure, solo 006.2 and Worker v006 preserved."
   }
 }
