@@ -21,9 +21,18 @@ export function speciesSensoryProfile(creature){
  const key=String(creature?.species||creature?.kind||'').toLowerCase();
  return CREATURE_SENSORY_PROFILES[key]||null;
 }
-export function visualLine(from,to,{shedDoorBreached=false}={}){
+export function visualLine(from,to,{shedDoorBreached=false,serviceShutterClosed=false,squall=false}={}){
  if(!SCENARIO.rooms[from]||!SCENARIO.rooms[to])return false;
  if(from===to)return true;
+ // A physical shutter across the shed doorway blocks sight both ways.
+ if(serviceShutterClosed&&new Set([from,to]).size===2&&
+   ['shed','jungle'].includes(from)&&['shed','jungle'].includes(to))return false;
+ // Outdoor visibility briefly fails during an authored tropical squall,
+ // without affecting same-zone contact or indoor windows.
+ if(squall&&(['jungle','helipad'].includes(from)&&
+   ['jungle','helipad'].includes(to)))return false;
+ if(squall&&(['shed','jungle'].includes(from)&&
+   ['shed','jungle'].includes(to)))return false;
  // A breached utility/shed door creates an actual reciprocal sightline.
  if(shedDoorBreached&&((from==='utility'&&to==='shed')||
    (from==='shed'&&to==='utility')))return true;
