@@ -54,6 +54,15 @@ test('conditional power and signal events depend on committed mission state',()=
  s.flags.beacon=true;
  assert(!availableSceneEvents(s,s.actors[0]).some(e=>e.id==='helipad-readiness'));
 });
+test('valley wonder remains available in clear rain but not during sight-obscuring squall',()=>{
+ const s=game();s.actors[0].location='helipad';
+ assert(availableSceneEvents(s,s.actors[0]).some(e=>e.id==='helipad-valley'));
+ s.clock.explorationStretches=2;
+ assert(!availableSceneEvents(s,s.actors[0]).some(e=>e.id==='helipad-valley'));
+ const denied=human(s,'scene helipad-valley');assert.equal(denied.accepted,false);
+ s.clock.explorationStretches=4;
+ assert(availableSceneEvents(s,s.actors[0]).some(e=>e.id==='helipad-valley'));
+});
 test('weather-dependent quiet or suspense scene is optional, not a forced encounter',()=>{
  const s=game();s.actors[0].location='jungle';
  assert.deepEqual(availableSceneEvents(s,s.actors[0]),[]);
