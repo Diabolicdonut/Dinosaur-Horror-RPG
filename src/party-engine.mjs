@@ -4,6 +4,7 @@
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {sceneForActor} from './cinematic-scenes.mjs';
+import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
@@ -427,6 +428,21 @@ const medicalFrom=worldSeconds(s);
    advancePredatorSearch(s);
   }
   medicalTick(s,medicalFrom,{safeRestFor,nurseFor,deferRoundDeath:wasCombat});
+  // Explore at genuine risk without creating or teleporting an animal.
+  if(!wasCombat&&s.outcome==='playing'){
+   const probe=checkScenePressure(s,actor,kind);
+   if(probe){
+    s.scenePressure??=[];
+    const old=s.scenePressure.findIndex(p=>p.actorId===actor.id);
+    const rec={actorId:actor.id,level:probe.level,
+     checks:(old>=0?s.scenePressure[old].checks:0)+1,lastBeat:s.beat};
+    if(old>=0)s.scenePressure[old]=rec;else s.scenePressure.push(rec);
+    const actionRecord=s.actions.at(-1);
+    if(actionRecord?.actorId===actor.id)actionRecord.scenePressure={
+     before:probe.before,after:probe.level,faces:probe.faces};
+    if(probe.audibleCue)gameEvent(s,'Heavy movement can be heard nearby. Its source is not visible.',actor.id,'risk');
+   }
+  }
  return {accepted:true,state:s,result:extra};
 }
 function rejected(before,why){
@@ -453,7 +469,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,
+  controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -470,7 +486,7 @@ export function isPartySave(s) {
     !Number.isInteger(s.control.epoch)||s.control.epoch<0||
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
-    !validCombatState(s)||
+    !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
@@ -573,6 +589,8 @@ export function partyView(s,{actorId=null}={}) {
    weather:outdoorWeather(s,actor.location),
    serviceShutterClosed:serviceShutterClosed(s)&&['shed','jungle'].includes(actor.location),
    cinematicScene:sceneForActor(s,actor),
+   availableSceneEvents:availableSceneEvents(s,actor),
+   encounterPressure:pressureForActor(s,actor.id),
   lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
    personalLight:{carried:actorOwnsLight(actor),on:actorHasLight(actor),
     charge:actor.light?.charge??(actorOwnsLight(actor)?LIGHT_CAPACITY_STRETCHES:0)},
@@ -615,6 +633,8 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ const scene=line.match(/^(?:scene|experience scene|play scene)\s+([a-z0-9-]+)$/);
+ if(scene)return {kind:'scene',target:scene[1],push:0};
  if(line==='wonder'||line==='take in the view'||line==='pause and observe')
   return {kind:'wonder',target:'',push:0};
  const wonder=line.match(/^(?:wonder|admire|appreciate|contemplate|marvel at|take in|enjoy|pause to observe)\s+(?:the\s+)?(.+)$/);
@@ -683,6 +703,18 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
+ if(action.kind==='scene'){
+  if(!eventAllowed(previous,actor,action.target))
+   return rejected(previous,'That conditional scene event is not currently available to this survivor.');
+  const changed=deep(previous),event=CINEMATIC_EVENTS[action.target];
+  changed.sceneRecords??=[];
+  changed.sceneRecords.push({id:action.target,zone:actor.location,
+   actorId:actor.id,beat:changed.beat});
+  gameEvent(changed,event.title+': '+event.text,actor.id,event.theme==='wonder'?'wonder':'scene');
+  changed.actions.push({beat:changed.beat,actorId:actor.id,kind:'scene',target:action.target});
+  changed.actions=changed.actions.slice(-200);
+  return {accepted:true,state:changed,result:{kind:'scene',id:action.target,title:event.title}};
+ }
  if(action.kind==='wonder'){
   if(slot)return rejected(previous,'This moment requires leaving combat behind.');
   if(actor.dead||actor.broken||actor.pendingSkip)

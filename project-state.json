@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.14",
-  "checkpoint": "007-L2b2",
-  "state": "shutter_squall_environment_gate_automated_candidate_verified_pending_final_main_and_graphical_qa",
+  "version": "0.7.15",
+  "checkpoint": "008-A",
+  "state": "typed_local_cinematic_events_and_d6_pressure_validated_candidate_pending_final_main_and_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 362,
+  "automated_tests": 377,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Confirm post-merge main 362/362 tests and GitHub Pages deployment, then perform actual desktop/mobile graphical QA on party/focus/spectator, shutter operations, storm visibility and save/replay.",
-    "With bounded 007-L gameplay primitives implemented, begin a scene/event and Alien Evolved encounter/danger-pressure checkpoint for the connected After the Storm Cinematic adventure; preserve believable quiet/wonder outcomes.",
-    "Advance 007-M finite physical batteries, equipment, park repairs and resource consequences with valid authored affordances, alongside scene work where helpful.",
-    "Plan 007-N multi-actor natural-language Game Mother on validated typed event/effect boundaries; do not add continuous island ecology as a dependency.",
-    "Preserve 362 accepted regression tests, save schema v3 and all compatible older saves, legacy solo 006.2, Worker v006 and private Wonder journals."
+    "Verify accepted 008-A main 377/377 CI and Pages, then perform true desktop/mobile interactive QA of scenes, Wonder, pressure, modes, predator encounters, shutter/squall and save/reload.",
+    "Add a bounded, source-grounded typed scene effect/danger event gate and connected After the Storm Cinematic adventure with optional peaceful and frightening outcomes; full Evolved Last Survivor timer parity must be separately verified.",
+    "Develop finite 007-M supplies/tools/batteries/repair actions as gameplay-significant physical resources, without introducing arbitrary ecology simulation.",
+    "Expand 007-N conversational Game Mother only after typed effect/event proposals are deterministic and validated; never grant model direct state mutation.",
+    "Keep old and new regression tests, all existing party v3 saves, v2 migration, legacy 006.2 solo, Worker v006 and per-character Wonder discoveries."
   ],
   "acceptance_criteria": [
-    "All 346 tests at accepted 007-L2b1 are retained; 16 added scene/environment cases target 362/362 deterministic tests.",
-    "An authored, locally operable service shutter blocks/reopens both directions for player and predator and physically obstructs sight while attenuating sound; denied travel costs no rolls or time.",
-    "Shutter status is persistent and validated Boolean; old v3 saves without the optional flag still open it by default and v2 migration is unchanged.",
-    "A single scripted heavy rain squall at stretches 2–3 suppresses the specific outdoor adjacent sightlines but not same-zone vision, audio, terrain movement, Evolved attack/defense or RNG.",
-    "Velociraptor stalk, pounce and flashlight-detection rules respect changing local barriers without hidden-state leaks, spawns or free actions.",
-    "Party/Focus/Spectator ownership, actor camera privacy, character creation, medical and Wonder discoveries, original solo and Worker remain unaffected.",
-    "Candidate 362-test run green; require final GitHub Actions and Pages success on exact merged main SHA and report real graphical QA separately.",
-    "No global weather or dinosaur population simulator introduced; prioritize scene/event/encounter procedures next."
+    "All 362 accepted main regression cases retained, 15 new typed cinematic/pressure tests added, 377 total.",
+    "Validated seven original conditional scene events with explicit real-room and actual flag/weather preconditions; a player may ignore, skip or activate them without forced outcomes.",
+    "Each actor may commit each authored event once; journal, actual beat and no time/RNG changes preserved, invalid forged events rejected before mutation.",
+    "Original bounded per-actor d6 encounter-pressure checks on relevant committed outdoor exploration; a die showing one raises pressure; stealth reduces pool and rushing increases it.",
+    "No automatic animal spawns, ambush teleports, stress/damage penalties or manufactured animal cues; near-footfall cue requires actual reachable and audible creature.",
+    "Actor and AI perspective privacy, Party/Focus/Spectator controls, physical visibility, shutter/squall/pounce, save v3 and v2 migration all maintained.",
+    "Manual desktop/mobile graphical gameplay and complete Evolved Solo/Cinematic timer parity remain explicitly outstanding.",
+    "Require separate final PR and main 377/377 Actions and Pages success on exact accepted head SHA."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +43,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "007-L2b2 candidate PR Pages not applicable; latest previously accepted main beefa2a98599a3a47bd46afa75c18b83410ca726 Pages 40061545274 successful. Verify new merged main Pages separately; desktop/mobile manual graphical QA still pending.",
+  "pages_deployment": "008-A final-main Pages pending; prior accepted 007-L2b2 main c2dc99ec329b5ff23f3be8a81a585825df1a2d77 passed Actions 40062731738 and Pages 40062731838. Manual browser QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -651,7 +651,7 @@
     "version": "0.7.14",
     "module": "src/dinosaur-environment.mjs",
     "doc": "docs/DINOSAUR-ENVIRONMENT-007L2B2.md",
-    "status": "Physical shutter and authored tropical squall implemented; 362/362 candidate validation green, final-main Actions and Pages required.",
+    "status": "Accepted 007-L2b2, main Actions and Pages validated; interactive graphical QA outstanding.",
     "features": [
       "One manually operated service shutter in shed and jungle; open by default; use action toggles and costs time/normal combat budget.",
       "Closed shutter blocks two-way legal movement for survivors and Velociraptor, interrupts visual link, attenuates sound and cancels otherwise invalid pounce opening.",
@@ -663,10 +663,44 @@
       "baseline": 346,
       "new": 16,
       "total": 362,
-      "ci": "362/362 green on candidate PR run 40062545619; final latest candidate and accepted main must separately pass."
+      "ci": "007-L2b2 accepted 362/362 on main c2dc99ec329b5ff23f3be8a81a585825df1a2d77, GitHub Actions 40062731738 and Pages 40062731838 both passed; manual graphical QA outstanding."
     },
     "compatibility": "Optional Boolean flags.serviceShutterClosed, legacy missing interpreted open; party save schema v3 and v2→v3 retained; solo 006.2 and Worker v006 untouched.",
     "manual_qa": "Actual desktop/mobile graphical smoke pending.",
     "next": "Advance focused scene/event/encounter pressure and 007-M physical resources, with manual browser QA acceptance still outstanding."
+  },
+  "scene_director_implementation": {
+    "checkpoint": "008-A",
+    "version": "0.7.15",
+    "modules": [
+      "src/cinematic-director.mjs",
+      "src/party-engine.mjs",
+      "src/party-app.mjs"
+    ],
+    "source": "Original Jurassic first scene/pressure adaptation inspired by private Alien Evolved Cinematic/Last Survivor structure; not exact Solo timer parity.",
+    "status": "Seven typed, gated, optional local scenes and actor-specific d6 pressure implemented; 377-test final candidate validation pending.",
+    "behavior": [
+      "Seven authored room-conditional scene events offer optional player actions, validated for real actor, local room, event prerequisites, active status and one-time per-character history.",
+      "Event selections add an actor-owned log without consuming time/dice or changing creatures, inventory, stress or scenario objectives; existing personalized Wonder journal remains independent.",
+      "Accepted outdoor exploration actions check a bounded actor-local d6 pressure clock. On a face of one, pressure advances; sneaking reduces the check pool and rushing increases it.",
+      "Pressure never forces encounters or spawns animals. At most, an actor-only heavy-movement sound cue can appear at threshold if a real, physically audible Velociraptor is nearby.",
+      "Camera/controller switches preserve event and pressure state. Old v3 party saves missing optional fields remain valid; invalid entries reject.",
+      "Distant herbivore scene is unavailable during the authored sight-obscuring squall; it becomes selectable when the storm clears."
+    ],
+    "tests": {
+      "baseline": 362,
+      "new": 15,
+      "total": 377,
+      "ci": "Earlier 376-test PR run 40063985601 passed before the valley visibility amendment; new 377-test final PR/main checks pending."
+    },
+    "manual_qa": "Actual desktop/mobile graphical QA, full three-mode testing and save/load remain outstanding.",
+    "deferred": [
+      "Full Evolved Last Survivor encounter timer and Campaign/Cinematic event rules parity",
+      "Actual conditional mechanical danger events and typed effect proposals",
+      "Linked multi-scene scenario with human NPC dialogue and peaceful physical herbivore encounter",
+      "008-B/007-M finite park tools and supplies",
+      "007-N conversational AI Game Mother"
+    ],
+    "compatibility": "Party v3, existing 007-L2b2 pounce/shutter/rain, Character Lab, Wonder, legacy 006.2 solo, Worker v006 unchanged."
   }
 }
