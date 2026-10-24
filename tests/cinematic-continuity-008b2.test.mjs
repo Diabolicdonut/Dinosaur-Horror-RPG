@@ -96,7 +96,7 @@ test('jungle track review becomes available only to the successful investigator'
  assert(availableSceneEvents(s,s.actors[0]).some(e=>e.id==='jungle-tracks-reviewed'));
  assert(!availableSceneEvents(s,s.actors[1]).some(e=>e.id==='jungle-tracks-reviewed'));
  assert.equal(localSceneConsequences(s,s.actors[0])[0].id,'studied-tracks');
- assert(!sceneForActor(s,s.actors[0]).focus.includes('present location'));
+ assert(sceneForActor(s,s.actors[0]).focus.includes('footprints are evidence'));
  assert(sceneForActor(s,s.actors[0]).focus.includes('not a guarantee'));
 });
 test('an actual successful gate repair unlocks a quiet recovery beat for everyone at the gate',()=>{
