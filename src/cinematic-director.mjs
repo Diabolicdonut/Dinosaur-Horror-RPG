@@ -18,7 +18,7 @@ export const CINEMATIC_EVENTS=Object.freeze({
   text:'A sudden sheet of rain blurs the canopy beyond the path. The storm conceals the distance; it does not reveal what might be there.'}),
  'paddock-fence':Object.freeze({zone:'paddock',title:'The Failed Perimeter',theme:'investigation',condition:'always',
   text:'The torn mesh and empty warning signs show how much of the park depended on electricity. Nothing in the marks tells you where an animal is now.'}),
- 'helipad-valley':Object.freeze({zone:'helipad',title:'Giants in the Valley',theme:'wonder',condition:'always',
+ 'helipad-valley':Object.freeze({zone:'helipad',title:'Giants in the Valley',theme:'wonder',condition:'valley_visible',
   text:'Across the distant valley, long-necked herbivores browse above the treeline. They remain far beyond this encounter zone; the sight is worth remembering.'}),
  'helipad-readiness':Object.freeze({zone:'helipad',title:'Awaiting a Rescue',theme:'recovery',condition:'signal_sent',
   text:'The distress call has been sent. The beacon still needs to be activated; the open pad offers a moment to prepare.'})
@@ -35,6 +35,7 @@ export function eventAllowed(state,actor,id){
   case 'power_off':return !state.flags?.power;
   case 'power_on':return state.flags?.power===true;
   case 'squall':return weatherAt(state)==='squall';
+  case 'valley_visible':return weatherAt(state)!=='squall';
   case 'signal_sent':return state.flags?.distress===true&&!state.flags?.beacon;
   default:return false;
  }
