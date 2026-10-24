@@ -3,7 +3,7 @@
 // procedures still resolve the strike; this module merely validates whether
 // there is an exposed target and whether one physically earned opening exists.
 import {SCENARIO} from './scenario.mjs';
-import {actorHasLight} from './dinosaur-pursuit.mjs';
+import {actorHasLight,exitsForCreature} from './dinosaur-pursuit.mjs';
 
 export const VELOCIRAPTOR_TACTICS=Object.freeze({
  bite:Object.freeze({id:'bite',label:'Close bite',attackDiceBonus:0,baseDamageBonus:0}),
@@ -23,7 +23,7 @@ export function validApproachPounce(state,creature,actor){
    state.combat.round!==1)return false;
  const hunt=creature.lastHunt;
  if(!hunt||hunt.blocked!==false||hunt.from===hunt.to||
-  !SCENARIO.rooms[hunt.from]?.exits.includes(hunt.to)||
+  !exitsForCreature(hunt.from,{shedDoorBreached:Boolean(state.flags?.shedBarrierBreached)}).includes(hunt.to)||
   hunt.to!==creature.location||!['stalk','investigate'].includes(hunt.behavior)||
   !Number.isSafeInteger(hunt.beat)||hunt.beat>state.beat)return false;
  // A physical arrival is a one-off opening, not a permanent dice bonus.
