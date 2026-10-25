@@ -103,7 +103,7 @@ export const SCENARIO = Object.freeze({
       name: 'Jungle Service Path',
       wonder: {id:'living-canopy',title:'Life beneath the canopy',kind:'ecosystem',
         description:'Rain beads on the immense fern fronds. Orchid roots, moss, and new shoots crowd every patch of fallen wood; countless small living things continue their work, indifferent to the park\'s alarms.'},
-      description: 'Ferns crowd the muddy path. A hand-operated storm shutter covers the maintenance shed doorway. The fence line disappears into the dark. Something has bent the warning signs.',
+      description: 'Ferns crowd the muddy path. A hand-operated storm shutter covers the maintenance shed doorway. A drainage stream runs below a steep fern-covered bank beside the trail. The fence line disappears into the dark. Something has bent the warning signs.',
       exits: ['shed', 'paddock', 'helipad'],
       aliases: ['jungle', 'path', 'service path'],
       items: [],
