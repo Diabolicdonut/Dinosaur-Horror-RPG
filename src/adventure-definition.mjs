@@ -93,6 +93,10 @@ export function validateAdventureDefinition(def){
  return normalized;
 }
 function next(x){x^=(x<<13)>>>0;x^=x>>>17;x^=(x<<5)>>>0;return x>>>0;}
+// Avalanche the seed before bounded selection: small consecutive seeds must
+// not lock the first variant slot to one choice (low-entropy modulo bias).
+function mix(x){x=(x^(x>>>16))>>>0;x=Math.imul(x,0x7feb352d)>>>0;
+ x=(x^(x>>>15))>>>0;x=Math.imul(x,0x846ca68b)>>>0;return (x^(x>>>16))>>>0;}
 export function compileAdventure(def,{seed=1993}={}){
  const clean=validateAdventureDefinition(def);
  if(!safeSeed(seed))reject('seed must be an unsigned 32-bit integer');
@@ -100,7 +104,7 @@ export function compileAdventure(def,{seed=1993}={}){
  let state=(seed>>>0)||0x9e3779b9;
  const hiddenFacts={};
  for(const slot of Object.keys(clean.variants).sort()){
-  state=next(state);
+  state=mix(next(state));
   const chosen=clean.variants[slot][state%clean.variants[slot].length];
   hiddenFacts[slot]=clone(chosen);
  }
