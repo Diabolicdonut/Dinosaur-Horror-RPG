@@ -8,6 +8,7 @@ import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,val
 import {CINEMATIC_DANGERS,currentCinematicAct,dangerAllowed,availableDangerEvents,validDangerRecords} from './cinematic-danger.mjs';
 import {generatorPreparation,localSceneConsequences} from './cinematic-continuity.mjs';
 import {WILDLIFE_ENCOUNTER,wildlifeState,wildlifeAvailable,validWildlifeState,dialogueAvailable,dialogueText,validDialogueRecords,localWildlifeView} from './cinematic-encounters.mjs';
+import {PARK_GUIDE,defaultGuide,guideState,guideOptions,guideSpeech,guideLocalView,validParkGuide,endingForGuide} from './cinematic-escort.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
@@ -477,6 +478,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],
   dialogueRecords:[],wildlifeEncounter:{status:'present',seenBy:[],approachedBy:[],reason:null},
+  parkGuide:defaultGuide(),
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -494,7 +496,7 @@ export function isPartySave(s) {
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
     !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||!validDangerRecords(s)||
-    !validWildlifeState(s)||!validDialogueRecords(s)||
+    !validWildlifeState(s)||!validDialogueRecords(s)||!validParkGuide(s)||
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
@@ -605,6 +607,8 @@ export function partyView(s,{actorId=null}={}) {
    wildlifeEncounter:wildlifeAvailable(s,actor).length?{title:WILDLIFE_ENCOUNTER.title,
     description:WILDLIFE_ENCOUNTER.description,choices:wildlifeAvailable(s,actor)}:localWildlifeView(s,actor),
    dialogueOpportunities:dialogueAvailable(s,actor),
+   parkGuide:guideLocalView(s,actor),
+   rescueEnding:s.outcome==='rescued'?endingForGuide(s):null,
    localPaddockGateBraced:actor.location==='paddock'&&s.flags.paddockGateBraced===true,
    availableSceneEvents:availableSceneEvents(s,actor),
    encounterPressure:pressureForActor(s,actor.id),
@@ -650,6 +654,8 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ const guide=line.match(/^guide\s+(talk|persuade|escort|handoff|shelter|muster)$/);
+ if(guide)return {kind:'guide',target:guide[1],push};
  const wildlife=line.match(/^wildlife\s+(watch|approach)$/);
  if(wildlife)return {kind:'wildlife',target:wildlife[1],push};
  const talk=line.match(/^(?:talk|speak)\s+(pc-[1-8])\s+(check-in|plan)$/);
@@ -726,6 +732,16 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
+ if(action.kind==='guide'&&action.target==='talk'){
+  if(!guideOptions(previous,actor).some(o=>o.id==='talk'))
+   return rejected(previous,'The guide is not available for that conversation here.');
+  const changed=deep(previous),g=guideState(changed);
+  changed.parkGuide={...g,spokenBy:[...g.spokenBy,actor.id]};
+  gameEvent(changed,PARK_GUIDE.name+' speaks with '+actor.name+': '+guideSpeech(changed),actor.id,'scene');
+  changed.actions.push({beat:changed.beat,actorId:actor.id,kind:'guide',target:'talk'});
+  changed.actions=changed.actions.slice(-200);
+  return {accepted:true,state:changed,result:{kind:'guide',target:'talk'}};
+ }
  if(action.kind==='dialogue'){
   const option=dialogueAvailable(previous,actor).find(o=>o.recipientId===action.recipientId&&o.topic===action.target);
   if(!option)return rejected(previous,'That teammate or conversation is not available here.');
@@ -776,11 +792,13 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   // it does not secretly alter stress, combat, supplies or predator position.
   return {accepted:true,state:changed,result:{kind:'wonder',id:moment.id,title:moment.title}};
  }
+ if(action.kind==='guide'&&!guideOptions(previous,actor).some(o=>o.id===action.target))
+  return rejected(previous,'That action requires Mara to be here, able to travel, and not already accounted for.');
  if(action.kind==='wildlife'&&!wildlifeAvailable(previous,actor).some(x=>x.id===action.target))
   return rejected(previous,'No safe, physically present wildlife encounter offers that choice now.');
  if(action.kind==='danger'&&!dangerAllowed(previous,actor,action.target))
   return rejected(previous,'This physical danger challenge is not available here or was already resolved or attempted.');
- if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest','danger','wildlife'].includes(action.kind))
+ if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest','danger','wildlife','guide'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
   if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
@@ -845,6 +863,29 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
      pushRefused:rolled.pushRefused};
  };
+ if(action.kind==='guide'){
+  const g=guideState(s);
+  if(action.target==='persuade'){
+   const check=result('manipulation','guide_escort');
+   s.parkGuide={...g,attemptedBy:[...g.attemptedBy,a.id],
+    status:check.success?'following':'waiting',escortId:check.success?a.id:null};
+   gameEvent(s,check.success?PARK_GUIDE.name+' agrees to follow '+a.name+' toward safety.':
+    PARK_GUIDE.name+' is not yet willing to leave the lobby without more reassurance.',a.id,
+    check.success?'milestone':'scene');
+   return accepted(s,a,'guide','persuade',{...check,agreed:check.success},0);
+  }
+  const updates={escort:{status:'following',escortId:a.id},
+   handoff:{status:'following',escortId:a.id},
+   shelter:{status:'sheltered',escortId:null},
+   muster:{status:'mustered',escortId:null}};
+  s.parkGuide={...g,...updates[action.target]};
+  const phrase=action.target==='escort'?'leaves the secure room with ':
+   action.target==='handoff'?'accepts a new escort from ':
+   action.target==='shelter'?'waits under cover after speaking with ':
+   'is accounted for at the helipad by ';
+  gameEvent(s,PARK_GUIDE.name+' '+phrase+a.name+'.',a.id,'milestone');
+  return accepted(s,a,'guide',action.target,{guideStatus:s.parkGuide.status},0);
+ }
  if(action.kind==='wildlife'){
   const w=wildlifeState(s);
   s.wildlifeEncounter={...w,seenBy:[...new Set([...w.seenBy,a.id])],
@@ -1010,6 +1051,8 @@ const origin=a.location;
     const stealth=quiet?result('mobility','stealth_travel'):null;
     const sound=quiet?(stealth.success?0:2):action.kind==='rush'?3:1;
     a.location=room;
+   if(guideState(s).status==='following'&&guideState(s).escortId===a.id&&
+      guideState(s).location===origin)s.parkGuide={...guideState(s),location:room};
    a.hidden=Boolean(quiet&&hadCover&&stealth.success&&localCover(room).length);
    a.coverId=a.hidden?localCover(room)[0].id:null;
    if(!a.visitedRooms.includes(room))a.visitedRooms.push(room);
@@ -1098,10 +1141,14 @@ if(action.groupApproach){
    if(rolled.success){
     if(feature==='generator')s.flags.power=true;
     if(feature==='radio')s.flags.distress=true;
-    if(feature==='beacon'){s.flags.beacon=true;s.outcome='rescued';}
+    if(feature==='beacon'){
+     s.flags.beacon=true;s.outcome='rescued';
+     gameEvent(s,endingForGuide(s).text,a.id,'milestone');
+    }
     gameEvent(s,a.name+' successfully operates the '+feature+'.',a.id,'milestone');
    }else gameEvent(s,a.name+' cannot get the '+feature+' working yet.',a.id,'risk');
    return accepted(s,a,'use',feature,{...rolled,
+    ...(feature==='beacon'?{guideEnding:endingForGuide(s)}:{}),
     ...(feature==='generator'?{preparationUsed:Boolean(preparation?.ready),
       preparationBonus:preparation?.modifier||0,
       preparationSource:preparation?.source||null}:{})},feature==='generator'?3:1);
