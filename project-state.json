@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.22",
-  "checkpoint": "009-B1",
-  "state": "accepted_manifest_driven_world_boundary_and_party_geometry_478_tests",
+  "version": "0.7.23",
+  "checkpoint": "009-B2a",
+  "state": "candidate_generic_Evolved_gated_objectives_integrated_nublar_second_adventure_not_playable",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,21 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 478,
+  "automated_tests": 494,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement 009-B2 reusable adventure objective/action/ending resolution and pass a selected compiled AdventureInstance through Party engine, director, saves and browser controls; do not claim full 009-B complete until two independent stories play.",
-    "Preserve all 478 accepted tests, pre-existing After the Storm saves and mechanics, Party/Focus/Spectator control, Evolved stress/combat/dice, finite cells, guide escort, Wonder, predators and legacy solo/Worker isolation.",
-    "Prove two genuinely different Party adventures end-to-end with correct initial maps, items, source-consistent creature/NPC scenes, objectives/endings, seeded saves and per-actor information privacy.",
-    "After two-adventure acceptance, implement meaningful seeded authored adventure variants, original procedural Cinematic generator, persistent Campaign chapters and typed bounded AI Game Mother proposals.",
-    "Run hands-on desktop/mobile gameplay smoke QA; never equate automated CI or successful Pages deployment with physical interactive QA."
+    "Confirm exact PR #23 494/494 on final head, merge only on success, verify accepted main Actions and Pages. Track separate manual graphical browser QA as outstanding.",
+    "Implement 009-B2b selected AdventureInstance context and two-adventure Party save/movement/action dispatch; remove remaining SCENARIO and rescue-specific dependencies without changing the accepted After the Storm story.",
+    "Prove The Long Count fully playable through the ordinary Party/Focus/Spectator engine with its own rooms, objectives, meaningful real action checks, physical creature presence, and valid non-helicopter ending; do not bypass Evolved checks with automatic objective commands.",
+    "Preserve all 478 accepted 009-B1 tests plus sixteen new 009-B2a tests, legacy party-v3/v2 saves, the old solo version, Wonder and Dread, guide escort, finite cells, raptor rules, and Worker independence.",
+    "Only after two independent adventures pass end-to-end: authored seeded replay variations, generated Cinematics, persistent Campaign chapters, bounded AI Game Mother; perform desktop/mobile interactive QA."
   ],
   "acceptance_criteria": [
-    "009-B1 accepted: 478/478 tests on PR #21 and merged main 99a044cf873d51ef500004092cabca1630713fad; Actions 40240771068 and Pages 40240770843 successful.",
-    "Current Party start, initial room inventory, item naming, room/exit labels and physical map routing are sourced from the compiled After the Storm manifest, not raw SCENARIO content.",
-    "Reusable adapter is independently tested on the distinct ridge-survey map; physical nonadjacency, copied stock and manifest tampering are rejected; all 470 009-A cases remain passing.",
-    "Source Evolved dice, deterministic party control and existing rescue/dinosaur/scene content remain unchanged; the second adventure is NOT playable through Party yet and 009-B is not completed.",
-    "Manual desktop/mobile graphical QA remains outstanding and must be tracked independently from CI/Pages."
+    "Retain all 478 accepted tests; pass sixteen new typed-objective/causal-history/security/regression checks (target 494).",
+    "Use validated compiled adventure definitions to resolve prerequisites, actor room, typed flag effects and authored end effects. Require completed deterministic Evolved roll before existing Nublar generator/radio/beacon changes are committed.",
+    "Do not change Evolved probability, roll sequence, cost, stress, rescue narration, item stocks or browser control modes. No universal free objective-completion command.",
+    "Version-three party saves remain backward compatible without objectiveRecords; new saves track causal records and reject forged, duplicated or inconsistent objective history.",
+    "Do not claim 009-B complete: ridge-survey is playable only at the standalone objective-domain test layer; Party game still bound to After the Storm for creatures, NPCs and director.",
+    "Successful exact PR head and accepted-main Actions/Pages required independently; hands-on desktop/mobile graphical QA remains outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted 009-B1 source main 99a044cf873d51ef500004092cabca1630713fad: Actions 40240771068 SUCCESS (478/478); Pages 40240770843 SUCCESS. Separate hands-on desktop/mobile graphical QA remains outstanding. Documentation acceptance update requires its own exact-head validation.",
+  "pages_deployment": "009-B2a candidate branch, final-main Actions/Pages not yet verified. Prior 009-B1 main 39616750a3667fc25a18d606c35ee6c19aa9e163 passed CI and Pages; real browser QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

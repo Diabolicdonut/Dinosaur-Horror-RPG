@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2a — Evolved-Gated Generic Objectives and Endings (candidate) — 2026-10-25
+
+**Recovery:** Accepted main `39616750a3667fc25a18d606c35ee6c19aa9e163`, 009-B1 v0.7.22, 478/478 regressions, Actions/Pages both successful; no open PRs. No work from other projects was used.
+
+**Implementation:** New `src/adventure-objectives.mjs` validates a compiled adventure before resolving authored objectives. An objective commits only after a deterministic engine-authorized successful action, with the correct actor physically present, the authored prerequisite chain satisfied, and no previous completion. Transactional flag and ending effects use the JSON manifest. It never rolls Evolved dice, authorizes an action by itself, changes action cost, teleports creatures or accepts an AI state patch. The *After the Storm* generator, radio, and beacon still use their existing source Evolved skill procedures but now hand successful authorized outcomes to this reusable service. The traditional rescued/lost Party-v3 UI meaning is maintained at the Party boundary, not hardcoded into the generic service.
+
+**Continuity and security:** New Party saves may include an `objectiveRecords` history; preexisting valid Party-v3 saves without it continue to load, with previously true flag effects providing safe legacy progress inference. Records reject unknown/duplicated objective IDs, wrong physical rooms/actors, future or reversed timestamps, inconsistent saved effects and skipped prerequisites. A direct player-authored "objective" action is rejected; normal Evolved success remains mandatory for authored machinery. Existing action RNG, stress, chase, medical, item and party mode behavior is unchanged.
+
+**Validation:** **494 total targeted**: retain all 478 accepted 009-B1 regressions and add 16 tests of both unrelated adventure objective graphs, legal source authorization, position checks, prerequisites, typed end effects, mutation isolation, legacy saves, spoofed histories, and generator Evolved success/failure. PR CI, accepted-main Actions/Pages and real graphical smoke must be confirmed separately.
+
+**Remaining:** 009-B2a is a subsystem milestone, **not** the full 009-B two-playable-adventures gate. The research survey can resolve its objective sequence through the standalone domain service but cannot yet run as a Party browser scenario. Creature/NPC/director/state selection remain Nublar-specific. Next: 009-B2b AdventureInstance selection and complete runtime extraction; then seeded authored variability, original generated Cinematics, continuing Campaigns and typed AI Game Mother.
+
+
 ## Checkpoint 009-B1 — Generic Adventure World Boundary (accepted) — 2026-10-25
 
 **Recovery:** Inspected main `2e74ab434f8bc0bf818c67d348009885deb589ab`, accepted 009-A v0.7.21, 470/470 previous tests with successful Actions and Pages, no open PRs. The approved adventure separation and replay contracts remain authoritative.
