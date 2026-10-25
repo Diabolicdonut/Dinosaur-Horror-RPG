@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.21",
-  "checkpoint": "009-A",
-  "state": "versioned_adventure_schema_two_distinct_compilable_fixtures_and_bound_after_storm_party_saves_candidate_final_ci_pending",
+  "version": "0.7.22",
+  "checkpoint": "009-B1",
+  "state": "validated_adventure_world_adapter_and_party_geometry_extraction_candidate_ci_pending",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,20 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 470,
+  "automated_tests": 478,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement 009-B AdventureInstance context plumbing across Party engine, director, action handling, maps, NPCs, creatures, objective/ending and scene systems; run two substantially distinct fully playable scenarios without changing Evolved dice rules.",
-    "Preserve existing After the Storm actions, saves, Party/Focus/Spectator, 007-M1 finite cells, 008-C1 park guide, wonder, predator mechanics, and 454 baseline tests during extraction.",
-    "After two-adventure gate, compile meaningful seeded variants of pregenerated adventures, validate whole maps/truths/resources/causality and lock manifest revision in saves.",
-    "Build procedural stand-alone Cinematic generator and then continuing Campaign episode generation using durable histories; AI Game Mother proposes only typed validated effects.",
-    "Run full desktop/mobile graphical QA and keep legacy solo 006.2 and Worker v006 isolated from Party schema changes."
+    "Verify exact-final-commit PR and accepted-main Actions/Pages for 009-B1 (478 tests targeted); run separate hands-on desktop/mobile smoke, not yet performed.",
+    "Implement 009-B2 generic action/objective/ending service and selected AdventureInstance context across party saving, director, NPCs and creature scenes; the second adventure must actually play through the existing party interface before calling 009-B complete.",
+    "Preserve all 470 previous checks and After the Storm mechanics, actor modes, physical predators, finite cells, guide escort, Wonder, Evolved dice and legacy saves.",
+    "Once two genuinely different adventures run through the same engine, implement seeded replay variability, procedural Cinematics, then persistent Campaign episodes and typed AI Game Mother proposals."
   ],
   "acceptance_criteria": [
-    "Preserve all 454 accepted tests and pass 16 new adventure compiler/save-boundary tests, targeting 470.",
-    "Two different data-only manifests have valid physical routes and true different objectives/ending rules without executable script effects.",
-    "Compiler is seed-reproducible and exhibits materially different latent authored variations over a broad seed range, without consuming Evolved gameplay dice.",
-    "Reject unreachable or one-way authored routes, invalid items/creatures, missing/cyclic objective prerequisites, undeclared flags, bad clue locations and forged compiled manifests.",
-    "New After the Storm saves bind versioned adventure identity and a content fingerprint, while old Party-v3/v2 saves without the field remain accepted and replay identically.",
-    "Do not claim engine independence yet: second scenario is not runnable by Party engine; 009-B must remove named story assumptions and satisfy two-adventure gate.",
-    "Require exact final-head PR, accepted main 470/470 Actions, Pages and separate manual browser smoke; do not claim QA not performed."
+    "Maintain 470 accepted 009-A regressions plus eight adventure-world boundary tests (478 target) on exact PR and main.",
+    "Use the compiled manifest, not src/scenario.mjs, for starting position, physical room inventory, item labels, room text, pathfinding and move destination matching in the legacy party runtime.",
+    "Prove the same shared world adapter reads two distinct maps, rejects nonadjacent exits, preserves item stock by copy, and refuses modified compiled manifests.",
+    "Keep source Evolved dice and existing scenario-only creature/director logic unchanged; 009-B full two-adventure runtime gate is NOT met.",
+    "Require actual successful GitHub Actions and Pages on accepted main; hands-on desktop/mobile smoke remains separate and outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +39,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-A final-main Pages pending; previous accepted architecture docs-only e9d0cdc983aee53eee1744ef9a1ea2bd551c1ffd passed Actions 40211967800 and Pages 40211968071; manual graphical QA outstanding.",
+  "pages_deployment": "009-B1 candidate branch unverified until exact final-main CI/Pages; previous 009-A main validated and deployed. Manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

@@ -1,8 +1,12 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (accepted 008-C1 park guide rescue and candidate 007-M1 finite portable lamp cells; graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B1 shared adventure-world boundary candidate after accepted 009-A; graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## 009-B1 — Physical-world data extraction (candidate, 2026-10-25)
+
+A reusable `createAdventureWorld(compiled)` adapter now validates and privately projects rooms, starts, finite physical inventories, aliases, item labels and graph navigation for any compiled package. The existing Party game uses that adapter for world start/room displays/map movement and item labels. Eight focused tests target correct world differences, no teleporting, immutable copies, manifest tamper rejection and legacy Party action/save parity (478 regression cases total targeted). This is **not** completion of 009-B: the second adventure still does not run through Party, and named Nublar objectives, creatures, escort/scene logic and endings remain in the shared runtime. Follow with generic objective/action resolution, instance ownership in saves, independent second-scenario Party play, then seeded variants. Do not declare CI or manual browser QA passed without verification.
 
 ## 009-A milestone — executable adventure definition foundation (implemented candidate, 2026-10-25)
 

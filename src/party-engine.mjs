@@ -4,6 +4,7 @@
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
+import {createAdventureWorld} from './adventure-world.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
@@ -29,6 +30,9 @@ export const PARTY_ENGINE_VERSION = 3;
 // the validated content revision, without changing the Evolved dice stream.
 const ACCEPTED_ADVENTURE=compileSelectedAdventure('nublar-after-the-storm',0);
 const ACCEPTED_BINDING=adventureBinding(ACCEPTED_ADVENTURE);
+// 009-B1: reusable topology and physical item data from a validated manifest.
+// Director, cinematic rules, and rescue mechanics remain scenario-bound.
+const PARTY_WORLD=createAdventureWorld(ACCEPTED_ADVENTURE);
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 const deep = v => JSON.parse(JSON.stringify(v));
@@ -43,21 +47,10 @@ function nextSeed(s){
  s.rng=x>>>0;
  return s.rng;
 }
-function dist(a,b) {
- if(a===b)return 0;
- const seen=new Set([a]),q=[[a,0]];
- while(q.length){const [p,d]=q.shift();for(const n of SCENARIO.rooms[p].exits){
-  if(n===b)return d+1;
-  if(!seen.has(n)){seen.add(n);q.push([n,d+1]);}
- }}
- return Infinity;
-}
-function stepToward(from,target){
- if(!SCENARIO.rooms[from]||!SCENARIO.rooms[target]||from===target)return from;
- return SCENARIO.rooms[from].exits.reduce((best,exit)=>
-  dist(exit,target)<dist(best,target)?exit:best,SCENARIO.rooms[from].exits[0]);
-}
-function itemLabel(id) { return SCENARIO.itemNames[id]||id; }
+// This shared pathfinding and item-labeling boundary is scenario-independent.
+function dist(a,b){return PARTY_WORLD.distance(a,b);}
+function stepToward(from,target){return PARTY_WORLD.stepToward(from,target);}
+function itemLabel(id){return PARTY_WORLD.itemLabel(id);}
 function gameEvent(s,message,actorId=null,category='action'){
  s.events.push({beat:s.beat,actorId,category,message});
  s.events=s.events.slice(-160);
@@ -391,12 +384,7 @@ function checkDodgeInterrupt(s,actorId){
  if(b.quickSpent===2)b.full=0;
  return true;
 }
-function matchRoom(target,room) {
- const raw=String(target||'').toLowerCase().replace(/^(to |the |into |toward |towards )+/,'').trim();
- return SCENARIO.rooms[room].exits.find(id=>id===raw||
-  SCENARIO.rooms[id].name.toLowerCase()===raw||
-  SCENARIO.rooms[id].aliases.some(name=>name.toLowerCase()===raw))||null;
-}
+function matchRoom(target,room){return PARTY_WORLD.resolveExit(room,target);}
 function matchItem(target,items){
  const q=String(target||'').trim().toLowerCase().replace(/^the /,'');
  return items.find(id=>id===q||itemLabel(id).toLowerCase()===q)||null;
@@ -467,14 +455,14 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  const issues=validateParty(party);
  if(issues.length)throw new RangeError(issues.join(' '));
  const actors=deep(party).map(c=>({
-  ...c,location:SCENARIO.start,health:c.healthMax,
+  ...c,location:PARTY_WORLD.start,health:c.healthMax,
   inventory:[],wonderJournal:[],light:{on:false,charge:actorOwnsLight(c)?LIGHT_CAPACITY_STRETCHES:0},
-   hidden:false,coverId:null,observed:[],visitedRooms:[SCENARIO.start],attemptedObservations:[],stress:c.stress??0,
+   hidden:false,coverId:null,observed:[],visitedRooms:[PARTY_WORLD.start],attemptedObservations:[],stress:c.stress??0,
   armorLevel:c.gear?.includes('protective vest')?2:0,broken:false,dead:false,criticalInjuries:[],seenThreats:[],guarding:false,pendingSkip:false,
   stressResponses:c.stressResponses||[],panicResponses:[],
   medicalRest:false,lastAction:null
  }));
- actors[0].inventory.push(...SCENARIO.startItems);
+ actors[0].inventory.push(...PARTY_WORLD.startItems);
  for(const survivor of actors)if(actorOwnsLight(survivor))survivor.light.charge=LIGHT_CAPACITY_STRETCHES;
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
@@ -487,7 +475,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],
   dialogueRecords:[],wildlifeEncounter:{status:'present',seenBy:[],approachedBy:[],reason:null},
   parkGuide:defaultGuide(),batterySpent:0,
-  rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
+  rooms:PARTY_WORLD.initialRoomItems(),
   dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
   actions:[]
@@ -591,6 +579,7 @@ export function partyView(s,{actorId=null}={}) {
  if(!isPartySave(s))throw new RangeError('Invalid party incident save.');
  const actor=s.actors.find(x=>x.id===actorId)||s.actors[s.cursor];
  const place=SCENARIO.rooms[actor.location];
+  const mapRoom=PARTY_WORLD.room(actor.location);
  return {
   beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
   time:{explorationStretches:s.clock?.explorationStretches??Math.floor(s.beat/s.actors.length),
@@ -605,7 +594,7 @@ export function partyView(s,{actorId=null}={}) {
    surprise:s.combat.surprise?{...s.combat.surprise}:null,
    pendingReaction:s.combat.pendingReaction?{...s.combat.pendingReaction}:null,
    remaining:s.combat.budgets[activeTurnId(s)]||null}:null,
-  location:actor.location,roomName:place.name,description:place.description,
+  location:actor.location,roomName:mapRoom.name,description:mapRoom.description,
    weather:outdoorWeather(s,actor.location),
    serviceShutterClosed:serviceShutterClosed(s)&&['shed','jungle'].includes(actor.location),
    cinematicScene:sceneForActor(s,actor),
@@ -635,7 +624,7 @@ export function partyView(s,{actorId=null}={}) {
    groupTravel:s.groupTravel?.awaiting?.includes(actor.id)&&
     actor.location===s.groupTravel.from?
       {to:s.groupTravel.to,approach:s.groupTravel.approach}:null,
-  exits:place.exits.map(id=>({id,name:SCENARIO.rooms[id].name,
+  exits:mapRoom.exits.map(id=>({id,name:PARTY_WORLD.roomName(id),
     blocked:shutterBlocks(s,actor.location,id)})),
   items:s.rooms[actor.location].items.map(id=>({id,name:itemLabel(id)})),
   features:[...place.features],observations:(place.observations||[]).map(o=>({id:o.id})),
@@ -651,7 +640,7 @@ export function partyView(s,{actorId=null}={}) {
   broken:Boolean(actor.broken),dead:Boolean(actor.dead),panicState:actor.panicState||null,
   hidden:actor.hidden,flags:Object.fromEntries(Object.entries(s.flags).filter(([key])=>!['serviceShutterClosed','paddockGateBraced'].includes(key))),
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,location:a.location,
-   roomName:SCENARIO.rooms[a.location].name,stress:a.stress,health:a.health,
+   roomName:PARTY_WORLD.roomName(a.location),stress:a.stress,health:a.health,
    active:a.id===s.actors[s.cursor].id})),
   events:s.events.filter(e=>e.actorId===null||e.actorId===actor.id).slice(-40)
  };
@@ -1092,7 +1081,7 @@ if(action.groupApproach){
      if(!s.groupTravel.awaiting.length)s.groupTravel=null;
     }
     gameEvent(s,a.name+(quiet?(stealth.success?' slips quietly into ':' makes a noise entering '):
-      action.kind==='rush'?' rushes noisily into ':' enters ')+SCENARIO.rooms[room].name+'.',
+      action.kind==='rush'?' rushes noisily into ':' enters ')+PARTY_WORLD.roomName(room)+'.',
       a.id,quiet&&!stealth.success?'risk':'action');
     return accepted(s,a,action.kind,room,
       {...(quiet?stealth:{}),noise:sound,...(action.groupApproach?{groupApproach:action.groupApproach,
