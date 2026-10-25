@@ -85,8 +85,12 @@ export function validDialogueRecords(s){
 }
 export function localWildlifeView(s,actor){
  const w=wildlifeState(s);
- return actor.location==='jungle'&&w.status==='withdrawn'&&w.seenBy.includes(actor.id)?
-  {status:'withdrawn',description:w.reason==='predator'?
-   'The Parasaurolophus moved away after the predator approached the stream.':
-   'The Parasaurolophus retreated through the ferns after being startled.'}:null;
+ if(actor.location!=='jungle'||!w.seenBy.includes(actor.id))return null;
+ if(w.status==='present'&&weatherAt(s)!=='squall'&&
+   !s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle'))
+  return {status:'present',description:'The Parasaurolophus remains across the stream, browsing calmly.'};
+ if(w.status==='withdrawn')return {status:'withdrawn',description:w.reason==='predator'?
+  'The Parasaurolophus moved away after the predator approached the stream.':
+  'The Parasaurolophus retreated through the ferns after being startled.'};
+ return null;
 }
