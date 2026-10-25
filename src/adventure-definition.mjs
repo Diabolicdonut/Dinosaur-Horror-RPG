@@ -55,6 +55,19 @@ export function validateAdventureDefinition(def){
  for(const o of def.objectives){
   if(!o||!key(o.id)||ids.has(o.id)||!text(o.description)||!rooms[o.room]||
       !Array.isArray(o.requires)||!Array.isArray(o.effects))reject('objective');
+  // Optional data-only interaction declares the physical target and exact
+  // Evolved skill eligibility. A null skill is a routine, no-roll interaction.
+  if(o.interaction!==undefined){
+   const i=o.interaction;
+   const known=['heavy_machinery','stamina','close_combat','mobility','ranged_combat',
+    'piloting','observation','comtech','survival','command','manipulation','medical_aid'];
+   if(!i||typeof i!=='object'||Array.isArray(i)||
+      Object.keys(i).some(k=>!['target','skill'].includes(k))||
+      !text(i.target)||i.target.length>80||
+      !(i.skill===null||known.includes(i.skill))||
+      def.objectives.filter(other=>other.interaction?.target?.toLowerCase()===i.target.toLowerCase()).length>1)
+     reject('invalid objective interaction');
+  }
   ids.add(o.id);
  }
  if(!def.objectives.some(o=>o.effects.some(e=>e.type==='end')))reject('no ending');
