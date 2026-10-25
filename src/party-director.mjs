@@ -5,7 +5,7 @@ import { SCENARIO } from './scenario.mjs?v=007l2a';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
 import {createAdventureWorld} from './adventure-world.mjs';
 const SURVEY_WORLD=createAdventureWorld(compileSelectedAdventure('ridge-survey',0));
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009a';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009b2b1';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
 
