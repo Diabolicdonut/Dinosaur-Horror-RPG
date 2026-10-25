@@ -1,7 +1,7 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=008c1';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=007m1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=008c1';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=007m1';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
@@ -142,6 +142,7 @@ function show(){
  else if(v.wildlifeEncounter?.description)scene.push('WILDLIFE · '+v.wildlifeEncounter.description);
  if(v.dialogueOpportunities?.length)scene.push('COMPANIONS · A teammate is here to talk or plan with.');
  if(v.parkGuide)scene.push('PARK EMPLOYEE · '+v.parkGuide.name+' ['+v.parkGuide.status+'] — '+v.parkGuide.description);
+ if(v.personalLight.carried)scene.push('LIGHT SUPPLIES · '+v.batterySupplies.carried+' spare cell(s) carried; lamp charge '+v.personalLight.charge+'.');
  if(v.rescueEnding)scene.push('RESCUE CONSEQUENCE · '+v.rescueEnding.text);
   if(v.availableSceneEvents?.length)scene.push('Cinematic opportunities: '+v.availableSceneEvents.map(e=>e.title).join(', '));
   if(v.availableDangerEvents?.length)scene.push('Optional physical challenges: '+v.availableDangerEvents.map(e=>e.title+' ['+e.skill+']').join(', '));
@@ -192,6 +193,7 @@ function show(){
   ...(v.wildlifeEncounter?.choices||[]).map(o=>['wildlife '+o.id,o.label+(o.skill?' ('+o.skill+')':'')]),
   ...(v.dialogueOpportunities||[]).map(o=>['talk '+o.recipientId+' '+o.topic,o.label+' · '+o.recipientName]),
   ...(v.parkGuide?.options||[]).map(o=>['guide '+o.id,o.label+(o.skill?' ('+o.skill+')':'')]),
+  ...(v.batteryActions||[]).map(o=>['battery '+o.id,o.label]),
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,f==='shutter'?(v.serviceShutterClosed?'Open storm shutter':'Close storm shutter'):'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
