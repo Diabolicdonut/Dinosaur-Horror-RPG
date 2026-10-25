@@ -148,7 +148,7 @@ test('spectator still progresses one grounded action at a time when stealth is a
 test('new stealth controls and revised cache version are present in playable UI',async()=>{
  const html=await readFile(new URL('../party.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
- assert(html.includes('party-app.mjs?v=007m1'));
+ assert(html.includes('party-app.mjs?v=009a'));
  assert(app.includes('data-order="sneak '));
  assert(app.includes('v.lighting'));
 });
