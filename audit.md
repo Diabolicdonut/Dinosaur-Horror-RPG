@@ -1,12 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B1 — Generic Adventure World Boundary (candidate) — 2026-10-25
+## Checkpoint 009-B1 — Generic Adventure World Boundary (accepted) — 2026-10-25
 
 **Recovery:** Inspected main `2e74ab434f8bc0bf818c67d348009885deb589ab`, accepted 009-A v0.7.21, 470/470 previous tests with successful Actions and Pages, no open PRs. The approved adventure separation and replay contracts remain authoritative.
 
 **Incremental implementation:** Added `src/adventure-world.mjs` as a data-only physical-world projection of a fully validated, versioned compiled AdventureInstance. Both the existing Nublar package and independent `ridge-survey` package use the same room lookup, finite room inventory copying, item labels, physically adjacent exit matching, shortest-path distance and movement step selection. The interface rejects tampered compiled content and never imports `SCENARIO`, Evolved combat code or adventure-specific directors.
 
 **Integration:** The existing Party engine now reads its start position, starting items, room item stock, displayed room descriptions/names, exit names, pathfinding and movement destination matching from the accepted compiled After the Storm manifest instead of the hardcoded scenario singleton. Existing optional scene features, rescue rules, NPCs, creatures, Evolved rolls, stress, saves, control modes and historical narrative remain unchanged. Added eight targeted adapter/parity tests; **478 total targeted** (470 prior + 8 new). Final PR and accepted-main CI/Pages must be checked before reporting acceptance.
+
+**Acceptance:** PR [#21](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/21) exact final head `14095601a154d33ad639a3cd34a592d4e531f7e9` passed **478/478** after correcting a test that had incorrectly inspected the *next* active survivor's view instead of the actor who moved. Merged main `99a044cf873d51ef500004092cabca1630713fad` separately passed [Actions 40240771068](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40240771068) and [Pages 40240770843](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40240770843). There were no changes to core Evolved dice or the Worker. Physical manual desktop/mobile graphical QA remains outstanding.
 
 **Not yet complete:** The Party engine still has many Nublar-specific imports and is not able to run the research-survey fixture; generic objective resolution, scene/NPC/creature routing, saved selected instances, procedural adventures, and Game Mother are **not** implemented. Next checkpoint should complete generic objective/action interface and extend it without changing Evolved mechanics. Desktop/mobile hands-on QA remains outstanding.
 
