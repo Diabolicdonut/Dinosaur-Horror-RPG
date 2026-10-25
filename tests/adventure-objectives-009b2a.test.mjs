@@ -152,6 +152,7 @@ test('009-B2a: accepted objective history rejects reversed causal time',()=>{
  let s=apply(compiled,move(state,'forest-blind'),'recover-transect').state;
  s.beat=1;
  s=apply(compiled,move(s,'survey-ridge'),'send-field-report').state;
- s.objectiveRecords[0].beat=2;
+ s.beat=3; // both records remain within the current game clock
+ s.objectiveRecords[0].beat=2; // now later than its dependent objective
  assert.equal(validObjectiveRecords(compiled,s),false);
 });
