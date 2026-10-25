@@ -3,6 +3,8 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
+import {compileSelectedAdventure} from './adventure-catalog.mjs';
+import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
 import {CINEMATIC_DANGERS,currentCinematicAct,dangerAllowed,availableDangerEvents,validDangerRecords} from './cinematic-danger.mjs';
@@ -23,6 +25,10 @@ import {TRAUMA,worldSeconds,woundModifiers,enrichInjuries,clinicallyEligible,
  resolveClinicalAid,resolveRally,resolveSurgery,tickMedicalClock,pendingLethal} from './evolved-injuries.mjs?v=007i';
 
 export const PARTY_ENGINE_VERSION = 3;
+// The legacy singleton runs until extraction is complete. Bind new saves to
+// the validated content revision, without changing the Evolved dice stream.
+const ACCEPTED_ADVENTURE=compileSelectedAdventure('nublar-after-the-storm',0);
+const ACCEPTED_BINDING=adventureBinding(ACCEPTED_ADVENTURE);
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 const deep = v => JSON.parse(JSON.stringify(v));
@@ -472,6 +478,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  for(const survivor of actors)if(actorOwnsLight(survivor))survivor.light.charge=LIGHT_CAPACITY_STRETCHES;
  return {
   kind:PARTY_SAVE_KIND,version:PARTY_ENGINE_VERSION,scenario:SCENARIO.id,
+  adventureBinding:deep(ACCEPTED_BINDING),
   initialSeed:n,rng:n||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
   clock:{explorationActions:0,explorationStretches:0,combatRounds:0,combatSeconds:0},
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false,paddockGateBraced:false},
@@ -501,7 +508,8 @@ export function isPartySave(s) {
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
-    s.scenario!==SCENARIO.id||!Number.isInteger(s.beat)||s.beat<0||
+    s.scenario!==SCENARIO.id||!validAdventureBinding(s.adventureBinding,ACCEPTED_ADVENTURE)||
+    !Number.isInteger(s.beat)||s.beat<0||
     !Number.isInteger(s.cursor)||!Array.isArray(s.actors)||s.actors.length<1||
     s.actors.length>8||s.cursor>=s.actors.length||
     !Number.isInteger(s.rng)||!s.rooms||!s.flags||!Array.isArray(s.actions)||
