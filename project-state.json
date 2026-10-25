@@ -16,11 +16,11 @@
   "automated_tests": 454,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "PRIORITY: Refactor singleton SCENARIO and specific park-story coupling into typed, validated adventure packages. See docs/ADVENTURE-ENGINE-SEPARATION.md; no new core branches for fixed shed/radio/beacon/NPC lore.",
-    "Create a distinct second adventure package and prove both run under the same unmodified engine, with version-bound saves, deterministic Evolved dice, legal paths, actor privacy, NPC and dinosaur encounters, and at least one player-responsive noncombat outcome.",
-    "After the boundary gate, implement deterministic seed-based and then bounded AI-authored adventure generation; the Game Mother generates content/validated proposals, not Evolved rules or direct state mutations.",
-    "Keep 007-M2 finite tools and any further scenario-specific Cinematic content queued behind the adventure separation contract unless implementing fully reusable primitives.",
-    "Perform true desktop/mobile interactive graphical smoke; protect 454 automated regressions, accepted 007-M1, Party save migrations, Party/Focus/Spectator, original solo 006.2 and Worker v006."
+    "PRIORITY: Complete adventure-agnostic engine extraction and two distinct playable adventure packages under docs/ADVENTURE-ENGINE-SEPARATION.md; preserve the 454 accepted tests and old party saves.",
+    "Define versioned, independently seeded authored adventure templates with meaningful replay-variant slots, compile them into locked/validated manifests, and regression-test same-seed reproducibility plus different-seed structural variability. See docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md.",
+    "Implement open-ended procedurally generated Cinematic adventures (different premises, maps, stakes, cast, threats, discoveries and endings), with an AI Game Mother allowed to propose only typed, validated effects, not rewrite the underlying rules or committed secrets.",
+    "Extend validated generation to continuing Campaign chapters that carry character progression, relationships, injuries, resolved mysteries and other past consequences without mandatory escalating horror or animal-population simulation.",
+    "Keep 007-M2 and new one-off park scenarios below the architecture/generation prerequisites; conduct real desktop/mobile interactive graphical QA and preserve Party/Focus/Spectator, solo 006.2 and Worker v006."
   ],
   "acceptance_criteria": [
     "Preserve the 440 previously accepted 008-C1 tests and add 14 meaningful finite-equipment tests, 454 total.",
@@ -858,6 +858,11 @@
       "No second distinct playable adventure package and no verified runtime adventure manifest selector yet."
     ],
     "next_gate": "A validated selectable second scenario with different geography/objectives must run through the unmodified core, with matching deterministic saves/replays/Evolved rules/control modes; preserve original 454 tests.",
-    "generator_policy": "Game Mother proposes manifests and scene/effect instructions through validators, never raw state mutation or forced scenario-specific arc."
+    "generator_policy": "Game Mother proposes manifests and scene/effect instructions through validators, never raw state mutation or forced scenario-specific arc.",
+    "replayability_contract": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md",
+    "generation_goal": "Include multiple authored adventure templates each with substantial replay variability, plus open-ended procedurally generated Cinematic adventures and Campaign chapters grounded in prior persistent decisions.",
+    "generation_current_status": "NOT_IMPLEMENTED — neither variable pregenerated instances nor a general adventure generator are available in main.",
+    "variation_policy": "Different seeds can change committed hidden cause, NPC agendas, physical creature dispositions, routes, challenges, clues, optional scenes and possible endings; game rules and prior accepted facts cannot change to force surprise.",
+    "reproducibility_policy": "New game compiles/validates and locks a template/generator version and independent seed; continue loads identical compiled manifest/event history, not a reroll; campaign generation respects durable world continuity."
   }
 }
