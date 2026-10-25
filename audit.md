@@ -1,5 +1,20 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Architecture correction — Adventure/Engine Separation — 2026-10-25
+
+**User requirement:** The eventual game must generate genuinely new and unpredictable Cinematic/Campaign adventures; the *After the Storm* scenario must never define the reusable rules engine or dictate every story's premise, location IDs, goals, supporting characters and outcome.
+
+**Current accepted baseline:** GitHub main `1cd360a732982189130c8381ee17d1ca980bbf73` (007-M1 / v0.7.20 / 454 automated tests), Actions [40162256262](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40162256262) and Pages [40162256266](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40162256266) both successful. No new mechanics or browser release created by this architectural documentation.
+
+**Finding:** `src/scenario.mjs` is already partly data-only, but **engine independence is not implemented**. `src/party-engine.mjs` imports it as a singleton and hardcodes the current rescue objectives, generator/radio/beacon, named zones, Velociraptor instance, fixed scenario-specific NPC encounter state and end condition. `src/cinematic-director.mjs`, `src/cinematic-scenes.mjs`, `src/cinematic-continuity.mjs`, `src/cinematic-danger.mjs`, `src/cinematic-encounters.mjs` and `src/cinematic-escort.mjs` mix reusable effect machinery with *After the Storm* plot/characters. Other affected modules are to be inspected, not presumed generic. Earlier prose claiming complete separation was inaccurate and has been corrected.
+
+**Authoritative architecture:** [docs/ADVENTURE-ENGINE-SEPARATION.md](docs/ADVENTURE-ENGINE-SEPARATION.md). Game mechanics (Evolved dice, stress, initiative, injuries, world movement, perception, inventories, actions and saves) are stable generic services. Every adventure is independently authored/generated, validated and loaded as its own versioned manifest with physical locations, objectives, scene triggers, actual NPC/creature instances, encounter options, resources and conclusions. The Game Mother may generate a new adventure or propose scenes and typed effects, but may not mutate game state directly, conjure owned items, force rolls or rewrite historical events. Generated situations permit wonder, uncertainty, different goals and outcomes without an always-on ecological sim.
+
+**Acceptance gate:** First migrate *After the Storm* behind a generic adventure interface while preserving previous 454 tests, v3 party saves, three control modes and source Evolved mechanics. Then create a **substantially different** second playable scenario and demonstrate both run without editing shared engine logic; validate independent maps, distinct objectives, outcomes, Evolved seeded replays, information privacy and version-bound save/reload. Add dependency checks preventing core-to-adventure imports. **Do not claim modularity or adventure generation complete until these tests pass.**
+
+**Status:** Documentation and prioritization only. No core refactor, second adventure or generator implemented by this change. Prioritize this work **ahead of 007-M2** or more one-off Cinematic changes. Physical manual desktop/mobile QA remains outstanding.
+
+
 ## Checkpoint 007-M1 — Two Finite Lamp Replacement Cells — 2026-10-25
 
 **Recovery:** Actual GitHub `main` was `de72f0e9ef0e885ae512f6d89a60bcb1144486a8`, **008-C1 / v0.7.19 / 440/440** tests, final [Actions 40160909599](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40160909599) and [Pages 40160909518](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40160909518) successful; no open PRs. Read project-state, latest audit, roadmap, existing lamp depletion/turn rules, scenario room inventories, give/take, save validation, camera, companion and all old equipment tests. Preserved all accepted 008-C1 guide, 008-B3 quiet wildlife, actor Wonder, Evolved skill/medical/stress/combat, shutter/rain/predator, three control modes, unrelated solo 006.2 and Cloudflare Worker v006.
