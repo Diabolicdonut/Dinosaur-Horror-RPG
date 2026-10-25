@@ -178,7 +178,7 @@ test('multi-character incident browser and validated roster transfer have isolat
  assert(lab.includes('validateParty(party)'));
  assert(app.includes('sessionStorage.removeItem(LAUNCH)'));
  assert(app.includes('state.startingRoster'));
- assert(app.includes('newPartyIncident(setup)'));
+ assert(app.includes("newPartyIncident({...setup,adventureId:$('adventure-select').value})"));
  assert(page.includes('STALKING · FACING · PREDATOR SENSES'));
  const characters=await readFile(new URL('../characters.html',import.meta.url),'utf8');
  assert(characters.includes('id="start-party"'));
