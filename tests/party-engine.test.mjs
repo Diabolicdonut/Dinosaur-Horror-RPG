@@ -170,7 +170,7 @@ test('multi-character incident browser and validated roster transfer have isolat
  for(const id of ['party-roster','beat','round','active','party-command','party-command-form',
    'party-events','world-buttons','travel-buttons','save-incident','load-incident','export-incident'])
   assert(page.includes('id="'+id+'"'),id);
- assert(page.includes('./src/party-app.mjs?v=008b2'));
+ assert(page.includes('./src/party-app.mjs?v=008b3'));
  assert(app.includes("dinosaur-party-incident-007c"));
  assert(app.includes('isPartySave'));
  assert(app.includes("partyStep("));
