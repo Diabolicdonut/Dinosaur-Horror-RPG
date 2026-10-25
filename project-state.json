@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.19",
-  "checkpoint": "008-C1",
-  "state": "single_park_guide_optional_persuasion_route_escort_and_truthful_rescue_candidate_440_green_pending_final_main_pages_and_manual_qa",
+  "version": "0.7.20",
+  "checkpoint": "007-M1",
+  "state": "two_finite_transferable_spare_lamp_cells_validated_pr_454_tests_pending_main_ci_pages_and_manual_browser_qa",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 440,
+  "automated_tests": 454,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify final 008-C1 main 440/440 GitHub Actions and Pages on exact accepted commit; then perform actual desktop/mobile graphical gameplay smoke of persuasion, handoff, shelter, muster, beacon ending, controls and save/reload.",
-    "Develop a stronger linked Cinematic rescue episode with meaningful character and original NPC dialogue, recovery and consequences rather than a forced horror sequence.",
-    "Implement focused 007-M consumable equipment/park tools, with owned finite resources and meaningful repair or rescue decisions, respecting Evolved rules and previous saves.",
-    "Advance 007-N bounded AI Game Mother through validated typed action/event proposals and safe deterministic effects, not direct game state mutation.",
-    "Preserve previous 440 regressions, Party v3 and v2 migration, Solo 006.2, Worker v006, personal Wonder, and no island ecology simulator prerequisite."
+    "Verify accepted final 007-M1 main 454/454 Actions and Pages on exact commit. Separately perform actual desktop/mobile graphical playtests for finite pickup/transfer, replacement, lighting, saves and control modes.",
+    "Continue 007-M2 with small grounded park tools or repair consumables only where physical scarcity creates interesting Evolved mechanical decisions.",
+    "Prioritize 007-N typed, bounded natural-language Game Mother integration once finite mechanics and action validation are stable; prevent model-driven direct state mutation.",
+    "Bring completed scene fragments into a complete initial Cinematic adventure with human choices, wonder, recovery, danger and an optional park-guide rescue, without island ecology simulation.",
+    "Preserve all 454 tests, Party v3 / v2 migration, 008-C1 player rescue, per-actor Wonder and source authority, legacy solo 006.2 and Worker v006."
   ],
   "acceptance_criteria": [
-    "Keep all 424 accepted 008-B3 regressions and add 16 new encounter, rescue and social tests, 440 total.",
-    "Only an actual on-site capable player can speak with or persuade the authored guide, with one-time free dialogue and a paid Evolved Manipulation/stress/push consent check.",
-    "Failed persuasion does not invent consent or spawn an NPC; another colocated survivor can make their own check.",
-    "Successful escort follows only a real current escort through accepted movement edges and never bypasses staff-card locked doors or the physical storm shutter.",
-    "Shelter, resume escort, handoff and helipad muster all require the real guide and capable actor in the same valid room, with time spent and validated persistence.",
-    "Genuine beacon Comtech success preserves existing game outcome, with a truthful NPC-specific rescue epilogue: accounted, at pad, sheltered or unknown.",
-    "Optional party save v3 record accepts old saves with no guide data, rejects invalid IDs, zones, statuses and remote escort positions; local view never exposes hidden remote NPC presence.",
-    "Final exact-head PR 440/440 and independently validated accepted main Actions/Pages required; hands-on desktop/mobile QA still unperformed."
+    "Preserve the 440 previously accepted 008-C1 tests and add 14 meaningful finite-equipment tests, 454 total.",
+    "Precisely two physical sealed replacement battery cells exist, one in the maintenance shed and one at the emergency helipad; both use existing legal item pickup/transfer mechanics.",
+    "An actor can replace a battery only with personally carried spare and owned light below maximum charge, outside combat, through normal exploration time; the actual cell is irrevocably spent, and light remains OFF.",
+    "Lamp drain, legal manual light toggle, concealment/perception, noise/predator routes, Evolved medical and combat clocks are maintained, with no free recharging.",
+    "Party-save-v3 stock conservation bound rejects any saved state with more than two cells across floors, inventories and spent counter; old saves without batteries/counter remain loadable.",
+    "Neither the new UI nor perspective switching reveals off-camera resource stock or another survivor's carried cells; original 006.2 solo and Cloudflare Worker v006 remain untouched.",
+    "Require final exact-head PR 454/454 and separately accepted main Actions/Pages; manual desktop/mobile graphical QA remains unperformed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "008-C1 final main Pages pending; prior accepted 008-B3 main 9cb9e3d5181b198ea0e24c1b7b350b46a680043d passed Actions 40160097813 and Pages 40160096998; manual graphical QA not performed.",
+  "pages_deployment": "007-M1 final-main Pages pending; previous accepted 008-C1 main de72f0e9ef0e885ae512f6d89a60bcb1144486a8 passed Actions 40160909599 and Pages 40160909518. Real graphical QA remains outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -796,7 +795,7 @@
     "version": "0.7.19",
     "module": "src/cinematic-escort.mjs",
     "report": "docs/CINEMATIC-ESCORT-008C1.md",
-    "status": "Candidate 440/440 automated tests passed; exact merged main Actions and Pages pending.",
+    "status": "008-C1 accepted in main de72f0e9ef0e885ae512f6d89a60bcb1144486a8 with 440/440 tests, successful main Actions 40160909599 and Pages 40160909518.",
     "authority": "Original Jurassic NPC scenario content; Evolved Manipulation/stress/push, physical zones and time retained. No autonomous NPC combat sheet.",
     "features": [
       "One original stranded park employee Mara Velez physically present at lobby reception, with optional mission-aware dialogue and real Manipulation consent check.",
@@ -809,7 +808,7 @@
       "baseline": 424,
       "new": 16,
       "total": 440,
-      "ci": "Candidate GitHub Actions PR run 40160684489 passed 440/440; final latest commit and accepted main checks still required."
+      "ci": "008-C1 accepted 440/440 on main Actions 40160909599 and Pages 40160909518; manual graphical smoke outstanding."
     },
     "limits": [
       "NPC is noncombat and does not receive independent health/stress or predator attacks",
@@ -818,5 +817,34 @@
       "No persistent wildlife population"
     ],
     "compatibility": "Previous 424 regressions, three agency modes, personal Wonder, accepted solo 006.2 and Worker v006, full v3 save compatibility maintained."
+  },
+  "finite_equipment_implementation": {
+    "checkpoint": "007-M1",
+    "version": "0.7.20",
+    "module": "src/finite-resources.mjs",
+    "report": "docs/FINITE-EQUIPMENT-007M1.md",
+    "status": "Candidate 454/454 automated tests passed, pending exact accepted-main CI and Pages verification; manual desktop/mobile smoke outstanding.",
+    "authority": "Original Jurassic park sealed battery cells; existing Evolved-compatible exploration time, owned light charge, physical predator sight and existing inventory rules remain authoritative.",
+    "features": [
+      "Two sealed physical replacement cells are authored, one at maintenance shed and one at emergency helipad, with ordinary room-specific pickup and same-room survivor handoff.",
+      "An owned, partially depleted lamp may consume one actually carried cell for one exploration action and restore its previously accepted maximum charge; lamp is left OFF until switched on with a separate action.",
+      "Action is rejected without cell, lamp, real capacity deficit or outside-combat eligibility; no free power, dice override, predator teleport or generated equipment.",
+      "Party schema v3 remains unchanged; optional batterySpent counter tracks consumption and validation bounds current room stock plus carried stock plus consumed cells to two.",
+      "Legacy v3 saves without counter/cells remain valid. Actor-private view shows only carried reserve and lamp charge; Party/Focus/Spectator, solo 006.2 and Worker v006 preserved."
+    ],
+    "tests": {
+      "baseline": 440,
+      "new": 14,
+      "total": 454,
+      "ci": "Initial candidate pull-request run 40162021440 passed 454/454, final latest-PR and main validations outstanding."
+    },
+    "manual_qa": "Actual live desktop/mobile graphical playthrough, resource pickup/transfer/replace, three modes and save/reload not performed.",
+    "deferred": [
+      "007-M2 finite park repair tools/materials and real Evolved action costs",
+      "007-N typed natural-language Game Mother",
+      "Full source-verified Evolved Cinematic/Campaign and solo procedure parity",
+      "Direct hands-on graphical QA"
+    ],
+    "compatibility": "All 440 prior regression tests, old party-v3 saves and v2 migration, approved 008-C1 rescue, actor Wonder, dinosaur physical rules, legacy solo and Worker intact."
   }
 }
