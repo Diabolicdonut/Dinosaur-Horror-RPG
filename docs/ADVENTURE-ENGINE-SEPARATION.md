@@ -6,6 +6,8 @@
 
 **The game engine must not be designed around one adventure.** The long-term game is an *Alien RPG Evolved Edition*-inspired dinosaur-survival RPG, with its adventures, NPCs, creatures, places, goals, dangers, Wonder and prose supplied as **replaceable, validated content**. The eventual AI Game Mother can build and run new adventures so that opening scenes, objectives, discoveries, emotional beats and resolutions are genuinely varied; characters' choices and seeded Evolved checks, not fixed scripts, determine what occurs.
 
+**Replayability requirement (2026-10-25):** Include multiple excellent *pregenerated authored adventure templates* **whose individual playthroughs vary meaningfully**, plus an **open-ended procedural Cinematic and Campaign generator**. Variation includes causal secrets, NPC agendas, creature situations, routes, clues, optional scenes, resources and consequences; it must not be cosmetic shuffling or random retconning. Authored content and generated content obey the exact same schema and Evolved rules. See [Procedural Adventures and Replayability](PROCEDURAL-ADVENTURES-REPLAYABILITY.md).
+
 *After the Storm* is a **sample/test adventure**, not the engine, the default adventure template for all future generations, a mandatory rescue plot, or an archetype into which generated adventures must fit. Use it to preserve the existing 454 regressions, not to determine the shape of all future stories.
 
 ## Layers and ownership
@@ -54,6 +56,12 @@ Generator validation checks schema/type bounds, unique IDs, connected playable m
 - Other helpers for pursuit, sound, light, environment, director, UI and save validation must be dependency-audited too. Merely moving `scenario.mjs` into a folder while retaining singleton imports would **not** satisfy this contract.
 - `src/scenario.mjs` is currently only partial data separation; it must become an importable content package. Existing history `nublar-incident-1993` and v3 saves cannot silently lose their exact scenario interpretation.
 
+## Authored adventure templates vs compiled adventures
+
+An *Adventure Template* has immutable creative identity plus **variation points** with permitted combinations. On **New Game**, compile the template (or a newly generated scenario) with a recorded independent generation seed into a complete, immutable **AdventureDefinition** and instantiate it. A fresh seed may alter actual mission causes, creature roles, NPC interests, routes or scene opportunities; later Game Mother events may not rewrite facts already committed by the compiler. **Continue** uses the existing locked compiled manifest and history, never compiles an old save with a newer generator version.
+
+A procedurally generated **Campaign** compiles each new chapter against a durable continuity ledger, rather than requiring a fixed plot chain or resetting established facts. Even an authored template should pass a different-seed **structural variability** test as well as equal-seed reproducibility and hidden-information fairness checks. The spec is [Procedural Adventures and Replayability](PROCEDURAL-ADVENTURES-REPLAYABILITY.md).
+
 ## Next milestones, in required order
 
 **A. Boundary and migration contract first.** Catalog all imports and named-zone/flag dependencies. Define `AdventureDefinition` and `AdventureInstance` validators and a generic `ScenarioContext` interface; make an explicit adapter for *After the Storm*. Do not remove previous gameplay to achieve genericity. Preserve exact source Evolved mechanics and the old solo/Worker isolation.
@@ -62,7 +70,7 @@ Generator validation checks schema/type bounds, unique IDs, connected playable m
 
 **C. Second, *substantially different* playable fixture.** Add a small alternative adventure (for example a scientific field mission/rescue in a different map with different NPCs/objectives and at least one possible noncombat ending). **Without changes to core mechanics**, instantiate both packages, take legal actions, save/reload, navigate, resolve Evolved rolls and complete appropriate endings. A renamed clone of the first seven rooms fails the gate.
 
-**D. Generation after validation.** Begin with a deterministic, seed-based generator of complete, validated adventure packages using reusable scene/encounter roles and difficulty constraints. Later let the AI Game Mother author original manifests and situational content subject to schema validation and durable causal memory. Promote variation in premise, map, goals, species, NPCs, discovery, wonder/recovery and endings. Do **not** impose a fixed threat schedule or insist on an island-scale ecosystem.
+**D. Generation after validation.** First support **seeded variations of authored templates** so that repeat plays of a pregenerated adventure have materially different hidden causes, NPC agendas, physical dispositions, investigation paths or endings. Then generate complete, original standalone Cinematic adventures from validated roles and constraints; extend that machinery to new continuing Campaign chapters grounded in prior accepted events. Later let the AI Game Mother author original manifests and situations subject to schema validation, version-bound saves and durable causal memory. Do **not** impose a fixed threat schedule or require island-scale ecology. See [procedural/replayability contract](PROCEDURAL-ADVENTURES-REPLAYABILITY.md).
 
 ## Hard acceptance gate
 
