@@ -82,6 +82,8 @@ test('009-B1: After the Storm still begins, saves, views, and moves identically'
  const moved=partyStep(incident,'move utility');
  assert.equal(moved.accepted,true);
  assert.equal(moved.state.actors[0].location,'utility');
- assert.equal(partyView(moved.state).roomName,SCENARIO.rooms.utility.name);
+ // The default camera follows the next scheduled survivor; inspect the moved actor explicitly.
+ assert.equal(partyView(moved.state,{actorId:moved.state.actors[0].id}).roomName,SCENARIO.rooms.utility.name);
+ assert.equal(partyView(moved.state).roomName,SCENARIO.rooms.control.name);
  assert.equal(isPartySave(moved.state),true);
 });
