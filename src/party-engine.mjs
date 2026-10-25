@@ -614,7 +614,7 @@ export function partyView(s,{actorId=null}={}) {
    availableSceneEvents:availableSceneEvents(s,actor),
    encounterPressure:pressureForActor(s,actor.id),
   lighting:roomIsDark(actor.location)?(actorHasLight(actor)?'dark — personal lamp ON':'dark — low visibility'):'partially lit',
-   batterySupplies:{carried:batteryCount(actor),remaining:Math.max(0,BATTERY_STOCK-(s.batterySpent||0))},
+   batterySupplies:{carried:batteryCount(actor)},
    batteryActions:localBatteryOptions(s,actor,actorOwnsLight(actor),LIGHT_CAPACITY_STRETCHES),
    personalLight:{carried:actorOwnsLight(actor),on:actorHasLight(actor),
     charge:actor.light?.charge??(actorOwnsLight(actor)?LIGHT_CAPACITY_STRETCHES:0)},
