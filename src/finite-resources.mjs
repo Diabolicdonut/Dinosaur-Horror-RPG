@@ -12,9 +12,8 @@ export function batteryReady(actor){
 // Count all authored physical stock, actors' carried cells and committed
 // consumption. No accepted turn ever produces a spare cell.
 export function validBatteryStock(state){
- if(state.batterySpent===undefined)return true; // older accepted party v3 saves
- if(!Number.isSafeInteger(state.batterySpent)||state.batterySpent<0||
-    state.batterySpent>BATTERY_STOCK)return false;
+ const spent=state.batterySpent??0; // older accepted party v3 saves
+ if(!Number.isSafeInteger(spent)||spent<0||spent>BATTERY_STOCK)return false;
  const floor=Object.values(state.rooms||{}).reduce((n,r)=>
    n+(Array.isArray(r?.items)?r.items.filter(id=>id===BATTERY_CELL).length:0),0);
  const held=(state.actors||[]).reduce((n,a)=>n+batteryCount(a),0);
