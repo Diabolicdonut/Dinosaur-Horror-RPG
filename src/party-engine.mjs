@@ -7,6 +7,7 @@ import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
 import {CINEMATIC_DANGERS,currentCinematicAct,dangerAllowed,availableDangerEvents,validDangerRecords} from './cinematic-danger.mjs';
 import {generatorPreparation,localSceneConsequences} from './cinematic-continuity.mjs';
+import {WILDLIFE_ENCOUNTER,wildlifeState,wildlifeAvailable,validWildlifeState,dialogueAvailable,dialogueText,validDialogueRecords,localWildlifeView} from './cinematic-encounters.mjs';
 import {creatureCanTargetActor,raptorAttackPlan} from './dinosaur-encounter.mjs';
 import {sightContext,shutterBlocks,serviceShutterClosed,outdoorWeather} from './dinosaur-environment.mjs';
 import {visualLine,physicalCover,localCover,speciesSensoryProfile,sensoryBehavior} from './dinosaur-visibility.mjs?v=007l2b2';
@@ -415,7 +416,10 @@ const medicalFrom=worldSeconds(s);
    ['incapacitated','panic_freeze'].includes(kind)?'wait':kind;
   finishCombatAction(s,actor.id,costKind,nextSeed);
  }else{
+  const predatorWasAtStream=s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle');
   dinoTick(s,noise,actor.location);
+  if((predatorWasAtStream||s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle'))&&wildlifeState(s).status==='present')
+   s.wildlifeEncounter={...wildlifeState(s),status:'withdrawn',reason:'predator'};
   s.clock.explorationActions++;
   s.clock.explorationStretches=Math.floor(s.clock.explorationActions/s.actors.length);
   if(s.combat?.active)s.beat++;
@@ -472,6 +476,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],
+  dialogueRecords:[],wildlifeEncounter:{status:'present',seenBy:[],approachedBy:[],reason:null},
   rooms:Object.fromEntries(Object.entries(SCENARIO.rooms).map(([k,r])=>[k,{items:[...r.items]}])),
   dinosaurs:[{...SCENARIO.initialDinosaur,behavior:'patrol',facing:null,lastHeard:null,health:DINO_SPECIES.velociraptor.health,defeated:false,lastStrikes:{}}],
   events:[{beat:0,actorId:null,category:'system',message:'Emergency lighting holds. The surviving personnel gather in the control room.'}],
@@ -489,6 +494,7 @@ export function isPartySave(s) {
     ![400,800,1200,2000].includes(s.control.speedMs)||
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
     !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||!validDangerRecords(s)||
+    !validWildlifeState(s)||!validDialogueRecords(s)||
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
@@ -596,6 +602,9 @@ export function partyView(s,{actorId=null}={}) {
    availableDangerEvents:availableDangerEvents(s,actor),
    sceneConsequences:localSceneConsequences(s,actor),
    preparedGenerator:generatorPreparation(s,actor).ready,
+   wildlifeEncounter:wildlifeAvailable(s,actor).length?{title:WILDLIFE_ENCOUNTER.title,
+    description:WILDLIFE_ENCOUNTER.description,choices:wildlifeAvailable(s,actor)}:localWildlifeView(s,actor),
+   dialogueOpportunities:dialogueAvailable(s,actor),
    localPaddockGateBraced:actor.location==='paddock'&&s.flags.paddockGateBraced===true,
    availableSceneEvents:availableSceneEvents(s,actor),
    encounterPressure:pressureForActor(s,actor.id),
@@ -641,6 +650,10 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ const wildlife=line.match(/^wildlife\s+(watch|approach)$/);
+ if(wildlife)return {kind:'wildlife',target:wildlife[1],push};
+ const talk=line.match(/^(?:talk|speak)\s+(pc-[1-8])\s+(check-in|plan)$/);
+ if(talk)return {kind:'dialogue',target:talk[2],recipientId:talk[1],push:0};
  const danger=line.match(/^(?:danger|attempt danger|resolve danger)\s+([a-z0-9-]+)$/);
  if(danger)return {kind:'danger',target:danger[1],push};
  const scene=line.match(/^(?:scene|experience scene|play scene)\s+([a-z0-9-]+)$/);
@@ -713,6 +726,19 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   return rejected(previous,'This character is currently controlled by '+(human?'the player.':'the computer.'));
  if(previous.outcome!=='playing')return rejected(previous,'This incident has concluded.');
  if(action.kind==='look')return rejected(previous,'Inspect the current scene without spending time.');
+ if(action.kind==='dialogue'){
+  const option=dialogueAvailable(previous,actor).find(o=>o.recipientId===action.recipientId&&o.topic===action.target);
+  if(!option)return rejected(previous,'That teammate or conversation is not available here.');
+  const changed=deep(previous),other=changed.actors.find(a=>a.id===action.recipientId);
+  const words=dialogueText(changed,actor,other,action.target);
+  changed.dialogueRecords??=[];
+  changed.dialogueRecords.push({actorId:actor.id,recipientId:other.id,zone:actor.location,
+   topic:action.target,beat:changed.beat});
+  gameEvent(changed,actor.name+' speaks with '+other.name+': '+words,actor.id,'scene');
+  changed.actions.push({beat:changed.beat,actorId:actor.id,kind:'dialogue',target:action.target,recipientId:other.id});
+  changed.actions=changed.actions.slice(-200);
+  return {accepted:true,state:changed,result:{kind:'dialogue',recipientId:other.id,topic:action.target}};
+ }
  if(action.kind==='scene'){
   if(!eventAllowed(previous,actor,action.target))
    return rejected(previous,'That conditional scene event is not currently available to this survivor.');
@@ -750,9 +776,11 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
   // it does not secretly alter stress, combat, supplies or predator position.
   return {accepted:true,state:changed,result:{kind:'wonder',id:moment.id,title:moment.title}};
  }
+ if(action.kind==='wildlife'&&!wildlifeAvailable(previous,actor).some(x=>x.id===action.target))
+  return rejected(previous,'No safe, physically present wildlife encounter offers that choice now.');
  if(action.kind==='danger'&&!dangerAllowed(previous,actor,action.target))
   return rejected(previous,'This physical danger challenge is not available here or was already resolved or attempted.');
- if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest','danger'].includes(action.kind))
+ if(!['wait','hold','end','move','sneak','rush','light','take','give','hide','use','investigate','guard','aid','attack','rally','surgery','rest','danger','wildlife'].includes(action.kind))
   return rejected(previous,'Describe a supported action or use the scene controls.');
  if(action.kind==='hold'){
   if(!slot)return rejected(previous,'Holding initiative is only allowed in combat.');
@@ -817,6 +845,23 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
      pushes:rolled.pushes,responseEvents:rolled.responseEvents,notes:rolled.notes,
      pushRefused:rolled.pushRefused};
  };
+ if(action.kind==='wildlife'){
+  const w=wildlifeState(s);
+  s.wildlifeEncounter={...w,seenBy:[...new Set([...w.seenBy,a.id])],
+   approachedBy:action.target==='approach'?[...new Set([...w.approachedBy,a.id])]:[...w.approachedBy]};
+  if(action.target==='watch'){
+   gameEvent(s,a.name+' watches a peaceful Parasaurolophus drinking across the stream. It remains free to move away.',a.id,'wonder');
+   return accepted(s,a,'wildlife','watch',{outcome:'observed',species:'Parasaurolophus'},0);
+  }
+  const check=result('mobility','careful_approach');
+  if(check.success){
+   gameEvent(s,a.name+' approaches slowly; the Parasaurolophus looks up, then continues feeding across the stream.',a.id,'wonder');
+  }else{
+   s.wildlifeEncounter.status='withdrawn';s.wildlifeEncounter.reason='disturbed';
+   gameEvent(s,"The Parasaurolophus startles at "+a.name+"'s movement and withdraws through the ferns.",a.id,'risk');
+  }
+  return accepted(s,a,'wildlife','approach',{...check,outcome:check.success?'calm':'withdrawn',species:'Parasaurolophus',noise:check.success?0:2},check.success?0:2);
+ }
  if(action.kind==='danger'){
   const hazard=CINEMATIC_DANGERS[action.target];
   const rolled=result(hazard.skill,hazard.context);

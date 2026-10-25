@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.17",
-  "checkpoint": "008-B2",
-  "state": "cross_room_cinematic_discoveries_and_earned_generator_preparation_candidate_validated_pending_final_main_and_browser_qa",
+  "version": "0.7.18",
+  "checkpoint": "008-B3",
+  "state": "authored_calm_dinosaur_and_survivor_dialogue_candidate_424_tests_green_pending_final_main_pages_and_manual_browser_smoke",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,24 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 405,
+  "automated_tests": 424,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify 008-B2 final merged main 405/405 Actions and GitHub Pages on accepted SHA; separately perform actual desktop/mobile graphical playtesting, including prepared generator, alternate unprepared route, optional scene beats, old saves and spectator/focus camera.",
-    "Begin 008-B3: a complete branching and testable multi-scene Cinematic adventure with genuine player choice, meaningful repair/recovery and human dialogue, peaceful/wondrous dinosaur encounters and optional predator avoidance.",
-    "Advance 007-M finite equipment/batteries/park tools as scenario-authored gameplay challenges rather than requiring complete wildlife or meteorological simulation.",
-    "Develop 007-N typed event/effect-proposal AI Game Mother after deterministic contracts are tested, without granting models direct state mutation.",
-    "Keep all 405 automated tests and Party v3 save compatibility, existing personal Wonder, Evolved source authority, solo 006.2 and Worker v006 isolated."
+    "Verify final merged main 424/424 Actions and GitHub Pages on the exact accepted SHA; separately conduct desktop/mobile graphical smoke including calm/failed wildlife choices, conversations, camera modes, old save restore and combat.",
+    "Continue into first fuller Cinematic incident: connect meaningful optional human NPC dialogue, social/medical/recovery scenes, rescue endings and dinosaur situations without mandatory combat.",
+    "Implement finite 007-M physical batteries, tools and park supplies only where scenically relevant; retain Evolved expenditure and clock authority.",
+    "Build a bounded 007-N natural-language Game Mother on typed validated event/effect proposals, not direct model-controlled mutation.",
+    "Protect all 424 regressions, existing v3/v2 save compatibility, personal Wonder, original solo 006.2 and Worker v006; no island population simulator prerequisite."
   ],
   "acceptance_criteria": [
-    "Retain 389 accepted tests at 008-B1; add 16 new connected-scene tests for 405 total.",
-    "A genuine paid successful control-room Observation of consoles is the only authored way to learn the original generator startup sequence; failure does not grant it.",
-    "Knowledge stays with the investigator, persists across locations and saves, and supplies exactly +1 Evolved Heavy Machinery base die to that actor only for generator startup while power remains off.",
-    "Prepared and unprepared generator operations preserve actual time, seeded dice, pushes/stress/medical consequences, success/failure, existing generator noise and rescue objectives.",
-    "Four new authored follow-up scenes are conditional on real local discoveries/repair/sent call and can be skipped without mandatory combat or invented actors/animals.",
-    "Only locally visible physical repairs are revealed to a present survivor; personally failed attempts and learned tracks are not leaked to teammates or remote cameras.",
-    "All valid old party v3/v2 migrated saves, Party/Focus/Spectator, actor Wonder, 008-A pressure, 008-B1 danger, original solo and Worker remain compatible.",
-    "Candidate 405/405 green; require exact final PR and final-main Actions/Pages separately. Manual graphical browser testing remains unperformed."
+    "Keep all 405 accepted 008-B2 tests; add 19 meaningful encounter/dialogue cases for 424 total.",
+    "A physically situated authored Parasaurolophus is accessible from the actual jungle path only when visible, out of combat and absent physically present predator; no global wildlife population.",
+    "Quiet viewing is optional and advances exploration time without forced roll/stress; careful approach uses existing seeded Evolved Mobility/stress/push engine, with failure causing animal withdrawal and propagated auditable noise 2 rather than automatic injury.",
+    "Actual predator arrival can drive persistent herbivore retreat; squall hides sight; successful observers and failures remember events with proper actor-private knowledge.",
+    "Real co-located survivor conversations are optional and context-grounded, do not heal stress/wounds, grant items or claim generative NPC intelligence.",
+    "Older saves missing optional wildlifeEncounter/dialogueRecords remain valid, forged entries reject; Party/Focus/Spectator, Wonder, v2 migration, legacy solo/Worker unchanged.",
+    "Latest PR test suite and accepted main 424/424 CI and Pages must pass separately; real graphical desktop/mobile smoke remains unperformed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -43,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "008-B2 final-main Pages pending; last accepted 008-B1 main 7791f0c772bb5f2b116891cfbec94676185a8b1f succeeded via Actions 40065152590 and Pages 40065152207. Real desktop/mobile graphical QA pending.",
+  "pages_deployment": "008-B3 final main Pages pending; accepted 008-B2 main 1caf0cb40b6de0728e646a140241a696fbc2fb48 passed final Actions 40066106647 and Pages 40066106457. Actual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -736,7 +735,7 @@
     "checkpoint": "008-B2",
     "version": "0.7.17",
     "module": "src/cinematic-continuity.mjs",
-    "status": "Original, actor-local cross-scene discovery and consequence support; 405-test candidate success, final accepted main and Pages verification pending.",
+    "status": "008-B2 accepted in main 1caf0cb40b6de0728e646a140241a696fbc2fb48 with 405/405 tests, Actions and Pages successful.",
     "source": "Private Evolved Observation and Heavy Machinery checks remain authoritative; one original Jurassic situational +1 base die follows a successful control-room consoles investigation.",
     "features": [
       "Real time/seed/skill-dependent Observation success of control-room consoles reveals auxiliary generator sequence to that actor only; prepared survivor can earn a single +1 die on a later normal Heavy Machinery generator check.",
@@ -749,7 +748,7 @@
       "baseline": 389,
       "new": 16,
       "total": 405,
-      "ci": "PR candidate run 40065841783 passed 405/405; final latest head Actions and merged main Actions/Pages required."
+      "ci": "008-B2 accepted 405/405; final main Actions 40066106647 and Pages 40066106457 succeeded."
     },
     "manual_qa": "Desktop/mobile graphical gameplay and save/reload manual smoke outstanding.",
     "deferred": [
@@ -760,5 +759,35 @@
       "007-N bounded conversational Game Mother"
     ],
     "compatibility": "Party v3 and v2 migration, old v3 optional scene/danger fields, prior 389 tests, personal Wonder journals, three control modes, solo 006.2 and Worker v006 unaffected."
+  },
+  "cinematic_encounters_implementation": {
+    "checkpoint": "008-B3",
+    "version": "0.7.18",
+    "module": "src/cinematic-encounters.mjs",
+    "status": "One authored, physically situated optional calm herbivore encounter and direct existing-party dialogue validated in candidate (424/424); final main CI/Pages pending.",
+    "original_source_boundary": "Original Jurassic scene and dialogue authoring; private Alien Evolved Mobility/stress/push, action time and predator sound remain authoritative. No published creature attack table copied.",
+    "features": [
+      "One physically grounded Parasaurolophus at jungle drainage stream beyond an authored bank, not added to the combat dinosaur array or a continuously simulated island population.",
+      "Optional watch safely (normal exploration time/no roll) or carefully approach (real Evolved Mobility roll), with success remaining peaceful and failure causing retreat and noise 2, never an automatic bite.",
+      "Heavy squall hides encounter; physically present Velociraptor removes peaceful availability, and accepted predator entry causes persistent herbivore withdrawal rather than teleporting the animal back.",
+      "Actor-specific seeing and attempting persists; only actual jungle observers can see appropriate memory, and forged/duplicate actor entries reject.",
+      "Actual party survivors can check in or plan while healthy/capable, alive, co-located and out of combat; conversations are player-optional, actor-recipient-topic persisted and grounded in real mission and health/stress state. No free healing, no fabricated NPC and no full AI dialogue.",
+      "No party schema bump; optional wildlifeEncounter/dialogueRecords are valid for older party v3 saves when absent; solo/Worker untouched."
+    ],
+    "tests": {
+      "baseline": 405,
+      "new": 19,
+      "total": 424,
+      "ci": "PR initial 423/424 due to omitted noise audit; fixed and retested 424/424 green on 40159872826; final latest PR and main CI/Pages required."
+    },
+    "manual_qa": "Hands-on desktop/mobile interactive mode, save/reload, wildlife and dialogue smoke outstanding.",
+    "deferred": [
+      "Connected multi-episode playable Cinematic campaign with original human NPCs and larger choice consequences",
+      "Autonomous conversational 007-N Game Mother",
+      "Complete source-verified Alien Evolved Last Survivor/Cinematic procedural parity",
+      "007-M finite equipment/repairs",
+      "Additional dinosaur species and broader physical reactions"
+    ],
+    "compatibility": "Party v3 and older valid v3 optional fields, v2 migration, 405 earlier regressions, 008-A/B1/B2 and 007-L, personal Wonder, Party/Focus/Spectator, solo 006.2, Worker v006 intact."
   }
 }
