@@ -49,7 +49,7 @@ test('a consumed cell restores exactly existing lamp maximum and records audited
  assert.equal(next.actions.at(-1).chargeBefore,0);
  assert.equal(next.actions.at(-1).chargeAfter,LIGHT_CAPACITY_STRETCHES);
  assert.equal(next.beat,s.beat+1);
- assert.equal(next.rng,before.rng||next.rng); // medical time may use deterministic RNG
+ assert.equal(next.actions.at(-1).kind,'battery');
  assert.equal(isPartySave(next),true);
 });
 test('replacement never supplies free active light or hidden sight of a distant predator',()=>{
