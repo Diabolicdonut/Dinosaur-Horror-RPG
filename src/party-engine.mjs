@@ -860,7 +860,7 @@ export function partyStep(previous,raw,{actorId=null,source='human',reactionProm
    s.wildlifeEncounter.status='withdrawn';s.wildlifeEncounter.reason='disturbed';
    gameEvent(s,"The Parasaurolophus startles at "+a.name+"'s movement and withdraws through the ferns.",a.id,'risk');
   }
-  return accepted(s,a,'wildlife','approach',{...check,outcome:check.success?'calm':'withdrawn',species:'Parasaurolophus'},check.success?0:2);
+  return accepted(s,a,'wildlife','approach',{...check,outcome:check.success?'calm':'withdrawn',species:'Parasaurolophus',noise:check.success?0:2},check.success?0:2);
  }
  if(action.kind==='danger'){
   const hazard=CINEMATIC_DANGERS[action.target];
