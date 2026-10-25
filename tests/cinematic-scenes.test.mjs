@@ -100,7 +100,7 @@ test('browser actually renders character-local scene without new activity or wor
  const html=await readFile(new URL('../party.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
  const engine=await readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8');
- assert(html.includes('src/party-app.mjs?v=007m1'));
+ assert(html.includes('src/party-app.mjs?v=009a'));
  assert(app.includes("scene.push('SCENE"));
  assert(app.includes('v.cinematicScene.focus'));
  assert(engine.includes('cinematicScene:sceneForActor(s,actor)'));
