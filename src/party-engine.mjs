@@ -5,6 +5,7 @@
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
 import {createAdventureWorld} from './adventure-world.mjs';
+import {commitAuthorizedObjective,validObjectiveRecords} from './adventure-objectives.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
 import {CINEMATIC_EVENTS,eventAllowed,availableSceneEvents,validSceneRecords,validScenePressure,pressureForActor,checkScenePressure} from './cinematic-director.mjs';
@@ -33,6 +34,10 @@ const ACCEPTED_BINDING=adventureBinding(ACCEPTED_ADVENTURE);
 // 009-B1: reusable topology and physical item data from a validated manifest.
 // Director, cinematic rules, and rescue mechanics remain scenario-bound.
 const PARTY_WORLD=createAdventureWorld(ACCEPTED_ADVENTURE);
+// Transitional Evolved-gated authored interactions, not universal game rules.
+const STORM_OBJECTIVE_BY_FEATURE=Object.freeze({
+ generator:'restore-power',radio:'call-for-help',beacon:'light-beacon'
+});
 export const PARTY_SAVE_KIND = 'dinosaur-party-incident';
 const own = (o,k) => Object.prototype.hasOwnProperty.call(o,k);
 const deep = v => JSON.parse(JSON.stringify(v));
@@ -472,7 +477,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
   startingRoster:deep(party),actors,flags:{power:false,distress:false,beacon:false,serviceShutterClosed:false,paddockGateBraced:false},
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
     cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],
+  controlHistory:[],aiDecisions:[],combat:null,sceneRecords:[],scenePressure:[],dangerRecords:[],objectiveRecords:[],
   dialogueRecords:[],wildlifeEncounter:{status:'present',seenBy:[],approachedBy:[],reason:null},
   parkGuide:defaultGuide(),batterySpent:0,
   rooms:PARTY_WORLD.initialRoomItems(),
@@ -493,6 +498,9 @@ export function isPartySave(s) {
     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
     !validCombatState(s)||!validSceneRecords(s)||!validScenePressure(s)||!validDangerRecords(s)||
     !validWildlifeState(s)||!validDialogueRecords(s)||!validParkGuide(s)||!validBatteryStock(s)||
+     !validObjectiveRecords(ACCEPTED_ADVENTURE,s)||
+     (s.adventureOutcome!==undefined&&s.adventureOutcome!==null&&
+       !['completed','abandoned'].includes(s.adventureOutcome))||
     (s.clock!==undefined&&(!s.clock||!['explorationActions','explorationStretches','combatRounds','combatSeconds'].every(k=>
       Number.isSafeInteger(s.clock[k])&&s.clock[k]>=0)))||
     !['playing','rescued','lost'].includes(s.outcome)||
@@ -1156,10 +1164,21 @@ if(action.groupApproach){
    if(preparation?.ready)gameEvent(s,a.name+' follows the auxiliary generator sequence learned from the control-room diagnostic.',a.id,'action');
    a.hidden=false;
    if(rolled.success){
-    if(feature==='generator')s.flags.power=true;
-    if(feature==='radio')s.flags.distress=true;
-    if(feature==='beacon'){
-     s.flags.beacon=true;s.outcome='rescued';
+    // Rule-authorized success has already been resolved using Evolved dice.
+    // The generic objective service may commit only authored typed effects.
+    const committed=commitAuthorizedObjective(ACCEPTED_ADVENTURE,s,{
+     objectiveId:STORM_OBJECTIVE_BY_FEATURE[feature],
+     actorId:a.id,authorization:{kind:'engine-committed-rule',success:true}
+    });
+    if(!committed.accepted)
+     throw new Error('Validated adventure objective disagreement: '+committed.reason);
+    s.flags=committed.state.flags;
+    s.objectiveRecords=committed.state.objectiveRecords;
+    if(committed.state.adventureOutcome){
+     s.adventureOutcome=committed.state.adventureOutcome;
+     // Party-v3 rescue reporting remains unchanged; other adventures can
+     // translate authored endings differently when fully extracted.
+     s.outcome=s.adventureOutcome==='completed'?'rescued':'lost';
      gameEvent(s,endingForGuide(s).text,a.id,'milestone');
     }
     gameEvent(s,a.name+' successfully operates the '+feature+'.',a.id,'milestone');
