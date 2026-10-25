@@ -1,7 +1,7 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009a';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009b2b1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009a';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009b2b1';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
@@ -49,8 +49,9 @@ function create({roster=null,seed=null}={}){
  if(roster)setup={seed:seed??1993,roster};
  else setup=state?.startingRoster&&validateParty(state.startingRoster).length===0?
    {seed:state.initialSeed,roster:state.startingRoster}:(setup??loadSetup());
- state=newPartyIncident(setup);
- save();announce('New party incident started. Choose a control mode at any time.');
+ state=newPartyIncident({...setup,adventureId:$('adventure-select').value});
+ save();announce('New '+(state.scenario==='ridge-survey'?'research':'rescue')+
+  ' incident started. Choose a control mode at any time.');
 }
 function selectedOption(id,label,selected){
  return '<option value="'+esc(id)+'"'+(id===selected?' selected':'')+'>'+esc(label)+'</option>';
@@ -58,6 +59,7 @@ function selectedOption(id,label,selected){
 function show(){
  if(!state||!isPartySave(state))return;
  const watching=cameraActorId(state),v=partyView(state,{actorId:watching});
+ $('adventure-select').value=v.adventureId||'nublar-after-the-storm';
  const turn=activeCombatSlot(state),predatorTurn=turn?.kind==='dinosaur';
  const active=predatorTurn?{name:'Velociraptor',id:state.dinosaurs[0].id}:
    state.actors.find(a=>a.id===activeTurnId(state));
@@ -121,12 +123,13 @@ function show(){
    ' · Exploration '+v.time.minutes+' min'+
    (v.time.combatSeconds?' · Combat '+v.time.combatSeconds+' s':'');
  const flags=v.flags;
- $('objectives').innerHTML=[
+ $('objectives').innerHTML=(v.objectives?
+  v.objectives.map(o=>[o.description,o.done]):[
    ['Recover the staff access card',state.actors.some(a=>a.inventory.includes('keycard'))],
    ['Restore auxiliary power',flags.power],
    ['Send distress call',flags.distress],
    ['Activate helipad beacon',flags.beacon]
- ].map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
+  ]).map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
    '"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
  const scene=[];
  if(v.cinematicAct)scene.push('CINEMATIC ACT '+v.cinematicAct.number+' · '+v.cinematicAct.title+' — '+v.cinematicAct.objective);
@@ -253,7 +256,9 @@ function show(){
    ' · 5–10 seconds per combat round':
    'EXPLORATION · 5–10 minute stretches · no combat';
  if(state.outcome!=='playing')announce(state.outcome==='lost'?
-  'ALL SURVIVORS LOST — this incident has ended.':'Rescue objectives complete; this incident has ended.');
+  'ALL SURVIVORS LOST — this incident has ended.':
+  (v.adventureId==='ridge-survey'?'The field survey is complete; the team has returned safely.':
+   'Rescue objectives complete; this incident has ended.'));
  queueAutoplay();
 }
 function commit(result,label){
@@ -390,7 +395,7 @@ $('load-incident').addEventListener('click',()=>{
  if(restore())show();else announce('No valid saved party incident found.');
 });
 $('restart-incident').addEventListener('click',()=>{
- if(!confirm('Restart the current party? Existing party progress will be replaced. Legacy solo saves stay untouched.'))return;
+ if(!confirm('Start the selected adventure with this party? Current progress will be replaced; legacy solo saves stay untouched.'))return;
  create();show();
 });
 $('export-incident').addEventListener('click',()=>{
