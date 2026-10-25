@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.18",
-  "checkpoint": "008-B3",
-  "state": "authored_calm_dinosaur_and_survivor_dialogue_candidate_424_tests_green_pending_final_main_pages_and_manual_browser_smoke",
+  "version": "0.7.19",
+  "checkpoint": "008-C1",
+  "state": "single_park_guide_optional_persuasion_route_escort_and_truthful_rescue_candidate_440_green_pending_final_main_pages_and_manual_qa",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,24 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 424,
+  "automated_tests": 440,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify final merged main 424/424 Actions and GitHub Pages on the exact accepted SHA; separately conduct desktop/mobile graphical smoke including calm/failed wildlife choices, conversations, camera modes, old save restore and combat.",
-    "Continue into first fuller Cinematic incident: connect meaningful optional human NPC dialogue, social/medical/recovery scenes, rescue endings and dinosaur situations without mandatory combat.",
-    "Implement finite 007-M physical batteries, tools and park supplies only where scenically relevant; retain Evolved expenditure and clock authority.",
-    "Build a bounded 007-N natural-language Game Mother on typed validated event/effect proposals, not direct model-controlled mutation.",
-    "Protect all 424 regressions, existing v3/v2 save compatibility, personal Wonder, original solo 006.2 and Worker v006; no island population simulator prerequisite."
+    "Verify final 008-C1 main 440/440 GitHub Actions and Pages on exact accepted commit; then perform actual desktop/mobile graphical gameplay smoke of persuasion, handoff, shelter, muster, beacon ending, controls and save/reload.",
+    "Develop a stronger linked Cinematic rescue episode with meaningful character and original NPC dialogue, recovery and consequences rather than a forced horror sequence.",
+    "Implement focused 007-M consumable equipment/park tools, with owned finite resources and meaningful repair or rescue decisions, respecting Evolved rules and previous saves.",
+    "Advance 007-N bounded AI Game Mother through validated typed action/event proposals and safe deterministic effects, not direct game state mutation.",
+    "Preserve previous 440 regressions, Party v3 and v2 migration, Solo 006.2, Worker v006, personal Wonder, and no island ecology simulator prerequisite."
   ],
   "acceptance_criteria": [
-    "Keep all 405 accepted 008-B2 tests; add 19 meaningful encounter/dialogue cases for 424 total.",
-    "A physically situated authored Parasaurolophus is accessible from the actual jungle path only when visible, out of combat and absent physically present predator; no global wildlife population.",
-    "Quiet viewing is optional and advances exploration time without forced roll/stress; careful approach uses existing seeded Evolved Mobility/stress/push engine, with failure causing animal withdrawal and propagated auditable noise 2 rather than automatic injury.",
-    "Actual predator arrival can drive persistent herbivore retreat; squall hides sight; successful observers and failures remember events with proper actor-private knowledge.",
-    "Real co-located survivor conversations are optional and context-grounded, do not heal stress/wounds, grant items or claim generative NPC intelligence.",
-    "Older saves missing optional wildlifeEncounter/dialogueRecords remain valid, forged entries reject; Party/Focus/Spectator, Wonder, v2 migration, legacy solo/Worker unchanged.",
-    "Latest PR test suite and accepted main 424/424 CI and Pages must pass separately; real graphical desktop/mobile smoke remains unperformed."
+    "Keep all 424 accepted 008-B3 regressions and add 16 new encounter, rescue and social tests, 440 total.",
+    "Only an actual on-site capable player can speak with or persuade the authored guide, with one-time free dialogue and a paid Evolved Manipulation/stress/push consent check.",
+    "Failed persuasion does not invent consent or spawn an NPC; another colocated survivor can make their own check.",
+    "Successful escort follows only a real current escort through accepted movement edges and never bypasses staff-card locked doors or the physical storm shutter.",
+    "Shelter, resume escort, handoff and helipad muster all require the real guide and capable actor in the same valid room, with time spent and validated persistence.",
+    "Genuine beacon Comtech success preserves existing game outcome, with a truthful NPC-specific rescue epilogue: accounted, at pad, sheltered or unknown.",
+    "Optional party save v3 record accepts old saves with no guide data, rejects invalid IDs, zones, statuses and remote escort positions; local view never exposes hidden remote NPC presence.",
+    "Final exact-head PR 440/440 and independently validated accepted main Actions/Pages required; hands-on desktop/mobile QA still unperformed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +43,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "008-B3 final main Pages pending; accepted 008-B2 main 1caf0cb40b6de0728e646a140241a696fbc2fb48 passed final Actions 40066106647 and Pages 40066106457. Actual graphical QA outstanding.",
+  "pages_deployment": "008-C1 final main Pages pending; prior accepted 008-B3 main 9cb9e3d5181b198ea0e24c1b7b350b46a680043d passed Actions 40160097813 and Pages 40160096998; manual graphical QA not performed.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -764,7 +765,7 @@
     "checkpoint": "008-B3",
     "version": "0.7.18",
     "module": "src/cinematic-encounters.mjs",
-    "status": "One authored, physically situated optional calm herbivore encounter and direct existing-party dialogue validated in candidate (424/424); final main CI/Pages pending.",
+    "status": "008-B3 accepted in main 9cb9e3d5181b198ea0e24c1b7b350b46a680043d; 424/424 tests, Actions 40160097813 and Pages 40160096998 successful.",
     "original_source_boundary": "Original Jurassic scene and dialogue authoring; private Alien Evolved Mobility/stress/push, action time and predator sound remain authoritative. No published creature attack table copied.",
     "features": [
       "One physically grounded Parasaurolophus at jungle drainage stream beyond an authored bank, not added to the combat dinosaur array or a continuously simulated island population.",
@@ -778,7 +779,7 @@
       "baseline": 405,
       "new": 19,
       "total": 424,
-      "ci": "PR initial 423/424 due to omitted noise audit; fixed and retested 424/424 green on 40159872826; final latest PR and main CI/Pages required."
+      "ci": "Accepted main 008-B3 424/424 on run 40160097813 and Pages 40160096998."
     },
     "manual_qa": "Hands-on desktop/mobile interactive mode, save/reload, wildlife and dialogue smoke outstanding.",
     "deferred": [
@@ -789,5 +790,33 @@
       "Additional dinosaur species and broader physical reactions"
     ],
     "compatibility": "Party v3 and older valid v3 optional fields, v2 migration, 405 earlier regressions, 008-A/B1/B2 and 007-L, personal Wonder, Party/Focus/Spectator, solo 006.2, Worker v006 intact."
+  },
+  "cinematic_escort_implementation": {
+    "checkpoint": "008-C1",
+    "version": "0.7.19",
+    "module": "src/cinematic-escort.mjs",
+    "report": "docs/CINEMATIC-ESCORT-008C1.md",
+    "status": "Candidate 440/440 automated tests passed; exact merged main Actions and Pages pending.",
+    "authority": "Original Jurassic NPC scenario content; Evolved Manipulation/stress/push, physical zones and time retained. No autonomous NPC combat sheet.",
+    "features": [
+      "One original stranded park employee Mara Velez physically present at lobby reception, with optional mission-aware dialogue and real Manipulation consent check.",
+      "A consenting guide follows only her designated escort through validated actual party-engine movement; blocked doors, shutter, failed movement and teammate movement cannot teleport her.",
+      "Physically present teammates can take over escorting; the guide can be sheltered at control room, invited to travel again, or mustered at helipad, all with existing exploration time.",
+      "Actual beacon Comtech victory stays unchanged; rescue epilogue distinguishes mustered, at-pad, sheltered or unaccounted outcomes without fabricating extraction.",
+      "Optional validated parkGuide v3 record, compatible with all old v3 and v2-migrated saves; actor-local guide view and original party/focus/spectator ownership."
+    ],
+    "tests": {
+      "baseline": 424,
+      "new": 16,
+      "total": 440,
+      "ci": "Candidate GitHub Actions PR run 40160684489 passed 440/440; final latest commit and accepted main checks still required."
+    },
+    "limits": [
+      "NPC is noncombat and does not receive independent health/stress or predator attacks",
+      "No full generated dialogue or new helicopter timeline",
+      "Manual desktop/mobile graphical QA remains outstanding",
+      "No persistent wildlife population"
+    ],
+    "compatibility": "Previous 424 regressions, three agency modes, personal Wonder, accepted solo 006.2 and Worker v006, full v3 save compatibility maintained."
   }
 }
