@@ -2,6 +2,7 @@
 // and actor-to-actor conversation. These are original scenario events, not
 // persistent wildlife populations or free mechanical stress cures.
 import {weatherAt} from './dinosaur-environment.mjs';
+import {SCENARIO} from './scenario.mjs';
 
 const TOPICS=Object.freeze({
  'check-in':'Check on one another',
@@ -76,7 +77,7 @@ export function validDialogueRecords(s){
   if(!r||!TOPICS[r.topic]||!s.actors.some(a=>a.id===r.actorId)||
    !s.actors.some(a=>a.id===r.recipientId)||r.actorId===r.recipientId||
    !Number.isSafeInteger(r.beat)||r.beat<0||r.beat>s.beat||
-   typeof r.zone!=='string')return false;
+   !SCENARIO.rooms[r.zone])return false;
   const key=r.actorId+':'+r.recipientId+':'+r.topic;
   if(seen.has(key))return false;
   seen.add(key);return true;
