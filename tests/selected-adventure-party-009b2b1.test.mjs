@@ -128,7 +128,7 @@ test('009-B2b1: two-person actual handoff conserves item counts and requires col
  const party=makeParty({seed:81,size:2});
  let s=newPartyIncident({adventureId:'ridge-survey',seed:81,roster:party});
  const initial=JSON.stringify(s);
- assert.equal(partyStep(s,{kind:'give',target:'field-radio',recipientId:party[1].id}).accepted,false);
+ assert.equal(partyStep(s,{kind:'give',target:'rope-coil',recipientId:party[1].id}).accepted,false);
  assert.equal(JSON.stringify(s),initial);
  s=step(s,'give field-radio to pc-2');
  assert.equal(s.actors[1].inventory.includes('field-radio'),true);
@@ -183,6 +183,7 @@ test('009-B2b1: per-actor view excludes remote stock and other actors private in
  const party=makeParty({seed:55,size:2});
  let s=newPartyIncident({adventureId:'ridge-survey',seed:55,roster:party});
  s=step(s,'take field-notes');
+ s=step(s,'wait'); // teammate uses own turn; first actor then departs
  s=step(s,'move rocky-ascent');
  const v=partyView(s,{actorId:party[1].id});
  assert.equal(v.location,'field-camp');
