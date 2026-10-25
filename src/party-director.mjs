@@ -2,6 +2,9 @@
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs?v=007l2a';
+import {compileSelectedAdventure} from './adventure-catalog.mjs';
+import {createAdventureWorld} from './adventure-world.mjs';
+const SURVEY_WORLD=createAdventureWorld(compileSelectedAdventure('ridge-survey',0));
 import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009a';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
@@ -75,13 +78,15 @@ export function setPlayback(previous,{paused=null,speedMs=null}={}){
  s.control.epoch++;
  return {accepted:true,state:s,changed:true};
 }
-function shortestNext(from,destination){
+function shortestNext(from,destination,adventureId='nublar-after-the-storm'){
  if(from===destination)return null;
- if(!SCENARIO.rooms[from]||!SCENARIO.rooms[destination])return null;
+ const rooms=adventureId==='ridge-survey'?SURVEY_WORLD:null;
+ if(rooms?(!rooms.hasRoom(from)||!rooms.hasRoom(destination)):
+   (!SCENARIO.rooms[from]||!SCENARIO.rooms[destination]))return null;
  const q=[[from,[]]],seen=new Set([from]);
  while(q.length){
   const [node,path]=q.shift();
-  for(const neighbor of SCENARIO.rooms[node].exits){
+  for(const neighbor of (rooms?rooms.room(node).exits:SCENARIO.rooms[node].exits)){
    if(seen.has(neighbor))continue;
    if(neighbor===destination)return (path[0]||neighbor);
    seen.add(neighbor);q.push([neighbor,[...path,neighbor]]);
@@ -120,14 +125,16 @@ export function actorObservation(s,actorId){
     .map(a=>({id:a.id,name:a.name,career:a.career,broken:Boolean(a.broken),dead:Boolean(a.dead),
       lethalUnstable:pendingLethal(a).length>0,
       surgeryNeeded:(a.criticalInjuries||[]).some(w=>!w.healed&&!w.surgeryDone&&TRAUMA[w.code]?.surgery)})),
-  mission:{...view.flags}
+  mission:{...view.flags},
+  adventureId:view.adventureId||'nublar-after-the-storm',
+  objectivePlan:Array.isArray(view.objectivePlan)?view.objectivePlan.map(x=>({...x})):null
  };
 }
 function proposal(kind,target,goal,reason){
  return {kind,target,goal,reason};
 }
 function to(observation,destination,goal){
- const step=shortestNext(observation.location,destination);
+ const step=shortestNext(observation.location,destination,observation.adventureId);
  const exposed=['jungle','paddock','helipad'].includes(observation.location);
  return step&&observation.exits.includes(step)?
    proposal(exposed?'sneak':'move',step,goal,
@@ -182,6 +189,16 @@ export function chooseCompanionAction(observation){
  if(researched && ['scientist','ranger'].includes(o.career) &&
     (o.location==='paddock'||o.location==='jungle'))
     return proposal('investigate',researched,'research_tracks','Examine a nearby environmental clue.');
+ // An adventure with manifest-defined objective prompts must not run the
+ // hardcoded Nublar generator-radio-beacon AI plan.
+ if(Array.isArray(o.objectivePlan)){
+  const goal=o.objectivePlan[0];
+  if(!goal)return proposal('wait','','mission_finished','No outstanding objectives.');
+  if(o.location===goal.room)return goal.target?
+   proposal('use',goal.target,goal.id,'Perform the local, authored objective interaction.') :
+   proposal('wait','',goal.id,'No source-valid interaction is defined yet.');
+  return to(o,goal.room,goal.id);
+ }
  if(!o.mission.power){
    if(o.inventory.includes('keycard')){
      if(o.location==='shed')return proposal('use','generator','restore_power','Restore auxiliary power.');
