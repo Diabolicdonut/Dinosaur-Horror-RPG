@@ -138,3 +138,20 @@ test('009-B2a: original Evolved generator successes commit and failures do not',
  assert.equal(isPartySave(success.state),true);
  assert.equal(isPartySave(failure.state),true);
 });
+
+test('009-B2a: forged completion records cannot override unapplied flags or skip prerequisites',()=>{
+ const {compiled,state}=fixture();
+ const bogus={id:'walk-out',actorId:'pc-1',room:'field-camp',beat:0};
+ state.objectiveRecords=[bogus];
+ assert.equal(validObjectiveRecords(compiled,state),false);
+ state.objectiveRecords=[{id:'recover-transect',actorId:'pc-1',room:'forest-blind',beat:0}];
+ assert.equal(validObjectiveRecords(compiled,state),false); // effect not applied
+});
+test('009-B2a: accepted objective history rejects reversed causal time',()=>{
+ const {compiled,state}=fixture();
+ let s=apply(compiled,move(state,'forest-blind'),'recover-transect').state;
+ s.beat=1;
+ s=apply(compiled,move(s,'survey-ridge'),'send-field-report').state;
+ s.objectiveRecords[0].beat=2;
+ assert.equal(validObjectiveRecords(compiled,s),false);
+});
