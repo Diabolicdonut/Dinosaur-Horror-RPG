@@ -1,5 +1,19 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Architecture refinement — Variability in Authored Adventures + Procedurally Generated Cinematics/Campaigns — 2026-10-25
+
+**User direction:** The game should ship **several pregenerated adventures**, but those adventures should **change meaningfully between runs**. The ultimate product should permit an **open-ended number of newly generated Cinematic scenarios and continuing Campaigns**, maintaining player uncertainty about human motives, threat presence, clues, difficulties and outcomes. Being familiar with an authored module must not mean knowing exactly what to expect next.
+
+**Recovery:** GitHub main at start: `da17db8b8b07abba0f8d71b6192ab70877eff390`; accepted 007-M1 v0.7.20 and **454/454 regression tests**; main Actions [40210971102](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40210971102) and Pages [40210970636](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40210970636) successful. Prior architecture decision and tracking Issue #18 already required scenario/engine separation. No product runtime implementation of generation or replay variation existed.
+
+**New authoritative contract:** [Procedural Adventures and Replayability](docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md) now defines (1) authored adventure **templates with substantial seeded variability**, (2) newly compiled **procedural Cinematic adventures** without a fixed rescue plot and (3) procedurally generated **Campaign chapters** governed by persistent character/world consequences. Variability concerns actual source of crisis, cast/relationships, valid NPC agendas, physical routes, species/dispositions, clues, resources, Wonder/danger/downtime, and real endings; *not* altered Evolved dice, retroactive hidden facts, arbitrary creature teleports or forced scares.
+
+**Mechanism:** A seed/versioned adventure compiler establishes an internally consistent, validated manifest and locked initial latent truths using an RNG independent of gameplay Evolved dice. The bounded Game Mother proposes source-valid *typed events and effects* in reaction to player choices, but may not silently change culprit/hidden facts, break physical reachability, mint items or overturn resolved outcomes. Continue/load uses the same compiled manifest, event history and party knowledge; fresh replay may compile a different accepted variant. Campaign generation must respect prior resolved scenes, injuries, relationships and actor knowledge.
+
+**Test gates:** First satisfy adventure-engine separation with two genuinely different playable adventures. Then demonstrate *same-seed reproducibility* and *different-seed structural replay diversity* for authored templates (not just different prose), plus validation of original generated Cinematics and coherent continuing Campaign chapters. All save versioning, physical conservation, actor privacy, Evolved source fidelity and the existing **454 accepted regressions** remain mandatory.
+
+**Status:** **Planning/documentation change only.** No generated adventure compiler, replay variant engine, dynamic Campaign generator or AI Game Mother work was implemented or validated by this doc-only milestone. Existing party gameplay and 454-case suite remain unchanged; graphical desktop/mobile QA still outstanding. Issue #18 and the living roadmap now reflect the refined priorities.
+
 ## Architecture correction — Adventure/Engine Separation — 2026-10-25
 
 **User requirement:** The eventual game must generate genuinely new and unpredictable Cinematic/Campaign adventures; the *After the Storm* scenario must never define the reusable rules engine or dictate every story's premise, location IDs, goals, supporting characters and outcome.
