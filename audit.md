@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b1 — Selected Second Party Adventure (candidate) — 2026-10-25
+
+**Recovery:** Verified current GitHub main `c96fc43b76f354a56eb29903b1c690cb20815363`, accepted 009-B2a v0.7.23, 494/494, Actions/Pages green, no open PRs. No other project inputs used.
+
+**Implementation:** The Party API now accepts an `adventureId`, preserving the original Nublar execution path while selecting a separate `ridge-survey` instance through `src/adventure-party-runtime.mjs`. The second adventure has a different five-zone world, research objectives, source Evolved Observation and Comtech attempts, actual physical inventory and teammate transfers, optional nonhostile Parasaurolophus observation, and a routine non-helicopter walk-out ending once earlier objectives are committed. The same Party/Focus/Spectator control public API, browser camera, action controls and saved session path work with the selected instance. The companion director follows the selected map and research objective instead of sending everyone to the Nublar generator. The browser now offers two selectable modules and displays scenario-specific objectives. A typed, data-only `interaction` field declares each research objective's in-room target and valid Evolved skill, with `null` reserved for routine no-roll actions. An unapproved player objective command cannot auto-complete goals.
+
+**Save/security:** New survey Party-v3 saves bind the exact adventure revision and fingerprint, enforce correct rooms, physical item conservation, known flags, causal objective history, valid actor identifiers, and reject foreign Nublar saves under the survey identity. Actor views do not display other actors' inventories or distant item stock. The compiled hidden variant facts remain private but are not yet materialized as different gameplay consequences.
+
+**Validation:** Fourteen targeted new tests plus the 494 previously accepted cases target **508/508**. An initial PR run caught 15 legacy UI tests requiring the obsolete cache revision string and two faulty new test assumptions concerning actual actor turns and item ownership. Corrected those assertions without weakening simulation guards. Latest candidate source commit `217b197d17819d3208d2af93b3546b9e2fdb5208` passed **508/508** in candidate CI [Actions 40246695292](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40246695292). Final documentation-inclusive PR and merged-main CI/Pages remain separately required.
+
+**Limits / next:** This is a **second playable exploration-and-objectives slice**, not feature-parity or final 009-B independence. The original survival/combat/guide/dinosaur director remains Nublar-bound; the survey's peaceful animal currently has no autonomous behavior or Evolved combat. Its seeded facts do not yet drive changing causal encounters. A later milestone must unify directors, creatures, events, saving and all mechanics behind selected AdventureInstances. No generic procedural Cinematic/Campaign generator, full AI Game Mother, or manual browser QA is complete.
+
+
 ## Checkpoint 009-B2a — Evolved-Gated Generic Objectives and Endings (accepted) — 2026-10-25
 
 **Recovery:** Accepted main `39616750a3667fc25a18d606c35ee6c19aa9e163`, 009-B1 v0.7.22, 478/478 regressions, Actions/Pages both successful; no open PRs. No work from other projects was used.
