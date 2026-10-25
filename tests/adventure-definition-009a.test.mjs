@@ -59,7 +59,7 @@ test('independent generation seed deterministically locks genuine hidden world f
 });
 test('generation does not change Evolved gameplay seed or retrofit a new rescue route',()=>{
  const a=compileSelectedAdventure('ridge-survey',1993);
- const b=compileSelectedAdventure('ridge-survey',1994);
+ const b=compileSelectedAdventure('ridge-survey',11);
  assert.notDeepEqual(a.hiddenFacts,b.hiddenFacts);
  assert.deepEqual(a.definition.rooms,b.definition.rooms);
  assert(!Object.hasOwn(a.definition.flags,'beacon'));
