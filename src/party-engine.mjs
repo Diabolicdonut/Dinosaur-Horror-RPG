@@ -416,8 +416,9 @@ const medicalFrom=worldSeconds(s);
    ['incapacitated','panic_freeze'].includes(kind)?'wait':kind;
   finishCombatAction(s,actor.id,costKind,nextSeed);
  }else{
+  const predatorWasAtStream=s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle');
   dinoTick(s,noise,actor.location);
-  if(s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle')&&wildlifeState(s).status==='present')
+  if((predatorWasAtStream||s.dinosaurs.some(d=>!d.defeated&&d.location==='jungle'))&&wildlifeState(s).status==='present')
    s.wildlifeEncounter={...wildlifeState(s),status:'withdrawn',reason:'predator'};
   s.clock.explorationActions++;
   s.clock.explorationStretches=Math.floor(s.clock.explorationActions/s.actors.length);
