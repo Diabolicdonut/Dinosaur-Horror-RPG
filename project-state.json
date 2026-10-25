@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.23",
   "checkpoint": "009-B2a",
-  "state": "candidate_generic_Evolved_gated_objectives_integrated_nublar_second_adventure_not_playable",
+  "state": "accepted_009_b2a_source_gated_generic_objectives_494_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,14 +16,14 @@
   "automated_tests": 494,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Confirm exact PR #23 494/494 on final head, merge only on success, verify accepted main Actions and Pages. Track separate manual graphical browser QA as outstanding.",
-    "Implement 009-B2b selected AdventureInstance context and two-adventure Party save/movement/action dispatch; remove remaining SCENARIO and rescue-specific dependencies without changing the accepted After the Storm story.",
-    "Prove The Long Count fully playable through the ordinary Party/Focus/Spectator engine with its own rooms, objectives, meaningful real action checks, physical creature presence, and valid non-helicopter ending; do not bypass Evolved checks with automatic objective commands.",
-    "Preserve all 478 accepted 009-B1 tests plus sixteen new 009-B2a tests, legacy party-v3/v2 saves, the old solo version, Wonder and Dread, guide escort, finite cells, raptor rules, and Worker independence.",
-    "Only after two independent adventures pass end-to-end: authored seeded replay variations, generated Cinematics, persistent Campaign chapters, bounded AI Game Mother; perform desktop/mobile interactive QA."
+    "Implement 009-B2b selected AdventureInstance context and independently playable Party/Focus/Spectator adventure loading, objective actions and endings across two substantially different scenarios; do not bypass Evolved checks.",
+    "Preserve all 494 accepted regression tests, 009-A/009-B1 saves, Nublar generator/radio/beacon rules, Evolved dice/stress/predator actions, finite battery stock, guide/wonder events and legacy solo/Worker isolation.",
+    "Remove remaining Nublar-specific scenario and director/creature/NPC imports from generic services, instead loading typed per-adventure instances with physical actor-aware validation.",
+    "After the two playable adventures gate, implement meaningful seeded authored replay variants, new procedural Cinematic adventures, continuing Campaign chapters and bounded typed AI Game Mother effects.",
+    "Run hands-on desktop/mobile graphical smoke with varied Party/Focus/Spectator action flow and save/reload; it has NOT yet been completed."
   ],
   "acceptance_criteria": [
-    "Retain all 478 accepted tests; pass sixteen new typed-objective/causal-history/security/regression checks (target 494).",
+    "009-B2a accepted: all 478 earlier tests and 16 additional objective/regression checks passed (494/494) on PR #23 and merged main 15748b3ae6cc03880e31ca2d455bdc028217fbfe; Actions 40241948021 and Pages 40241947584 successful.",
     "Use validated compiled adventure definitions to resolve prerequisites, actor room, typed flag effects and authored end effects. Require completed deterministic Evolved roll before existing Nublar generator/radio/beacon changes are committed.",
     "Do not change Evolved probability, roll sequence, cost, stress, rescue narration, item stocks or browser control modes. No universal free objective-completion command.",
     "Version-three party saves remain backward compatible without objectiveRecords; new saves track causal records and reject forged, duplicated or inconsistent objective history.",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2a candidate branch, final-main Actions/Pages not yet verified. Prior 009-B1 main 39616750a3667fc25a18d606c35ee6c19aa9e163 passed CI and Pages; real browser QA outstanding.",
+  "pages_deployment": "Accepted 009-B2a implementation main 15748b3ae6cc03880e31ca2d455bdc028217fbfe: Actions 40241948021 SUCCESS (494/494), Pages 40241947584 SUCCESS. Hands-on desktop/mobile QA outstanding. Acceptance-ledger-only follow-up requires separate Actions/Pages.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

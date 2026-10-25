@@ -22,3 +22,7 @@ Retain the accepted 478 regressions and add sixteen targeted objective tests. Re
 ## Next
 
 009-B2b must introduce an explicit selected AdventureInstance in Party saves and action dispatch, remove remaining authored scene/creature/NPC ownership from the shared rules engine and prove full end-to-end runs for both structurally distinct scenarios. Then proceed to seeded replay variation, procedural Cinematics, continuing Campaigns and bounded AI Game Mother.
+
+## Final GitHub acceptance (2026-10-25)
+
+Final PR #23 head `dcdc9bdc9f3297718afb1f3b12034f4c81ee8d25` passed 494/494. Merged source main `15748b3ae6cc03880e31ca2d455bdc028217fbfe` passed [Actions 40241948021](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40241948021) and [Pages 40241947584](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40241947584). There is no manual graphical QA completion evidence. Full two-adventure game runtime and generated content remain unimplemented.

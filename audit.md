@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B2a — Evolved-Gated Generic Objectives and Endings (candidate) — 2026-10-25
+## Checkpoint 009-B2a — Evolved-Gated Generic Objectives and Endings (accepted) — 2026-10-25
 
 **Recovery:** Accepted main `39616750a3667fc25a18d606c35ee6c19aa9e163`, 009-B1 v0.7.22, 478/478 regressions, Actions/Pages both successful; no open PRs. No work from other projects was used.
 
@@ -9,6 +9,8 @@
 **Continuity and security:** New Party saves may include an `objectiveRecords` history; preexisting valid Party-v3 saves without it continue to load, with previously true flag effects providing safe legacy progress inference. Records reject unknown/duplicated objective IDs, wrong physical rooms/actors, future or reversed timestamps, inconsistent saved effects and skipped prerequisites. A direct player-authored "objective" action is rejected; normal Evolved success remains mandatory for authored machinery. Existing action RNG, stress, chase, medical, item and party mode behavior is unchanged.
 
 **Validation:** **494 total targeted**: retain all 478 accepted 009-B1 regressions and add 16 tests of both unrelated adventure objective graphs, legal source authorization, position checks, prerequisites, typed end effects, mutation isolation, legacy saves, spoofed histories, and generator Evolved success/failure. PR CI, accepted-main Actions/Pages and real graphical smoke must be confirmed separately.
+
+**Acceptance:** [PR #23](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/23) final validated head `dcdc9bdc9f3297718afb1f3b12034f4c81ee8d25` passed **494/494** and merged as main `15748b3ae6cc03880e31ca2d455bdc028217fbfe`. Its independent accepted-main [Actions 40241948021](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40241948021) and [Pages 40241947584](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40241947584) both succeeded. Manual browser desktop/mobile QA remains outstanding.
 
 **Remaining:** 009-B2a is a subsystem milestone, **not** the full 009-B two-playable-adventures gate. The research survey can resolve its objective sequence through the standalone domain service but cannot yet run as a Party browser scenario. Creature/NPC/director/state selection remain Nublar-specific. Next: 009-B2b AdventureInstance selection and complete runtime extraction; then seeded authored variability, original generated Cinematics, continuing Campaigns and typed AI Game Mother.
 
