@@ -11,7 +11,7 @@ function already(state,o){
  if(state.objectiveRecords?.some(r=>r.id===o.id))return true;
  // Optional legacy Party-v3 histories: existing true flags prove prior effects.
  const flags=o.effects.filter(e=>e.type==='flag');
- return flags.length>0&&flags.every(e=>state.flags?.[e.name]===e.value);
+ return flags.length>0&&flags.every(e=>e.value===true&&state.flags?.[e.name]===true);
 }
 export function objectiveStatus(compiled,state){
  const d=definition(compiled);
@@ -24,13 +24,17 @@ export function validObjectiveRecords(compiled,state){
  if(records===undefined)return true; // old accepted saves
  if(!Array.isArray(records)||records.length>d.objectives.length)return false;
  const seen=new Set();
+ let previousBeat=-1;
  return records.every(r=>{
   const o=d.objectives.find(x=>x.id===r?.id);
   if(!o||seen.has(r.id)||r.room!==o.room||
-   !Number.isSafeInteger(r.beat)||r.beat<0||
+   !Number.isSafeInteger(r.beat)||r.beat<previousBeat||
    !Number.isSafeInteger(state.beat)||r.beat>state.beat||
-   typeof r.actorId!=='string'||!state.actors?.some(a=>a.id===r.actorId))return false;
-  seen.add(r.id);
+   typeof r.actorId!=='string'||!state.actors?.some(a=>a.id===r.actorId)||
+   o.requires.some(id=>!seen.has(id)&&!already(state,d.objectives.find(x=>x.id===id)))||
+   o.effects.some(e=>(e.type==='flag'&&state.flags?.[e.name]!==e.value)||
+    (e.type==='end'&&state.adventureOutcome!==e.outcome)))return false;
+  seen.add(r.id);previousBeat=r.beat;
   return true;
  });
 }
