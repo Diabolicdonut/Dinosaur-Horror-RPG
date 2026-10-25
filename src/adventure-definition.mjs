@@ -4,7 +4,7 @@
 export const ADVENTURE_SCHEMA_VERSION=1;
 export const ADVENTURE_COMPILER_VERSION=1;
 const clone=x=>JSON.parse(JSON.stringify(x));
-const key=x=>typeof x==='string'&&/^[a-z][a-z0-9-]{1,63}$/.test(x);
+const key=x=>typeof x==='string'&&/^[a-z][a-z0-9_-]{1,63}$/.test(x);
 const text=x=>typeof x==='string'&&x.trim().length>0&&x.length<=700;
 const safeSeed=x=>Number.isSafeInteger(x)&&x>=0&&x<=0xffffffff;
 function reject(why){throw new RangeError('Invalid adventure: '+why);}
