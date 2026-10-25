@@ -17,7 +17,7 @@ export function validBatteryStock(state){
  const floor=Object.values(state.rooms||{}).reduce((n,r)=>
    n+(Array.isArray(r?.items)?r.items.filter(id=>id===BATTERY_CELL).length:0),0);
  const held=(state.actors||[]).reduce((n,a)=>n+batteryCount(a),0);
- return floor+held+state.batterySpent<=BATTERY_STOCK;
+ return floor+held+spent<=BATTERY_STOCK;
 }
 export function localBatteryOptions(state,actor,ownsLight,capacity){
  if(!state||!actor||!ownsLight)return [];
