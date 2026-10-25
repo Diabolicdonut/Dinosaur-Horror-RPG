@@ -1,6 +1,8 @@
 # Dinosaur Horror RPG — Isla Nublar Prototype
 
-A personal-use, browser-based dinosaur survival-horror RPG prototype. Its initial *Jurassic Park* setting is deliberately isolated from the original rules engine so it can later be replaced with an original dinosaur setting.
+A personal-use, browser-based dinosaur survival-horror RPG prototype using *Alien RPG Evolved Edition*-inspired mechanics. **Scenario separation is the approved architecture but is not yet complete**: the current *After the Storm* test adventure still has hardcoded dependencies in the shared party engine. The architecture refactor is now prioritized before expanding scenario-specific gameplay. The final engine must be reusable for independently authored and AI-generated adventures.
+
+**Architecture priority:** [Adventure packages separate from the game engine](docs/ADVENTURE-ENGINE-SEPARATION.md). *After the Storm* is a sample/test adventure, never the hardcoded template for every session. Future scenarios will be created/generated as independently validated packages; the engine alone enforces Evolved actions, physics, saves and consequences. **This is an approved goal, not a completed refactor.**
 
 **Shared living roadmap:** [Dinosaur Horror RPG — Game Vision and Evolved Implementation Roadmap](docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md). This is the long-term design and development reference for future GitHub sessions, including Wonder and Dread, Evolved rules fidelity, multi-character agency, the AI Game Master, Alien-style cinematic/campaign scenes and dinosaur encounter behavior, current and future milestones, and release gates. Before developing, consult the latest `project-state.json` and newest `audit.md` record for the actual accepted checkpoint; older sections below are historical feature reports.
 
