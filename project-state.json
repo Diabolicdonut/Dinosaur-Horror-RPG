@@ -16,11 +16,11 @@
   "automated_tests": 454,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify accepted final 007-M1 main 454/454 Actions and Pages on exact commit. Separately perform actual desktop/mobile graphical playtests for finite pickup/transfer, replacement, lighting, saves and control modes.",
-    "Continue 007-M2 with small grounded park tools or repair consumables only where physical scarcity creates interesting Evolved mechanical decisions.",
-    "Prioritize 007-N typed, bounded natural-language Game Mother integration once finite mechanics and action validation are stable; prevent model-driven direct state mutation.",
-    "Bring completed scene fragments into a complete initial Cinematic adventure with human choices, wonder, recovery, danger and an optional park-guide rescue, without island ecology simulation.",
-    "Preserve all 454 tests, Party v3 / v2 migration, 008-C1 player rescue, per-actor Wonder and source authority, legacy solo 006.2 and Worker v006."
+    "PRIORITY: Refactor singleton SCENARIO and specific park-story coupling into typed, validated adventure packages. See docs/ADVENTURE-ENGINE-SEPARATION.md; no new core branches for fixed shed/radio/beacon/NPC lore.",
+    "Create a distinct second adventure package and prove both run under the same unmodified engine, with version-bound saves, deterministic Evolved dice, legal paths, actor privacy, NPC and dinosaur encounters, and at least one player-responsive noncombat outcome.",
+    "After the boundary gate, implement deterministic seed-based and then bounded AI-authored adventure generation; the Game Mother generates content/validated proposals, not Evolved rules or direct state mutations.",
+    "Keep 007-M2 finite tools and any further scenario-specific Cinematic content queued behind the adventure separation contract unless implementing fully reusable primitives.",
+    "Perform true desktop/mobile interactive graphical smoke; protect 454 automated regressions, accepted 007-M1, Party save migrations, Party/Focus/Spectator, original solo 006.2 and Worker v006."
   ],
   "acceptance_criteria": [
     "Preserve the 440 previously accepted 008-C1 tests and add 14 meaningful finite-equipment tests, 454 total.",
@@ -42,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "007-M1 final-main Pages pending; previous accepted 008-C1 main de72f0e9ef0e885ae512f6d89a60bcb1144486a8 passed Actions 40160909599 and Pages 40160909518. Real graphical QA remains outstanding.",
+  "pages_deployment": "007-M1 main 1cd360a732982189130c8381ee17d1ca980bbf73 passed final Actions 40162256262 (454 tests) and Pages 40162256266; live graphical desktop/mobile QA still outstanding. Architecture contract is documentation only, not implemented.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -846,5 +846,18 @@
       "Direct hands-on graphical QA"
     ],
     "compatibility": "All 440 prior regression tests, old party-v3 saves and v2 migration, approved 008-C1 rescue, actor Wonder, dinosaur physical rules, legacy solo and Worker intact."
+  },
+  "adventure_architecture": {
+    "decision_date": "2026-10-25",
+    "status": "APPROVED_ARCHITECTURAL_REQUIREMENT_NOT_YET_IMPLEMENTED",
+    "contract": "docs/ADVENTURE-ENGINE-SEPARATION.md",
+    "approved_goal": "Single adventure-agnostic Evolved-based engine and generic validated adventure package/instance schema; After the Storm is only an existing sample fixture; later seed-generated and AI-generated adventures are first-class.",
+    "current_debt": [
+      "src/party-engine.mjs directly imports singleton SCENARIO and hardcodes rooms, flags, particular rescue mechanisms, default creature and NPC exceptions.",
+      "Several src/cinematic-*.mjs modules hardcode After the Storm prose, local scene events and characters; assorted physical helper modules require audit.",
+      "No second distinct playable adventure package and no verified runtime adventure manifest selector yet."
+    ],
+    "next_gate": "A validated selectable second scenario with different geography/objectives must run through the unmodified core, with matching deterministic saves/replays/Evolved rules/control modes; preserve original 454 tests.",
+    "generator_policy": "Game Mother proposes manifests and scene/effect instructions through validators, never raw state mutation or forced scenario-specific arc."
   }
 }
