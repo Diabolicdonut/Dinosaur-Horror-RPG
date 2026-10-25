@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.20",
-  "checkpoint": "007-M1",
-  "state": "two_finite_transferable_spare_lamp_cells_validated_pr_454_tests_pending_main_ci_pages_and_manual_browser_qa",
+  "version": "0.7.21",
+  "checkpoint": "009-A",
+  "state": "versioned_adventure_schema_two_distinct_compilable_fixtures_and_bound_after_storm_party_saves_candidate_final_ci_pending",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,23 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 454,
+  "automated_tests": 470,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "PRIORITY: Complete adventure-agnostic engine extraction and two distinct playable adventure packages under docs/ADVENTURE-ENGINE-SEPARATION.md; preserve the 454 accepted tests and old party saves.",
-    "Define versioned, independently seeded authored adventure templates with meaningful replay-variant slots, compile them into locked/validated manifests, and regression-test same-seed reproducibility plus different-seed structural variability. See docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md.",
-    "Implement open-ended procedurally generated Cinematic adventures (different premises, maps, stakes, cast, threats, discoveries and endings), with an AI Game Mother allowed to propose only typed, validated effects, not rewrite the underlying rules or committed secrets.",
-    "Extend validated generation to continuing Campaign chapters that carry character progression, relationships, injuries, resolved mysteries and other past consequences without mandatory escalating horror or animal-population simulation.",
-    "Keep 007-M2 and new one-off park scenarios below the architecture/generation prerequisites; conduct real desktop/mobile interactive graphical QA and preserve Party/Focus/Spectator, solo 006.2 and Worker v006."
+    "Implement 009-B AdventureInstance context plumbing across Party engine, director, action handling, maps, NPCs, creatures, objective/ending and scene systems; run two substantially distinct fully playable scenarios without changing Evolved dice rules.",
+    "Preserve existing After the Storm actions, saves, Party/Focus/Spectator, 007-M1 finite cells, 008-C1 park guide, wonder, predator mechanics, and 454 baseline tests during extraction.",
+    "After two-adventure gate, compile meaningful seeded variants of pregenerated adventures, validate whole maps/truths/resources/causality and lock manifest revision in saves.",
+    "Build procedural stand-alone Cinematic generator and then continuing Campaign episode generation using durable histories; AI Game Mother proposes only typed validated effects.",
+    "Run full desktop/mobile graphical QA and keep legacy solo 006.2 and Worker v006 isolated from Party schema changes."
   ],
   "acceptance_criteria": [
-    "Preserve the 440 previously accepted 008-C1 tests and add 14 meaningful finite-equipment tests, 454 total.",
-    "Precisely two physical sealed replacement battery cells exist, one in the maintenance shed and one at the emergency helipad; both use existing legal item pickup/transfer mechanics.",
-    "An actor can replace a battery only with personally carried spare and owned light below maximum charge, outside combat, through normal exploration time; the actual cell is irrevocably spent, and light remains OFF.",
-    "Lamp drain, legal manual light toggle, concealment/perception, noise/predator routes, Evolved medical and combat clocks are maintained, with no free recharging.",
-    "Party-save-v3 stock conservation bound rejects any saved state with more than two cells across floors, inventories and spent counter; old saves without batteries/counter remain loadable.",
-    "Neither the new UI nor perspective switching reveals off-camera resource stock or another survivor's carried cells; original 006.2 solo and Cloudflare Worker v006 remain untouched.",
-    "Require final exact-head PR 454/454 and separately accepted main Actions/Pages; manual desktop/mobile graphical QA remains unperformed."
+    "Preserve all 454 accepted tests and pass 16 new adventure compiler/save-boundary tests, targeting 470.",
+    "Two different data-only manifests have valid physical routes and true different objectives/ending rules without executable script effects.",
+    "Compiler is seed-reproducible and exhibits materially different latent authored variations over a broad seed range, without consuming Evolved gameplay dice.",
+    "Reject unreachable or one-way authored routes, invalid items/creatures, missing/cyclic objective prerequisites, undeclared flags, bad clue locations and forged compiled manifests.",
+    "New After the Storm saves bind versioned adventure identity and a content fingerprint, while old Party-v3/v2 saves without the field remain accepted and replay identically.",
+    "Do not claim engine independence yet: second scenario is not runnable by Party engine; 009-B must remove named story assumptions and satisfy two-adventure gate.",
+    "Require exact final-head PR, accepted main 470/470 Actions, Pages and separate manual browser smoke; do not claim QA not performed."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "007-M1 main 1cd360a732982189130c8381ee17d1ca980bbf73 passed final Actions 40162256262 (454 tests) and Pages 40162256266; live graphical desktop/mobile QA still outstanding. Architecture contract is documentation only, not implemented.",
+  "pages_deployment": "009-A final-main Pages pending; previous accepted architecture docs-only e9d0cdc983aee53eee1744ef9a1ea2bd551c1ffd passed Actions 40211967800 and Pages 40211968071; manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -849,20 +849,52 @@
   },
   "adventure_architecture": {
     "decision_date": "2026-10-25",
-    "status": "APPROVED_ARCHITECTURAL_REQUIREMENT_NOT_YET_IMPLEMENTED",
+    "status": "PARTIAL_IMPLEMENTATION_009A_MANIFEST_AND_SAVE_BOUNDARY_ONLY",
     "contract": "docs/ADVENTURE-ENGINE-SEPARATION.md",
     "approved_goal": "Single adventure-agnostic Evolved-based engine and generic validated adventure package/instance schema; After the Storm is only an existing sample fixture; later seed-generated and AI-generated adventures are first-class.",
     "current_debt": [
-      "src/party-engine.mjs directly imports singleton SCENARIO and hardcodes rooms, flags, particular rescue mechanisms, default creature and NPC exceptions.",
-      "Several src/cinematic-*.mjs modules hardcode After the Storm prose, local scene events and characters; assorted physical helper modules require audit.",
-      "No second distinct playable adventure package and no verified runtime adventure manifest selector yet."
+      "The main Party engine still directly imports singleton SCENARIO and hardcodes its rescue objective, creature and named NPC/zone assumptions; the ridge-survey fixture is NOT PLAYABLE.",
+      "Director, encounter, scene, objective dispatch, saves and UI must be rewritten to accept a selected validated AdventureInstance before real two-adventure support.",
+      "Generic effect and ending types are declared but not yet wired to the Evolved rules engine; compiler RNG is separate from gameplay RNG, not a complete procedural Campaign generator."
     ],
-    "next_gate": "A validated selectable second scenario with different geography/objectives must run through the unmodified core, with matching deterministic saves/replays/Evolved rules/control modes; preserve original 454 tests.",
+    "next_gate": "009-B: run both After the Storm and The Long Count with same generic mechanics, truly distinct objectives and Evolved actions, version-bound save/reload and all 470+ tests green; no false claim of full independence.",
     "generator_policy": "Game Mother proposes manifests and scene/effect instructions through validators, never raw state mutation or forced scenario-specific arc.",
     "replayability_contract": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md",
     "generation_goal": "Include multiple authored adventure templates each with substantial replay variability, plus open-ended procedurally generated Cinematic adventures and Campaign chapters grounded in prior persistent decisions.",
     "generation_current_status": "NOT_IMPLEMENTED — neither variable pregenerated instances nor a general adventure generator are available in main.",
     "variation_policy": "Different seeds can change committed hidden cause, NPC agendas, physical creature dispositions, routes, challenges, clues, optional scenes and possible endings; game rules and prior accepted facts cannot change to force surprise.",
-    "reproducibility_policy": "New game compiles/validates and locks a template/generator version and independent seed; continue loads identical compiled manifest/event history, not a reroll; campaign generation respects durable world continuity."
+    "reproducibility_policy": "New game compiles/validates and locks a template/generator version and independent seed; continue loads identical compiled manifest/event history, not a reroll; campaign generation respects durable world continuity.",
+    "recovery_baseline": "e9d0cdc983aee53eee1744ef9a1ea2bd551c1ffd, 007-M1 v0.7.20, 454 accepted tests, main Actions and Pages passed.",
+    "features_009a": [
+      "Generic typed JSON-only adventure definition schema and seeded compiler with physical map/objective/stock/creature/clue validation, deterministic fingerprint, separate content RNG.",
+      "Two separately valid selectable definitions: accepted Nublar After the Storm adapter and a distinct field-study The Long Count data fixture with different map, goals and ending.",
+      "New After the Storm Party-v3 saves bound to an adventure ID, revision and content fingerprint, with forged bindings rejected; legacy Party-v3/v2 saves without binding remain legal.",
+      "Seeded hidden variants produce deterministic compiled content with meaningful changed research obstacle/wildlife disposition; live Party game still uses unchanged initial After the Storm facts."
+    ]
+  },
+  "adventure_compiler_implementation": {
+    "checkpoint": "009-A",
+    "version": "0.7.21",
+    "module": "src/adventure-definition.mjs",
+    "manifests": [
+      "adventures/after-the-storm.mjs",
+      "adventures/ridge-survey.mjs"
+    ],
+    "catalog": "src/adventure-catalog.mjs",
+    "report": "docs/ADVENTURE-MANIFEST-009A.md",
+    "status": "Implemented compiler, validation and version binding; candidate 470-test CI pending; two playable adventures not yet achieved.",
+    "tests": {
+      "baseline": 454,
+      "new": 16,
+      "total": 470,
+      "ci": "Final exact-PR and main CI/Pages must be separately verified."
+    },
+    "admitted_limits": [
+      "Only existing After the Storm instance is playable",
+      "After the Storm singleton remains hardcoded in Party engine and director",
+      "Seeded variants do not yet dynamically populate current story scenes",
+      "Full generated Cinematics/Campaigns and Game Mother not live",
+      "Manual desktop/mobile graphical testing still outstanding"
+    ]
   }
 }
