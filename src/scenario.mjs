@@ -83,7 +83,7 @@ export const SCENARIO = Object.freeze({
       description: 'Tools hang above the emergency generator. A hand-operated storm shutter hangs over the shed doorway to the drenched jungle service path.',
       exits: ['utility', 'jungle'],
       aliases: ['shed', 'maintenance', 'generator room'],
-      items: ['medkit', 'flare'],
+      items: ['medkit', 'flare', 'battery_cell'],
       affordances: [{"id":"tool_cabinet","label":"Workshop tool cabinet","uses":["barricade","cover"]},{"id":"wrench","label":"Loose steel wrench","uses":["distract"]}],
       features: ['generator','shutter'],
       observations: [
@@ -145,7 +145,7 @@ export const SCENARIO = Object.freeze({
       description: 'A circle of cracked concrete stands above the canopy. Its emergency locator beacon is unlit.',
       exits: ['jungle'],
       aliases: ['helipad', 'landing pad', 'landing zone'],
-      items: [],
+      items: ['battery_cell'],
       affordances: [{"id":"supply_crate","label":"Emergency supply crate","uses":["barricade","cover"]},{"id":"marker_stone","label":"Loose marker stone","uses":["distract"]}],
       features: ['beacon'],
       observations: [
@@ -174,6 +174,7 @@ export const SCENARIO = Object.freeze({
     keycard: 'Staff access card',
     medkit: 'Field medical kit',
     flare: 'Emergency flare',
-    flashlight: 'Flashlight'
+    flashlight: 'Flashlight',
+    battery_cell: 'Sealed flashlight replacement cell'
   }
 });
