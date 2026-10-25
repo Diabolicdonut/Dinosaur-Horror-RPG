@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.24",
   "checkpoint": "009-B2b1",
-  "state": "candidate_second_selected_adventure_party_exploration_and_508_regressions",
+  "state": "accepted_009_b2b1_selected_research_party_vertical_slice_508_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,19 +16,19 @@
   "automated_tests": 508,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify 009-B2b1 final PR head 508/508, merge on success, then independently confirm merged-main Actions and Pages; desktop/mobile manual QA remains outstanding.",
-    "Continue 009-B2b2 replacing transitional dual scenario-specific routes with one fully adventure-agnostic director/party runtime, selected saved manifest context and fully source-valid creature, stress, injury and Cinematic encounter systems.",
-    "Preserve old After the Storm gameplay, Party/Focus/Spectator, saved Party-v3/v2, finite equipment, guide escort, dinosaur pursuit, hidden Evolved rolls, legacy solo/Worker and all 508 tests.",
-    "Upgrade The Long Count beyond peaceful exploration/research: causally situated dinosaur movement and response, meaningful danger and human stories, dynamic scene pacing, localized hidden variant consequences, while preserving truth and agency.",
-    "After two feature-parity scenarios genuinely run on a shared engine, add meaningful seeded replay variants, procedural Cinematic adventures, continuing Campaign chapters and bounded AI Game Mother typed effects."
+    "Implement 009-B2b2 selected AdventureInstance routing for generic creature/NPC, director, scene and medical-combat behaviors; converge the two transitional Party execution paths toward truly independent, source-valid scenarios.",
+    "Preserve 508 accepted regression tests and original After the Storm mechanics, accepted saves, three control modes, 009-B2b1 research story, Evolved rules, Wonder, finite equipment, guide rescue, legacy solo and deployed Worker isolation.",
+    "Expand research adventure with grounded animal behavior and danger, scene cadence, actual human relationships and meaningful seeded hidden facts, without a full ecological population simulator or compulsory violence.",
+    "Require the same full two-adventure playable-source-fidelity gate before claiming engine/adventure separation complete; after that implement authored variability, generated Cinematic adventures, then durable Campaign episodes and bounded AI Game Mother.",
+    "Perform actual desktop/mobile interactive browser smoke including selecting both adventures, character/focus/spectator, save/reload, action cost, Evolved rolls and privacy. This QA remains OUTSTANDING."
   ],
   "acceptance_criteria": [
-    "Retain all 494 previous tests and add 14 selected-adventure Party end-to-end tests (508 target) including source Evolved checks, physical movement, items, saving, actor privacy, focus/spectator AI and different non-helicopter ending.",
+    "Accepted 009-B2b1: baseline 494 tests plus 14 end-to-end selected-adventure cases (508/508) passed in exact PR #25 final-head CI and separately merged-main Actions 40246877401; Pages 40246876975 successful.",
     "Party browser can choose After the Storm or The Long Count; selection creates appropriately bound saves and objective lists without changing old rescue mechanics.",
     "Compiled adventure data defines allowed objective interaction targets and source-legal skills (or explicitly routine no-roll interaction), avoiding a user/AI skip-objective command.",
     "The Long Count is now a bounded playable field-research and exploration slice through the Party API; its creature and Cinematic systems are NOT feature-parity with After the Storm and this does NOT complete 009-B.",
     "Do not falsely claim open-ended adventure generation, fully generic director, realistic physical herbivore danger, manual desktop/mobile graphical QA or Cloudflare redeployment.",
-    "Require exact PR and merged-main Actions/Pages before acceptance."
+    "Do not claim manual browser QA or fully adventure-independent director; 009-B2b2+ still needed for creature, NPC, medical/combat and Cinematic feature parity across both selected stories."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b1 candidate under PR #25; accepted main is still 009-B2a until exact-head CI and Pages success. Manual desktop/mobile graphical QA outstanding.",
+  "pages_deployment": "Accepted 009-B2b1 main 33b2d5b1500ad6e65109e787ed2baae942d6701d: Actions 40246877401 SUCCESS (508/508) and Pages 40246876975 SUCCESS. Manual desktop/mobile graphical smoke QA remains outstanding. Full 009-B engine independence not yet accepted.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

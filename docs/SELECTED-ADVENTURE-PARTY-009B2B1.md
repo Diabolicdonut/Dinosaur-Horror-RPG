@@ -14,3 +14,7 @@ Authority: `project-state.json`, newest `audit.md`, Evolved Edition, the adventu
 - Deferred: unify all scenario-specific directors; genuine herbivore physical behavior, survival combat/medical systems in both adventures, meaningful seeded story variations, open-ended Cinematic/Campaign creation, and a bounded full AI Game Mother.
 
 Do not describe this milestone as full scenario independence or open-ended procedural adventures.
+
+## Accepted GitHub evidence — 2026-10-25
+
+Exact PR #25 head `e9789c2e80a580bf63ffa1eb2ad83817403118fa`: 508/508 tests passed. Merged source main `33b2d5b1500ad6e65109e787ed2baae942d6701d`: [Actions 40246877401](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40246877401) and [Pages 40246876975](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40246876975) both succeeded. No live desktop/mobile manual interaction was witnessed. The scenario-selection bridge is a playable exploration/research slice rather than complete Jurassic creature encounter, campaign or natural-language GM independence.
