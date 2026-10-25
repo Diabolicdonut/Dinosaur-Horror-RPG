@@ -1,0 +1,252 @@
+// 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
+// Purely manifest-driven room graph, stock and objective rules. The existing
+// Evolved Nublar director/combat remains on its original compatibility path.
+import {compileSelectedAdventure} from './adventure-catalog.mjs';
+import {createAdventureWorld} from './adventure-world.mjs';
+import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
+import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
+import {makeParty,validateParty} from './characters.mjs';
+import {resolveSkillCheck} from './evolved-checks.mjs';
+
+const copy=x=>JSON.parse(JSON.stringify(x));
+const compiled=compileSelectedAdventure('ridge-survey',0);
+const world=createAdventureWorld(compiled);
+const template=compiled.definition;
+const integers=x=>Number.isSafeInteger(x)&&x>=0;
+function nextSeed(s){
+ let x=s.rng>>>0;
+ x^=(x<<13)>>>0;x^=x>>>17;x^=(x<<5)>>>0;
+ s.rng=x>>>0;return s.rng;
+}
+function reject(s,reason){return {accepted:false,state:s,reason};}
+function countInventory(s){
+ const counts={};
+ for(const item of [
+  ...Object.values(s.rooms).flatMap(r=>r.items),
+  ...s.actors.flatMap(a=>a.inventory)])counts[item]=(counts[item]||0)+1;
+ return counts;
+}
+function originalStock(){
+ const counts={};
+ for(const item of [...template.startItems,...Object.values(template.rooms).flatMap(r=>r.items)])
+  counts[item]=(counts[item]||0)+1;
+ return counts;
+}
+const stock=originalStock();
+export function isSelectedAdventureSave(s){
+ try{
+  if(!s||s.kind!=='dinosaur-party-incident'||s.version!==3||
+     s.scenario!==template.id||!s.adventureBinding||
+     !validAdventureBinding(s.adventureBinding,compiled)||
+     !integers(s.beat)||!integers(s.initialSeed)||
+     !Number.isInteger(s.rng)||!integers(s.cursor)||!integers(s.round)||
+     !Array.isArray(s.actors)||!s.actors.length||s.actors.length>8||
+     s.cursor>=s.actors.length||!Array.isArray(s.startingRoster)||
+     validateParty(s.actors).length||validateParty(s.startingRoster).length||
+     s.startingRoster.length!==s.actors.length||
+     !['playing','rescued','lost'].includes(s.outcome)||
+     !s.control||!['party','focus','spectator'].includes(s.control.mode)||
+     !['follow','actor'].includes(s.control.cameraMode)||
+     typeof s.control.paused!=='boolean'||!integers(s.control.epoch)||
+     ![400,800,1200,2000].includes(s.control.speedMs)||
+     !s.actors.some(a=>a.id===s.control.focusedActorId)||
+     !s.actors.some(a=>a.id===s.control.cameraActorId)||
+     !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
+     s.combat!==null||!Array.isArray(s.actions)||!Array.isArray(s.events)||
+     !Array.isArray(s.dinosaurs)||s.dinosaurs.length!==template.initialCreatures.length||
+     !s.clock||!integers(s.clock.explorationActions)||!integers(s.clock.explorationStretches)||
+     !integers(s.clock.combatRounds)||!integers(s.clock.combatSeconds)||
+     s.clock.combatRounds!==0||s.clock.combatSeconds!==0||
+     !s.rooms||Object.keys(s.rooms).sort().join('|')!==Object.keys(template.rooms).sort().join('|')||
+     !s.flags||Object.keys(s.flags).sort().join('|')!==Object.keys(template.flags).sort().join('|')||
+     Object.values(s.flags).some(v=>typeof v!=='boolean')||
+     s.actors.some(a=>!world.hasRoom(a.location)||
+       !Array.isArray(a.visitedRooms)||a.visitedRooms.some(r=>!world.hasRoom(r))||
+       !Array.isArray(a.inventory)||!Array.isArray(a.observed)||
+       !integers(a.stress)||a.stress>30||!integers(a.health)||
+       typeof a.dead!=='boolean'||typeof a.broken!=='boolean')||
+     Object.values(s.rooms).some(r=>!Array.isArray(r?.items))||
+     Object.keys(countInventory(s)).some(id=>!Object.hasOwn(stock,id))||
+     JSON.stringify(countInventory(s),Object.keys(stock).sort())!==
+       JSON.stringify(stock,Object.keys(stock).sort())||
+     !validObjectiveRecords(compiled,s)||
+     (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
+     s.dinosaurs.some((d,i)=>d.id!==template.initialCreatures[i].id||
+       d.kind!==template.initialCreatures[i].species||
+       !world.hasRoom(d.location)))return false;
+  return true;
+ }catch{return false;}
+}
+export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
+ if(!integers(seed)||seed>0xffffffff)throw new RangeError('Seed must be a uint32.');
+ const party=roster??makeParty({seed,size:3});
+ const errors=validateParty(party);
+ if(errors.length||party.length<1||party.length>8)
+  throw new RangeError(errors.join(' ')||'Party must have 1–8 survivors.');
+ const actors=copy(party).map(a=>({...a,health:a.healthMax,location:world.start,
+  inventory:[],visitedRooms:[world.start],observed:[],attemptedObservations:[],
+  stress:a.stress??0,stressResponses:a.stressResponses||[],broken:false,dead:false,
+  criticalInjuries:[],hidden:false,coverId:null,pendingSkip:false,
+  light:{on:false,charge:0}}));
+ actors[0].inventory.push(...world.startItems);
+ return {kind:'dinosaur-party-incident',version:3,scenario:template.id,
+  adventureBinding:adventureBinding(compiled),initialSeed:seed,
+  rng:seed||0x9e3779b9,beat:0,round:1,cursor:0,outcome:'playing',
+  clock:{explorationActions:0,explorationStretches:0,combatRounds:0,combatSeconds:0},
+  startingRoster:copy(party),actors,flags:copy(template.flags),
+  control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
+   cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],
+  rooms:world.initialRoomItems(),dinosaurs:copy(template.initialCreatures).map(d=>({
+   id:d.id,kind:d.species,location:d.location,disposition:d.disposition,
+   defeated:false})),
+  events:[{beat:0,actorId:null,category:'system',message:
+   'The research party gathers at the canvas camp to begin its ecological survey.'}],
+  actions:[]};
+}
+function nextObjective(s){
+ return template.objectives.find(o=>!objectiveStatus(compiled,s).completedIds.includes(o.id));
+}
+export function selectedAdventureView(s,{actorId=null}={}){
+ if(!isSelectedAdventureSave(s))throw new RangeError('Invalid selected adventure save.');
+ const actor=s.actors.find(a=>a.id===actorId)||s.actors[s.cursor];
+ const room=world.room(actor.location);
+ const progress=objectiveStatus(compiled,s);
+ const goal=nextObjective(s);
+ const creatures=s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated);
+ return {
+  adventureId:template.id,adventureTitle:template.title,
+  objectivePlan:goal?[{id:goal.id,room:goal.room,
+   target:goal.interaction?.target||null,description:goal.description}]:[],
+  objectives:template.objectives.map(o=>({id:o.id,description:o.description,
+   done:progress.completedIds.includes(o.id)})),
+  beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
+  time:{explorationStretches:s.clock.explorationStretches,
+   minutes:s.clock.explorationStretches*10,combatRounds:0,combatSeconds:0,combatRoundSeconds:10},
+  controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
+  cameraMode:s.control.cameraMode,paused:s.control.paused,
+  activeActorId:s.actors[s.cursor].id,combat:null,
+  location:actor.location,roomName:room.name,description:room.description,
+  weather:null,serviceShutterClosed:false,cinematicScene:null,cinematicAct:null,
+  availableDangerEvents:[],sceneConsequences:[],preparedGenerator:false,
+  wildlifeEncounter:creatures.length?{title:creatures.map(d=>d.kind).join(', '),
+   description:'A physically present animal can be watched without provoking it.',
+   choices:[{id:'watch',label:'Observe from a respectful distance'}]}:null,
+  dialogueOpportunities:[],parkGuide:null,rescueEnding:null,
+  localPaddockGateBraced:false,availableSceneEvents:[],encounterPressure:null,
+  lighting:'natural ambient light',batterySupplies:{carried:0},batteryActions:[],
+  personalLight:{carried:false,on:false,charge:0},cover:null,availableCover:[],
+  distantSightings:[],groupTravel:null,
+  exits:room.exits.map(id=>({id,name:world.roomName(id),blocked:false})),
+  items:s.rooms[actor.location].items.map(id=>({id,name:world.itemLabel(id)})),
+  features:template.objectives.filter(o=>o.room===actor.location&&o.interaction&&
+   !progress.completedIds.includes(o.id)).map(o=>o.interaction.target),
+  observations:[],wonder:null,wonderJournal:[],visibleDinosaurs:[],
+  inventory:actor.inventory.map(id=>({id,name:world.itemLabel(id)})),
+  health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
+  injuries:actor.criticalInjuries||[],medicalUrgency:[],
+  broken:actor.broken,dead:actor.dead,panicState:null,hidden:false,
+  flags:copy(s.flags),
+  actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,
+    location:a.location,roomName:world.roomName(a.location),
+    stress:a.stress,health:a.health,active:a.id===s.actors[s.cursor].id})),
+  events:s.events.filter(e=>e.actorId===null||e.actorId===actor.id).slice(-40)
+ };
+}
+function normalize(raw,parser){
+ let a=parser(raw);
+ if(a.kind==='group'){
+  const [style,...parts]=a.target.split('|');
+  if(!['quiet','normal','noisy'].includes(style)||!parts.length)return {kind:'invalid'};
+  a={...a,kind:style==='quiet'?'sneak':style==='noisy'?'rush':'move',
+   target:parts.join('|'),groupApproach:style};
+ }
+ return a;
+}
+export function selectedAdventureStep(previous,raw,opts={},parser){
+ if(!isSelectedAdventureSave(previous))throw new RangeError('Invalid selected adventure save.');
+ const active=previous.actors[previous.cursor];
+ const human=previous.control.mode==='party'||
+  (previous.control.mode==='focus'&&previous.control.focusedActorId===active.id);
+ if(opts.actorId!=null&&opts.actorId!==active.id)return reject(previous,'It is '+active.name+"'s turn.");
+ if((opts.source??'human')!==(human?'human':'ai'))return reject(previous,'Control owner mismatch.');
+ if(previous.outcome!=='playing')return reject(previous,'The adventure has concluded.');
+ const action=normalize(raw,parser);
+ if(action.kind==='look')return reject(previous,'Inspection is free; no turn was spent.');
+ if(!['move','sneak','rush','wait','take','give','use','wildlife'].includes(action.kind))
+  return reject(previous,'This adventure currently supports travel, survey interactions, observation, items and waiting.');
+ if(active.dead||active.broken)return reject(previous,'This survivor cannot act.');
+ let s=copy(previous),actor=s.actors[s.cursor],rolled=null;
+ let result={},description='',noise=0;
+ const at=actor.location;
+ if(['move','sneak','rush'].includes(action.kind)){
+  const dest=world.resolveExit(at,action.target);
+  if(!dest)return reject(previous,'Destination is not physically adjacent.');
+  if(action.kind==='sneak'){
+   rolled=resolveSkillCheck(actor,{skill:'mobility',context:'stealth_travel',
+    seed:nextSeed(s),push:action.push||0});
+   actor.stress=rolled.after.stress;actor.stressResponses=rolled.after.stressResponses;
+  }
+  actor.location=dest;actor.visitedRooms=[...new Set([...actor.visitedRooms,dest])];
+  description=actor.name+' travels to '+world.roomName(dest)+'.';
+  if(action.groupApproach)description+=' The others must move on their own turns.';
+ }else if(action.kind==='wait')description=actor.name+' waits and observes the research camp.';
+ else if(action.kind==='take'){
+  const item=s.rooms[at].items.find(id=>id===action.target||
+   world.itemLabel(id).toLowerCase()===String(action.target).toLowerCase());
+  if(!item)return reject(previous,'That item is not physically here.');
+  s.rooms[at].items.splice(s.rooms[at].items.indexOf(item),1);actor.inventory.push(item);
+  description=actor.name+' takes '+world.itemLabel(item)+'.';
+ }else if(action.kind==='give'){
+  const other=s.actors.find(a=>a.id===action.recipientId&&a.location===at&&a.id!==actor.id);
+  const item=actor.inventory.find(id=>id===action.target||
+   world.itemLabel(id).toLowerCase()===String(action.target).toLowerCase());
+  if(!other||!item)return reject(previous,'A carried item and colocated recipient are required.');
+  actor.inventory.splice(actor.inventory.indexOf(item),1);other.inventory.push(item);
+  description=actor.name+' hands '+world.itemLabel(item)+' to '+other.name+'.';
+ }else if(action.kind==='wildlife'){
+  if(action.target!=='watch'||!s.dinosaurs.some(d=>d.location===at&&!d.defeated))
+   return reject(previous,'There is no visible, peaceful animal to observe here.');
+  description=actor.name+' quietly observes the animal without forcing a confrontation.';
+ }else if(action.kind==='use'){
+  const objective=template.objectives.find(o=>o.interaction&&o.room===at&&
+   o.interaction.target.toLowerCase()===String(action.target).toLowerCase());
+  if(!objective)return reject(previous,'No authored interaction by that name exists here.');
+  const progress=objectiveStatus(compiled,s);
+  if(progress.completedIds.includes(objective.id))return reject(previous,'Already completed.');
+  if(objective.requires.some(id=>!progress.completedIds.includes(id)))
+   return reject(previous,'Complete the preceding objective first.');
+  if(objective.interaction.skill!==null){
+   rolled=resolveSkillCheck(actor,{skill:objective.interaction.skill,
+    seed:nextSeed(s),push:action.push||0});
+   actor.stress=rolled.after.stress;actor.stressResponses=rolled.after.stressResponses;
+   actor.storyPoints=rolled.after.storyPoints;
+  }
+  if(rolled===null||rolled.success){
+   const outcome=commitAuthorizedObjective(compiled,s,{objectiveId:objective.id,
+    actorId:actor.id,authorization:{kind:'engine-committed-rule',success:true}});
+   if(!outcome.accepted)throw new Error('Approved interaction did not match objective contract: '+outcome.reason);
+   s.flags=outcome.state.flags;s.objectiveRecords=outcome.state.objectiveRecords;
+   if(outcome.state.adventureOutcome){
+    s.adventureOutcome=outcome.state.adventureOutcome;
+    s.outcome=s.adventureOutcome==='completed'?'rescued':'lost';
+   }
+   description=actor.name+' completes '+objective.description;
+  }else description=actor.name+' attempts '+objective.description+' but does not succeed.';
+  result={objectiveId:objective.id,success:rolled?.success??true};
+ }
+ s.actions.push({beat:s.beat,actorId:actor.id,kind:action.kind,target:action.target,
+  ...(rolled?{success:rolled.success,skill:rolled.skill}: {})});
+ s.actions=s.actions.slice(-200);
+ s.events.push({beat:s.beat,actorId:actor.id,category:action.kind==='wildlife'?'wonder':
+  s.outcome!=='playing'?'milestone':'action',message:description});
+ s.events=s.events.slice(-160);
+ s.beat++;s.cursor=(s.cursor+1)%s.actors.length;
+ if(s.cursor===0)s.round++;
+ s.clock.explorationActions++;s.clock.explorationStretches=
+  Math.floor(s.clock.explorationActions/s.actors.length);
+ if(!isSelectedAdventureSave(s))throw new Error('Selected adventure state failed post-action validation.');
+ return {accepted:true,state:s,result:rolled?{...result,base:rolled.initial.base,
+  stressDice:rolled.initial.stress,successes:rolled.successes,
+  success:rolled.success,seed:rolled.initialSeed??null,pushRefused:rolled.pushRefused}:result};
+}

@@ -5,6 +5,8 @@
 import { SCENARIO } from './scenario.mjs?v=007l1';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
 import {createAdventureWorld} from './adventure-world.mjs';
+import {newSelectedAdventureIncident,isSelectedAdventureSave,
+ selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs';
 import {commitAuthorizedObjective,validObjectiveRecords} from './adventure-objectives.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
@@ -455,7 +457,9 @@ const medicalFrom=worldSeconds(s);
 function rejected(before,why){
  return {accepted:false,state:before,reason:why};
 }
-export function newPartyIncident({seed=1993,roster=null}={}) {
+export function newPartyIncident({seed=1993,roster=null,adventureId='nublar-after-the-storm'}={}) {
+ if(adventureId==='ridge-survey')return newSelectedAdventureIncident({seed,roster});
+ if(adventureId!=='nublar-after-the-storm')throw new RangeError('Unknown or unsupported adventure.');
  const n=normalizeSeed(seed),party=roster??makeParty({seed:n,size:3});
  const issues=validateParty(party);
  if(issues.length)throw new RangeError(issues.join(' '));
@@ -487,6 +491,7 @@ export function newPartyIncident({seed=1993,roster=null}={}) {
  };
 }
 export function isPartySave(s) {
+ if(s?.scenario==='ridge-survey')return isSelectedAdventureSave(s);
  if(!s||s.kind!==PARTY_SAVE_KIND||s.version!==PARTY_ENGINE_VERSION||
     !Array.isArray(s.actors)||!s.control||!['party','focus','spectator'].includes(s.control.mode)||
     !['follow','actor'].includes(s.control.cameraMode)||
@@ -584,6 +589,7 @@ export function upgradePartySave(candidate) {
  return s;
 }
 export function partyView(s,{actorId=null}={}) {
+ if(s?.scenario==='ridge-survey')return selectedAdventureView(s,{actorId});
  if(!isPartySave(s))throw new RangeError('Invalid party incident save.');
  const actor=s.actors.find(x=>x.id===actorId)||s.actors[s.cursor];
  const place=SCENARIO.rooms[actor.location];
@@ -720,6 +726,8 @@ export function parsePartyAction(input) {
  return {kind:'',target:line,push:0};
 }
 export function partyStep(previous,raw,{actorId=null,source='human',reactionPrompt=false}={}) {
+ if(previous?.scenario==='ridge-survey')
+  return selectedAdventureStep(previous,raw,{actorId,source,reactionPrompt},parsePartyAction);
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
  let action=parsePartyAction(raw);
   if(action.kind==='group'){

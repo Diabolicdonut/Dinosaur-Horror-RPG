@@ -22,12 +22,15 @@ export const RIDGE_SURVEY={
  flags:{dataRecovered:false,reportSent:false,teamWithdrawn:false},
  objectives:[
   {id:'recover-transect',description:'Recover the ecology observations from the blind.',
-   room:'forest-blind',requires:[],effects:[{type:'flag',name:'dataRecovered',value:true}]},
+   room:'forest-blind',requires:[],interaction:{target:'survey records',skill:'observation'},
+   effects:[{type:'flag',name:'dataRecovered',value:true}]},
   {id:'send-field-report',description:'Submit the observation report from the ridge.',
    room:'survey-ridge',requires:['recover-transect'],
+   interaction:{target:'field transmitter',skill:'comtech'},
    effects:[{type:'flag',name:'reportSent',value:true}]},
   {id:'walk-out',description:'Return to camp before nightfall; no helicopter rescue is required.',
    room:'field-camp',requires:['send-field-report'],
+   interaction:{target:'return to safety',skill:null},
    effects:[{type:'flag',name:'teamWithdrawn',value:true},{type:'end',outcome:'completed'}]}
  ],
  initialCreatures:[{id:'grazer-1',species:'parasaurolophus',
