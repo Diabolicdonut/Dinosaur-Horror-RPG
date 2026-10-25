@@ -1,8 +1,12 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (accepted 009-B1 shared adventure-world boundary after 009-A; graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2a generic objective transition candidate after accepted 009-B1; graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## 009-B2a — Generic objective and ending service (candidate, 2026-10-25)
+
+`src/adventure-objectives.mjs` reads validated versioned adventure objectives and safely applies authored prerequisites, actor-zone gating, typed flags, and declared endings **only after a deterministic Evolved-legal action has already succeeded**. Existing generator/radio/beacon Party interactions call the service after unchanged source checks, with v3 rescue narration still local to the sample adventure. Optional saved objective histories validate author, location, causal time and committed effects; legacy flag-only saves remain accepted. Both distinct adventure definitions are covered by targeted objective-domain tests (494 suite target). The second adventure is still **not** playable through the shared Party game, and this is not the 009-B acceptance gate. Next: world-instance/scene/NPC/creature/action/save independence and playable two-adventure testing. No complete AI GM or procedural generator; manual graphical QA still pending.
 
 ## 009-B1 — Physical-world data extraction (accepted, 2026-10-25)
 
