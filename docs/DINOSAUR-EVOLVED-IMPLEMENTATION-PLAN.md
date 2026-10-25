@@ -2,7 +2,15 @@
 
 **Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (accepted 008-C1 park guide rescue and candidate 007-M1 finite portable lamp cells; graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
-**Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. Keep scenario/franchise data separate so a future original dinosaur-survival setting can reuse the underlying game. The finished experience should be an Alien Evolved-style cinematic/campaign Jurassic Park RPG with credible animal encounters, wonder, human drama, rules consequences and a capable Game Mother—not park management.
+**Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## Non-negotiable priority — modular adventures (architecture correction, 2026-10-25)
+
+**This precedes 007-M2 scenario-specific repairs or additional hardcoded Cinematic scenes.** The current implementation still directly imports the `SCENARIO` singleton and embeds `control/shed/generator/radio/beacon`, a fixed Velociraptor, named Mara Velez, hardcoded story events and rescue assumptions into `src/party-engine.mjs` and supporting modules. Historical descriptions of "isolated" scenario content were aspirations, **not an accurate description of implementation**.
+
+Separate (1) Evolved mechanics, physical world/action semantics and validated state; (2) typed, independently loadable adventure manifests with roles/objectives/creature and NPC instances; and (3) a bounded AI Game Mother that generates or directs such instances, never bypassing the engine. Preserve complete accepted *After the Storm* behavior as one test package, with a migration contract for saved party-v3 incidents. Make the engine run an **independent second adventure with different geography and objectives without altering core code** before claiming decoupling.
+
+**Development sequence:** audit named imports and actions → define/validate adventure format → extract `After the Storm` behind a generic interface → create and play a second distinct scenario → test saves/replay/Evolved and actor privacy → implement seed-based and AI-authored adventure generation. Endings emerge from decisions; the generator does not require generator–radio–helipad, mandatory predators, a fixed arc or ecological simulation. Read [Architecture contract](ADVENTURE-ENGINE-SEPARATION.md) before adding new gameplay capabilities.
 
 ## 1. Core premise — Alien RPG translated into Jurassic Park
 
