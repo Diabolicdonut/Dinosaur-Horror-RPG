@@ -138,6 +138,9 @@ function show(){
  if(v.serviceShutterClosed)scene.push('PHYSICAL BARRIER — the shed storm shutter is CLOSED. It blocks the doorway and sightlines.');
  if(v.localPaddockGateBraced)scene.push('PERIMETER — the damaged service gate has been braced; loose metal no longer swings in the wind.');
  if(v.sceneConsequences?.length)scene.push(...v.sceneConsequences.map(c=>'CONTINUITY · '+c.text));
+ if(v.wildlifeEncounter?.title)scene.push('LIVING DINOSAUR · '+v.wildlifeEncounter.title+' — '+v.wildlifeEncounter.description);
+ else if(v.wildlifeEncounter?.description)scene.push('WILDLIFE · '+v.wildlifeEncounter.description);
+ if(v.dialogueOpportunities?.length)scene.push('COMPANIONS · A teammate is here to talk or plan with.');
   if(v.availableSceneEvents?.length)scene.push('Cinematic opportunities: '+v.availableSceneEvents.map(e=>e.title).join(', '));
   if(v.availableDangerEvents?.length)scene.push('Optional physical challenges: '+v.availableDangerEvents.map(e=>e.title+' ['+e.skill+']').join(', '));
   if(['jungle','paddock','helipad'].includes(v.location))scene.push('Exploration pressure: '+v.encounterPressure.label+' · '+v.encounterPressure.checks+' checks');
@@ -184,6 +187,8 @@ function show(){
  const actions=[
   ...(v.availableSceneEvents||[]).map(e=>['scene '+e.id,'Experience scene · '+e.title]),
   ...(v.availableDangerEvents||[]).map(e=>['danger '+e.id,'Attempt challenge · '+e.title+' ('+e.skill+')']),
+  ...(v.wildlifeEncounter?.choices||[]).map(o=>['wildlife '+o.id,o.label+(o.skill?' ('+o.skill+')':'')]),
+  ...(v.dialogueOpportunities||[]).map(o=>['talk '+o.recipientId+' '+o.topic,o.label+' · '+o.recipientName]),
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
   ...v.features.map(f=>['use '+f,f==='shutter'?(v.serviceShutterClosed?'Open storm shutter':'Close storm shutter'):'Operate '+f]),
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
