@@ -31,6 +31,7 @@ test('009-B2b2c2a: authored predator presence is seeded and non-universal',()=>{
 test('009-B2b2c2a: historical fourth-revision expeditions cannot inherit a new hunter',()=>{
  let s=fresh(hunterSeed);
  s.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV4,{seed:hunterSeed}));
+ s.supportingCast=undefined;s.conversationRecords=undefined;
  s.dinosaurs=s.dinosaurs.filter(d=>d.id!=='hunter-1');
  delete s.creatureRecords;
  assert.equal(isPartySave(s),true);
@@ -59,6 +60,7 @@ test('009-B2b2c2a: one real animal patrol step follows a connected room on a com
  // This historical test verifies patrol behavior of immutable revision 5,
  // before optional opening-contact Evolved detection/initiative was introduced.
  s.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}));
+ s.supportingCast=undefined;s.conversationRecords=undefined;
  delete s.predatorContacts;
  const rng=s.rng,health=s.actors[0].health,from=s.dinosaurs[1].location;
  s=perform(s,'move river-crossing');
