@@ -107,7 +107,7 @@ export function isSelectedAdventureSave(s){
          a.kind==='wildlife'&&a.target==='approach'&&a.success===false);
        return d.id!==original.id||d.kind!==original.species||
          d.disposition!==original.disposition||d.defeated!==false||
-         !world.hasRoom(d.location)||(d.location!==original.location&&!fled);
+         !world.hasRoom(d.location)||(d.location!==original.location&&!fled&&!original.patrol);
      }))return false;
   return true;
  }catch{return false;}
