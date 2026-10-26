@@ -42,7 +42,7 @@ export function validPerilRecords(compiled,state){
    r.damage<0||r.damage>peril.baseDamage+peril.attackerDice-1||
    (r.success&&r.damage!==0)||
    (peril.variant&&compiled.hiddenFacts[peril.variant.slot]?.id!==peril.variant.choice)||
-   !action)return false;
+   (!action&&r.beat>=(state.actions?.[0]?.beat??-1)))return false;
   seen.add(key);last=r.beat;return true;
  });
 }
