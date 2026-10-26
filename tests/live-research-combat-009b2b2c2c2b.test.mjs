@@ -146,3 +146,33 @@ test('009-B2b2c2c2b: saved combat is not reconstructed as a fictional target or 
   assert.equal(isPartySave(tampered),false);
  }
 });
+
+function cycleLiveFight(s){
+ const reaction=s.combatReaction,slot=selectedCombatSlot(s);
+ return reaction?partyStep(s,'react defend',{actorId:reaction.victimId,source:'human'}):
+  slot?.kind==='dinosaur'?partyStep(s,{kind:'predator',target:''},
+   {actorId:slot.actorId,source:'ai'}):
+   partyStep(s,'end',{actorId:slot.actorId,source:'human'});
+}
+function replayToSecondRound(seed){
+ let s=engaged(seed);
+ for(let n=0;n<40&&s.combat&&s.combat.round===1;n++){
+  const result=cycleLiveFight(s);
+  if(!result.accepted)return null;
+  s=result.state;
+ }
+ return s.combat?.round===2?s:null;
+}
+test('009-B2b2c2c2b: actual completed ten-second round advances injury time and re-deals initiative',()=>{
+ const seed=threatened.find(i=>Boolean(replayToSecondRound(i)));
+ assert.ok(Number.isInteger(seed),'an actual physical encounter must survive the first full round');
+ const initial=engaged(seed),next=replayToSecondRound(seed);
+ assert.ok(next.combat,'continuing predator contact has a real second round');
+ assert.equal(next.combat.round,2);
+ assert.equal(next.combatRoundRecords.length,1);
+ assert.equal(next.clock.combatRounds,2,'opening defense plus one completed combat round');
+ assert.equal(next.clock.combatSeconds,20);
+ assert.notEqual(next.combat.cardSeed,initial.combat.cardSeed);
+ assert.deepEqual(next,replayToSecondRound(seed),'full combat round is deterministic');
+ assert.equal(isPartySave(next),true);
+});
