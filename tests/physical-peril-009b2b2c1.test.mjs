@@ -15,9 +15,9 @@ const grazing=seeds.find(i=>compileSelectedAdventure('ridge-survey',i).hiddenFac
 const fresh=(seed=nervous,roster=person)=>newPartyIncident({seed,roster,adventureId:'ridge-survey'});
 function move(s,dest){const x=partyStep(s,'move '+dest);assert.equal(x.accepted,true,x.reason);return x.state;}
 const ridge=s=>move(move(s,'rocky-ascent'),'survey-ridge');
-test('009-B2b2c1: new research adventure is revision 4; immutable rev1/2/3 remain valid',()=>{
+test('009-B2b2c1: current research adventure is revision 5; immutable rev1/2/3 remain valid',()=>{
  const s=fresh();
- assert.equal(s.adventureBinding.revision,4);
+ assert.equal(s.adventureBinding.revision,5);
  assert.equal(isPartySave(s),true);
  for(const [def,rev] of [[RIDGE_SURVEY_REV1,1],[RIDGE_SURVEY_REV2,2],[RIDGE_SURVEY_REV3,3]]){
   const old=structuredClone(s);
