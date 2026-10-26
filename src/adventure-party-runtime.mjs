@@ -11,6 +11,8 @@ import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
 import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
 import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
 import {RIDGE_SURVEY_REV7} from '../adventures/ridge-survey-rev7.mjs';
+import {RIDGE_SURVEY_REV8} from '../adventures/ridge-survey-rev8.mjs';
+import {playerScenarioMaterial} from './adventure-scenario-material.mjs';
 import {selectedCombatSlot,validSelectedCombat,beginSelectedCombat,selectedCombatStep}
  from './adventure-combat-live.mjs';
 import {localPredator,validPredatorContacts,resolvePredatorContact,
@@ -50,6 +52,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV6,{seed:s.initialSeed}):
  s.adventureBinding?.revision===7?
  compileAdventure(RIDGE_SURVEY_REV7,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===8?
+ compileAdventure(RIDGE_SURVEY_REV8,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -173,6 +177,8 @@ export function selectedAdventureView(s,{actorId=null}={}){
  const combatSlot=selectedCombatSlot(s);
  return {
   adventureId:template.id,adventureTitle:template.title,
+  scenarioMaterial:playerScenarioMaterial(situated(s),s,actor.id,
+   cinematicAct(situated(s),s)),
   objectivePlan:goal?[{id:goal.id,room:goal.room,
    target:goal.interaction?.target||null,description:goal.description}]:[],
   objectives:template.objectives.map(o=>({id:o.id,description:o.description,
