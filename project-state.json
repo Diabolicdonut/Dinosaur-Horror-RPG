@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.26",
-  "checkpoint": "009-B2b2b",
-  "state": "accepted_009_b2b2b_optional_cinematic_533_tests",
+  "version": "0.7.27",
+  "checkpoint": "009-B2b2c1",
+  "state": "candidate_voluntary_source_evolved_peril_and_medical_aid_547_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,22 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 533,
+  "automated_tests": 547,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Continue 009-B2b2c generic adventure-aware NPC, creature and physically causal peril service, then progressively support genuine suspense and predator situations in The Long Count using source-valid Evolved combat/stress/medical rules.",
-    "Preserve old After the Storm gameplay, immutable ridge-survey rev1/rev2 saves, new revision 3 optional Cinematic scenes, Evolved rules and all 533 accepted regression tests.",
-    "Converge the two transitional scenario-specific Party runtimes and abstract all scenario-bound pursuit, injury/medical, inventory, companion/guide, NPC behavior and Cinematic opportunities into one reusable core with independently validated authored packages.",
-    "Only after engine parity and two fully playable different scenarios, add structurally meaningful multi-seed authored replayability, procedural Cinematic scenario generation, Campaign chapter continuity and bounded typed AI Game Mother.",
-    "Perform manual desktop/mobile physical browser QA of both adventures, three control modes, scene skipping, act progression, save/reload, source checks, local privacy and old rev1/rev2 saves; still outstanding."
+    "Verify final PR #32 exact head 547/547 tests, squash merge and independently confirm merged-main Actions and Pages. Only then mark 009-B2b2c1 accepted.",
+    "Continue 009-B2b2c2: truly autonomous, physical, source-bounded predator/creature movement and risk plus surviving NPCs, rather than only optional exposed-herbivore encounters; integrate Evolved round sequence and reaction rules.",
+    "Preserve 547 accepted-source tests, all Nublar rescue mechanics, immutable The Long Count revisions 1/2/3 and newly launched revision 4, three control modes, finite equipment, hidden incident truths and separate legacy solo/Worker.",
+    "Unify the remaining scenario-specific creature, medical clock and NPC systems into a genuinely adventure-independent Party engine; do not introduce world ecology micromanagement, forced predator encounters or teleporting creatures.",
+    "After verified multi-adventure feature parity, implement structurally variable Cinematic scenarios, generated adventures and continuing Campaign chapters with a bounded AI Game Mother. Manual desktop/mobile graphical smoke and long-running clinical recovery QA still outstanding."
   ],
   "acceptance_criteria": [
-    "Accepted 009-B2b2b: 522 prior + 11 new = 533 automated regressions, PR #30 final candidate head 4f8e8b962bf0849de54b4723499fe1380dcb8478 green; source main e37a83bd25c568a9f5f0f9c9c10a58c7e23ce1f8 independently green (Actions 40262285692 and Pages 40262285718).",
-    "Support data-only adventure-defined Cinematic acts and optional event opportunities with no forced scene sequence or mandatory predatory encounters; acts derive only from actual committed objective progression.",
-    "Scenes require an eligible present actor in the correct location and any physical creature, another human survivor and seeded-variant conditions; invisible or remote events cannot be triggered.",
-    "Voluntary scene commits preserve action economy, Evolved RNG, stress, creature movement, finite inventories and truthful objective outcomes; record actor and beat and reject duplicate/future/incorrect actor/act history.",
-    "Preserve immutable historical research revisions 1 and 2 and Nublar rescue with all existing legacy saves; newly compiled research adventures bind revision 3 and contain six optional scenes across Setup/Tilt/Showdown.",
-    "Do not claim active predator combat in research, complete NP​C/medical/parity, generated adventures, user-visible full GM, or manual desktop/mobile graphical QA."
+    "Retain 533 previous automated tests and add 14 physical-peril and source Evolved medical Command tests: total 547, with exact PR head and merged-main Actions/Pages gates.",
+    "A defensive grazing animal cannot injure someone just because the director needs an attack: scenario revision 4 exposes a single optional peril only when the seed chooses a nervous herd, a creature is physically in the correct zone and a living eligible actor chooses to risk close passage.",
+    "On risk, a real source Evolved Mobility check resolves; failure permits a separate Evolved creature attack roll and critical injury as determined by the existing rule engine. A failed evasion does not guarantee injury. Each attempt costs one exploration action, and repeating the same encounter with the same actor is barred.",
+    "Evolved medical aid and Command rallies are available only for injured, physically colocated teammates and use the existing canonical rules. Full medical-clock advancement and autonomous predator round/retreat AI are not yet added for the research scenario.",
+    "Source-bound peril action records are checked for actor, position, seed variation, action-log support and damage, with old save compatibility. Original research revisions 1–3 are immutable and do not gain the peril retroactively; new starts are bound to revision 4.",
+    "Manual graphical desktop/mobile gameplay QA, independent NPCs, full automatic dinosaur combat and procedural adventure generation are not accepted and must remain outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted 009-B2b2b source main e37a83bd25c568a9f5f0f9c9c10a58c7e23ce1f8: independent Actions 40262285692 SUCCESS (533/533 tests) and GitHub Pages 40262285718 SUCCESS. Immutable research revisions 1 and 2 maintained; new revision 3 contains 6 optional scenes. Documentation-only acceptance merge subject to its own independent CI and Pages. Manual desktop/mobile graphical QA outstanding.",
+  "pages_deployment": "Candidate 009-B2b2c1 version 0.7.27 PR #32: source test target 547; final PR/main CI and Pages yet to verify. Last accepted 009-B2b2b main 307e529578151f255f4a70d14ff1e4f6bbda4b18 Actions and Pages successful (533/533). Desktop/mobile manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

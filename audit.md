@@ -1,5 +1,20 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2c1 — Voluntary Local Dinosaur Peril and Evolved First Aid (candidate) — 2026-10-25
+
+**Recovery:** GitHub `main` `307e529578151f255f4a70d14ff1e4f6bbda4b18` accepted 009-B2b2b v0.7.26 (533/533), Actions and Pages passed, no open PRs. Work is strictly isolated to Dinosaur Horror RPG, no Worker changes.
+
+**Source-grounded playable feature:** New generic `AdventureDefinition.perils` is optional, strictly validated data requiring a known species instance physically located in a real room, a bounded Evolved skill and modifiers, and optionally a compile-time hidden-variant match. New reusable `src/adventure-perils.mjs` gates voluntary actor-local opportunities and uses the existing Evolved `resolveSkillCheck`, `applyCreatureAttack`, and `enrichInjuries` procedures; no artificial auto-hit or free injury. The actor must opt to face a risky path, choosing alternatives is always possible. Source Mobility success avoids contact, failure allows a real creature attack roll that might still miss or cause damage and critical injury. One actual exploration action is charged and causal peril records are validated. The scenario selector/controls expose it via existing optional danger controls.
+
+**Medical continuity:** The same selected Party runtime now permits actual Evolved Medical Aid and Command rally checks on injured, physically colocated teammates. This supports recovering from an injury caused by the new encounter; it does not yet implement the full autonomous time-based lethal-injury clock in research sessions.
+
+**Versioned content:** Exact *The Long Count* revision 3 preserved immutably at `adventures/ridge-survey-rev3.mjs`; new revision **4** adds one seed-dependent peril to a cautious, nonviolent research expedition. Revisions 1–3 retain all original fingerprints, scenes and quiet gameplay. The Nublar rescue scenario, solo mode and Cloudflare Worker remain untouched.
+
+**Evidence:** Added 14 tests: strict type/creature and provenance checks, seed/room agency, seeded Evolved evasion/real damage/miss, nonrepeatability, state tampering, wonder coexistence, physical first aid and Command, original Nublar parity and previous revision compatibility. **547 candidate automated tests** (533 prior). Final PR #32 and separately merged-main Actions/Pages required for acceptance. No hands-on graphical desktop/mobile QA performed.
+
+**Deferred:** This is *not* active predator hunting, independent human NPC behavior, medical round/shift timers, fully generic creature battle AI, natural-language AI GM or procedural scenario generation. Continue 009-B2b2c2 with source-authorized autonomous NPC/creature and combat-turn architecture.
+
+
 ## Checkpoint 009-B2b2b — Optional Three-Act Cinematic Events (accepted) — 2026-10-25
 
 **Recovery:** GitHub main `f5a993ae448233196114d259d541251891f595c3`, accepted 009-B2b2a v0.7.25 and 522/522 regressions; main Actions and Pages successful, no open PRs. Exclusive Dinosaur project scope maintained.
