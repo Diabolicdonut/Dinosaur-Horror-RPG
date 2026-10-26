@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // played by the revision-gated selected-adventure Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:10,
+ schemaVersion:1,id:'ridge-survey',revision:11,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -69,9 +69,11 @@ export const RIDGE_SURVEY={
      reply:'Good. Record what you measured, and leave anything you could not verify clearly marked as uncertain.'}
    ]},
   {id:'tomas-wren',name:'Tomas Wren',role:'Visiting field naturalist',
-   description:'A patient observer remains by the ridge telescope, studying the distant valley. He has no means of controlling the animals.',
+   description:'A patient observer studies the distant valley beside his telescope. Once the expedition report is transmitted, he packs his notes and walks back toward camp.',
    motive:'Protect the scientific integrity of the expedition, even if the sponsor prefers a dramatic story.',
    location:'survey-ridge',stance:'cautious',
+   autonomy:{kind:'return_route',trigger:{kind:'objective',id:'send-field-report'},
+    path:['survey-ridge','rocky-ascent','field-camp'],cadence:1},
    topics:[
     {id:'herd',prompt:'Ask about the animals in the valley',
      reply:'The big browsers make their own choices. There is a kind of calm here worth remembering, but keeping our distance matters.'},

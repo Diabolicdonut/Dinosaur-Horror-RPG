@@ -1,9 +1,9 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c2';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c3';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c2';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c3';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
@@ -13,8 +13,9 @@ import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
 import {RIDGE_SURVEY_REV7} from '../adventures/ridge-survey-rev7.mjs';
 import {RIDGE_SURVEY_REV8} from '../adventures/ridge-survey-rev8.mjs';
 import {RIDGE_SURVEY_REV9} from '../adventures/ridge-survey-rev9.mjs';
+import {RIDGE_SURVEY_REV10} from '../adventures/ridge-survey-rev10.mjs';
 import {initialSupportingCast,validSupportingCastState,localSupportingCast,
- commitSupportingConversation} from './adventure-supporting-cast.mjs';
+ commitSupportingConversation,advanceSupportingCast} from './adventure-supporting-cast.mjs';
 import {playerScenarioMaterial} from './adventure-scenario-material.mjs';
 import {selectedCombatSlot,validSelectedCombat,beginSelectedCombat,selectedCombatStep}
  from './adventure-combat-live.mjs';
@@ -59,6 +60,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV8,{seed:s.initialSeed}):
  s.adventureBinding?.revision===9?
  compileAdventure(RIDGE_SURVEY_REV9,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===10?
+ compileAdventure(RIDGE_SURVEY_REV10,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -164,7 +167,8 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],pendingPredatorResponse:null,
   ...(compiled.revision>=8?{combatReaction:null,combatRoundRecords:[],combatDamageRecords:[]}:{}),
    ...(compiled.revision>=10?{supportingCast:initialSupportingCast(compileSelectedAdventure(template.id,seed)),
-    conversationRecords:[]}:{}),
+    conversationRecords:[],
+     ...(compiled.revision>=11?{npcAutonomyRecords:[]}: {})}:{}),
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -463,6 +467,8 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   Math.floor(s.clock.explorationActions/s.actors.length);
  if(situated(s).definition.initialCreatures.some(d=>d.patrol))
   s=advanceAutonomousCreatures(situated(s),s);
+ if(s.adventureBinding.revision>=11)
+  s=advanceSupportingCast(situated(s),s);
  // An opening source Evolved contact is possible only after a committed action.
  // The immutable Rev1–5 manifests cannot trigger this new hostile procedure.
  const predator=localPredator(situated(s),s,actor.id);

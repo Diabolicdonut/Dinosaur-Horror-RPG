@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-C3 — Objective-triggered supporting NPC physical travel (candidate) — 2026-10-26
+
+**Recovery:** GitHub main `020e3c97c33bf6b0ec68b38b1f876a1c30592710`, accepted 009-C2 v0.7.34, had **618/618** green and successful main Actions 40399069477 / Pages 40399068666, with no outstanding PRs.
+
+**Implementation:** Original *Long Count* rev10 is frozen unmodified in `adventures/ridge-survey-rev10.mjs`. Rev11 adds one generic **return_route** autonomy contract to Tomas Wren: once the existing Evolved-tested **send-field-report** objective is committed, he independently travels Survey Ridge → Rocky Ascent → Canvas Research Camp, at most one physically adjacent step per completed exploration roster round. The reusable `src/adventure-supporting-cast.mjs` validator rejects fictional objectives, fabricated paths/teleporting routes, arbitrary programmable effects, and out-of-bounds cadence. The runtime produces a full `npcAutonomyRecords` ledger and replay-verifies all expected moves and present physical locations from authoritative objective records and elapsed roster rounds. Conversations retain their actual original locations even after the NPC walks away; only physically colocated viewers get arrival/departure narration. No dice, inventory, wounds, scene timing, forced predator or dynamic offscreen monster behavior is fabricated.
+
+**Explicit scope:** This is **bounded autonomous goal-driven travel**, not yet independent Evolved-compliant NPC perception/combat/critical injury or generalized AI planning. Leena Harrow continues coordinating from camp. Rev1–10 saves, Nublar and Worker are unchanged; GM secrets are still browser-inspectable. See [technical contract](docs/ADVENTURE-NPC-AUTONOMY-009C3.md).
+
+**Validation gate:** 618 baseline + 8 focused source-authorized NPC replay tests = **626 targeted**. PR #48 exact-head Actions, then independent merged-main Actions and Pages required. Graphical mobile/desktop smoke still outstanding.
+
+
 ## Checkpoint 009-C2 — Adventure-owned supporting cast, colocated dialogues (accepted) — 2026-10-26
 
 **Recovery:** GitHub main `b57d2f92a99e1aad3db8e3b3d40d2d534761da8a` is authoritative; checkpoint 009-C1 v0.7.33, 609 passing tests, main Actions 40358871376 and Pages 40358869938 succeeded. PR #46 branches from that exact accepted commit; no newer accepted main was found.

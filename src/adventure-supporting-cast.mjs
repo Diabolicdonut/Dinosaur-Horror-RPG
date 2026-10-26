@@ -21,13 +21,24 @@ export function validateSupportingCastDefinition(def){
  const ids=new Set();
  for(const npc of def.supportingCast){
   if(!keys(npc,['id','name','role','description','location','motive','stance',
-      'variant','topics'])||!key(npc.id)||ids.has(npc.id)||!prose(npc.name)||
+      'variant','topics','autonomy'])||!key(npc.id)||ids.has(npc.id)||!prose(npc.name)||
       !prose(npc.role)||!prose(npc.description)||!prose(npc.motive)||
       !def.rooms[npc.location]||!['cooperative','cautious','reserved'].includes(npc.stance)||
       (npc.variant!==undefined&&!variantValid(def,npc.variant))||
       !Array.isArray(npc.topics)||npc.topics.length<1||npc.topics.length>12)
    bad('NPC identity, location and motive');
   ids.add(npc.id);
+  if(npc.autonomy!==undefined){
+   const a=npc.autonomy;
+   if(!keys(a,['kind','trigger','path','cadence'])||
+    a.kind!=='return_route'||!triggerValid(def,a.trigger)||a.trigger.kind!=='objective'||
+    !Array.isArray(a.path)||a.path.length<2||a.path.length>12||
+    a.path[0]!==npc.location||!Number.isInteger(a.cadence)||
+    a.cadence<1||a.cadence>4||new Set(a.path).size!==a.path.length||
+    a.path.some(room=>!def.rooms[room])||
+    a.path.slice(1).some((room,i)=>!def.rooms[a.path[i]].exits.includes(room)))
+    bad('autonomous NPC route must be source-authorized, contiguous and event-triggered');
+  }
   const topics=new Set();
   for(const topic of npc.topics){
    if(!keys(topic,['id','prompt','reply','requires','variant'])||
@@ -55,12 +66,85 @@ export function initialSupportingCast(compiled){
  return (compiled.definition.supportingCast||[]).filter(npc=>selected(compiled,npc))
   .map(npc=>({id:npc.id,location:npc.location,status:'present'}));
 }
+// One roster round is a real shared exploration interval. Supporting NPCs
+// follow a *source-authored* route, one adjacent step at a time, only after a
+// committed prerequisite. Never spend player dice, grant items or teleport.
+function expectedAutonomy(compiled,s){
+ const live=initialSupportingCast(compiled),positions=Object.fromEntries(
+  live.map(n=>[n.id,n.location])),records=[];
+ const members=s.actors?.length??0;
+ if(members<1||!Number.isSafeInteger(s.beat)||s.beat<0)return null;
+ for(let tick=members;tick<=s.beat;tick+=members){
+  // The action which ends an adventure concludes it before another roster
+  // round of NPC behavior can be advanced.
+  if(s.outcome!=='playing'&&tick===s.beat)continue;
+  for(const n of live){
+   const spec=compiled.definition.supportingCast.find(x=>x.id===n.id);
+   const a=spec.autonomy;
+   if(!a||(tick/members-1)%a.cadence!==0||
+    !s.objectiveRecords?.some(r=>a.trigger.kind==='objective'?
+      r.id===a.trigger.id&&r.beat<tick:
+      false))continue;
+   const index=a.path.indexOf(positions[n.id]);
+   if(index<0)return null;
+   if(index===a.path.length-1)continue;
+   const from=positions[n.id],to=a.path[index+1];
+   records.push({id:n.id,beat:tick,from,to});
+   positions[n.id]=to;
+  }
+ }
+ return {positions,records};
+}
+function locationAt(compiled,s,id,beat){
+ let location=initialSupportingCast(compiled).find(n=>n.id===id)?.location;
+ for(const r of s.npcAutonomyRecords||[])if(r.id===id&&r.beat<=beat)
+  location=r.to;
+ return location;
+}
+export function advanceSupportingCast(compiled,previous){
+ if(!compiled.definition.supportingCast?.some(n=>n.autonomy))return previous;
+ if(previous.outcome!=='playing'||!previous.beat||
+  previous.beat%previous.actors.length!==0)return previous;
+ const projected=expectedAutonomy(compiled,previous);
+ if(!projected||!Array.isArray(previous.npcAutonomyRecords)||
+  previous.npcAutonomyRecords.length>projected.records.length||
+  JSON.stringify(previous.npcAutonomyRecords)!==
+   JSON.stringify(projected.records.slice(0,previous.npcAutonomyRecords.length)))
+  throw new RangeError('NPC movement history is inconsistent before the completed round.');
+ const s=copy(previous);
+ const pending=projected.records.slice(s.npcAutonomyRecords.length);
+ for(const record of pending){
+  const npc=s.supportingCast.find(n=>n.id===record.id);
+  npc.location=record.to;
+  s.npcAutonomyRecords.push(record);
+  const author=compiled.definition.supportingCast.find(n=>n.id===npc.id);
+  // Never reveal remote NPC movement through the player's scene log.
+  const observers=s.actors.filter(actor=>!actor.dead&&
+   (actor.location===record.from||actor.location===record.to));
+  for(const observer of observers)
+   s.events.push({beat:s.beat,actorId:observer.id,category:'scene',
+    message:author.name+(observer.location===record.to?
+     ' arrives from the adjoining trail.':' heads along the adjoining trail.')});
+ }
+ s.events=s.events.slice(-160);
+ return s;
+}
 export function validSupportingCastState(compiled,s){
  const introduced=compiled.definition.supportingCast;
  if(introduced===undefined)return s.supportingCast===undefined&&s.conversationRecords===undefined;
  const initial=initialSupportingCast(compiled);
- if(!Array.isArray(s.supportingCast)||JSON.stringify(s.supportingCast)!==JSON.stringify(initial)||
-    !Array.isArray(s.conversationRecords)||s.conversationRecords.length>160)
+ const modern=compiled.revision>=11;
+ const movement=modern?expectedAutonomy(compiled,s):null;
+ if(!Array.isArray(s.supportingCast)||
+    !Array.isArray(s.conversationRecords)||s.conversationRecords.length>160||
+    (modern?(!movement||!Array.isArray(s.npcAutonomyRecords)||
+       s.npcAutonomyRecords.length>2000||
+       JSON.stringify(s.npcAutonomyRecords)!==JSON.stringify(movement.records)||
+       JSON.stringify(s.supportingCast)!==JSON.stringify(initial.map(n=>({
+        ...n,location:movement.positions[n.id]
+       })))) :
+       (s.npcAutonomyRecords!==undefined||
+        JSON.stringify(s.supportingCast)!==JSON.stringify(initial))))
   return false;
  const seen=new Set();
  let last=-1;
@@ -71,7 +155,7 @@ export function validSupportingCastState(compiled,s){
   if(!npc||!topic||!selected(compiled,topic)||!eventOccurred(s,topic.requires)||
      !s.actors.some(a=>a.id===r.actorId)||!Number.isSafeInteger(r.beat)||
      r.beat<0||r.beat> s.beat||r.beat<last||
-     r.location!==npc.location||
+     r.location!==(modern?locationAt(compiled,s,r.npcId,r.beat):npc.location)||
      Object.keys(r).some(k=>!['actorId','npcId','topicId','location','beat'].includes(k))||
      seen.has(r.actorId+':'+r.npcId+':'+r.topicId))return false;
   // History can exceed 200 actions; archived records older than the first retained
