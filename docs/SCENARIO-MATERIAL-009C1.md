@@ -1,6 +1,6 @@
 # 009-C1 — Adventure-owned scenario material, agendas and field documents
 
-**Candidate — October 26, 2026** · *Alien RPG Evolved Edition* continues to govern rules; the three separately owned official Free League scenarios **Chariot of the Gods**, **Destroyer of Worlds**, and **Heart of Darkness** were reviewed as private **structural references**, not source material to transcribe.
+**Accepted — October 26, 2026; source merge `e3178e98d2e0214a9d01db7b19a9b3ddc14527bc`** · *Alien RPG Evolved Edition* continues to govern rules; the three separately owned official Free League scenarios **Chariot of the Gods**, **Destroyer of Worlds**, and **Heart of Darkness** were reviewed as private **structural references**, not source material to transcribe.
 
 ## What those references demonstrate
 
@@ -40,4 +40,4 @@ Continue combat parity separately: actual carried weapons, offensive action reso
 
 ## Verification
 
-Run `npm test` including `tests/adventure-scenario-material-009c1.test.mjs`, confirm a **607-test** baseline after the first nine new focused tests, verify historical bound saves, Focus/Spectator privacy and live scene triggers, then check **exact PR head** Actions before merge and **independent main** Actions/Pages after merge. Desktop and mobile graphical smoke tests are still a separate pending gate.
+Run `npm test` including `tests/adventure-scenario-material-009c1.test.mjs`, confirm a **607-test** baseline after the first nine new focused tests, verify historical bound saves, Focus/Spectator privacy and live scene triggers, then **verified:** PR #44 Actions 40357970045 (609/609), independently merged-main Actions 40358102862 (609/609), and Pages 40358099111 SUCCESS. Acceptance-ledger-only CI and manual graphical QA remain separate. Desktop and mobile graphical smoke tests are still a separate pending gate.
