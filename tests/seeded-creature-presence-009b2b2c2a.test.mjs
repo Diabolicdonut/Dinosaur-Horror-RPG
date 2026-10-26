@@ -17,7 +17,7 @@ const perform=(s,cmd)=>{let r=partyStep(s,cmd);assert.equal(r.accepted,true,r.re
 test('009-B2b2c2a: authored predator presence is seeded and non-universal',()=>{
  assert.notEqual(hunterSeed,quietSeed);
  const a=fresh(hunterSeed),b=fresh(quietSeed);
- assert.equal(a.adventureBinding.revision,5);
+ assert.equal(a.adventureBinding.revision,6);
  assert.equal(a.dinosaurs.length,2);
  assert.equal(b.dinosaurs.length,1);
  assert.equal(a.dinosaurs[1].kind,'velociraptor');
