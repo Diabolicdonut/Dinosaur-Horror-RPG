@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // played by the revision-gated selected-adventure Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:9,
+ schemaVersion:1,id:'ridge-survey',revision:10,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -57,6 +57,35 @@ export const RIDGE_SURVEY={
   ]
  },
 
+ supportingCast:[
+  {id:'leena-harrow',name:'Leena Harrow',role:'Field operations coordinator',
+   description:'The expedition coordinator checks battery cases beneath the camp awning. She does not leave the camp or accompany the team on patrol.',
+   motive:'Keep the crew and the study equipment intact; financial pressure from the sponsors remains her private concern.',
+   location:'field-camp',stance:'cooperative',
+   topics:[
+    {id:'route',prompt:'Ask about the survey route',
+     reply:'The trail branches at the rocky ascent and the river crossing. Both reach the hide, but that does not mean either is safe in every condition.'},
+    {id:'report',prompt:'Discuss the recovered transect data',requires:{kind:'objective',id:'recover-transect'},
+     reply:'Good. Record what you measured, and leave anything you could not verify clearly marked as uncertain.'}
+   ]},
+  {id:'tomas-wren',name:'Tomas Wren',role:'Visiting field naturalist',
+   description:'A patient observer remains by the ridge telescope, studying the distant valley. He has no means of controlling the animals.',
+   motive:'Protect the scientific integrity of the expedition, even if the sponsor prefers a dramatic story.',
+   location:'survey-ridge',stance:'cautious',
+   topics:[
+    {id:'herd',prompt:'Ask about the animals in the valley',
+     reply:'The big browsers make their own choices. There is a kind of calm here worth remembering, but keeping our distance matters.'},
+    {id:'quiet-sign',prompt:'Ask whether the valley is quiet',
+     variant:{slot:'predatorPresence',choice:'quiet-range'},
+     reply:'I have no fresh evidence of a hunting animal along this route. It is still wise to watch where you step.'},
+    {id:'recent-sign',prompt:'Ask about the fresh tracks',
+     variant:{slot:'predatorPresence',choice:'raptor-territory'},
+     reply:'There are newer tracks beyond the ridge. I cannot name the animal from this vantage. Please do not mistake uncertainty for safety.'},
+    {id:'compare',prompt:'Compare recovered notes with ridge sightings',
+     requires:{kind:'objective',id:'recover-transect'},
+     reply:'Now we can put the measured record beside what we watched. A discrepancy is a question, not proof of a particular cause.'}
+   ]}
+ ],
  scenarioMaterial:{
   briefing:{
    title:'The Count Begins',
