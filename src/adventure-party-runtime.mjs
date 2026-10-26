@@ -1,13 +1,16 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2a';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2b';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2c2a';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2c2b';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
 import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
+import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
+import {localPredator,validPredatorContacts,resolvePredatorContact}
+ from './adventure-predator-contact.mjs';
 import {initialAdventureCreatures,validateCreatureContinuity,
  advanceAutonomousCreatures} from './adventure-creatures.mjs';
 import {availablePhysicalPerils,validPerilRecords,
@@ -36,6 +39,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV3,{seed:s.initialSeed}):
  s.adventureBinding?.revision===4?
  compileAdventure(RIDGE_SURVEY_REV4,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===5?
+ compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -80,6 +85,7 @@ export function isSelectedAdventureSave(s){
      s.combat!==null||!Array.isArray(s.actions)||!Array.isArray(s.events)||
      !Array.isArray(s.dinosaurs)||
      !validateCreatureContinuity(situated(s),s)||
+     !validPredatorContacts(situated(s),s)||
      !s.clock||!integers(s.clock.explorationActions)||!integers(s.clock.explorationStretches)||
      !integers(s.clock.combatRounds)||!integers(s.clock.combatSeconds)||
      s.clock.combatRounds!==0||s.clock.combatSeconds!==0||
@@ -131,7 +137,7 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   startingRoster:copy(party),actors,flags:copy(template.flags),
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -372,6 +378,27 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   Math.floor(s.clock.explorationActions/s.actors.length);
  if(situated(s).definition.initialCreatures.some(d=>d.patrol))
   s=advanceAutonomousCreatures(situated(s),s);
+ // An opening source Evolved contact is possible only after a committed action.
+ // The immutable Rev1–5 manifests cannot trigger this new hostile procedure.
+ const predator=localPredator(situated(s),s,actor.id);
+ if(predator&&s.outcome==='playing'){
+  const contact=resolvePredatorContact(situated(s),s,{actorId:actor.id,
+   observationSeed:nextSeed(s),initiativeSeed:nextSeed(s),
+   attackSeed:nextSeed(s),dodgeSeed:nextSeed(s),
+   time:s.clock.explorationStretches*600});
+  if(!contact.accepted)throw new Error('Predator contact failed: '+contact.reason);
+  s.actors[s.actors.findIndex(a=>a.id===actor.id)]=contact.actorAfter;
+  s.predatorContacts??=[];s.predatorContacts.push(contact.record);
+  s.events.push({beat:s.beat,actorId:actor.id,category:'danger',
+   message:contact.strike?
+    (contact.strike.damage?
+     'A colocated Velociraptor strikes for '+contact.strike.damage+' damage.':
+     'A Velociraptor tries to strike, but a defensive reaction prevents injury.'):
+    'A physically nearby Velociraptor is detected, but no strike occurs.'});
+  s.events=s.events.slice(-160);
+  if(s.actors.every(a=>a.dead))s.outcome='lost';
+  result={...result,predatorContact:contact.result};
+ }
  if(!isSelectedAdventureSave(s))throw new Error('Selected adventure state failed post-action validation.');
  return {accepted:true,state:s,result:rolled?{...result,base:rolled.initial.base,
   stressDice:rolled.initial.stress,successes:rolled.successes,

@@ -4,6 +4,7 @@ import {makeParty} from '../src/characters.mjs';
 import {compileSelectedAdventure} from '../src/adventure-catalog.mjs';
 import {compileAdventure,adventureBinding,validateAdventureDefinition} from '../src/adventure-definition.mjs';
 import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
+import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
 import {initialAdventureCreatures,validateCreatureContinuity,
  advanceAutonomousCreatures} from '../src/adventure-creatures.mjs';
 import {newPartyIncident,isPartySave,partyStep,partyView} from '../src/party-engine.mjs';
@@ -17,7 +18,7 @@ const perform=(s,cmd)=>{let r=partyStep(s,cmd);assert.equal(r.accepted,true,r.re
 test('009-B2b2c2a: authored predator presence is seeded and non-universal',()=>{
  assert.notEqual(hunterSeed,quietSeed);
  const a=fresh(hunterSeed),b=fresh(quietSeed);
- assert.equal(a.adventureBinding.revision,5);
+ assert.equal(a.adventureBinding.revision,6);
  assert.equal(a.dinosaurs.length,2);
  assert.equal(b.dinosaurs.length,1);
  assert.equal(a.dinosaurs[1].kind,'velociraptor');
@@ -55,6 +56,10 @@ test('009-B2b2c2a: schema refuses teleporting paths and non-existent variant gat
 });
 test('009-B2b2c2a: one real animal patrol step follows a connected room on a completed round',()=>{
  let s=fresh();
+ // This historical test verifies patrol behavior of immutable revision 5,
+ // before optional opening-contact Evolved detection/initiative was introduced.
+ s.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}));
+ delete s.predatorContacts;
  const rng=s.rng,health=s.actors[0].health,from=s.dinosaurs[1].location;
  s=perform(s,'move river-crossing');
  assert.equal(from,'forest-blind');

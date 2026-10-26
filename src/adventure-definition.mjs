@@ -91,8 +91,16 @@ export function validateAdventureDefinition(def){
       !['neutral','wary','defensive','predatory'].includes(c.disposition)))reject('creature');
  if(new Set(def.initialCreatures.map(c=>c.id)).size!==def.initialCreatures.length)reject('duplicate creature');
  for(const creature of def.initialCreatures){
-  if(Object.keys(creature).some(k=>!['id','species','location','disposition','when','patrol'].includes(k)))
+  if(Object.keys(creature).some(k=>!['id','species','location','disposition','when','patrol','threat'].includes(k)))
    reject('unknown creature property');
+  if(creature.threat!==undefined){
+   const t=creature.threat;
+   if(!t||typeof t!=='object'||Array.isArray(t)||
+    Object.keys(t).some(k=>k!=='protocol')||
+    t.protocol!=='evolved_contact'||creature.disposition!=='predatory'||
+    creature.species!=='velociraptor')
+    reject('unrecognized source-bounded physical predator protocol');
+  }
   if(creature.patrol!==undefined){
    const p=creature.patrol;
    if(!p||Object.keys(p).some(k=>!['path','cadence'].includes(k))||

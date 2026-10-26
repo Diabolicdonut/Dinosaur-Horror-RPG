@@ -13,7 +13,7 @@ const fresh=()=>newPartyIncident({adventureId:'ridge-survey',seed:chosen,roster}
 
 test('009-B2b2a: seeded mechanics remain available on immutable newer authored revisions',()=>{
  const current=fresh();
- assert.equal(current.adventureBinding.revision,5);
+ assert.equal(current.adventureBinding.revision,6);
  assert.equal(isPartySave(current),true);
  const original=compileAdventure(RIDGE_SURVEY_REV1,{seed:chosen});
  assert.equal(original.revision,1);

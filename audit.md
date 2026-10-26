@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2c2b — Source-Evolved Predator Opening Contact (candidate) — 2026-10-25
+
+**Recovery:** Current accepted `main` `43ca8ffa720d1df4c5e7530fb4094b67a3e1926d` is 009-B2b2c2a, version 0.7.28, 560 passing regressions, Actions and Pages green, no open pull requests. New implementation advances that state rather than the user's older earlier reported checkpoint.
+
+**Implementation:** Authored research revision **6** introduces a validated `threat:{protocol:'evolved_contact'}` for an actual seed-dependent patrolling Velociraptor. Generic `src/adventure-predator-contact.mjs` resolves **opening contact after an actual Party action** only if a capable living survivor and actual eligible predator occupy the same zone. It calls previously accepted Evolved passive detection, numbered initiative (two source-speed dinosaur slots), source creature attack and Mobility defensive dodge, followed by injury enrichment when necessary. Genuine outcomes include harmless sighting, avoided attack, successful defensive reaction, or damage and possible critical injury; an encounter never implies automatic harm or off-map monster appearance. Contact records validate current and reconstructed patrolled room, actor, beat, source awareness and attack flags. Remote animal information is not displayed to actors elsewhere. An actor may use a legal physical exit next turn.
+
+**History:** `adventures/ridge-survey-rev5.mjs` preserves the exact previous predator-patrol-only definition; Rev1–5 saved expeditions never retroactively acquire hostile contact rules. Rev6 is the new authored scenario. Nublar rescue and separate solo/Worker remain unchanged.
+
+**Testing:** 12 new focused cases plus existing 560 for **572/572 candidate**. The previous patrol-only no-RNG case continues to test actual immutable Rev5 rather than incorrectly asserting contact consumes no dice in Rev6. Browser module cache revisions and historical browser tests refreshed. Exact-head GitHub CI, merged-main Actions and Pages still required. Manual desktop/mobile graphical gameplay QA outstanding.
+
+**Limitations:** This is source opening initiative and automatic defensive reaction, **not full 10-second Evolved combat rounds** or explicit choice-driven attack/reaction turn budget. Independent human NPCs, full medical death-clock, generated Cinematic stories and Campaigns are not yet implemented. Next milestone 009-B2b2c2c builds those shared combat capabilities.
+
+
 ## Checkpoint 009-B2b2c2a — Seed-Conditional Persistent Predator Presence (accepted) — 2026-10-25
 
 **Recovery:** Accepted GitHub main `10cb0fd53d458ed18d4df3bda51614d85aaa3b43`, 009-B2b2c1 v0.7.27, 547/547 tests with Actions+Pages successful and zero open PRs. Strict isolation: Dinosaur Horror RPG only.
