@@ -271,7 +271,7 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    remoteCombatActor?{kind:'end',target:'',goal:'disengage',reason:'No local combat target remains.'}:
     chooseCompanionAction(actorObservation(previous,actor.id));
  let resolved=partyStep(previous,{kind:choice.kind,target:choice.target},
-  {actorId:pending?.victimId||(predator?turn.actorId:actor.id),
+  {actorId:pending?.victimId||(predator?(previous.scenario==='ridge-survey'?turn.actorId:previous.dinosaurs[0].id):actor.id),
    source:'ai',reactionPrompt:true});
  if(!resolved.accepted){
    // A safe, deterministic fallback never forges a success or spends an invalid check.
