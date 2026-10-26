@@ -3,7 +3,8 @@
 // Evolved Nublar director/combat remains on its original compatibility path.
 import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2a';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs?v=009b2b2a';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2a';
+import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
 import {makeParty,validateParty} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
@@ -17,7 +18,9 @@ const template=compiled.definition;
 // Legacy saves remain valid: the earlier prototype used a fixed compiled
 // scenario, while its previously-unused latent variants were never revealed.
 // The incident's original seed now determines its stable private situation.
-const situated=s=>compileSelectedAdventure(template.id,s.initialSeed);
+const situated=s=>s.adventureBinding?.revision===1?
+ compileAdventure(RIDGE_SURVEY_REV1,{seed:s.initialSeed}):
+ compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
  let x=s.rng>>>0;
@@ -43,7 +46,7 @@ export function isSelectedAdventureSave(s){
  try{
   if(!s||s.kind!=='dinosaur-party-incident'||s.version!==3||
      s.scenario!==template.id||!s.adventureBinding||
-     !validAdventureBinding(s.adventureBinding,compiled)||
+     !validAdventureBinding(s.adventureBinding,situated(s))||
      !integers(s.beat)||!integers(s.initialSeed)||
      !Number.isInteger(s.rng)||!integers(s.cursor)||!integers(s.round)||
      !Array.isArray(s.actors)||!s.actors.length||s.actors.length>8||
@@ -75,7 +78,7 @@ export function isSelectedAdventureSave(s){
      Object.keys(countInventory(s)).some(id=>!Object.hasOwn(stock,id))||
      JSON.stringify(countInventory(s),Object.keys(stock).sort())!==
        JSON.stringify(stock,Object.keys(stock).sort())||
-     !validObjectiveRecords(compiled,s)||
+     !validObjectiveRecords(situated(s),s)||
      (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
      s.dinosaurs.some((d,i)=>{
        const original=template.initialCreatures[i];
@@ -117,13 +120,13 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   actions:[]};
 }
 function nextObjective(s){
- return template.objectives.find(o=>!objectiveStatus(compiled,s).completedIds.includes(o.id));
+ return template.objectives.find(o=>!objectiveStatus(situated(s),s).completedIds.includes(o.id));
 }
 export function selectedAdventureView(s,{actorId=null}={}){
  if(!isSelectedAdventureSave(s))throw new RangeError('Invalid selected adventure save.');
  const actor=s.actors.find(a=>a.id===actorId)||s.actors[s.cursor];
  const room=world.room(actor.location);
- const progress=objectiveStatus(compiled,s);
+ const progress=objectiveStatus(situated(s),s);
  const goal=nextObjective(s);
  const creatures=s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated);
  return {
@@ -140,12 +143,14 @@ export function selectedAdventureView(s,{actorId=null}={}){
   activeActorId:s.actors[s.cursor].id,combat:null,
   location:actor.location,roomName:room.name,description:room.description,
   weather:null,serviceShutterClosed:false,cinematicScene:null,cinematicAct:null,
-  availableDangerEvents:[],sceneConsequences:localSituationCues(situated(s),actor.location),
+  availableDangerEvents:[],sceneConsequences:s.adventureBinding.revision===1?[]:
+   localSituationCues(situated(s),actor.location),
   preparedGenerator:false,
   wildlifeEncounter:creatures.length?{title:creatures.map(d=>d.kind).join(', '),
    description:'A physically present animal can be watched without provoking it.',
    choices:[{id:'watch',label:'Observe from a respectful distance'},
-    {id:'approach',label:'Approach slowly and read the animal’s behavior (Survival if wary)'}]}:null,
+    ...(s.adventureBinding.revision===1?[]:[
+     {id:'approach',label:'Approach slowly and read the animal’s behavior (Survival if wary)'}])]}:null,
   dialogueOpportunities:[],parkGuide:null,rescueEnding:null,
   localPaddockGateBraced:false,availableSceneEvents:[],encounterPressure:null,
   lighting:'natural ambient light',batterySupplies:{carried:0},batteryActions:[],
@@ -231,7 +236,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   description=actor.name+' hands '+world.itemLabel(item)+' to '+other.name+'.';
  }else if(action.kind==='wildlife'){
   const animal=s.dinosaurs.find(d=>d.location===at&&!d.defeated);
-  if(!['watch','approach'].includes(action.target)||!animal)
+  if(!['watch',...(s.adventureBinding.revision===1?[]:['approach'])].includes(action.target)||!animal)
    return reject(previous,'There is no physically present animal offering that encounter.');
   if(action.target==='watch'){
    description=actor.name+' quietly observes the animal without forcing a confrontation.';
@@ -258,7 +263,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   const objective=template.objectives.find(o=>o.interaction&&o.room===at&&
    o.interaction.target.toLowerCase()===String(action.target).toLowerCase());
   if(!objective)return reject(previous,'No authored interaction by that name exists here.');
-  const progress=objectiveStatus(compiled,s);
+  const progress=objectiveStatus(situated(s),s);
   if(progress.completedIds.includes(objective.id))return reject(previous,'Already completed.');
   if(objective.requires.some(id=>!progress.completedIds.includes(id)))
    return reject(previous,'Complete the preceding objective first.');
@@ -271,7 +276,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
    actor.storyPoints=rolled.after.storyPoints;
   }
   if(rolled===null||rolled.success){
-   const outcome=commitAuthorizedObjective(compiled,s,{objectiveId:objective.id,
+   const outcome=commitAuthorizedObjective(instance,s,{objectiveId:objective.id,
     actorId:actor.id,authorization:{kind:'engine-committed-rule',success:true}});
    if(!outcome.accepted)throw new Error('Approved interaction did not match objective contract: '+outcome.reason);
    s.flags=outcome.state.flags;s.objectiveRecords=outcome.state.objectiveRecords;
