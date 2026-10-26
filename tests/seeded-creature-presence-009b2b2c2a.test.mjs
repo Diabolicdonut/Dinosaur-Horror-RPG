@@ -149,7 +149,7 @@ test('009-B2b2c2a: creature simulation is safely repeatable without mutation',()
  // called only by the Party engine after a newly resolved full actor round.
  assert.equal(Array.isArray(result.creatureRecords),true);
 });
-test('009-B2b2c2a: original After the Storm's raptor and rescue state remain unaffected',()=>{
+test('009-B2b2c2a: original After the Storm raptor and rescue state remain unaffected',()=>{
  const s=newPartyIncident({seed:1993,roster});
  assert.equal(s.scenario,'nublar-incident-1993');
  assert.equal(isPartySave(s),true);
