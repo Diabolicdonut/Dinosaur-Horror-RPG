@@ -176,8 +176,8 @@ test('browser exposes real shutter commands and obscured routes, with updated im
   readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b2a'));
- assert(app.includes('party-engine.mjs?v=009b2b2a'));
+ assert(html.includes('party-app.mjs?v=009b2b2a1'));
+ assert(app.includes('party-engine.mjs?v=009b2b2a1'));
  assert(app.includes('shutter closed'));
  assert(app.includes('Open storm shutter'));
  assert(engine.includes('shutterBlocks(s,a.location,room)'));
