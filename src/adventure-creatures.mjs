@@ -57,7 +57,8 @@ export function advanceAutonomousCreatures(compiled,previous){
   return state;
  const completed=state.beat/state.actors.length;
  for(const d of defs){
-  if(!d.patrol||(completed-1)%d.patrol.cadence!==0)continue;
+  if(!d.patrol||(completed-1)%d.patrol.cadence!==0||
+     state.creatureRecords.some(r=>r.id===d.id&&r.beat===state.beat))continue;
   const animal=state.dinosaurs.find(c=>c.id===d.id);
   if(!animal||animal.defeated)continue;
   const from=animal.location;
