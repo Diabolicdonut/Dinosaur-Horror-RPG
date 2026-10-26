@@ -1,8 +1,14 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2b accepted optional three-act Cinematic director 533/533; NPC/creature/medical parity and graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2c1 candidate optional creature peril and clinical aid 547/547; full predator/NPC parity and graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## 009-B2b2c1 — Optional physical Evolved danger and clinical response (candidate, 2026-10-25)
+
+The shared adventure definition now supports strictly bounded `perils` with typed real-room creature presence and seeded variant gates. `src/adventure-perils.mjs` provides source Evolved skill resolution and creature strike attempts, which remain voluntary and can fail to make contact. A new *Long Count* revision 4 allows an exposed researcher to choose a hazardous close pass only when its actual wary herbivore is present; prior Rev1–3 manifests and saved incidents remain unchanged. Failed source Mobility checks may produce authentic Evolved damage and critical injury; the victim cannot be hurt simply because an act requires tension. Colocated teammates can attempt source Evolved Medical Aid or Command rally. Medical clocks and fuller clinical operations remain future work.
+
+**Gate:** previous 533 tests plus 14 peril/medical regressions (547 total), exact PR head and merged-main CI and Pages verification, clear manual graphical QA outstanding. Next 009-B2b2c2: physical autonomous predator and NPC behavior with Evolved combat turns, awareness and retreats, integrated into adventure-agnostic packages rather than a Nublar-scripted encounter.
 
 ## 009-B2b2b — Three-act, strictly optional Cinematic scenes (accepted, 2026-10-25)
 

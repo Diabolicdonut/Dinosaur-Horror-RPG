@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // not yet runnable by the legacy After the Storm-specific Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:3,
+ schemaVersion:1,id:'ridge-survey',revision:4,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -56,6 +56,13 @@ export const RIDGE_SURVEY={
     text:'The camp is still here. The team can decide what matters most before choosing whether to conclude its expedition.'}
   ]
  },
+ perils:[
+  {id:'herd-close-pass',title:'A Narrow Passage Beside the Herd',
+   description:'Try to thread past an alarmed animal at close range. Retreating and taking another route remain possible.',
+   room:'survey-ridge',creatureId:'grazer-1',skill:'mobility',modifier:-1,
+   attackerDice:4,baseDamage:1,
+   variant:{slot:'wildlifeBehavior',choice:'nervous'}}
+ ],
  initialCreatures:[{id:'grazer-1',species:'parasaurolophus',
   location:'survey-ridge',disposition:'neutral'}],
  variants:{

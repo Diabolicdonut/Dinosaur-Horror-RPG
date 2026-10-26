@@ -1,16 +1,20 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2b';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c1';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2b';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2c1';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
+import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
+import {availablePhysicalPerils,validPerilRecords,
+ resolvePhysicalPeril} from './adventure-perils.mjs';
 import {cinematicAct,availableCinematicEvents,validCinematicRecords,
  commitCinematicEvent} from './adventure-cinematic.mjs';
 import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
 import {makeParty,validateParty} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
+import {resolveClinicalAid,resolveRally,pendingLethal} from './evolved-injuries.mjs';
 import {passageCircumstance,objectiveCircumstance,
  animalApproachCircumstance,localSituationCues} from './adventure-situations.mjs';
 
@@ -25,6 +29,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV1,{seed:s.initialSeed}):
  s.adventureBinding?.revision===2?
  compileAdventure(RIDGE_SURVEY_REV2,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===3?
+ compileAdventure(RIDGE_SURVEY_REV3,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -77,7 +83,7 @@ export function isSelectedAdventureSave(s){
      s.actors.some(a=>!world.hasRoom(a.location)||
        !Array.isArray(a.visitedRooms)||a.visitedRooms.some(r=>!world.hasRoom(r))||
        !Array.isArray(a.inventory)||!Array.isArray(a.observed)||
-       !integers(a.stress)||a.stress>30||!integers(a.health)||
+       !integers(a.stress)||a.stress>30||!integers(a.health)||a.health>a.healthMax||
        typeof a.dead!=='boolean'||typeof a.broken!=='boolean')||
      Object.values(s.rooms).some(r=>!Array.isArray(r?.items))||
      Object.keys(countInventory(s)).some(id=>!Object.hasOwn(stock,id))||
@@ -85,6 +91,7 @@ export function isSelectedAdventureSave(s){
        JSON.stringify(stock,Object.keys(stock).sort())||
      !validObjectiveRecords(situated(s),s)||
      !validCinematicRecords(situated(s),s)||
+     !validPerilRecords(situated(s),s)||
      (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
      s.dinosaurs.some((d,i)=>{
        const original=template.initialCreatures[i];
@@ -117,7 +124,7 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   startingRoster:copy(party),actors,flags:copy(template.flags),
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],
   rooms:world.initialRoomItems(),dinosaurs:copy(template.initialCreatures).map(d=>({
    id:d.id,kind:d.species,location:d.location,disposition:d.disposition,
    defeated:false})),
@@ -150,7 +157,8 @@ export function selectedAdventureView(s,{actorId=null}={}){
   location:actor.location,roomName:room.name,description:room.description,
   weather:null,serviceShutterClosed:false,cinematicScene:null,
   cinematicAct:cinematicAct(situated(s),s),
-  availableDangerEvents:[],sceneConsequences:s.adventureBinding.revision===1?[]:
+  availableDangerEvents:availablePhysicalPerils(situated(s),s,actor.id),
+  sceneConsequences:s.adventureBinding.revision===1?[]:
    localSituationCues(situated(s),actor.location),
   preparedGenerator:false,
   wildlifeEncounter:creatures.length?{title:creatures.map(d=>d.kind).join(', '),
@@ -172,7 +180,8 @@ export function selectedAdventureView(s,{actorId=null}={}){
   observations:[],wonder:null,wonderJournal:[],visibleDinosaurs:[],
   inventory:actor.inventory.map(id=>({id,name:world.itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
-  injuries:actor.criticalInjuries||[],medicalUrgency:[],
+  injuries:actor.criticalInjuries||[],
+  medicalUrgency:pendingLethal(actor).map(w=>({code:w.code,deadline:w.deadline,nextDeathAt:w.nextDeathAt})),
   broken:actor.broken,dead:actor.dead,panicState:null,hidden:false,
   flags:copy(s.flags),
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,
@@ -208,13 +217,50 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   return result;
  }
  if(action.kind==='look')return reject(previous,'Inspection is free; no turn was spent.');
- if(!['move','sneak','rush','wait','take','give','use','wildlife'].includes(action.kind))
+ if(!['move','sneak','rush','wait','take','give','use','wildlife','danger','aid','rally'].includes(action.kind))
   return reject(previous,'This adventure currently supports travel, survey interactions, observation, items and waiting.');
  if(active.dead||active.broken)return reject(previous,'This survivor cannot act.');
  let s=copy(previous),actor=s.actors[s.cursor],rolled=null;
  let result={},description='',noise=0;
  const at=actor.location,instance=situated(s);
- if(['move','sneak','rush'].includes(action.kind)){
+ let perilDamage=null;
+ if(action.kind==='danger'){
+  const resolved=resolvePhysicalPeril(instance,s,{actorId:actor.id,
+   perilId:action.target,skillSeed:nextSeed(s),attackSeed:nextSeed(s),
+   push:action.push||0,time:s.clock.explorationStretches*600});
+  if(!resolved.accepted)return reject(previous,resolved.reason);
+  // All authoritative modifications come from the existing Evolved resolver.
+  rolled=resolved.check;
+  const index=s.actors.findIndex(a=>a.id===actor.id);
+  s.actors[index]=resolved.actorAfter;actor=s.actors[index];
+  s.perilRecords??=[];s.perilRecords.push(resolved.record);
+  perilDamage=resolved.record.damage;result=resolved.result;
+  description=actor.name+' risks crossing close to the animal. '+
+   (resolved.check.success?'They keep their distance.':
+    resolved.strike.damage?
+     'The startled dinosaur strikes for '+resolved.strike.damage+' damage.':
+     'The animal lashes out but does not injure them.');
+ }else if(action.kind==='aid'||action.kind==='rally'){
+  const patient=s.actors.find(a=>a.id===action.target);
+  if(!patient||patient.dead||patient.location!==actor.location||
+     patient.id===actor.id||(!patient.broken&&!pendingLethal(patient).length))
+   return reject(previous,'A living, injured, colocated teammate is required.');
+  const seed=nextSeed(s);
+  const cure=action.kind==='aid'?
+   resolveClinicalAid(actor,patient,{seed,time:s.clock.explorationStretches*600,
+    medicalGear:actor.gear?.some(i=>['medical bag','first aid pouch','first aid kit'].includes(i))}):
+   resolveRally(actor,patient,{seed});
+  if(!cure.accepted)return reject(previous,cure.reason);
+  rolled=cure.roll;
+  const actorIndex=s.actors.findIndex(a=>a.id===actor.id);
+  const patientIndex=s.actors.findIndex(a=>a.id===patient.id);
+  s.actors[actorIndex]=cure.medicAfter||cure.commanderAfter;
+  s.actors[patientIndex]=cure.patient;
+  actor=s.actors[actorIndex];
+  result={kind:action.kind,success:cure.success,patientId:patient.id};
+  description=actor.name+' attempts '+(action.kind==='aid'?'first aid':'a Command rally')+
+   ' for '+patient.name+(cure.success?', and the attempt succeeds.':', without immediate recovery.');
+ }else if(['move','sneak','rush'].includes(action.kind)){
   const dest=world.resolveExit(at,action.target);
   if(!dest)return reject(previous,'Destination is not physically adjacent.');
   const passage=passageCircumstance(instance,at,dest);
@@ -305,7 +351,8 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   result={objectiveId:objective.id,success:rolled?.success??true};
  }
  s.actions.push({beat:s.beat,actorId:actor.id,kind:action.kind,target:action.target,
-  ...(rolled?{success:rolled.success,skill:rolled.skill}: {})});
+  ...(rolled?{success:rolled.success,skill:rolled.skill}: {}),
+  ...(perilDamage!==null?{damage:perilDamage}: {})});
  s.actions=s.actions.slice(-200);
  s.events.push({beat:s.beat,actorId:actor.id,category:action.kind==='wildlife'?'wonder':
   s.outcome!=='playing'?'milestone':'action',message:description});

@@ -21,7 +21,7 @@ export function adventureFingerprint(def){
 }
 export function validateAdventureDefinition(def){
  if(!def||typeof def!=='object'||Array.isArray(def))reject('expected object');
- const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic'];
+ const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic','perils'];
  if(Object.keys(def).some(k=>!allowed.includes(k)))reject('unknown top-level field');
  if(def.schemaVersion!==ADVENTURE_SCHEMA_VERSION||!key(def.id)||
     !Number.isSafeInteger(def.revision)||def.revision<1||
@@ -158,6 +158,32 @@ export function validateAdventureDefinition(def){
     if(!v||Object.keys(v).some(k=>!['slot','choice'].includes(k))||
        !def.variants[v.slot]?.some(choice=>choice.id===v.choice))
       reject('cinematic variant');
+   }
+  }
+ }
+ // Optional source-bounded peril contracts. A creature must be physically
+ // present in a declared room; no synthetic predator or automatic strike.
+ if(def.perils!==undefined){
+  if(!Array.isArray(def.perils)||def.perils.length>16)reject('perils');
+  const seen=new Set();
+  for(const p of def.perils){
+   if(!p||!key(p.id)||seen.has(p.id)||!text(p.title)||
+     !text(p.description)||!rooms[p.room]||
+     !['mobility','survival','stamina'].includes(p.skill)||
+     !Number.isInteger(p.modifier)||p.modifier < -5||p.modifier>5||
+     !Number.isInteger(p.attackerDice)||p.attackerDice<1||p.attackerDice>12||
+     !Number.isInteger(p.baseDamage)||p.baseDamage<1||p.baseDamage>4||
+     Object.keys(p).some(k=>!['id','title','description','room','creatureId',
+       'skill','modifier','attackerDice','baseDamage','variant'].includes(k)))
+    reject('peril');
+   seen.add(p.id);
+   if(!def.initialCreatures.some(c=>c.id===p.creatureId&&c.location===p.room))
+    reject('peril creature location');
+   if(p.variant!==undefined){
+    const v=p.variant;
+    if(!v||Object.keys(v).some(k=>!['slot','choice'].includes(k))||
+      !def.variants[v.slot]?.some(choice=>choice.id===v.choice))
+     reject('peril variant');
    }
   }
  }
