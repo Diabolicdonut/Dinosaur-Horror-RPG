@@ -1,14 +1,14 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2c2a candidate seeded physical predator presence 560/560; hostile Evolved combat/NPC parity and manual QA outstanding). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (accepted 009-B2b2c2a physical predator presence 560/560; Evolved hostile combat/NPC parity and manual QA outstanding). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
 
-## 009-B2b2c2a — Seed-conditional animal presence and physical patrol (candidate, 2026-10-25)
+## 009-B2b2c2a — Seed-conditional animal presence and physical patrol (accepted, 2026-10-25)
 
 An AdventureDefinition may now attach validated `when` conditions to creatures and a bounded adjacent `patrol` path plus cadence. A new adventure-agnostic service filters initial creatures using authored hidden variant truth and advances a persistent predator's actual location after complete Party rounds, with no extra Evolved rolls, silent attacks, teleportation or forced exposure. A *Long Count* revision 5 seed variation yields either a quiet survey basin or a Velociraptor in the forest blind, patrolling the forest/river connection. Predator positions and actions are saved and validated. Only colocated actors see the animal; their companions may retreat on a real exit. The old rev4 manifest is immutable and rev1–4 saves never acquire the new animal.
 
-**Gate:** 547 prior + 13 new = 560 candidate regressions, exact PR/main GitHub Actions and Pages, no assertion of completed manual UI smoke. **Next 009-B2b2c2b:** Evolved source initiative, predator awareness and grounded contact/reactions, injury/medical clock and native scenario-independent NPCs. This stage alone does not deliver hostile combat.
+**Gate:** 547 prior + 13 new = 560 accepted regressions, PR #34 and source main Actions 40265924855 and Pages 40265924390 green, no assertion of completed manual UI smoke. **Next 009-B2b2c2b:** Evolved source initiative, predator awareness and grounded contact/reactions, injury/medical clock and native scenario-independent NPCs. This stage alone does not deliver hostile combat.
 
 ## 009-B2b2c1 — Optional physical Evolved danger and clinical response (accepted, 2026-10-25)
 
