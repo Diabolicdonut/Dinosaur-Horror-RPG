@@ -25,7 +25,7 @@ test('009-C1: third-party style narrative dossier is data-only and revision-boun
  assert.notEqual(compiled.fingerprint,adventureFingerprint(RIDGE_SURVEY_REV8));
  const legacy=compileAdventure(RIDGE_SURVEY_REV8,{seed:quietSeed});
  const old=create(quietSeed);old.adventureBinding=adventureBinding(legacy);
- old.supportingCast=undefined;old.conversationRecords=undefined;
+ old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;
  assert.equal(isPartySave(old),true);
  assert.equal(partyView(old).scenarioMaterial,null);
 });
