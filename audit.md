@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2b — Optional Three-Act Cinematic Events (candidate) — 2026-10-25
+
+**Recovery:** GitHub main `f5a993ae448233196114d259d541251891f595c3`, accepted 009-B2b2a v0.7.25 and 522/522 regressions; main Actions and Pages successful, no open PRs. Exclusive Dinosaur project scope maintained.
+
+**Implementation:** Adds genuinely adventure-agnostic, data-only `cinematic` format validated alongside an authored AdventureDefinition: three ordered acts with explicit *objective prerequisites*, optional authored scene events with physical room, theme, optional real creature presence, optional second colocated capable survivor and optional compiled latent variant match. New `src/adventure-cinematic.mjs` derives the active Setup/Tilt/Showdown act from already committed mission objectives. It returns only currently local, eligible, actor-specific, one-time scene opportunities. A voluntary `scene <id>` action records actor, room, act and beat; it does not advance time or turns, spend Evolved dice/RNG, modify stress or injury, teleport a creature, add items or change mission success. Unavailable, repeated, forged and out-of-order scenes are rejected. There are no forced cinematic events and no compulsory predator attacks.
+
+**New authored module:** *The Long Count* revision **3** adds six optional Wonder, Discovery, Human and Dread scenes organized into three acts. It retains the physical survey, safe route, seeded research obstacles and natural animal behavior from revision 2. Exact revision 1 and revision 2 manifests remain immutable separately; older saves continue their original definitions and do not suddenly gain new scenes. The same Party/Focus/Spectator interfaces show the current act and available optional scenes through existing browser controls; no new Worker or legacy solo changes.
+
+**Validation:** 11 new tests added, for **533/533 candidate** (522 previously accepted + 11). Earlier test routes were adjusted to use an actually safe ridge route when the ford is flooded. Browser module cache identifiers and dependent UI assertions updated to load the new scenario. PR #30 final head and independently merged main CI/Pages must be confirmed. Manual graphical desktop/mobile QA remains outstanding.
+
+**Limit:** This is source-bound optional Cinematic *structure*, not actual fully generated stories, autonomous human NPCs, source-faithful predator rounds or medical-combat parity across scenarios. The survey's existing nonviolent wildlife response is unchanged. Next 009-B2b2c should generalize physically situated NPC and animal encounters and source Evolved danger mechanisms across adventures, then eliminate remaining two-runtime transitional duplication.
+
+
 ## Checkpoint 009-B2b2a — Causal Seeded Complications and Wildlife Response (accepted) — 2026-10-25
 
 **Recovery:** Main `2f33d2990f8b45618e178fb1c157a7d6471bee75`, accepted 009-B2b1 v0.7.24, **508/508** regression cases, GitHub Actions and Pages successful; no open PRs and no cross-project inputs.

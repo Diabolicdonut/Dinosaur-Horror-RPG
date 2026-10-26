@@ -1,8 +1,14 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2a accepted 522/522 source tests; full engine parity, Cinematic director and graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2b optional Cinematic director candidate 533/533; NPC/creature/medical parity and graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## 009-B2b2b — Three-act, strictly optional Cinematic scenes (candidate, 2026-10-25)
+
+A reusable data-only Cinematic package now defines Act I Setup, Act II Tilt, Act III Showdown, with independently validated unlock objectives; local scene events with optional real creature presence, nearby able participant and fixed seeded variant conditions. The 3-act director recomputes act progression from committed objectives—there is no time-driven escalation, creature teleportation, scripted mandatory monster encounter or scope to bypass Evolved mechanics. Valid voluntary scene requests record only the actor's local memory/event and do not spend action time, rolls, finite resources or modify objectives. *The Long Count* revision 3 includes six optional human/wonder/dread/discovery opportunities, while old rev1/rev2 saves and physical mechanics remain unchanged. The existing Party browser reuses its optional scene UI and reports the current act.
+
+**Gate:** 522 accepted regressions plus 11 new tests for source-valid scenes, physical and seed gates, no-cost event semantics, act transitions from Evolved-gated objectives and immutable historical saves (**533 candidate**). Next 009-B2b2c: source-valid adventure-agnostic creature/NPC and medical combat experiences; then full Party engine extraction and generated scenarios.
 
 ## 009-B2b2a — Data-bound Cinematic suspense ingredients (accepted, 2026-10-25)
 

@@ -1,10 +1,13 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2a1';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2b';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2a1';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009b2b2b';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
+import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
+import {cinematicAct,availableCinematicEvents,validCinematicRecords,
+ commitCinematicEvent} from './adventure-cinematic.mjs';
 import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
 import {makeParty,validateParty} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
@@ -20,6 +23,8 @@ const template=compiled.definition;
 // The incident's original seed now determines its stable private situation.
 const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV1,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===2?
+ compileAdventure(RIDGE_SURVEY_REV2,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -79,6 +84,7 @@ export function isSelectedAdventureSave(s){
      JSON.stringify(countInventory(s),Object.keys(stock).sort())!==
        JSON.stringify(stock,Object.keys(stock).sort())||
      !validObjectiveRecords(situated(s),s)||
+     !validCinematicRecords(situated(s),s)||
      (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
      s.dinosaurs.some((d,i)=>{
        const original=template.initialCreatures[i];
@@ -111,7 +117,7 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   startingRoster:copy(party),actors,flags:copy(template.flags),
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],
   rooms:world.initialRoomItems(),dinosaurs:copy(template.initialCreatures).map(d=>({
    id:d.id,kind:d.species,location:d.location,disposition:d.disposition,
    defeated:false})),
@@ -142,7 +148,8 @@ export function selectedAdventureView(s,{actorId=null}={}){
   cameraMode:s.control.cameraMode,paused:s.control.paused,
   activeActorId:s.actors[s.cursor].id,combat:null,
   location:actor.location,roomName:room.name,description:room.description,
-  weather:null,serviceShutterClosed:false,cinematicScene:null,cinematicAct:null,
+  weather:null,serviceShutterClosed:false,cinematicScene:null,
+  cinematicAct:cinematicAct(situated(s),s),
   availableDangerEvents:[],sceneConsequences:s.adventureBinding.revision===1?[]:
    localSituationCues(situated(s),actor.location),
   preparedGenerator:false,
@@ -152,7 +159,9 @@ export function selectedAdventureView(s,{actorId=null}={}){
     ...(s.adventureBinding.revision===1?[]:[
      {id:'approach',label:'Approach slowly and read the animal’s behavior (Survival if wary)'}])]}:null,
   dialogueOpportunities:[],parkGuide:null,rescueEnding:null,
-  localPaddockGateBraced:false,availableSceneEvents:[],encounterPressure:null,
+  localPaddockGateBraced:false,
+  availableSceneEvents:availableCinematicEvents(situated(s),s,actor.id),
+  encounterPressure:null,
   lighting:'natural ambient light',batterySupplies:{carried:0},batteryActions:[],
   personalLight:{carried:false,on:false,charge:0},cover:null,availableCover:[],
   distantSightings:[],groupTravel:null,
@@ -191,6 +200,13 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
  if((opts.source??'human')!==(human?'human':'ai'))return reject(previous,'Control owner mismatch.');
  if(previous.outcome!=='playing')return reject(previous,'The adventure has concluded.');
  const action=normalize(raw,parser);
+ if(action.kind==='scene'){
+  const result=commitCinematicEvent(situated(previous),previous,
+   {actorId:active.id,eventId:action.target});
+  if(!result.accepted)return result;
+  if(!isSelectedAdventureSave(result.state))throw new Error('Invalid scene commit.');
+  return result;
+ }
  if(action.kind==='look')return reject(previous,'Inspection is free; no turn was spent.');
  if(!['move','sneak','rush','wait','take','give','use','wildlife'].includes(action.kind))
   return reject(previous,'This adventure currently supports travel, survey interactions, observation, items and waiting.');

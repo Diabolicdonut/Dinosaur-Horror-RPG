@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // not yet runnable by the legacy After the Storm-specific Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:2,
+ schemaVersion:1,id:'ridge-survey',revision:3,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -33,6 +33,29 @@ export const RIDGE_SURVEY={
    interaction:{target:'return to safety',skill:null},
    effects:[{type:'flag',name:'teamWithdrawn',value:true},{type:'end',outcome:'completed'}]}
  ],
+ cinematic:{
+  acts:[
+   {number:1,title:'The Setup',objective:'Enter the basin, locate study observations, and establish the ordinary survey route.',unlocksAfter:[]},
+   {number:2,title:'The Tilt',objective:'Reconcile the observations with the conditions in the field and relay an accurate report.',unlocksAfter:['recover-transect']},
+   {number:3,title:'The Showdown',objective:'Determine what to preserve, then return to camp with whatever truths the party has established.',unlocksAfter:['recover-transect','send-field-report']}
+  ],
+  events:[
+   {id:'living-valley',act:1,room:'survey-ridge',title:'The Valley Breathes',theme:'wonder',
+    creatureId:'grazer-1',text:'A massive living silhouette shifts below the ridge; its breathing carries across the grass, unhurried and unthreatening.'},
+   {id:'notes-among-leaves',act:1,room:'forest-blind',title:'The Empty Observation Hide',theme:'discovery',
+    text:'Leaf litter has collected beneath the field markers. The place is empty; that alone establishes no cause for alarm.'},
+   {id:'river-reckoning',act:2,room:'river-crossing',title:'The Rising Ford',theme:'dread',
+    variant:{slot:'researchObstacle',choice:'flooded-ford'},
+    text:'The river has risen across the submerged stones. Reaching the blind from here may require care, or a different route.'},
+   {id:'cross-check',act:2,room:'survey-ridge',title:'Compare the Transect',theme:'human',
+    requiresCompanion:true,
+    text:'Two researchers compare their field observations, recognizing a discrepancy without assuming it points to a predator.'},
+   {id:'farewell-valley',act:3,room:'survey-ridge',title:'A Last Look at the Herd',theme:'wonder',
+    creatureId:'grazer-1',text:'Across the valley the animal keeps moving. For a moment the scientific mission gives way to awe.'},
+   {id:'camp-decision',act:3,room:'field-camp',title:'What the Expedition Carries Home',theme:'human',
+    text:'The camp is still here. The team can decide what matters most before choosing whether to conclude its expedition.'}
+  ]
+ },
  initialCreatures:[{id:'grazer-1',species:'parasaurolophus',
   location:'survey-ridge',disposition:'neutral'}],
  variants:{
