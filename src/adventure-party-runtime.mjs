@@ -7,11 +7,17 @@ import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs
 import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
 import {makeParty,validateParty} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
+import {passageCircumstance,objectiveCircumstance,
+ animalApproachCircumstance,localSituationCues} from './adventure-situations.mjs';
 
 const copy=x=>JSON.parse(JSON.stringify(x));
 const compiled=compileSelectedAdventure('ridge-survey',0);
 const world=createAdventureWorld(compiled);
 const template=compiled.definition;
+// Legacy saves remain valid: the earlier prototype used a fixed compiled
+// scenario, while its previously-unused latent variants were never revealed.
+// The incident's original seed now determines its stable private situation.
+const situated=s=>compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
  let x=s.rng>>>0;
@@ -128,10 +134,12 @@ export function selectedAdventureView(s,{actorId=null}={}){
   activeActorId:s.actors[s.cursor].id,combat:null,
   location:actor.location,roomName:room.name,description:room.description,
   weather:null,serviceShutterClosed:false,cinematicScene:null,cinematicAct:null,
-  availableDangerEvents:[],sceneConsequences:[],preparedGenerator:false,
+  availableDangerEvents:[],sceneConsequences:localSituationCues(situated(s),actor.location),
+  preparedGenerator:false,
   wildlifeEncounter:creatures.length?{title:creatures.map(d=>d.kind).join(', '),
    description:'A physically present animal can be watched without provoking it.',
-   choices:[{id:'watch',label:'Observe from a respectful distance'}]}:null,
+   choices:[{id:'watch',label:'Observe from a respectful distance'},
+    {id:'approach',label:'Approach slowly and read the animal’s behavior (Survival if wary)'}]}:null,
   dialogueOpportunities:[],parkGuide:null,rescueEnding:null,
   localPaddockGateBraced:false,availableSceneEvents:[],encounterPressure:null,
   lighting:'natural ambient light',batterySupplies:{carried:0},batteryActions:[],
@@ -178,18 +186,29 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
  if(active.dead||active.broken)return reject(previous,'This survivor cannot act.');
  let s=copy(previous),actor=s.actors[s.cursor],rolled=null;
  let result={},description='',noise=0;
- const at=actor.location;
+ const at=actor.location,instance=situated(s);
  if(['move','sneak','rush'].includes(action.kind)){
   const dest=world.resolveExit(at,action.target);
   if(!dest)return reject(previous,'Destination is not physically adjacent.');
-  if(action.kind==='sneak'){
-   rolled=resolveSkillCheck(actor,{skill:'mobility',context:'stealth_travel',
+  const passage=passageCircumstance(instance,at,dest);
+  if(passage||action.kind==='sneak'){
+   rolled=resolveSkillCheck(actor,{skill:passage?.skill||'mobility',
+    context:action.kind==='sneak'?'stealth_travel':'terrain_crossing',
+    modifier:passage?.modifier??0,
     seed:nextSeed(s),push:action.push||0});
    actor.stress=rolled.after.stress;actor.stressResponses=rolled.after.stressResponses;
+   actor.storyPoints=rolled.after.storyPoints;
   }
-  actor.location=dest;actor.visitedRooms=[...new Set([...actor.visitedRooms,dest])];
-  description=actor.name+' travels to '+world.roomName(dest)+'.';
-  if(action.groupApproach)description+=' The others must move on their own turns.';
+  if(passage&& !rolled.success){
+   description=actor.name+' tries to cross the hazardous ford, but must withdraw to '+
+    world.roomName(at)+'. No distance is gained.';
+   result={challenge:'passage',success:false};
+  }else{
+   actor.location=dest;actor.visitedRooms=[...new Set([...actor.visitedRooms,dest])];
+   description=actor.name+' travels to '+world.roomName(dest)+'.';
+   if(action.groupApproach)description+=' The others must move on their own turns.';
+   if(passage)result={challenge:'passage',success:true};
+  }
  }else if(action.kind==='wait')description=actor.name+' waits and observes the research camp.';
  else if(action.kind==='take'){
   const item=s.rooms[at].items.find(id=>id===action.target||
@@ -205,9 +224,30 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   actor.inventory.splice(actor.inventory.indexOf(item),1);other.inventory.push(item);
   description=actor.name+' hands '+world.itemLabel(item)+' to '+other.name+'.';
  }else if(action.kind==='wildlife'){
-  if(action.target!=='watch'||!s.dinosaurs.some(d=>d.location===at&&!d.defeated))
-   return reject(previous,'There is no visible, peaceful animal to observe here.');
-  description=actor.name+' quietly observes the animal without forcing a confrontation.';
+  const animal=s.dinosaurs.find(d=>d.location===at&&!d.defeated);
+  if(!['watch','approach'].includes(action.target)||!animal)
+   return reject(previous,'There is no physically present animal offering that encounter.');
+  if(action.target==='watch'){
+   description=actor.name+' quietly observes the animal without forcing a confrontation.';
+  }else{
+   const response=animalApproachCircumstance(instance,animal.id,at);
+   if(response){
+    rolled=resolveSkillCheck(actor,{skill:response.skill,context:'wildlife_approach',
+     modifier:response.modifier,seed:nextSeed(s),push:action.push||0});
+    actor.stress=rolled.after.stress;actor.stressResponses=rolled.after.stressResponses;
+    actor.storyPoints=rolled.after.storyPoints;
+    if(!rolled.success){
+     // The animal uses a real authored adjacent exit. No attack is implied.
+     animal.location=response.to;
+     description=actor.name+' approaches too closely; the alarmed dinosaur retreats toward '+
+      world.roomName(response.to)+'. No attack occurs.';
+    }else description=actor.name+' reads the animal’s warning signs and maintains a safe distance.';
+    result={challenge:'animal_approach',success:rolled.success};
+   }else{
+    description=actor.name+' approaches slowly; the grazing dinosaur remains undisturbed.';
+    result={challenge:'animal_approach',success:true};
+   }
+  }
  }else if(action.kind==='use'){
   const objective=template.objectives.find(o=>o.interaction&&o.room===at&&
    o.interaction.target.toLowerCase()===String(action.target).toLowerCase());
@@ -217,7 +257,9 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   if(objective.requires.some(id=>!progress.completedIds.includes(id)))
    return reject(previous,'Complete the preceding objective first.');
   if(objective.interaction.skill!==null){
+   const complication=objectiveCircumstance(instance,objective.id);
    rolled=resolveSkillCheck(actor,{skill:objective.interaction.skill,
+    modifier:complication?.modifier??0,
     seed:nextSeed(s),push:action.push||0});
    actor.stress=rolled.after.stress;actor.stressResponses=rolled.after.stressResponses;
    actor.storyPoints=rolled.after.storyPoints;
