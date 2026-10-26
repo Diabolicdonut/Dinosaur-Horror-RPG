@@ -93,7 +93,10 @@ export function isSelectedAdventureSave(s){
      !validPendingPredatorResponse(situated(s),s)||
      !s.clock||!integers(s.clock.explorationActions)||!integers(s.clock.explorationStretches)||
      !integers(s.clock.combatRounds)||!integers(s.clock.combatSeconds)||
-     s.clock.combatRounds!==0||s.clock.combatSeconds!==0||
+     (s.adventureBinding.revision<7?
+      (s.clock.combatRounds!==0||s.clock.combatSeconds!==0):
+      (s.clock.combatSeconds!==s.clock.combatRounds*10||
+       s.clock.combatRounds!==s.predatorContacts.filter(r=>r.reaction).length))||
      !s.rooms||Object.keys(s.rooms).sort().join('|')!==Object.keys(template.rooms).sort().join('|')||
      !s.flags||Object.keys(s.flags).sort().join('|')!==Object.keys(template.flags).sort().join('|')||
      Object.values(s.flags).some(v=>typeof v!=='boolean')||
