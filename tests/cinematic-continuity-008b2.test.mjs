@@ -173,8 +173,8 @@ test('live browser projects continuity and 008-B2 modules without Worker mutatio
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/scenario.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b1'));
- assert(app.includes('party-engine.mjs?v=009b2b1'));
+ assert(html.includes('party-app.mjs?v=009b2b2a'));
+ assert(app.includes('party-engine.mjs?v=009b2b2a'));
  assert(app.includes('CONTINUITY'));
  assert(engine.includes('generatorPreparation(s,a)'));
  assert(engine.includes('sceneConsequences:localSceneConsequences(s,actor)'));

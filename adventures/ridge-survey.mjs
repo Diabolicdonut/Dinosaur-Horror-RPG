@@ -38,17 +38,21 @@ export const RIDGE_SURVEY={
  variants:{
   researchObstacle:[
    {id:'flooded-ford',fact:'flood',clueRoom:'river-crossing',
-    description:'The river crossing is threatened by rising water.'},
+    description:'The river is visibly rising, making the forest ford treacherous.',
+    mechanic:{kind:'passage_check',from:'river-crossing',to:'forest-blind',skill:'mobility',modifier:-2}},
    {id:'damaged-tripod',fact:'equipment',clueRoom:'survey-ridge',
-    description:'Wind damaged the survey tripod and scattered markers.'},
+    description:'The observation tripod is wind-damaged, compromising the field transmitter.',
+    mechanic:{kind:'objective_check',objectiveId:'send-field-report',modifier:-2}},
    {id:'missing-records',fact:'human',clueRoom:'forest-blind',
-    description:'Someone relocated the field records before leaving.'}
+    description:'The study markers have been disturbed and the records are out of sequence.',
+    mechanic:{kind:'objective_check',objectiveId:'recover-transect',modifier:-2}}
   ],
   wildlifeBehavior:[
    {id:'grazing',fact:'peaceful',clueRoom:'survey-ridge',
     description:'The animals are grazing quietly in the valley.'},
    {id:'nervous',fact:'defensive',clueRoom:'forest-blind',
-    description:'A nearby nesting animal is wary of any intrusion.'}
+    description:'The tracks and alarm calls suggest an animal is wary of close approach.',
+    mechanic:{kind:'animal_response',creatureId:'grazer-1',response:'flee_on_failed_approach',to:'forest-blind',skill:'survival',modifier:-1}}
   ]
  }
 };

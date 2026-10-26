@@ -81,7 +81,7 @@ test('009-B2b1: completed research has source-legal second skill and routine fin
  let completed=null;
  for(let seed=1;seed<=160&&!completed;seed++){
   let s=fresh(seed);
-  s=step(s,'move river-crossing');s=step(s,'move forest-blind');
+  s=step(s,'move rocky-ascent');s=step(s,'move survey-ridge');s=step(s,'move forest-blind');
   for(let n=0;n<16&&!s.flags.dataRecovered;n++)s=step(s,'use survey records');
   if(!s.flags.dataRecovered)continue;
   s=step(s,'move survey-ridge');
