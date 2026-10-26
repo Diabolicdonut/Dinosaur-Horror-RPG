@@ -7,3 +7,7 @@
 **Limit:** Not full 10-second multi-turn source combat, adversary pursuit/attacks outside the opening threat, clinical progression across combat rounds, weapon inventory combat or general-purpose NPC AI.
 
 **Testing:** 572 older cases preserved, eleven new = 583. Exact PR, main Actions and Pages must be green before acceptance; manual graphical testing is outstanding.
+
+## Accepted source evidence (October 26, 2026)
+
+[PR #38](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/38) exact fully documented head `3fecb3c0ce50ec175612df42a48e29e6faa3ab29` passed 583/583. Merged gameplay main `130e8dc57c9b0f97e6e49eb5049bd922111fceb8` independently passed [Actions 40316221185](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40316221185) 583/583 and [Pages 40316221383](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40316221383) deployment successful. This is an opening attack defensive choice, not complete source Evolved multi-round combat. Actual desktop/mobile graphical smoke remains outstanding.

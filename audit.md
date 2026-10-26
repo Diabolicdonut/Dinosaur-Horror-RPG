@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B2b2c2c1 — Player-Selected Evolved Opening Defense (candidate) — 2026-10-26
+## Checkpoint 009-B2b2c2c1 — Player-Selected Evolved Opening Defense (accepted) — 2026-10-26
 
 **Recovery:** GitHub accepted main `e719bb9df12bfa2f15edf2bec802fa46ef06b37b`, 009-B2b2c2b v0.7.29, 572 passing tests and both Actions/Pages green, zero open PRs. Isolated Dinosaur project scope; no other repositories or Worker secrets used.
 
@@ -11,6 +11,8 @@
 **History:** Rev1–6 existing research saves continue their exact previous rules and source fingerprints; this feature only starts for newly created Rev7 research sessions. Nublar rescue, source Nublar combat, legacy solo and Cloudflare Worker remain unchanged.
 
 **Testing:** 11 new regression cases, old baseline 572, **583 candidate tests**. New tests check the source opportunity, quiet seeds, forced-reaction bypass rejection, defended and declined outcomes, one 10-second clock step, deterministic dice, Focus/Spectator AI agency, tamper rejection, historical rev6 behavior and Nublar isolation. An initial CI test failure exposed a double-escaped typed command regex, fixed before subsequent green candidate checks. Final exact PR head and independently merged main Actions and Pages remain acceptance gates. Manual desktop/mobile graphical smoke not performed.
+
+**Acceptance:** [PR #38](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/38) exact documentation-inclusive head `3fecb3c0ce50ec175612df42a48e29e6faa3ab29` passed **583/583** via [Actions 40316080352](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40316080352). Merged source main `130e8dc57c9b0f97e6e49eb5049bd922111fceb8` independently passed [Actions 40316221185](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40316221185) **583/583** and [Pages 40316221383](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40316221383). The acceptance-ledger-only follow-up requires separate GitHub checks. Manual graphical desktop/mobile smoke still outstanding.
 
 **Remaining limitations:** This is **one opening strike's explicit reaction**, not complete 10-second combat rounds, ongoing multi-slot initiative, ranged combat options, a full clinically ticking injury clock or autonomous human NPCs. Next milestone **009-B2b2c2c2** advances real combat-turn architecture.
 
