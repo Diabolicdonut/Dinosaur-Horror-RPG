@@ -97,6 +97,29 @@ export function validateAdventureDefinition(def){
   for(const option of options){
    if(!option||!key(option.id)||!text(option.description)||
       !rooms[option.clueRoom]||!key(option.fact))reject('variant choice');
+   if(option.mechanic!==undefined){
+    const m=option.mechanic;
+    if(!m||typeof m!=='object'||Array.isArray(m)||
+       !['passage_check','objective_check','animal_response'].includes(m.kind)||
+       !Number.isInteger(m.modifier)||m.modifier < -5||m.modifier > 5)
+      reject('variant mechanic');
+    const allowed=m.kind==='passage_check'?['kind','from','to','skill','modifier']:
+      m.kind==='objective_check'?['kind','objectiveId','modifier']:
+      ['kind','creatureId','to','skill','modifier','response'];
+    if(Object.keys(m).some(k=>!allowed.includes(k)))reject('variant mechanic fields');
+    if(m.kind==='passage_check'&&
+       (!rooms[m.from]||!rooms[m.to]||!rooms[m.from].exits.includes(m.to)||
+        !['mobility','survival'].includes(m.skill)))reject('passage circumstance');
+    if(m.kind==='objective_check'&&
+       !def.objectives.some(o=>o.id===m.objectiveId&&o.interaction?.skill))
+      reject('objective circumstance');
+    if(m.kind==='animal_response'){
+     const creature=def.initialCreatures.find(c=>c.id===m.creatureId);
+     if(!creature||!rooms[creature.location].exits.includes(m.to)||
+        m.response!=='flee_on_failed_approach'||m.skill!=='survival')
+      reject('animal response');
+    }
+   }
   }
  }
  // A fully serializable manifest may not contain executable callbacks, NaN or
