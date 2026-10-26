@@ -15,3 +15,7 @@
 Accepted baseline: 009-B2b1 508/508 with both main Actions and Pages green. Candidate 009-B2b2a: 518 automated regression cases in PR #27. Browser module identity changes across the relevant catalog, adventure and Party app to prevent cached gameplay logic from mixing old source definitions.
 
 Future work: three-act Setup/Tilt/Showdown event definitions and actor-local optional scene opportunities; persistent noncombat NPCs; mobile graphical smoke; real credible predator encounters, injury/medical source mechanics for all scenarios; eventually dynamic Cinematic/Campaign generation and bounded typed Game Mother.
+
+## Compatibility follow-up — immutable story revision
+
+The first mechanics addition changed an accepted authored manifest in place, which would invalidate the research saves bound to revision 1. PR #28 instead preserves `adventures/ridge-survey-rev1.mjs` as the exact prior definition; all newly generated research adventures bind to **revision 2**. When loading a saved revision 1 incident, the engine compiles and validates the previous definition with its stored seed; it does not apply revision 2 passage checks, revised clues or animal approach options. New revisions keep the seeded physical consequences. Four new tests cover the exact fingerprints, prior-rules safe crossing, original wildlife behavior and forged cross-revision bindings. Total candidate gate: **522/522** automated regressions. No full procedural replayability or live graphical QA is claimed.
