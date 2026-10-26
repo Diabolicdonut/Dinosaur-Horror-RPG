@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
-// not yet runnable by the legacy After the Storm-specific Party engine.
+// played by the revision-gated selected-adventure Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:7,
+ schemaVersion:1,id:'ridge-survey',revision:8,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
