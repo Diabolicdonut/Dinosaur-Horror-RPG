@@ -9,7 +9,9 @@ import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
 import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
 import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
-import {localPredator,validPredatorContacts,resolvePredatorContact}
+import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
+import {localPredator,validPredatorContacts,resolvePredatorContact,
+ resolveDeferredPredatorContact,validPendingPredatorResponse}
  from './adventure-predator-contact.mjs';
 import {initialAdventureCreatures,validateCreatureContinuity,
  advanceAutonomousCreatures} from './adventure-creatures.mjs';
@@ -41,6 +43,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV4,{seed:s.initialSeed}):
  s.adventureBinding?.revision===5?
  compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===6?
+ compileAdventure(RIDGE_SURVEY_REV6,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -86,6 +90,7 @@ export function isSelectedAdventureSave(s){
      !Array.isArray(s.dinosaurs)||
      !validateCreatureContinuity(situated(s),s)||
      !validPredatorContacts(situated(s),s)||
+     !validPendingPredatorResponse(situated(s),s)||
      !s.clock||!integers(s.clock.explorationActions)||!integers(s.clock.explorationStretches)||
      !integers(s.clock.combatRounds)||!integers(s.clock.combatSeconds)||
      s.clock.combatRounds!==0||s.clock.combatSeconds!==0||
@@ -137,7 +142,7 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   startingRoster:copy(party),actors,flags:copy(template.flags),
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],pendingPredatorResponse:null,
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -217,6 +222,39 @@ function normalize(raw,parser){
 }
 export function selectedAdventureStep(previous,raw,opts={},parser){
  if(!isSelectedAdventureSave(previous))throw new RangeError('Invalid selected adventure save.');
+ if(previous.pendingPredatorResponse){
+  const pending=previous.pendingPredatorResponse;
+  const victim=previous.actors.find(a=>a.id===pending.victimId);
+  const human=previous.control.mode==='party'||
+   (previous.control.mode==='focus'&&previous.control.focusedActorId===victim.id);
+  if(opts.actorId!=null&&opts.actorId!==victim.id)
+   return reject(previous,'Only the threatened survivor may defend.');
+  if((opts.source??'human')!==(human?'human':'ai'))
+   return reject(previous,'The defender is owned by another controller.');
+  const defensiveAction=normalize(raw,parser);
+  if(defensiveAction.kind!=='react'||!['defend','decline'].includes(defensiveAction.target))
+   return reject(previous,'Resolve the incoming strike first: defend or decline.');
+  const resolved=resolveDeferredPredatorContact(situated(previous),previous,defensiveAction.target,
+   {time:previous.clock.explorationStretches*600+previous.clock.combatSeconds});
+  if(!resolved.accepted)return reject(previous,resolved.reason);
+  const s=copy(previous);
+  s.actors[s.actors.findIndex(a=>a.id===victim.id)]=resolved.actorAfter;
+  s.pendingPredatorResponse=null;
+  s.predatorContacts.push(resolved.record);
+  s.clock.combatRounds++;s.clock.combatSeconds+=10;
+  s.actions.push({beat:s.beat,actorId:victim.id,kind:'react',
+   target:defensiveAction.target,damage:resolved.record.damage});
+  s.actions=s.actions.slice(-200);
+  s.events.push({beat:s.beat,actorId:victim.id,category:'danger',
+   message:resolved.strike.damage?
+    victim.name+' attempts '+defensiveAction.target+' and suffers '+resolved.strike.damage+' damage.':
+    victim.name+' '+(defensiveAction.target==='defend'?'defends against':'declines to defend against')+
+     ' the Velociraptor and escapes injury.'});
+  s.events=s.events.slice(-160);
+  if(s.actors.every(a=>a.dead))s.outcome='lost';
+  if(!isSelectedAdventureSave(s))throw new Error('Defensive reaction failed state validation.');
+  return {accepted:true,state:s,result:resolved.result};
+ }
  const active=previous.actors[previous.cursor];
  const human=previous.control.mode==='party'||
   (previous.control.mode==='focus'&&previous.control.focusedActorId===active.id);
@@ -385,12 +423,17 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   const contact=resolvePredatorContact(situated(s),s,{actorId:actor.id,
    observationSeed:nextSeed(s),initiativeSeed:nextSeed(s),
    attackSeed:nextSeed(s),dodgeSeed:nextSeed(s),
-   time:s.clock.explorationStretches*600});
+   time:s.clock.explorationStretches*600,
+   deferDefense:s.adventureBinding.revision>=7});
   if(!contact.accepted)throw new Error('Predator contact failed: '+contact.reason);
   s.actors[s.actors.findIndex(a=>a.id===actor.id)]=contact.actorAfter;
-  s.predatorContacts??=[];s.predatorContacts.push(contact.record);
+  s.predatorContacts??=[];
+  if(contact.pending)s.pendingPredatorResponse=contact.pending;
+  else s.predatorContacts.push(contact.record);
   s.events.push({beat:s.beat,actorId:actor.id,category:'danger',
-   message:contact.strike?
+   message:contact.pending?
+    'The Velociraptor strikes first. '+actor.name+' must choose a defense.':
+    contact.strike?
     (contact.strike.damage?
      'A colocated Velociraptor strikes for '+contact.strike.damage+' damage.':
      'A Velociraptor tries to strike, but a defensive reaction prevents injury.'):
