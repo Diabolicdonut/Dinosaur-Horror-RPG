@@ -189,8 +189,8 @@ test('the browser offers local rescue and epilogue actions without bypassing Evo
   readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b1'));
- assert(app.includes('party-engine.mjs?v=009b2b1'));
+ assert(html.includes('party-app.mjs?v=009b2b2a'));
+ assert(app.includes('party-engine.mjs?v=009b2b2a'));
  assert(app.includes('v.parkGuide?.options'));
  assert(app.includes('v.rescueEnding'));
  assert.equal(parsePartyAction('guide persuade').kind,'guide');

@@ -148,8 +148,8 @@ test('natural text and live browser buttons use the same validated battery comma
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/scenario.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b1'));
- assert(app.includes('party-engine.mjs?v=009b2b1'));
+ assert(html.includes('party-app.mjs?v=009b2b2a'));
+ assert(app.includes('party-engine.mjs?v=009b2b2a'));
  assert(app.includes('v.batteryActions'));
  assert(engine.includes('batteryReady(a)'));
  assert(scenario.includes("battery_cell"));
