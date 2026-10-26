@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.30",
-  "checkpoint": "009-B2b2c2c1",
-  "state": "accepted_009_b2b2c2c1_player_evolved_predator_defense_583_tests",
+  "version": "0.7.31",
+  "checkpoint": "009-B2b2c2c2a",
+  "state": "accepted_generic_evolved_round_scheduler_foundation_591_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,21 +13,20 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 583,
+  "automated_tests": 591,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Continue 009-B2b2c2c2: actual reusable Evolved 10-second multi-round creature/human initiative, quick/full action budgets, physically connected retreat/hiding and combat injuries/medical clocks; 009-B2b2c2c1 supplies first-contact explicit defense only.",
-    "Preserve all 583 accepted tests, source rescue combat, immutable The Long Count revisions 1–6, new rev7 reaction, Party/Focus/Spectator, solo and Worker; no retroactive rules changes to saved games.",
-    "Integrate physically causal autonomous dinosaur and human NPC behavior without guaranteeing threats, manufacturing predator attacks or revealing remote hidden truth.",
-    "After full two-adventure feature parity, add procedural Cinematic scenarios with meaningful seed variation, continuing Campaign chapters and typed bounded AI Game Mother actions.",
-    "Run manual desktop and mobile graphical gameplay QA for new defender controls, focus/spectator reactions, actual injury and time checks, quiet/predator seed variants, older saves and privacy; still outstanding."
+    "Integrate the new generic src/adventure-combat-scheduler.mjs into The Long Count's revisioned Evolved combat runtime, with real 10-second turns, player actions, an actual committed consequence and injury clock; keep a coherent source rulebook.",
+    "Retain 591 regression tests and existing Nublar combat; immutable research rev1–7 saves must remain unchanged until an explicitly versioned new combat-enabled scenario is accepted.",
+    "Converge creature and human NPC turn controllers with species-aware physical movement, stealth, recovery and credible non-guaranteed predator encounters without fictional spawns or park micromanagement.",
+    "After two adventures have true gameplay parity, build structurally variable authored Cinematic adventures, procedural generation, Campaign chapter continuity and a bounded Game Mother.",
+    "Complete real desktop/mobile gameplay smoke testing; automation tests and GitHub Pages do not substitute for visual gameplay QA."
   ],
   "acceptance_criteria": [
-    "Accepted source 009-B2b2c2c1: 572 prior regression cases + 11 new = 583/583 tests; PR #38 exact final validated head 3fecb3c0ce50ec175612df42a48e29e6faa3ab29; merged source main 130e8dc57c9b0f97e6e49eb5049bd922111fceb8 independently Actions 40316221185 SUCCESS and Pages 40316221383 SUCCESS.",
-    "New The Long Count Rev7 must stage a threatened person's defense only if a physically situated predator's source Evolved detection/initiative genuinely permits an incoming attack; no invented attack or forced reaction in quiet seeds.",
-    "Explicit player or AI 'react defend' and 'react decline' resolves original Evolved creature attack using source Close Combat reaction or no defense, with deterministic seeds, no bypass of pending strike and a tracked 10-second reaction without consuming a second exploration action.",
-    "Save-bound old research revisions 1–6 retain their original fingerprints and combat behavior, including the prior automatic opening dodge; rev7 source response uses validated local pending-state and durable records.",
-    "All three control modes respect the threatened actor's ownership; only active victim can respond. Manual graphical smoke, full ongoing combat rounds, player attacks and autonomous human NPC minds are not yet completed."
+    "583 accepted tests plus eight new generic Evolved initiative and action-budget tests = 591; source head PR #40 CI green. Merged source main Actions/Pages must be checked separately.",
+    "New source-only reusable combat scheduler validates actual participants, Evolved numbered initiative with creature speed, quick/full spending and fresh seeded next rounds while rejecting forged action budgets or bogus cards.",
+    "Scheduler must not modify world positions, health, stress, creature attacks or historical Party saves. It is a separate groundwork service and not yet wired into The Long Count or After the Storm's live encounter rounds.",
+    "Manual browser smoke, playable true multi-round second-adventure combat, critical clock effects, independent NPCs and generated adventures are still pending."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +39,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted 009-B2b2c2c1 gameplay source main 130e8dc57c9b0f97e6e49eb5049bd922111fceb8: GitHub Actions 40316221185 SUCCESS (583/583) and Pages 40316221383 SUCCESS. Documentation-only acceptance PR and merged-main Actions/Pages must independently pass. Manual desktop/mobile graphical testing outstanding.",
+  "pages_deployment": "009-B2b2c2c2a source PR #40 validated 591/591, source merged main 272f31fef09683ceb9345a4cfb4d2578442e74b3 Actions/Pages to verify. Documentation acceptance merge additionally requires its own checks. Manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
