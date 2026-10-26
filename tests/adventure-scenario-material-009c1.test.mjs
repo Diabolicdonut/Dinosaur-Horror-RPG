@@ -73,6 +73,7 @@ test('009-C1: handouts and story cards unlock only through actual committed scen
  s=advance(s,'move rocky-ascent'); // seat 0
  s=advance(s,'move rocky-ascent'); // seat 1
  s=advance(s,'move survey-ridge'); // seat 0
+ s=advance(s,'move survey-ridge'); // seat 1
  const before=structuredClone(s);
  assert.equal(partyView(s).scenarioMaterial.privateStoryCards.length,0);
  s=advance(s,'scene living-valley');
