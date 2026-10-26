@@ -21,7 +21,7 @@ export function adventureFingerprint(def){
 }
 export function validateAdventureDefinition(def){
  if(!def||typeof def!=='object'||Array.isArray(def))reject('expected object');
- const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants'];
+ const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic'];
  if(Object.keys(def).some(k=>!allowed.includes(k)))reject('unknown top-level field');
  if(def.schemaVersion!==ADVENTURE_SCHEMA_VERSION||!key(def.id)||
     !Number.isSafeInteger(def.revision)||def.revision<1||
@@ -119,6 +119,45 @@ export function validateAdventureDefinition(def){
         m.response!=='flee_on_failed_approach'||m.skill!=='survival')
       reject('animal response');
     }
+   }
+  }
+ }
+ // Optional Cinematic event packages describe *opportunities*, not compulsory
+ // plot beats. Acts advance only from already-authored objective completion.
+ if(def.cinematic!==undefined){
+  const ci=def.cinematic;
+  if(!ci||typeof ci!=='object'||Array.isArray(ci)||
+     Object.keys(ci).some(k=>!['acts','events'].includes(k))||
+     !Array.isArray(ci.acts)||ci.acts.length!==3||
+     !Array.isArray(ci.events)||ci.events.length>32)reject('cinematic structure');
+  for(let i=0;i<3;i++){
+   const act=ci.acts[i];
+   if(!act||act.number!==i+1||!text(act.title)||!text(act.objective)||
+      !Array.isArray(act.unlocksAfter)||
+      act.unlocksAfter.some(id=>!ids.has(id))||
+      new Set(act.unlocksAfter).size!==act.unlocksAfter.length||
+      (i===0&&act.unlocksAfter.length)||
+      (i>0&&!act.unlocksAfter.length)||
+      (i>0&&ci.acts[i-1].unlocksAfter.some(id=>!act.unlocksAfter.includes(id))))
+     reject('cinematic act progression');
+  }
+  const eventIds=new Set();
+  for(const event of ci.events){
+   if(!event||!key(event.id)||eventIds.has(event.id)||
+      ![1,2,3].includes(event.act)||!rooms[event.room]||
+      !text(event.title)||!text(event.text)||!['wonder','dread','human','discovery'].includes(event.theme)||
+      Object.keys(event).some(k=>!['id','act','room','title','text','theme',
+       'creatureId','requiresCompanion','variant'].includes(k)))reject('cinematic event');
+   eventIds.add(event.id);
+   if(event.creatureId!==undefined&&!def.initialCreatures.some(c=>c.id===event.creatureId))
+      reject('cinematic creature');
+   if(event.requiresCompanion!==undefined&&typeof event.requiresCompanion!=='boolean')
+      reject('cinematic companion');
+   if(event.variant!==undefined){
+    const v=event.variant;
+    if(!v||Object.keys(v).some(k=>!['slot','choice'].includes(k))||
+       !def.variants[v.slot]?.some(choice=>choice.id===v.choice))
+      reject('cinematic variant');
    }
   }
  }
