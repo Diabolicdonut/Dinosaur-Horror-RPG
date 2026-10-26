@@ -10,6 +10,9 @@ import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
 import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
 import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
 import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
+import {RIDGE_SURVEY_REV7} from '../adventures/ridge-survey-rev7.mjs';
+import {selectedCombatSlot,validSelectedCombat,beginSelectedCombat,selectedCombatStep}
+ from './adventure-combat-live.mjs';
 import {localPredator,validPredatorContacts,resolvePredatorContact,
  resolveDeferredPredatorContact,validPendingPredatorResponse}
  from './adventure-predator-contact.mjs';
@@ -45,6 +48,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}):
  s.adventureBinding?.revision===6?
  compileAdventure(RIDGE_SURVEY_REV6,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===7?
+ compileAdventure(RIDGE_SURVEY_REV7,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -86,7 +91,7 @@ export function isSelectedAdventureSave(s){
      !s.actors.some(a=>a.id===s.control.focusedActorId)||
      !s.actors.some(a=>a.id===s.control.cameraActorId)||
      !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
-     s.combat!==null||!Array.isArray(s.actions)||!Array.isArray(s.events)||
+     !validSelectedCombat(s)||!Array.isArray(s.actions)||!Array.isArray(s.events)||
      !Array.isArray(s.dinosaurs)||
      !validateCreatureContinuity(situated(s),s)||
      !validPredatorContacts(situated(s),s)||
@@ -96,7 +101,8 @@ export function isSelectedAdventureSave(s){
      (s.adventureBinding.revision<7?
       (s.clock.combatRounds!==0||s.clock.combatSeconds!==0):
       (s.clock.combatSeconds!==s.clock.combatRounds*10||
-       s.clock.combatRounds!==s.predatorContacts.filter(r=>r.reaction).length))||
+       s.clock.combatRounds!==s.predatorContacts.filter(r=>r.reaction).length+
+        (s.adventureBinding.revision>=8?s.combatRoundRecords.length:0)))||
      !s.rooms||Object.keys(s.rooms).sort().join('|')!==Object.keys(template.rooms).sort().join('|')||
      !s.flags||Object.keys(s.flags).sort().join('|')!==Object.keys(template.flags).sort().join('|')||
      Object.values(s.flags).some(v=>typeof v!=='boolean')||
@@ -146,6 +152,7 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],pendingPredatorResponse:null,
+  ...(compiled.revision>=8?{combatReaction:null,combatRoundRecords:[],combatDamageRecords:[]}:{}),
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -163,18 +170,24 @@ export function selectedAdventureView(s,{actorId=null}={}){
  const goal=nextObjective(s);
  const creatures=s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated);
  const grazers=creatures.filter(d=>d.disposition!=='predatory');
+ const combatSlot=selectedCombatSlot(s);
  return {
   adventureId:template.id,adventureTitle:template.title,
   objectivePlan:goal?[{id:goal.id,room:goal.room,
    target:goal.interaction?.target||null,description:goal.description}]:[],
   objectives:template.objectives.map(o=>({id:o.id,description:o.description,
    done:progress.completedIds.includes(o.id)})),
-  beat:s.beat,round:s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
+  beat:s.beat,round:s.combat?.round??s.round,outcome:s.outcome,actorId:actor.id,actorName:actor.name,
   time:{explorationStretches:s.clock.explorationStretches,
-   minutes:s.clock.explorationStretches*10,combatRounds:0,combatSeconds:0,combatRoundSeconds:10},
+   minutes:s.clock.explorationStretches*10,combatRounds:s.clock.combatRounds,
+   combatSeconds:s.clock.combatSeconds,combatRoundSeconds:10},
   controlMode:s.control.mode,focusedActorId:s.control.focusedActorId,
   cameraMode:s.control.cameraMode,paused:s.control.paused,
-  activeActorId:s.actors[s.cursor].id,combat:null,
+  activeActorId:combatSlot?.actorId??s.actors[s.cursor].id,
+  combat:s.combat?{round:s.combat.round,card:combatSlot?.card,
+   index:s.combat.index,owner:combatSlot?.kind,order:copy(s.combat.order),
+   remaining:combatSlot?.kind==='human'?copy(s.combat.budgets[combatSlot.actorId]):null,
+   pendingReaction:s.combatReaction,surprise:null}:null,
   location:actor.location,roomName:room.name,description:room.description,
   weather:null,serviceShutterClosed:false,cinematicScene:null,
   cinematicAct:cinematicAct(situated(s),s),
@@ -255,8 +268,16 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
      ' the Velociraptor and escapes injury.'});
   s.events=s.events.slice(-160);
   if(s.actors.every(a=>a.dead))s.outcome='lost';
+  if(s.outcome==='playing'&&s.adventureBinding.revision>=8)
+   beginSelectedCombat(s,nextSeed);
   if(!isSelectedAdventureSave(s))throw new Error('Defensive reaction failed state validation.');
   return {accepted:true,state:s,result:resolved.result};
+ }
+ if(previous.combat){
+  const result=selectedCombatStep(previous,normalize(raw,parser),opts,nextSeed,world);
+  if(result.accepted&&!isSelectedAdventureSave(result.state))
+   throw new Error('Combat action broke research world/save integrity.');
+  return result;
  }
  const active=previous.actors[previous.cursor];
  const human=previous.control.mode==='party'||
