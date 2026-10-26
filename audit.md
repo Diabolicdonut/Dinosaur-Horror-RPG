@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B2b2a — Causal Seeded Complications and Wildlife Response (candidate) — 2026-10-25
+## Checkpoint 009-B2b2a — Causal Seeded Complications and Wildlife Response (accepted) — 2026-10-25
 
 **Recovery:** Main `2f33d2990f8b45618e178fb1c157a7d6471bee75`, accepted 009-B2b1 v0.7.24, **508/508** regression cases, GitHub Actions and Pages successful; no open PRs and no cross-project inputs.
 
@@ -11,6 +11,8 @@
 **Tests:** +10 initial regression cases for seed identity, schema validation, local-only secrets, Evolved passage success/failure, alternate access route, objective modifiers, safe watching, real adjacent animal flight, save tampering and original rescue parity. Retained 508 previous cases for **518/518**, validated in PR #27 and merged source main `590c639421caed0f7920813fc72be6c4707efab2` (Actions 40259944918 and Pages 40259944941 both successful). A separate compatibility correction PR #28 adds four tests, targeting **522/522** final. Final PR #28 and resulting merged-main CI/Pages remain to be verified independently. Manual graphical QA remains outstanding.
 
 **Save continuity correction:** The first variant commit changed the research manifest while retaining `revision:1`, unintentionally changing the fingerprint of existing Party saves. PR #28 corrects this before final acceptance: preserves the *exact* historical revision 1 definition in `adventures/ridge-survey-rev1.mjs`; increments mechanically enriched research definition to revision **2**; selects validation, objectives and cues according to saved bound revision. Old saves keep their original ford/wildlife behavior; new revision 2 incidents use the new seeded consequences. Added four revision/forgery tests. Browser module revisions are refreshed to load the correct current manifests, preserving all other scenarios.
+
+**Acceptance:** [PR #27](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/27) delivered initial situation-level mechanics; its merged main `590c639421caed0f7920813fc72be6c4707efab2` passed Actions 40259944918 and Pages 40259944941 (518/518). [PR #28](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/28) fixed old-save fingerprint/revision continuity and added four regression tests; its exact final head `b1d0b3577020ba840d6c2511b6762061c9a3154a` passed **522/522**, then accepted source main `f53cd9e8403627bb423b021f6ce0cbebf51a5485` independently passed [Actions 40260540618](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40260540618) **522/522** and [Pages 40260540169](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40260540169). The documentation-only acceptance follow-up must pass its own checks. Manual browser desktop/mobile QA remains outstanding.
 
 **Deliberate limits:** Not full 009-B2b2: research adventure still does not simulate active predators, injury/combat ecology, dynamic weather, companion/NPC relationships, three-act scene sequencing or procedural Campaigns. This is constrained *situation-level seed variation* (difficulty, path and animal reaction), NOT evidence of structurally different complete generated stories or cinematic playthroughs. Next 009-B2b2b: reusable three-act Cinematic framework with optional events and physically grounded triggers; then continuing creature, medical and NPC extraction.
 
