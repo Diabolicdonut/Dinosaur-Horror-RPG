@@ -103,12 +103,14 @@ function locationAt(compiled,s,id,beat){
 }
 export function advanceSupportingCast(compiled,previous){
  if(!compiled.definition.supportingCast?.some(n=>n.autonomy))return previous;
- if(!validSupportingCastState(compiled,previous))
-  throw new RangeError('Supporting cast state is not consistent with its source.');
  if(previous.outcome!=='playing'||!previous.beat||
   previous.beat%previous.actors.length!==0)return previous;
  const projected=expectedAutonomy(compiled,previous);
- if(!projected)throw new RangeError('Invalid roster round for supporting cast.');
+ if(!projected||!Array.isArray(previous.npcAutonomyRecords)||
+  previous.npcAutonomyRecords.length>projected.records.length||
+  JSON.stringify(previous.npcAutonomyRecords)!==
+   JSON.stringify(projected.records.slice(0,previous.npcAutonomyRecords.length)))
+  throw new RangeError('NPC movement history is inconsistent before the completed round.');
  const s=copy(previous);
  const pending=projected.records.slice(s.npcAutonomyRecords.length);
  for(const record of pending){
