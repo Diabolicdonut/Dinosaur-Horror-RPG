@@ -1,3 +1,4 @@
+import {validateScenarioMaterialDefinition} from './adventure-scenario-material.mjs';
 // 009-A — data-only, replaceable adventure manifests.
 // A manifest describes physical starts, routes, objectives and latent variants;
 // never arbitrary JS effect handlers or modifications of Evolved mechanics.
@@ -21,7 +22,7 @@ export function adventureFingerprint(def){
 }
 export function validateAdventureDefinition(def){
  if(!def||typeof def!=='object'||Array.isArray(def))reject('expected object');
- const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic','perils'];
+ const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic','perils','scenarioMaterial'];
  if(Object.keys(def).some(k=>!allowed.includes(k)))reject('unknown top-level field');
  if(def.schemaVersion!==ADVENTURE_SCHEMA_VERSION||!key(def.id)||
     !Number.isSafeInteger(def.revision)||def.revision<1||
@@ -159,9 +160,9 @@ export function validateAdventureDefinition(def){
   const ci=def.cinematic;
   if(!ci||typeof ci!=='object'||Array.isArray(ci)||
      Object.keys(ci).some(k=>!['acts','events'].includes(k))||
-     !Array.isArray(ci.acts)||ci.acts.length!==3||
+     !Array.isArray(ci.acts)||ci.acts.length<1||ci.acts.length>5||
      !Array.isArray(ci.events)||ci.events.length>32)reject('cinematic structure');
-  for(let i=0;i<3;i++){
+  for(let i=0;i<ci.acts.length;i++){
    const act=ci.acts[i];
    if(!act||act.number!==i+1||!text(act.title)||!text(act.objective)||
       !Array.isArray(act.unlocksAfter)||
@@ -175,7 +176,7 @@ export function validateAdventureDefinition(def){
   const eventIds=new Set();
   for(const event of ci.events){
    if(!event||!key(event.id)||eventIds.has(event.id)||
-      ![1,2,3].includes(event.act)||!rooms[event.room]||
+      (!Number.isInteger(event.act)||event.act<1||event.act>ci.acts.length)||!rooms[event.room]||
       !text(event.title)||!text(event.text)||!['wonder','dread','human','discovery'].includes(event.theme)||
       Object.keys(event).some(k=>!['id','act','room','title','text','theme',
        'creatureId','requiresCompanion','variant'].includes(k)))reject('cinematic event');
@@ -218,6 +219,7 @@ export function validateAdventureDefinition(def){
    }
   }
  }
+ validateScenarioMaterialDefinition(def);
  // A fully serializable manifest may not contain executable callbacks, NaN or
  // undefined; recursive JSON roundtrip also prevents prototype-bearing values.
  const normalized=clone(def);

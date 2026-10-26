@@ -1,7 +1,7 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009b2b2c2c2b';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009c1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009b2b2c2c2b';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009c1';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
 import {selectedCombatSlot} from './adventure-combat-live.mjs';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
@@ -134,6 +134,14 @@ function show(){
   ]).map(([title,done])=>'<div class="objective '+(done?'done':'not-done')+
    '"><span class="indicator">'+(done?'✓':'○')+'</span>'+esc(title)+'</div>').join('');
  const scene=[];
+  if(v.scenarioMaterial?.briefing)
+   scene.push('MISSION BRIEF · '+v.scenarioMaterial.briefing.title+' — '+v.scenarioMaterial.briefing.text);
+  for(const h of v.scenarioMaterial?.handouts||[])
+   scene.push('FIELD DOCUMENT · '+h.title+' — '+h.text);
+  for(const a of v.scenarioMaterial?.privateAgendas||[])
+   scene.push('PRIVATE ACT '+a.act+' AGENDA · '+a.text);
+  for(const c of v.scenarioMaterial?.privateStoryCards||[])
+   scene.push('PRIVATE STORY CARD · '+c.text);
  if(v.cinematicAct)scene.push('CINEMATIC ACT '+v.cinematicAct.number+' · '+v.cinematicAct.title+' — '+v.cinematicAct.objective);
  if(v.cinematicScene){
   scene.push('SCENE · '+v.cinematicScene.title+' ['+v.cinematicScene.theme+']');

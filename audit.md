@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-C1 — Original adventure scenario dossiers and character agendas (PR candidate) — 2026-10-26
+
+**Recovery:** Accepted GitHub main `fe88be827266a4883346446a802a24b4a39ca09f`, checkpoint 009-B2b2c2c2b v0.7.32, source 600/600 regressions; independent Actions and Pages successful. Reviewed the privately uploaded official Free League `Chariot of the Gods`, `Destroyer of Worlds`, and `Heart of Darkness` for adventure *structure* only. They are not imported, reproduced, renamed or turned into Jurassic Park adventures.
+
+**Implementation:** The compiler also now supports **one to five optional Cinematic acts** rather than requiring exactly three, so the Alien scenario structure does not become a mandatory plot formula. The reusable adventure-definition validator now allows an optional bounded, serializable `scenarioMaterial` dossier included in fingerprint binding. The separate pure `src/adventure-scenario-material.mjs` projects only public briefing/earned handouts and *controlled* character seat/act agendas and story cards after real seeded, committed objective/scene triggers. The authored `The Long Count` revision **9** provides original survey briefing, handouts, seed-conditioned field evidence and personal agendas without changing Evolved dice or world rules. GM source notes never enter player-view projections, but are **not secure secrets** while shipped as inspectable browser JavaScript. A rev9 cinematic record needs its matching committed action, blocking a fabricated save record from awarding a story card. Previous `adventures/ridge-survey-rev8.mjs` preserves the accepted 8 rules and content exactly; rev1–7, Nublar and Worker also unaffected. No automatic Story Point rewards or NPC agenda decisions are implied. [Technical specification](docs/SCENARIO-MATERIAL-009C1.md).
+
+**Validation:** 9 new source/trigger/privacy/revision/variable-act tests + 600 prior regressions = **609 targeted tests**; the prior 607/607 source run passed [Actions 40356640292](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40356640292), and the new 609-test candidate requires its own exact-head validation. Exact latest PR head and independent merged main Actions + Pages still pending final checks, and desktop/mobile graphical smoke not performed. Next: data-backed NPC cast/motives; true server-side GM secrecy; offensive equipment-combat parity; structurally varying procedural adventures once generic gameplay parity is sufficiently complete.
+
+
 ## Checkpoint 009-B2b2c2c2b — The Long Count live combat rounds (accepted) — 2026-10-26
 
 **Recovery:** Accepted main `6dd52888dbc175d5eb115def97a4a1d5dcc492b6`, checkpoint 009-B2b2c2c2a v0.7.31, 591 passing tests and independently green main Actions/Pages. Its generic scheduler was groundwork only, not playable.

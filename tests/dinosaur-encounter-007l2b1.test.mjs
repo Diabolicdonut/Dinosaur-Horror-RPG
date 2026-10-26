@@ -162,9 +162,9 @@ test('updated party browser imports real predator mechanics without changing sol
  const html=await readFile(new URL('../party.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
  const engine=await readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8');
- assert(html.includes('party-app.mjs?v=009b2b2c2c2b'));
- assert(app.includes("party-engine.mjs?v=009b2b2c2c2b"));
- assert(app.includes("party-director.mjs?v=009b2b2c2c2b"));
+ assert(html.includes('party-app.mjs?v=009c1'));
+ assert(app.includes("party-engine.mjs?v=009c1"));
+ assert(app.includes("party-director.mjs?v=009c1"));
  assert(engine.includes("combat-turns.mjs?v=007l2b1"));
  assert(engine.includes('raptorAttackPlan'));
  assert(!engine.includes("from '../worker/"));

@@ -2,6 +2,8 @@
 
 **Status (2026-10-25):** Approved direction; **not yet implemented**. GitHub main at adoption: `1cd360a732982189130c8381ee17d1ca980bbf73` (007-M1, v0.7.20, 454/454 tests, Actions/Pages passed). This document explicitly supersedes any roadmap implication that continued *After the Storm*-specific logic belongs in shared mechanics.
 
+**Current partial implementation note (009-C1, October 26, 2026):** Authored Cinematic packages can now have one to five optional acts; a standard three-act book structure is not required by the generic engine. The Long Count has a playable independent selected-adventure runtime with Evolved predator combat and a newly versioned `scenarioMaterial` dossier for player briefing, seat/act agendas, triggered Story Cards and earned documents. Rev1–8 manifests remain bound and intact. `After the Storm` still has some named assumptions in `src/party-engine.mjs`; the full universal runtime and AI generator remain unimplemented. Official Alien RPG scenarios are private structural references only, never content to copy to GitHub.
+
 ## Product requirement
 
 **The game engine must not be designed around one adventure.** The long-term game is an *Alien RPG Evolved Edition*-inspired dinosaur-survival RPG, with its adventures, NPCs, creatures, places, goals, dangers, Wonder and prose supplied as **replaceable, validated content**. The eventual AI Game Mother can build and run new adventures so that opening scenes, objectives, discoveries, emotional beats and resolutions are genuinely varied; characters' choices and seeded Evolved checks, not fixed scripts, determine what occurs.
