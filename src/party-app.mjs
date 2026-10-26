@@ -62,9 +62,9 @@ function show(){
  $('adventure-select').value=v.adventureId||'nublar-after-the-storm';
  const turn=activeCombatSlot(state),predatorTurn=turn?.kind==='dinosaur';
  const active=predatorTurn?{name:'Velociraptor',id:state.dinosaurs[0].id}:
-   state.actors.find(a=>a.id===activeTurnId(state));
+   state.actors.find(a=>a.id===(state.pendingPredatorResponse?.victimId||activeTurnId(state)));
  const owner=currentOwner(state);
- const pending=state.combat?.pendingReaction;
+ const pending=state.combat?.pendingReaction||state.pendingPredatorResponse;
  const ownHuman=owner==='human'&&state.outcome==='playing';
  $('beat').textContent=String(v.beat).padStart(3,'0');
  $('round').textContent=String(v.round).padStart(2,'0');
@@ -254,7 +254,8 @@ function show(){
    (v.combat.surprise?.ambush&&!v.combat.surprise.consumed&&v.combat.round===1?
      ' · AMBUSH: first strike cannot be dodged':'')+
    ' · 5–10 seconds per combat round':
-   'EXPLORATION · 5–10 minute stretches · no combat';
+   state.pendingPredatorResponse?'PREDATOR STRIKE · DEFEND or DECLINE · 10-second reaction':
+    'EXPLORATION · 5–10 minute stretches · no combat';
  if(state.outcome!=='playing')announce(state.outcome==='lost'?
   'ALL SURVIVORS LOST — this incident has ended.':
   (v.adventureId==='ridge-survey'?'The field survey is complete; the team has returned safely.':
@@ -270,13 +271,13 @@ function commit(result,label){
 }
 function issue(command){
  if(!state||state.outcome!=='playing')return;
- if(state.combat?.pendingReaction){announce('Resolve the incoming attack first: defend or decline.');return;}
+ if(state.combat?.pendingReaction||state.pendingPredatorResponse){announce('Resolve the incoming attack first: defend or decline.');return;}
  if(currentOwner(state)!=='human'){announce('This actor is computer-controlled. Pause and take over a character to intervene.');return;}
  const input=String(command||'').trim();
  if(!input){announce('Describe an action.');return;}
  cancelAuto();
  const parsed=input.startsWith('push ')?input:$('party-push').checked?'push '+input:input;
- const acting=state.actors[state.cursor];
+ const acting=state.actors.find(a=>a.id===(state.pendingPredatorResponse?.victimId||state.actors[state.cursor].id));
  const r=partyStep(state,parsed,{actorId:acting.id,source:'human'});
  if(!r.accepted){announce(r.reason);queueAutoplay();return;}
  const roll=r.result;
@@ -289,7 +290,7 @@ function issue(command){
  commit(r,message+' · Next: '+r.state.actors[r.state.cursor].name);
 }
 function reactToAttack(choice){
- const pending=state?.combat?.pendingReaction;
+ const pending=state?.combat?.pendingReaction||state?.pendingPredatorResponse;
  if(!pending||state.outcome!=='playing'||currentOwner(state)!=='human'){
   announce('No human-controlled defensive reaction is pending.');return;
  }
