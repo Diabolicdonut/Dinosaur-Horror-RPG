@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.26",
   "checkpoint": "009-B2b2b",
-  "state": "candidate_three_act_optional_cinematic_533_tests",
+  "state": "accepted_009_b2b2b_optional_cinematic_533_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,14 +16,14 @@
   "automated_tests": 533,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Validate exact candidate PR #30 head 533/533, merge only on success and independently verify main Actions and Pages; then record accepted 009-B2b2b ledger with final commit and evidence.",
-    "Implement 009-B2b2c: shared adventure-aware NPC/creature and Evolved peril/medical encounter contracts across both authored adventures, without forced attacks, while retaining existing Nublar pursuit and character control.",
-    "Preserve historical ridge-survey revisions 1 and 2 (immutable fingerprints and rules); revision 3 contains optional objective-derived Setup/Tilt/Showdown event slots, with free character-owned scenes and no RNG, time or equipment mutation.",
-    "Continue 009-B complete engine/scenario separation; after two feature-parity scenarios, introduce structurally different seeded replays, procedural Cinematic adventures, persistent Campaign chapters and typed bounded AI Game Mother.",
-    "Perform manual desktop/mobile graphical smoke for both adventures, changing control mode, visibility/private clue boundaries, optional scenes, and save/reload. Not yet performed."
+    "Continue 009-B2b2c generic adventure-aware NPC, creature and physically causal peril service, then progressively support genuine suspense and predator situations in The Long Count using source-valid Evolved combat/stress/medical rules.",
+    "Preserve old After the Storm gameplay, immutable ridge-survey rev1/rev2 saves, new revision 3 optional Cinematic scenes, Evolved rules and all 533 accepted regression tests.",
+    "Converge the two transitional scenario-specific Party runtimes and abstract all scenario-bound pursuit, injury/medical, inventory, companion/guide, NPC behavior and Cinematic opportunities into one reusable core with independently validated authored packages.",
+    "Only after engine parity and two fully playable different scenarios, add structurally meaningful multi-seed authored replayability, procedural Cinematic scenario generation, Campaign chapter continuity and bounded typed AI Game Mother.",
+    "Perform manual desktop/mobile physical browser QA of both adventures, three control modes, scene skipping, act progression, save/reload, source checks, local privacy and old rev1/rev2 saves; still outstanding."
   ],
   "acceptance_criteria": [
-    "522 previous tests plus 11 tests for three-act progression, source-valid authored scene structure, variant/companion/creature/physical-zone gating, once-only scene history, exact zero-time/RNG/resource semantics, historical revisions and bypass rejection: 533 target.",
+    "Accepted 009-B2b2b: 522 prior + 11 new = 533 automated regressions, PR #30 final candidate head 4f8e8b962bf0849de54b4723499fe1380dcb8478 green; source main e37a83bd25c568a9f5f0f9c9c10a58c7e23ce1f8 independently green (Actions 40262285692 and Pages 40262285718).",
     "Support data-only adventure-defined Cinematic acts and optional event opportunities with no forced scene sequence or mandatory predatory encounters; acts derive only from actual committed objective progression.",
     "Scenes require an eligible present actor in the correct location and any physical creature, another human survivor and seeded-variant conditions; invisible or remote events cannot be triggered.",
     "Voluntary scene commits preserve action economy, Evolved RNG, stress, creature movement, finite inventories and truthful objective outcomes; record actor and beat and reject duplicate/future/incorrect actor/act history.",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2b candidate PR #30 (533 tests target), no accepted deployment claim until exact-head CI, merged-main Actions and Pages independently succeed. Last accepted main f5a993ae448233196114d259d541251891f595c3 green (522/522). Desktop/mobile manual graphical QA outstanding.",
+  "pages_deployment": "Accepted 009-B2b2b source main e37a83bd25c568a9f5f0f9c9c10a58c7e23ce1f8: independent Actions 40262285692 SUCCESS (533/533 tests) and GitHub Pages 40262285718 SUCCESS. Immutable research revisions 1 and 2 maintained; new revision 3 contains 6 optional scenes. Documentation-only acceptance merge subject to its own independent CI and Pages. Manual desktop/mobile graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

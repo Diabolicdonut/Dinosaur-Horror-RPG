@@ -10,3 +10,7 @@ Research adventure revision 3 adds Setup, Tilt and Showdown with six optional sc
 
 ## Test and acceptance
 Existing 522 cases remain required; 11 new tests exercise the act progression/locked facts and voluntary event invariants for **533 total**. No manual desktop/mobile smoke has been performed. Full combat/medical danger mechanics for research, NPCs, unlimited procedural Cinematic scenes and Campaign episode generation remain separate milestones. Avoid describing this as finished Alien-style cinematic scenario generation or engine parity.
+
+## Accepted GitHub evidence
+
+[PR #30](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/30) candidate `4f8e8b962bf0849de54b4723499fe1380dcb8478` passed 533/533. Merged main source commit `e37a83bd25c568a9f5f0f9c9c10a58c7e23ce1f8` passed [Actions 40262285692](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40262285692) (533 passing, 0 failing) and [Pages 40262285718](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40262285718) successful. No actual graphical/mobile user journey or simulation of the creature danger/NPC/medical parity was completed. Next milestone is 009-B2b2c.
