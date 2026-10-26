@@ -1,9 +1,9 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c1';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c2';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c1';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c2';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
@@ -12,6 +12,9 @@ import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
 import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
 import {RIDGE_SURVEY_REV7} from '../adventures/ridge-survey-rev7.mjs';
 import {RIDGE_SURVEY_REV8} from '../adventures/ridge-survey-rev8.mjs';
+import {RIDGE_SURVEY_REV9} from '../adventures/ridge-survey-rev9.mjs';
+import {initialSupportingCast,validSupportingCastState,localSupportingCast,
+ commitSupportingConversation} from './adventure-supporting-cast.mjs';
 import {playerScenarioMaterial} from './adventure-scenario-material.mjs';
 import {selectedCombatSlot,validSelectedCombat,beginSelectedCombat,selectedCombatStep}
  from './adventure-combat-live.mjs';
@@ -54,6 +57,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV7,{seed:s.initialSeed}):
  s.adventureBinding?.revision===8?
  compileAdventure(RIDGE_SURVEY_REV8,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===9?
+ compileAdventure(RIDGE_SURVEY_REV9,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -95,7 +100,8 @@ export function isSelectedAdventureSave(s){
      !s.actors.some(a=>a.id===s.control.focusedActorId)||
      !s.actors.some(a=>a.id===s.control.cameraActorId)||
      !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
-     !validSelectedCombat(s)||!Array.isArray(s.actions)||!Array.isArray(s.events)||
+     !validSelectedCombat(s)||!validSupportingCastState(situated(s),s)||
+      !Array.isArray(s.actions)||!Array.isArray(s.events)||
      !Array.isArray(s.dinosaurs)||
      !validateCreatureContinuity(situated(s),s)||
      !validPredatorContacts(situated(s),s)||
@@ -157,6 +163,8 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],pendingPredatorResponse:null,
   ...(compiled.revision>=8?{combatReaction:null,combatRoundRecords:[],combatDamageRecords:[]}:{}),
+   ...(compiled.revision>=10?{supportingCast:initialSupportingCast(compileSelectedAdventure(template.id,seed)),
+    conversationRecords:[]}:{}),
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -179,6 +187,7 @@ export function selectedAdventureView(s,{actorId=null}={}){
   adventureId:template.id,adventureTitle:template.title,
   scenarioMaterial:playerScenarioMaterial(situated(s),s,actor.id,
    cinematicAct(situated(s),s)),
+  supportingCast:localSupportingCast(situated(s),s,actor.id),
   objectivePlan:goal?[{id:goal.id,room:goal.room,
    target:goal.interaction?.target||null,description:goal.description}]:[],
   objectives:template.objectives.map(o=>({id:o.id,description:o.description,
@@ -292,6 +301,14 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
  if((opts.source??'human')!==(human?'human':'ai'))return reject(previous,'Control owner mismatch.');
  if(previous.outcome!=='playing')return reject(previous,'The adventure has concluded.');
  const action=normalize(raw,parser);
+ if(action.kind==='npc'){
+  const [npcId,topicId]=action.target.split(':');
+  const result=commitSupportingConversation(situated(previous),previous,
+   {actorId:active.id,npcId,topicId});
+  if(result.accepted&&!isSelectedAdventureSave(result.state))
+   throw new Error('Invalid committed supporting character conversation.');
+  return result;
+ }
  if(action.kind==='scene'){
   const result=commitCinematicEvent(situated(previous),previous,
    {actorId:active.id,eventId:action.target});

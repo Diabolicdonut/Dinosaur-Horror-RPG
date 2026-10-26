@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.33",
-  "checkpoint": "009-C1",
-  "state": "accepted_adventure_owned_scenario_material_variable_acts_609_green_main_actions_pages",
+  "version": "0.7.34",
+  "checkpoint": "009-C2",
+  "state": "candidate_revision10_supporting_cast_dialogue_618_regressions",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,21 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 609,
+  "automated_tests": 618,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement independent authorable NPC/cast profiles, motives, physical starting positions, player-bounded conversation and genuinely committed story-card/agenda rewards when Evolved-appropriate, inside the same validated scenario package rather than hardcoded to After the Storm.",
-    "Implement survivor offensive weapon attacks, gear conservation and species-aware opponent defense/behavior, reusing canonical Evolved routines across both playable adventures.",
-    "Reduce hardcoded Nublar singleton dependencies in party-engine.mjs toward a single fully adventure-neutral rules engine while retaining all 609 accepted regressions and immutable research revisions.",
-    "Validate actual desktop/mobile Party/Focus/Spectator browser play including scenario handouts, seeded animal absence/presence and live research retreat.",
-    "Only after two-adventure gameplay parity and trusted bounded authoring, introduce procedural Cinematic and continuing Campaign adventure packages; no forced three-act or compulsory fight formula."
+    "Verify exact PR #46 head 618-test regression suite; merge only if passing. Independently validate merged-main Actions and Pages and update authoritative acceptance ledger.",
+    "Build actually autonomous physically consistent human NPC roles, movement, encounters, observation and reaction rules; do not claim cast dialogue is NPC AI.",
+    "Implement Evolved survivor offensive actions with physically carried gear, source damage, cover and creature reactions; preserve all existing historical rev1–9 research saves and Nublar behavior.",
+    "Expand authored cast data, relationships, source-limited agenda/story-card rewards and trusted GM-only secrets without making every adventure a mandatory three-act progression.",
+    "Complete real desktop/mobile Party/Focus/Spectator graphical gameplay smoke tests; later build original generated Cinematic/Campaign packages from these reusable validators."
   ],
   "acceptance_criteria": [
-    "Source PR #44 final head 74e0dd069e8f40c7e3a4450a15455f6eaf22b31e independent Actions 40357970045 SUCCESS 609/609.",
-    "Source main e3178e98d2e0214a9d01db7b19a9b3ddc14527bc independent Actions 40358102862 SUCCESS 609/609 and GitHub Pages 40358099111 SUCCESS.",
-    "Only original Dinosaur content; three privately uploaded Free League Alien scenario books used as structure references, never copied into public repository.",
-    "Versioned Long Count revision9 has safe typed adventure dossiers and one-through-five optional Cinematic acts, original role agendas and trigger-bound story cards/handouts, no fabricated facts/rewards and no private non-owner agenda in projected player UI.",
-    "Historic Long Count rev1–8 saves, Nublar rescues, existing Evolved combats and Worker remain unchanged. Browser-source GM secret confidentiality, NPC agent behaviors, Story Point agenda rewards, procedural generators and manual desktop/mobile smoke remain outstanding."
+    "Source candidate based on accepted main b57d2f92a99e1aad3db8e3b3d40d2d534761da8a, checkpoint 009-C1 v0.7.33, 609/609; existing main Actions 40358871376 and Pages 40358869938 succeeded.",
+    "Add nine focused NPC cast, evidence, seed, privacy, history and no-fabricated-content tests: expected 618 total; exact PR head and main independently require CI evidence.",
+    "Long Count rev10 adds two static NPCs with real authored colocated rooms, public descriptions, private motives, evidence/seed-conditioned one-time conversations and scene journal records; no autonomous NPC decision engine, source combat/skill dice or Story Point awards.",
+    "Preserve historical rev1–9 manifests and save content. Invalid cross-revision casts, remote conversations, source-varied knowledge, and invented actors must reject.",
+    "Alien RPG uploaded books remain private structural references only; do not copy licensed scenarios/assets to public GitHub. GM/private cast motivations are omitted from player projections but not secure in shipped browser JS.",
+    "Manual graphical desktop/mobile smoke remains outstanding; actual NPC agency and shared Evolved offensive combat parity not complete."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-C1 accepted source main e3178e98d2e0214a9d01db7b19a9b3ddc14527bc: GitHub main Actions https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40358102862 SUCCESS (609/609) and Pages https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40358099111 SUCCESS; source PR #44 final head 74e0dd069e8f40c7e3a4450a15455f6eaf22b31e Actions 40357970045 SUCCESS (609/609). Acceptance ledger-only follow-up still requires its own CI. No manual desktop/mobile graphical QA.",
+  "pages_deployment": "Prior accepted main b57d2f92a99e1aad3db8e3b3d40d2d534761da8a: Actions 40358871376 SUCCESS (609/609) and Pages 40358869938 SUCCESS. 009-C2 candidate not deployed/accepted until exact PR-head Actions and independently main Actions/Pages pass.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -847,7 +848,7 @@
   },
   "adventure_architecture": {
     "decision_date": "2026-10-25",
-    "status": "PARTIAL_IMPLEMENTATION_009_C1_TWO_PLAYABLE_ADVENTURES_RESEARCH_SCENARIO_MATERIAL",
+    "status": "PARTIAL_IMPLEMENTATION_009_C2_SUPPORTING_CAST_NOT_AUTONOMOUS_NPC",
     "contract": "docs/ADVENTURE-ENGINE-SEPARATION.md",
     "approved_goal": "Single adventure-agnostic Evolved-based engine and generic validated adventure package/instance schema; After the Storm is only an existing sample fixture; later seed-generated and AI-generated adventures are first-class.",
     "current_debt": [
@@ -860,7 +861,7 @@
     "generator_policy": "Game Mother proposes manifests and scene/effect instructions through validators, never raw state mutation or forced scenario-specific arc.",
     "replayability_contract": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md",
     "generation_goal": "Include multiple authored adventure templates each with substantial replay variability, plus open-ended procedurally generated Cinematic adventures and Campaign chapters grounded in prior persistent decisions.",
-    "generation_current_status": "NOT IMPLEMENTED: authored Long Count seed variants plus dynamically revealed narrative data work, but no open-ended original adventures or campaign generator.",
+    "generation_current_status": "NOT IMPLEMENTED: only two authored templates, original research rev10 includes source-driven NPCs and field dossiers, no procedural Cinematic/Campaign author.",
     "variation_policy": "Different seeds can change committed hidden cause, NPC agendas, physical creature dispositions, routes, challenges, clues, optional scenes and possible endings; game rules and prior accepted facts cannot change to force surprise.",
     "reproducibility_policy": "New game compiles/validates and locks a template/generator version and independent seed; continue loads identical compiled manifest/event history, not a reroll; campaign generation respects durable world continuity.",
     "recovery_baseline": "e9d0cdc983aee53eee1744ef9a1ea2bd551c1ffd, 007-M1 v0.7.20, 454 accepted tests, main Actions and Pages passed.",
@@ -939,5 +940,16 @@
       "tests": 609,
       "manualGraphicalQa": "pending"
     }
+  },
+  "adventure_supporting_cast_009c2": {
+    "spec": "docs/ADVENTURE-SUPPORTING-CAST-009C2.md",
+    "module": "src/adventure-supporting-cast.mjs",
+    "manifest": "adventures/ridge-survey.mjs",
+    "historic": "adventures/ridge-survey-rev9.mjs",
+    "schema": "optional supportingCast entries in JSON-only fingerprinted AdventureDefinition",
+    "presentation": "physically colocated public NPCs and only currently earned topics",
+    "replay": "stable compiled variants, no state-mutation except optional journal/action/event",
+    "tests": "candidate 618/618 expected pending exact CI",
+    "scope": "fixed-position NPC dialogue, no autonomous AI or hidden source security"
   }
 }
