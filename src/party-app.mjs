@@ -3,6 +3,7 @@ import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from 
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
   setPlayback,runAutonomousTurn} from './party-director.mjs?v=009b2b2c2c1';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
+import {selectedCombatSlot} from './adventure-combat-live.mjs';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
 const $=id=>document.getElementById(id);
@@ -60,11 +61,12 @@ function show(){
  if(!state||!isPartySave(state))return;
  const watching=cameraActorId(state),v=partyView(state,{actorId:watching});
  $('adventure-select').value=v.adventureId||'nublar-after-the-storm';
- const turn=activeCombatSlot(state),predatorTurn=turn?.kind==='dinosaur';
- const active=predatorTurn?{name:'Velociraptor',id:state.dinosaurs[0].id}:
-   state.actors.find(a=>a.id===(state.pendingPredatorResponse?.victimId||activeTurnId(state)));
+ const turn=selectedCombatSlot(state)||activeCombatSlot(state),predatorTurn=turn?.kind==='dinosaur';
+ const active=predatorTurn?{name:'Predator',id:turn.actorId}:
+   state.actors.find(a=>a.id===(state.combatReaction?.victimId||
+     state.pendingPredatorResponse?.victimId||(turn?.actorId||activeTurnId(state))));
  const owner=currentOwner(state);
- const pending=state.combat?.pendingReaction||state.pendingPredatorResponse;
+ const pending=state.combat?.pendingReaction||state.pendingPredatorResponse||state.combatReaction;
  const ownHuman=owner==='human'&&state.outcome==='playing';
  $('beat').textContent=String(v.beat).padStart(3,'0');
  $('round').textContent=String(v.round).padStart(2,'0');
@@ -202,7 +204,7 @@ function show(){
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
   ...(v.wonder&&!v.wonder.discovered&&!v.combat?[
     ['wonder '+v.wonder.id,'Take in the view · '+v.wonder.title]]:[]),
-  ...(v.visibleDinosaurs.length?[['attack dinosaur','Fight the dinosaur']]:[]),
+  ...(v.visibleDinosaurs.length&&v.adventureId!=='ridge-survey'?[['attack dinosaur','Fight the dinosaur']]:[]),
   ...state.actors.filter(a=>a.location===v.location&&!a.dead&&
       (a.broken||pendingLethal(a).length))
     .map(a=>['aid '+a.id,'First aid: '+a.name]),
@@ -219,12 +221,15 @@ function show(){
     'Follow group to '+v.groupTravel.to]]:[]),
    ...v.availableCover.map(x=>['hide behind '+x.id,'Hide behind '+x.label]),
    ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
-  ...(v.combat&&canScene?v.combat.order.slice(v.combat.index+1).map(slot=>
+  ...(v.combat&&canScene&&v.adventureId!=='ridge-survey'?v.combat.order.slice(v.combat.index+1).map(slot=>
    ['hold '+slot.card,'Hold for '+(slot.kind==='dinosaur'?'Velociraptor':
       state.actors.find(a=>a.id===slot.actorId)?.name||'survivor')+' (#'+slot.card+')']):[]),
   ...(v.combat?[['end','End combat turn']]:[])
  ];
- $('world-buttons').innerHTML=actions.map(([order,label])=>{
+ const displayed=v.combat&&v.adventureId==='ridge-survey'?
+  actions.filter(([order])=>['end','wait'].includes(order)||
+   /^(take|give|aid) /.test(order)):actions;
+ $('world-buttons').innerHTML=displayed.map(([order,label])=>{
   const budget=v.combat?.remaining;
   let cost=combatCost(order.split(' ')[0]);
   if(order.startsWith('move ')&&woundModifiers(state.actors.find(a=>a.id===v.actorId),'mobility').moveFull)
@@ -271,13 +276,14 @@ function commit(result,label){
 }
 function issue(command){
  if(!state||state.outcome!=='playing')return;
- if(state.combat?.pendingReaction||state.pendingPredatorResponse){announce('Resolve the incoming attack first: defend or decline.');return;}
+ if(state.combat?.pendingReaction||state.pendingPredatorResponse||state.combatReaction){announce('Resolve the incoming attack first: defend or decline.');return;}
  if(currentOwner(state)!=='human'){announce('This actor is computer-controlled. Pause and take over a character to intervene.');return;}
  const input=String(command||'').trim();
  if(!input){announce('Describe an action.');return;}
  cancelAuto();
  const parsed=input.startsWith('push ')?input:$('party-push').checked?'push '+input:input;
- const acting=state.actors.find(a=>a.id===(state.pendingPredatorResponse?.victimId||state.actors[state.cursor].id));
+ const acting=state.actors.find(a=>a.id===((selectedCombatSlot(state)?.actorId)||
+  state.pendingPredatorResponse?.victimId||state.actors[state.cursor].id));
  const r=partyStep(state,parsed,{actorId:acting.id,source:'human'});
  if(!r.accepted){announce(r.reason);queueAutoplay();return;}
  const roll=r.result;
@@ -290,7 +296,7 @@ function issue(command){
  commit(r,message+' · Next: '+r.state.actors[r.state.cursor].name);
 }
 function reactToAttack(choice){
- const pending=state?.combat?.pendingReaction||state?.pendingPredatorResponse;
+ const pending=state?.combat?.pendingReaction||state?.pendingPredatorResponse||state?.combatReaction;
  if(!pending||state.outcome!=='playing'||currentOwner(state)!=='human'){
   announce('No human-controlled defensive reaction is pending.');return;
  }
@@ -315,7 +321,8 @@ function autoOnce({singleStep=false}={}){
   }
   return false;
  }
- const who=activeCombatSlot(state)?.kind==='dinosaur'?'Velociraptor':state.actors[state.cursor].name;
+ const who=(selectedCombatSlot(state)||activeCombatSlot(state))?.kind==='dinosaur'?
+  'Predator':state.actors[state.cursor].name;
  const statement=who+' (AI): '+result.decision.acceptedAction+
    (result.decision.proposed.target?' '+result.decision.proposed.target:'');
  commit(result,statement);
@@ -323,7 +330,7 @@ function autoOnce({singleStep=false}={}){
 }
 function queueAutoplay(){
  cancelAuto();
- const predator=activeCombatSlot(state)?.kind==='dinosaur';
+ const predator=(selectedCombatSlot(state)||activeCombatSlot(state))?.kind==='dinosaur';
  if(!state||(state.control.paused&&!(predator&&state.control.mode==='party'))||(!predator&&state.control.mode==='party')||
    state.outcome!=='playing'||currentOwner(state)!=='ai'||document.hidden)return;
  const expectedBeat=state.beat,expectedEpoch=state.control.epoch;
