@@ -39,7 +39,7 @@ export function validateScenarioMaterialDefinition(def){
  for(const a of m.agendas){
   if(!sameKeys(a,['id','seat','act','text','variant'])||
     !key(a.id)||!Number.isInteger(a.seat)||a.seat<0||a.seat>7||
-    ![1,2,3].includes(a.act)||!prose(a.text)||
+    (!Number.isInteger(a.act)||a.act<1||a.act>5)||!prose(a.text)||
     !def.cinematic?.acts?.some(act=>act.number===a.act)||
     (a.variant!==undefined&&!condition(def,a.variant)))
    invalid('agenda');
