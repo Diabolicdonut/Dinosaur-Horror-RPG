@@ -50,9 +50,10 @@ export function validCinematicRecords(compiled,state){
  return records.every(record=>{
   const event=ci.events.find(e=>e.id===record?.id);
   if(!event||seen.has(event.id)||event.room!==record.room||
-   (state.adventureBinding?.revision>=9&&!state.actions?.some(a=>
-    a.kind==='scene'&&a.target===record.id&&
-    a.actorId===record.actorId&&a.beat===record.beat))||
+   (state.adventureBinding?.revision>=9&&
+    record.beat>=(state.actions?.[0]?.beat??0)&&
+    !state.actions?.some(a=>a.kind==='scene'&&a.target===record.id&&
+     a.actorId===record.actorId&&a.beat===record.beat))||
    record.act!==event.act||!Number.isSafeInteger(record.beat)||
    record.beat<last||record.beat>state.beat||
    typeof record.actorId!=='string'||
