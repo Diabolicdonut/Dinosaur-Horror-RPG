@@ -467,6 +467,8 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   Math.floor(s.clock.explorationActions/s.actors.length);
  if(situated(s).definition.initialCreatures.some(d=>d.patrol))
   s=advanceAutonomousCreatures(situated(s),s);
+ if(s.adventureBinding.revision>=11)
+  s=advanceSupportingCast(situated(s),s);
  // An opening source Evolved contact is possible only after a committed action.
  // The immutable Rev1–5 manifests cannot trigger this new hostile procedure.
  const predator=localPredator(situated(s),s,actor.id);
