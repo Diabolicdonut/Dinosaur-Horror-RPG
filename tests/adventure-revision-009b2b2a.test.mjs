@@ -23,6 +23,7 @@ test('009-B2b2a: seeded mechanics remain available on immutable newer authored r
 test('009-B2b2a: genuine historical revision 1 Party saves retain original fingerprint and encounter behavior',()=>{
  const old=fresh();
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV1,{seed:chosen}));
+ old.supportingCast=undefined;old.conversationRecords=undefined;
  assert.equal(isPartySave(old),true);
  const copy=JSON.parse(JSON.stringify(old));
  assert.equal(partyView(copy).sceneConsequences.length,0);
@@ -38,6 +39,7 @@ test('009-B2b2a: genuine historical revision 1 Party saves retain original finge
 test('009-B2b2a: historical actor gets only original peaceful wildlife option',()=>{
  let old=fresh();
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV1,{seed:chosen}));
+ old.supportingCast=undefined;old.conversationRecords=undefined;
  old=partyStep(old,'move rocky-ascent').state;
  old=partyStep(old,'move survey-ridge').state;
  assert.deepEqual(partyView(old).wildlifeEncounter.choices.map(x=>x.id),['watch']);
@@ -49,6 +51,7 @@ test('009-B2b2a: mismatched revision and bound content cannot be substituted',()
  const current=fresh();
  const legacy=structuredClone(current);
  legacy.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV1,{seed:chosen}));
+ legacy.supportingCast=undefined;legacy.conversationRecords=undefined;
  assert.equal(isPartySave(legacy),true);
  const forged=structuredClone(legacy);forged.adventureBinding.fingerprint=current.adventureBinding.fingerprint;
  assert.equal(isPartySave(forged),false);
