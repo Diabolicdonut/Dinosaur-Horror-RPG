@@ -7,6 +7,9 @@ import {adventureBinding,validAdventureBinding,compileAdventure} from './adventu
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
+import {RIDGE_SURVEY_REV4} from '../adventures/ridge-survey-rev4.mjs';
+import {initialAdventureCreatures,validateCreatureContinuity,
+ advanceAutonomousCreatures} from './adventure-creatures.mjs';
 import {availablePhysicalPerils,validPerilRecords,
  resolvePhysicalPeril} from './adventure-perils.mjs';
 import {cinematicAct,availableCinematicEvents,validCinematicRecords,
@@ -31,6 +34,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV2,{seed:s.initialSeed}):
  s.adventureBinding?.revision===3?
  compileAdventure(RIDGE_SURVEY_REV3,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===4?
+ compileAdventure(RIDGE_SURVEY_REV4,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
@@ -73,7 +78,8 @@ export function isSelectedAdventureSave(s){
      !s.actors.some(a=>a.id===s.control.cameraActorId)||
      !Array.isArray(s.controlHistory)||!Array.isArray(s.aiDecisions)||
      s.combat!==null||!Array.isArray(s.actions)||!Array.isArray(s.events)||
-     !Array.isArray(s.dinosaurs)||s.dinosaurs.length!==template.initialCreatures.length||
+     !Array.isArray(s.dinosaurs)||
+     !validateCreatureContinuity(situated(s),s)||
      !s.clock||!integers(s.clock.explorationActions)||!integers(s.clock.explorationStretches)||
      !integers(s.clock.combatRounds)||!integers(s.clock.combatSeconds)||
      s.clock.combatRounds!==0||s.clock.combatSeconds!==0||
@@ -94,7 +100,8 @@ export function isSelectedAdventureSave(s){
      !validPerilRecords(situated(s),s)||
      (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
      s.dinosaurs.some((d,i)=>{
-       const original=template.initialCreatures[i];
+       const original=situated(s).definition.initialCreatures.find(x=>x.id===d.id);
+       if(!original)return true;
        const response=animalApproachCircumstance(situated(s),d.id,original.location);
        const fled=response&&response.to===d.location&&s.actions.some(a=>
          a.kind==='wildlife'&&a.target==='approach'&&a.success===false);
@@ -124,10 +131,9 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   startingRoster:copy(party),actors,flags:copy(template.flags),
   control:{mode:'party',focusedActorId:actors[0].id,cameraMode:'follow',
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
-  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],
-  rooms:world.initialRoomItems(),dinosaurs:copy(template.initialCreatures).map(d=>({
-   id:d.id,kind:d.species,location:d.location,disposition:d.disposition,
-   defeated:false})),
+  controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],
+  rooms:world.initialRoomItems(),
+  dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
    'The research party gathers at the canvas camp to begin its ecological survey.'}],
   actions:[]};
@@ -142,6 +148,7 @@ export function selectedAdventureView(s,{actorId=null}={}){
  const progress=objectiveStatus(situated(s),s);
  const goal=nextObjective(s);
  const creatures=s.dinosaurs.filter(d=>d.location===actor.location&&!d.defeated);
+ const grazers=creatures.filter(d=>d.disposition!=='predatory');
  return {
   adventureId:template.id,adventureTitle:template.title,
   objectivePlan:goal?[{id:goal.id,room:goal.room,
@@ -161,7 +168,7 @@ export function selectedAdventureView(s,{actorId=null}={}){
   sceneConsequences:s.adventureBinding.revision===1?[]:
    localSituationCues(situated(s),actor.location),
   preparedGenerator:false,
-  wildlifeEncounter:creatures.length?{title:creatures.map(d=>d.kind).join(', '),
+  wildlifeEncounter:grazers.length?{title:grazers.map(d=>d.kind).join(', '),
    description:'A physically present animal can be watched without provoking it.',
    choices:[{id:'watch',label:'Observe from a respectful distance'},
     ...(s.adventureBinding.revision===1?[]:[
@@ -177,7 +184,9 @@ export function selectedAdventureView(s,{actorId=null}={}){
   items:s.rooms[actor.location].items.map(id=>({id,name:world.itemLabel(id)})),
   features:template.objectives.filter(o=>o.room===actor.location&&o.interaction&&
    !progress.completedIds.includes(o.id)).map(o=>o.interaction.target),
-  observations:[],wonder:null,wonderJournal:[],visibleDinosaurs:[],
+  observations:[],wonder:null,wonderJournal:[],
+  visibleDinosaurs:creatures.filter(d=>d.disposition==='predatory')
+   .map(d=>({id:d.id,kind:d.kind,location:actor.location})),
   inventory:actor.inventory.map(id=>({id,name:world.itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
   injuries:actor.criticalInjuries||[],
@@ -297,7 +306,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   actor.inventory.splice(actor.inventory.indexOf(item),1);other.inventory.push(item);
   description=actor.name+' hands '+world.itemLabel(item)+' to '+other.name+'.';
  }else if(action.kind==='wildlife'){
-  const animal=s.dinosaurs.find(d=>d.location===at&&!d.defeated);
+  const animal=s.dinosaurs.find(d=>d.location===at&&!d.defeated&&d.disposition!=='predatory');
   if(!['watch',...(s.adventureBinding.revision===1?[]:['approach'])].includes(action.target)||!animal)
    return reject(previous,'There is no physically present animal offering that encounter.');
   if(action.target==='watch'){
@@ -361,6 +370,8 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
  if(s.cursor===0)s.round++;
  s.clock.explorationActions++;s.clock.explorationStretches=
   Math.floor(s.clock.explorationActions/s.actors.length);
+ if(situated(s).definition.initialCreatures.some(d=>d.patrol))
+  s=advanceAutonomousCreatures(situated(s),s);
  if(!isSelectedAdventureSave(s))throw new Error('Selected adventure state failed post-action validation.');
  return {accepted:true,state:s,result:rolled?{...result,base:rolled.initial.base,
   stressDice:rolled.initial.stress,successes:rolled.successes,
