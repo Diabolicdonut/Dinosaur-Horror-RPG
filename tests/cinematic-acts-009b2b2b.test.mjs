@@ -88,7 +88,7 @@ test('009-B2b2b: act transitions follow committed objectives, not clocks or mand
  const instance=compileSelectedAdventure('ridge-survey',1);
  let s=fresh(1);
  assert.equal(cinematicAct(instance,s).number,1);
- s=move(move(s,'river-crossing'),'forest-blind');
+ s=move(move(move(s,'rocky-ascent'),'survey-ridge'),'forest-blind');
  for(let i=0;i<35&&!s.flags.dataRecovered;i++){
   const result=partyStep(s,'use survey records');assert.equal(result.accepted,true);
   s=result.state;
@@ -147,7 +147,7 @@ test('009-B2b2b: variant-dependent dread cannot be offered unless the seeded flo
  for(const seed of [flood,dry]){
   const ci=compileSelectedAdventure('ridge-survey',seed);
   let s=fresh(seed);
-  s=move(move(s,'river-crossing'),'forest-blind');
+  s=move(move(move(s,'rocky-ascent'),'survey-ridge'),'forest-blind');
   for(let i=0;i<35&&!s.flags.dataRecovered;i++)s=partyStep(s,'use survey records').state;
   s=move(s,'river-crossing');
   const has=availableCinematicEvents(ci,s,s.actors[0].id).some(x=>x.id==='river-reckoning');
