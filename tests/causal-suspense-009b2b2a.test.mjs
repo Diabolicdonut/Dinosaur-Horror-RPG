@@ -31,7 +31,7 @@ test('009-B2b2a: seeds deterministically choose different physical problems, not
 test('009-B2b2a: authored consequences require validated adjacent rooms, known objectives and source skills',()=>{
  const base=compileSelectedAdventure('ridge-survey',0).definition;
  for(const modify of [
-  d=>d.variants.researchObstacle[0].mechanic.to='field-camp',
+  d=>d.variants.researchObstacle[0].mechanic.to='rocky-ascent',
   d=>d.variants.researchObstacle[0].mechanic.skill='universal_success',
   d=>d.variants.researchObstacle[1].mechanic.objectiveId='invented',
   d=>d.variants.wildlifeBehavior[1].mechanic.to='field-camp',
