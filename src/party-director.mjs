@@ -2,10 +2,10 @@
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs?v=007l2a';
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2b';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2c1';
 import {createAdventureWorld} from './adventure-world.mjs';
 const SURVEY_WORLD=createAdventureWorld(compileSelectedAdventure('ridge-survey',0));
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009b2b2c2b';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009b2b2c2c1';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
 
@@ -17,7 +17,7 @@ function insist(s){if(!isPartySave(s))throw new RangeError('Invalid party incide
 function noChange(s,reason){return {accepted:false,state:s,reason};}
 export function currentOwner(s){
  insist(s);
- const id=s.combat?.pendingReaction?.victimId||activeTurnId(s);
+ const id=s.combat?.pendingReaction?.victimId||s.pendingPredatorResponse?.victimId||activeTurnId(s);
  if(activeCombatSlot(s)?.kind==='dinosaur'&&!s.combat?.pendingReaction)return 'ai';
  return s.control.mode==='party'||
    (s.control.mode==='focus'&&s.control.focusedActorId===id)?'human':'ai';
@@ -25,7 +25,7 @@ export function currentOwner(s){
 export function cameraActorId(s){
  insist(s);
  return s.control.cameraMode==='follow' ?
-   (s.combat?.pendingReaction?.victimId||
+   (s.combat?.pendingReaction?.victimId||s.pendingPredatorResponse?.victimId||
     (activeCombatSlot(s)?.kind==='dinosaur'?s.control.cameraActorId:activeTurnId(s))) : s.control.cameraActorId;
 }
 /** Mode switches apply only between completed actions, no simulation time or RNG. */
@@ -253,9 +253,9 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    return noChange(previous,'Outdated AI decision rejected.');
  if(expectedEpoch!==null&&expectedEpoch!==previous.control.epoch)
    return noChange(previous,'AI control changed before this decision.');
- const pending=previous.combat?.pendingReaction;
+ const pending=previous.combat?.pendingReaction||previous.pendingPredatorResponse;
  const predator=activeCombatSlot(previous)?.kind==='dinosaur';
- const actor=predator?null:previous.actors.find(a=>a.id===activeTurnId(previous));
+ const actor=predator?null:previous.actors.find(a=>a.id===(pending?.victimId||activeTurnId(previous)));
  const choice=pending?
   {kind:'react',target:'defend',goal:'survive',reason:'Use an available quick action to defend before the attack.'}:
   predator?

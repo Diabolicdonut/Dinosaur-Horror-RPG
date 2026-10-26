@@ -1,5 +1,20 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2c2c1 — Player-Selected Evolved Opening Defense (candidate) — 2026-10-26
+
+**Recovery:** GitHub accepted main `e719bb9df12bfa2f15edf2bec802fa46ef06b37b`, 009-B2b2c2b v0.7.29, 572 passing tests and both Actions/Pages green, zero open PRs. Isolated Dinosaur project scope; no other repositories or Worker secrets used.
+
+**Mechanics:** The research adventure now offers an explicitly chosen defense **when a genuinely colocated, seed-real predator's Evolved awareness and initiative generate an attack**. New authored *Long Count* revision **7** uses the validated `evolved_reaction` creature contact contract, and the exact earlier revision 6 manifest is copied immutably to `adventures/ridge-survey-rev6.mjs`. Source detection and initiative still occur only after real completed actor travel/survey actions; if they produce a threatening strike, the normal actor queue pauses until the actual victim chooses **Defend** (source Evolved Close Combat opposed defense) or **Decline** (no defensive roll). The source creature attack can miss, wound or cause critical injury, not a cinematic automatic hit. The reaction adds one 10-second combat clock unit, **not** a duplicate exploration action. The pending reaction is bound to real actor, animal, seed, room and action beat; state validation rejects tampering and unsupported travel or objective actions while a strike is outstanding.
+
+**Player and AI:** Reuses existing Nublar Party browser's defend/decline reaction panel and typed `react defend` / `react decline` parser, with legitimate Party, Focus and Spectator ownership. Autonomous companions choose a source defense when the AI controls the victim. The broader Party UI and source version module chain are updated.
+
+**History:** Rev1–6 existing research saves continue their exact previous rules and source fingerprints; this feature only starts for newly created Rev7 research sessions. Nublar rescue, source Nublar combat, legacy solo and Cloudflare Worker remain unchanged.
+
+**Testing:** 11 new regression cases, old baseline 572, **583 candidate tests**. New tests check the source opportunity, quiet seeds, forced-reaction bypass rejection, defended and declined outcomes, one 10-second clock step, deterministic dice, Focus/Spectator AI agency, tamper rejection, historical rev6 behavior and Nublar isolation. An initial CI test failure exposed a double-escaped typed command regex, fixed before subsequent green candidate checks. Final exact PR head and independently merged main Actions and Pages remain acceptance gates. Manual desktop/mobile graphical smoke not performed.
+
+**Remaining limitations:** This is **one opening strike's explicit reaction**, not complete 10-second combat rounds, ongoing multi-slot initiative, ranged combat options, a full clinically ticking injury clock or autonomous human NPCs. Next milestone **009-B2b2c2c2** advances real combat-turn architecture.
+
+
 ## Checkpoint 009-B2b2c2b — Source-Evolved Predator Opening Contact (accepted) — 2026-10-25
 
 **Recovery:** Current accepted `main` `43ca8ffa720d1df4c5e7530fb4094b67a3e1926d` is 009-B2b2c2a, version 0.7.28, 560 passing regressions, Actions and Pages green, no open pull requests. New implementation advances that state rather than the user's older earlier reported checkpoint.

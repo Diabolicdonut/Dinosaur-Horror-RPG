@@ -17,7 +17,7 @@ function move(s,dest){const x=partyStep(s,'move '+dest);assert.equal(x.accepted,
 const ridge=s=>move(move(s,'rocky-ascent'),'survey-ridge');
 test('009-B2b2c1: current research adventure is revision 5; immutable rev1/2/3 remain valid',()=>{
  const s=fresh();
- assert.equal(s.adventureBinding.revision,6);
+ assert.equal(s.adventureBinding.revision,7);
  assert.equal(isPartySave(s),true);
  for(const [def,rev] of [[RIDGE_SURVEY_REV1,1],[RIDGE_SURVEY_REV2,2],[RIDGE_SURVEY_REV3,3]]){
   const old=structuredClone(s);

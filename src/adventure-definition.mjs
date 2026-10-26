@@ -97,7 +97,7 @@ export function validateAdventureDefinition(def){
    const t=creature.threat;
    if(!t||typeof t!=='object'||Array.isArray(t)||
     Object.keys(t).some(k=>k!=='protocol')||
-    t.protocol!=='evolved_contact'||creature.disposition!=='predatory'||
+    !['evolved_contact','evolved_reaction'].includes(t.protocol)||creature.disposition!=='predatory'||
     creature.species!=='velociraptor')
     reject('unrecognized source-bounded physical predator protocol');
   }

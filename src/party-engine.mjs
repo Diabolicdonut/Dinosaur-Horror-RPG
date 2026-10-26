@@ -6,7 +6,7 @@ import { SCENARIO } from './scenario.mjs?v=007l1';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
 import {createAdventureWorld} from './adventure-world.mjs';
 import {newSelectedAdventureIncident,isSelectedAdventureSave,
- selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009b2b2c2b';
+ selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009b2b2c2c1';
 import {commitAuthorizedObjective,validObjectiveRecords} from './adventure-objectives.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
@@ -668,6 +668,8 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
+ const reaction=line.match(/^react(?:ion)?\s+(defend|decline)$/);
+ if(reaction)return {kind:'react',target:reaction[1],push:0};
  if(/^(?:battery\s+replace|replace\s+(?:the\s+)?(?:flashlight\s+)?battery|swap\s+(?:the\s+)?battery|reload\s+(?:the\s+)?(?:flashlight|headlamp))$/.test(line))
   return {kind:'battery',target:'replace',push:0};
  const guide=line.match(/^guide\s+(talk|persuade|escort|handoff|shelter|muster)$/);

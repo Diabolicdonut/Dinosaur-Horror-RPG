@@ -207,7 +207,7 @@ test('active search, grouping, and lights roundtrip through the unchanged v3 sav
 test('new interaction controls are present and older solo/Worker files remain untouched',async()=>{
  const html=await readFile(new URL('../party.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
- assert(html.includes('007-L2a'));assert(html.includes('party-app.mjs?v=009b2b2c2b'));
+ assert(html.includes('007-L2a'));assert(html.includes('party-app.mjs?v=009b2b2c2c1'));
  assert(app.includes('Switch light ON'));
  assert(app.includes('Lead group quietly'));
  assert(app.includes('Rush to'));
