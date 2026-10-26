@@ -110,3 +110,34 @@ test('009-C1: scenario dossier does not alter legacy Nublar or raw Evolved comba
  const bad=structuredClone(current);bad.adventureBinding.fingerprint='00000000';
  assert.equal(isPartySave(bad),false);
 });
+
+test('009-C1: the generic engine accepts one-act and four-act authoring without a forced three-act scenario arc',()=>{
+ const base=compileSelectedAdventure('ridge-survey',quietSeed).definition;
+ const one=structuredClone(base);
+ one.cinematic.acts=one.cinematic.acts.slice(0,1);
+ one.cinematic.events=one.cinematic.events.filter(e=>e.act===1);
+ one.scenarioMaterial.agendas=one.scenarioMaterial.agendas.filter(a=>a.act===1);
+ assert.equal(compileAdventure(one,{seed:quietSeed}).definition.cinematic.acts.length,1);
+ const four=structuredClone(base);
+ four.cinematic.acts.push({number:4,title:'After the Report',
+  objective:'Reconcile the field notes after returning to safety.',
+  unlocksAfter:['recover-transect','send-field-report']});
+ four.cinematic.events.push({id:'camp-reckoning',act:4,room:'field-camp',
+  title:'Comparing Memories',text:'The team compares records without imposing a single conclusion.',
+  theme:'human'});
+ four.scenarioMaterial.agendas.push({id:'reflect',seat:0,act:4,
+  text:'Decide which uncertainties deserve a second expedition.'});
+ assert.equal(compileAdventure(four,{seed:quietSeed}).definition.cinematic.acts.length,4);
+});
+test('009-C1: malicious or incoherent act counts and cross-references remain prohibited',()=>{
+ const base=compileSelectedAdventure('ridge-survey',quietSeed).definition;
+ for(const change of [
+  m=>m.cinematic.acts=[],
+  m=>m.cinematic.acts=Array.from({length:6},(_,i)=>({...m.cinematic.acts[0],number:i+1})),
+  m=>m.cinematic.events[0].act=9,
+  m=>m.scenarioMaterial.agendas[0].act=7
+ ]){
+  const bad=structuredClone(base);change(bad);
+  assert.throws(()=>compileAdventure(bad,{seed:quietSeed}),RangeError);
+ }
+});
