@@ -1,7 +1,7 @@
 // 009-B2b2a — fully compiled, seeded, data-only local circumstances.
 // This service never rolls dice or mutates people, supplies, or creatures.
 // No specific dinosaur species, adventure name, or objective is referenced.
-import {validateCompiledAdventure} from './adventure-definition.mjs?v=009b2b2c2a';
+import {validateCompiledAdventure} from './adventure-definition.mjs?v=009b2b2c2b';
 
 function choices(compiled){
  if(!validateCompiledAdventure(compiled))
