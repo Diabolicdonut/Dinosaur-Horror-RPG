@@ -39,7 +39,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2c2c2a source PR #40 validated 591/591, source merged main 272f31fef09683ceb9345a4cfb4d2578442e74b3 Actions/Pages to verify. Documentation acceptance merge additionally requires its own checks. Manual graphical QA outstanding.",
+  "pages_deployment": "009-B2b2c2c2a source main 272f31fef09683ceb9345a4cfb4d2578442e74b3: Actions 40326736184 SUCCESS (591 tests), Pages 40326735763 SUCCESS. Acceptance-doc merge needs separate checks; manual desktop/mobile graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
