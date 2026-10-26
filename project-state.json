@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.25",
-  "checkpoint": "009-B2b2a",
-  "state": "accepted_009_b2b2a_seeded_situations_immutable_revisions_522_tests",
+  "version": "0.7.26",
+  "checkpoint": "009-B2b2b",
+  "state": "candidate_three_act_optional_cinematic_533_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,23 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 522,
+  "automated_tests": 533,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement 009-B2b2b reusable source-bounded three-act Cinematic director: optional/setup/tilt/showdown events with physical actor location, NPC and creature preconditions, no mandatory attack and no new state patches outside typed effects.",
-    "Preserve both scenario revisions: original 009-B2b1 ridge-survey revision 1 ongoing saves and new revision 2 seeded suspense; keep all 522 accepted tests plus Nublar party/pursuit, Evolved stress/medical, modes, finite resources, legacy solo and Worker isolation.",
-    "Complete remaining adventure-agnostic runtime extraction for NPCs, physical predator behavior, Evolved injury/combat and local scenes across both adventures, avoiding forced cinematic pacing and off-map wildlife spawning.",
-    "After verified two-adventure feature parity, implement structurally varied authored replays, procedural Cinematic generation, persistent Campaign chapters and bounded AI Game Mother typed actions.",
-    "Run hands-on desktop/mobile graphical gameplay QA: change selected adventure, control modes, save/reload, watch grazer, attempt hazardous ford, verify hidden clues; this is still outstanding."
+    "Validate exact candidate PR #30 head 533/533, merge only on success and independently verify main Actions and Pages; then record accepted 009-B2b2b ledger with final commit and evidence.",
+    "Implement 009-B2b2c: shared adventure-aware NPC/creature and Evolved peril/medical encounter contracts across both authored adventures, without forced attacks, while retaining existing Nublar pursuit and character control.",
+    "Preserve historical ridge-survey revisions 1 and 2 (immutable fingerprints and rules); revision 3 contains optional objective-derived Setup/Tilt/Showdown event slots, with free character-owned scenes and no RNG, time or equipment mutation.",
+    "Continue 009-B complete engine/scenario separation; after two feature-parity scenarios, introduce structurally different seeded replays, procedural Cinematic adventures, persistent Campaign chapters and typed bounded AI Game Mother.",
+    "Perform manual desktop/mobile graphical smoke for both adventures, changing control mode, visibility/private clue boundaries, optional scenes, and save/reload. Not yet performed."
   ],
   "acceptance_criteria": [
-    "Accepted 009-B2b2a: 508 historical tests + 10 source-bound suspense cases + 4 immutable-save-revision tests = 522/522, on final PR #28 and independently on merged main f53cd9e8403627bb423b021f6ce0cbebf51a5485 (Actions 40260540618, Pages 40260540169 both successful).",
-    "Validate data-only, seed-locked, physically attached passage penalties, objective penalties and nonhostile herbivore reactions without introducing arbitrary rolls or changing Evolved dice or skill success.",
-    "Failed flooded-ford crossing spends an actual Evolved Mobility check and time without moving; an alternate legal route remains. Other seeded faults apply source check modifiers instead of inventing completed objectives.",
-    "Wary Parasaurolophus may flee one authored adjacent edge after a failed close Survival approach; safe observation and grazing approach need no roll or forced combat. Falsified uncaused animal relocation is rejected.",
-    "Historical 009-B2b1 research revision 1 Party saves retain their exact original bound fingerprint and gameplay; new seeded consequences are a distinct research manifest revision 2. Do not silently rewrite old situations.",
-    "Only local situational cues are player-visible; initial seed and remote hidden facts do not appear in normal actor views. Preserve historical Party-v3 save envelope and Nublar/Evolved/solo/Worker behavior.",
-    "Do not claim full 009-B scenario parity, living predator threat, full injury/combat/director/NPC systems, fully procedural story generation, or completed manual browser QA."
+    "522 previous tests plus 11 tests for three-act progression, source-valid authored scene structure, variant/companion/creature/physical-zone gating, once-only scene history, exact zero-time/RNG/resource semantics, historical revisions and bypass rejection: 533 target.",
+    "Support data-only adventure-defined Cinematic acts and optional event opportunities with no forced scene sequence or mandatory predatory encounters; acts derive only from actual committed objective progression.",
+    "Scenes require an eligible present actor in the correct location and any physical creature, another human survivor and seeded-variant conditions; invisible or remote events cannot be triggered.",
+    "Voluntary scene commits preserve action economy, Evolved RNG, stress, creature movement, finite inventories and truthful objective outcomes; record actor and beat and reject duplicate/future/incorrect actor/act history.",
+    "Preserve immutable historical research revisions 1 and 2 and Nublar rescue with all existing legacy saves; newly compiled research adventures bind revision 3 and contain six optional scenes across Setup/Tilt/Showdown.",
+    "Do not claim active predator combat in research, complete NP​C/medical/parity, generated adventures, user-visible full GM, or manual desktop/mobile graphical QA."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -42,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted 009-B2b2a source main f53cd9e8403627bb423b021f6ce0cbebf51a5485: 522/522 Actions 40260540618 SUCCESS and Pages 40260540169 SUCCESS. Historical rev1 bound Party saves and new rev2 research instances both covered. Final acceptance-ledger-only merge requires independent CI/Pages. Hands-on graphical desktop/mobile QA outstanding.",
+  "pages_deployment": "009-B2b2b candidate PR #30 (533 tests target), no accepted deployment claim until exact-head CI, merged-main Actions and Pages independently succeed. Last accepted main f5a993ae448233196114d259d541251891f595c3 green (522/522). Desktop/mobile manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
