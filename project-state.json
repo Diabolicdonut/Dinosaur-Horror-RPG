@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.27",
-  "checkpoint": "009-B2b2c1",
-  "state": "accepted_009_b2b2c1_evolved_local_peril_and_medical_547_tests",
+  "version": "0.7.28",
+  "checkpoint": "009-B2b2c2a",
+  "state": "candidate_seeded_physical_predator_patrol_560_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,22 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 547,
+  "automated_tests": 560,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Develop 009-B2b2c2 generic autonomous dinosaur, NPC and grounded predator threat behavior, with true Evolved combat turns and injury-clock progression; no forced attacks or impossible creature movement.",
-    "Preserve 547 accepted tests, Nublar rescue, immutable research rev1/rev2/rev3 historical saves, current rev4 voluntary physical peril, Party/Focus/Spectator and separate Worker/solo.",
-    "Extract remaining scenario-specific encounter, pursuit, NPC and medical engines into reusable scenario-independent services; do not expand into a park/ecology simulator.",
-    "After two feature-parity scenarios, implement structurally varied replayable Cinematic adventures, continuing Campaign chapters and a bounded AI Game Mother.",
-    "Run desktop/mobile manual graphical QA of both adventures, source hazards, first aid, scenes, camera and control modes, save/resume and hidden truth boundaries (still outstanding)."
+    "Verify exact final PR #34 560/560, merge on success, independently verify main Actions and Pages; then record accepted 009-B2b2c2a evidence.",
+    "Implement 009-B2b2c2b true Evolved predator awareness, initiative, player defensive reaction, physical attack/escape and time-based injury/medical care; require source-valid decisions and ability to avoid the creature rather than guaranteeing an ambush.",
+    "Develop generic physically situated human NPC behavior, dialogue, agendas and companion interactions that work with selected AdventureInstances, not only the Nublar park guide.",
+    "Preserve immutable Long Count rev1/rev2/rev3/rev4 save content, new rev5 seed-conditional predator presence, all 560 regressions and original Nublar rescue behavior plus independent solo/Worker.",
+    "Finish two-adventure feature parity before structurally varied procedural Cinematic adventures, recurring Campaign chapters and typed AI Game Mother. Manual desktop/mobile graphical QA remains outstanding."
   ],
   "acceptance_criteria": [
-    "Accepted source 009-B2b2c1: baseline 533 + 14 = 547/547, exact validated PR #32 head 4425acd1e561ab700ea67db01eda626436d557a1; merged source main 631daf8f185656e57a5056660b9370bdc6d65e67 passed Actions 40263956091 and Pages 40263955789.",
-    "A defensive grazing animal cannot injure someone just because the director needs an attack: scenario revision 4 exposes a single optional peril only when the seed chooses a nervous herd, a creature is physically in the correct zone and a living eligible actor chooses to risk close passage.",
-    "On risk, a real source Evolved Mobility check resolves; failure permits a separate Evolved creature attack roll and critical injury as determined by the existing rule engine. A failed evasion does not guarantee injury. Each attempt costs one exploration action, and repeating the same encounter with the same actor is barred.",
-    "Evolved medical aid and Command rallies are available only for injured, physically colocated teammates and use the existing canonical rules. Full medical-clock advancement and autonomous predator round/retreat AI are not yet added for the research scenario.",
-    "Source-bound peril action records are checked for actor, position, seed variation, action-log support and damage, with old save compatibility. Original research revisions 1–3 are immutable and do not gain the peril retroactively; new starts are bound to revision 4.",
-    "Manual graphical desktop/mobile gameplay QA, independent NPCs, full automatic dinosaur combat and procedural adventure generation are not accepted and must remain outstanding."
+    "Original 547 accepted tests plus 13 new tests for seed-conditional animal presence, immutable rev4 saves, typed adjacent patrol routes, local-only discovery, actor-controlled withdrawal and forged movement rejection: 560 target.",
+    "Predator existence is fixed by the original scenario seed: some expeditions have a physically situated Velociraptor and others have no predator. No director-authored surprise creature spawns or obligatory raptor contact.",
+    "Persist creature locations and bounded adjacent patrol records; advance only once per completed human party round according to an authored cadence, without rolling Evolved dice, dealing invisible injury, modifying objectives or moving animals off-map.",
+    "Local views and companion observations can identify only physically colocated predator instances. Offline companion AI may withdraw along a real available exit instead of claiming unsupported research-scenario combat.",
+    "Historical research rev1 through rev4 saves retain their unchanged bindings and older animal populations. New research starts bind rev5; Nublar gameplay and Worker are untouched.",
+    "Not yet full hostile creature AI: the research raptor can move and be seen, but cannot initiate Evolved combat turns, attack, react or be fought in a proper encounter. Predator initiative, defense, medical clocks, active NPCs and procedural campaigns remain future work."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted source main 631daf8f185656e57a5056660b9370bdc6d65e67: Actions 40263956091 SUCCESS (547/547); Pages 40263955789 SUCCESS. Documentation-only acceptance merge independently requires its own Actions+Pages. Desktop/mobile manual QA outstanding.",
+  "pages_deployment": "009-B2b2c2a candidate PR #34: 560/560 pre-documentation CI passed; final head and accepted-main Actions/Pages must be checked independently. Last accepted 009-B2b2c1 main 10cb0fd53d458ed18d4df3bda51614d85aaa3b43 547/547 and Pages green. Manual desktop/mobile browser QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

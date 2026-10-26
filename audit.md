@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2c2a — Seed-Conditional Persistent Predator Presence (candidate) — 2026-10-25
+
+**Recovery:** Accepted GitHub main `10cb0fd53d458ed18d4df3bda51614d85aaa3b43`, 009-B2b2c1 v0.7.27, 547/547 tests with Actions+Pages successful and zero open PRs. Strict isolation: Dinosaur Horror RPG only.
+
+**Playable scope:** A validated adventure now supports an initial creature gated by a specific hidden, compiled seed variant, plus an authored, adjacent-room patrol route and cadence. `src/adventure-creatures.mjs` instantiates only actually present animals and advances their physical positions on completed actor rounds without spending Evolved RNG, teleporting, spawning cinematic attackers or retroactively rewriting a situation. The actor sees the predator only when colocated; remote tracks become local clues at the authored site. A companion observing an actual research raptor can choose a real connected retreat rather than invent unsupported attack rules. The original *Long Count* revision **4** is preserved as an exact immutable file; newly started revision **5** has a 50/50 authored predator-presence variation with a Velociraptor patrolling the forest-blind / river-crossing edge or no predator at all. The variation is deterministic for a seed, not a live random spawn.
+
+**Verification:** Added 13 focused regression tests for populated/quiet seeds, physical graph validation, old rev4 saved facts, turn cadence, seeded visibility, hidden facts, locally aware companion retreat, journal tampering and Nublar parity. Previously accepted 547 cases retained (**560/560 candidate**). Browser cache revisions and previous UI regression assertions updated. Final exact PR #34 head and independently merged main GitHub Actions and Pages are required before acceptance. Actual manual desktop/mobile graphical QA remains outstanding.
+
+**Explicit limits:** This is predator *presence, awareness and position*, not autonomous hostile combat: the second adventure still lacks predator initiative/attacks, defensive reaction, source-aware stealth pursuit, critical injury time ticks and independent human NPC minds. Physical predator sightings will not injure the party in this milestone. Next **009-B2b2c2b** must implement genuinely source-legal confrontation or avoidance when a predator shares a survivor's room, not make it appear for dramatic pacing.
+
+
 ## Checkpoint 009-B2b2c1 — Voluntary Local Dinosaur Peril and Evolved First Aid (accepted) — 2026-10-25
 
 **Recovery:** GitHub `main` `307e529578151f255f4a70d14ff1e4f6bbda4b18` accepted 009-B2b2b v0.7.26 (533/533), Actions and Pages passed, no open PRs. Work is strictly isolated to Dinosaur Horror RPG, no Worker changes.

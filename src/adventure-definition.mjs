@@ -90,6 +90,19 @@ export function validateAdventureDefinition(def){
  if(def.initialCreatures.some(c=>!c||!key(c.id)||!key(c.species)||!rooms[c.location]||
       !['neutral','wary','defensive','predatory'].includes(c.disposition)))reject('creature');
  if(new Set(def.initialCreatures.map(c=>c.id)).size!==def.initialCreatures.length)reject('duplicate creature');
+ for(const creature of def.initialCreatures){
+  if(Object.keys(creature).some(k=>!['id','species','location','disposition','when','patrol'].includes(k)))
+   reject('unknown creature property');
+  if(creature.patrol!==undefined){
+   const p=creature.patrol;
+   if(!p||Object.keys(p).some(k=>!['path','cadence'].includes(k))||
+      !Array.isArray(p.path)||p.path.length<2||p.path.length>12||
+      p.path[0]!==creature.location||new Set(p.path).size!==p.path.length||
+      p.path.some(r=>!rooms[r])||
+      p.path.some((r,i)=>!rooms[r].exits.includes(p.path[(i+1)%p.path.length]))||
+      ![1,2,3].includes(p.cadence))reject('invalid physical creature patrol');
+  }
+ }
  if(!def.variants||typeof def.variants!=='object'||Array.isArray(def.variants))reject('variants');
  for(const [slot,options] of Object.entries(def.variants)){
   if(!key(slot)||!Array.isArray(options)||options.length<2||options.length>12)reject('variant slot');
@@ -120,6 +133,16 @@ export function validateAdventureDefinition(def){
       reject('animal response');
     }
    }
+  }
+ }
+ // A conditional creature must exist only in its actual seeded authored variant.
+ for(const creature of def.initialCreatures){
+  if(creature.when!==undefined){
+   const w=creature.when;
+   if(!w||typeof w!=='object'||Array.isArray(w)||
+      Object.keys(w).some(k=>!['slot','choice'].includes(k))||
+      !def.variants[w.slot]?.some(option=>option.id===w.choice))
+    reject('conditional creature presence');
   }
  }
  // Optional Cinematic event packages describe *opportunities*, not compulsory
