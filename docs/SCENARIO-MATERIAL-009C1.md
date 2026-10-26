@@ -10,6 +10,8 @@ The Evolved engine, independently, determines skill checks, dice, stress, moveme
 
 ## New reusable content contract
 
+Cinematic acts may be absent entirely or may use **one to five authored acts**; the compiler no longer forces the three-act structure used in several Alien RPG examples. Exact named events still reference existing act numbers, and agenda acts must exist in the authored package.
+
 A versioned `AdventureDefinition` can now carry an optional, strictly JSON-only `scenarioMaterial`:
 
 - **`briefing`**: public title and introduction, no secrets or forced outcome.
@@ -38,4 +40,4 @@ Continue combat parity separately: actual carried weapons, offensive action reso
 
 ## Verification
 
-Run `npm test` including `tests/adventure-scenario-material-009c1.test.mjs`, confirm a **607-test** baseline after the first seven new focused tests, verify historical bound saves, Focus/Spectator privacy and live scene triggers, then check **exact PR head** Actions before merge and **independent main** Actions/Pages after merge. Desktop and mobile graphical smoke tests are still a separate pending gate.
+Run `npm test` including `tests/adventure-scenario-material-009c1.test.mjs`, confirm a **607-test** baseline after the first nine new focused tests, verify historical bound saves, Focus/Spectator privacy and live scene triggers, then check **exact PR head** Actions before merge and **independent main** Actions/Pages after merge. Desktop and mobile graphical smoke tests are still a separate pending gate.
