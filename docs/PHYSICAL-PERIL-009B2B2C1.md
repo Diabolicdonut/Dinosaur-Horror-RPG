@@ -7,3 +7,7 @@ The adventure manifest's optional `perils` array declares the real room, real cr
 **Version history:** Rev1–3 remain immutable and valid; new research starts bind rev4 with the single conditional peril. Existing Nublar, rescue, critical injury and Party control paths are not modified.
 
 **Verification:** 547 regression target, +14 from 533 accepted. Final PR #32 and merged-main Actions/Pages required before acceptance. No manual graphical QA, full autonomous animal turns, true independent human NPCs or complete critical-injury time advancement yet; do not claim their completion.
+
+## Accepted GitHub evidence
+
+[PR #32](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/32) exact validated head `4425acd1e561ab700ea67db01eda626436d557a1` passed 547/547; source main `631daf8f185656e57a5056660b9370bdc6d65e67` independently passed [Actions 40263956091](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40263956091) and [Pages 40263955789](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40263955789). No hands-on browser smoke, autonomous predator pursuit, full injury-clock or generated Cinematic/Campaign features are claimed.
