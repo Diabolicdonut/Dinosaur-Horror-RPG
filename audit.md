@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-C2 — Adventure-owned supporting cast, colocated dialogues (candidate) — 2026-10-26
+## Checkpoint 009-C2 — Adventure-owned supporting cast, colocated dialogues (accepted) — 2026-10-26
 
 **Recovery:** GitHub main `b57d2f92a99e1aad3db8e3b3d40d2d534761da8a` is authoritative; checkpoint 009-C1 v0.7.33, 609 passing tests, main Actions 40358871376 and Pages 40358869938 succeeded. PR #46 branches from that exact accepted commit; no newer accepted main was found.
 
@@ -8,7 +8,7 @@
 
 **Constraints:** These authored NPCs **do not move, initiate dialogue, act on motives, fight or use Evolved human NPC rules** yet. NPC private motives do not appear in player views but are **not confidential against client-source inspection**. This is supporting-character content and a grounded dialogue interface, not autonomous NPC simulation or a scenario generator. See [technical report](docs/ADVENTURE-SUPPORTING-CAST-009C2.md).
 
-**Acceptance pending:** 609 prior tests + 9 new source/presence/privacy/evidence/replay tests = 618 targeted. Require PR exact-head CI, then merged main Actions and Pages. Manual desktop/mobile graphical smoke still outstanding; live weapon combat and gameplay parity are next.
+**Acceptance:** 609 previous tests plus 9 focused cast tests = **618/618**. [PR #46](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/46) source head `a15237c45cb897ab1d9284d1f3f2a85767d09d08` passed [Actions 40398262634](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40398262634). Source merged main `01bdd1972086b53c44ae82da1d484d903fa8ea88` independently passed [Actions 40398455467](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40398455467) (618/618), while [Pages 40398455740](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40398455740) SUCCESS. Documentation-only acceptance merge requires separate CI/Pages verification; manual graphical smoke still outstanding.
 
 
 ## Checkpoint 009-C1 — Original adventure scenario dossiers and character agendas (accepted) — 2026-10-26

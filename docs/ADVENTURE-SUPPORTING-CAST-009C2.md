@@ -1,6 +1,6 @@
 # 009-C2 — Versioned supporting cast and grounded conversations
 
-**Candidate, October 26, 2026.** Builds on accepted 009-C1 (v0.7.33, 609/609 tests). The core principle is that NPC identity, goals, information and authored spoken words belong to replaceable adventures. Evolved Edition controls character rolls, physical encounters, injuries and consequences. No copyrighted Alien RPG scenario content, characters, or dialogue is included.
+**Accepted, October 26, 2026; merged source `01bdd1972086b53c44ae82da1d484d903fa8ea88`.** Builds on accepted 009-C1 (v0.7.33, 609/609 tests). The core principle is that NPC identity, goals, information and authored spoken words belong to replaceable adventures. Evolved Edition controls character rolls, physical encounters, injuries and consequences. No copyrighted Alien RPG scenario content, characters, or dialogue is included.
 
 ## Reusable adventure data contract
 
@@ -22,4 +22,4 @@ This is **NPC information plus static presence and limited dialogue**, not full 
 
 ## Acceptance
 
-Focused tests are `tests/adventure-cast-009c2.test.mjs` (9), plus the **609** accepted regressions. Historical revision tests construct genuine old saves without the rev10-only cast. Expected CI total: **618/618**, subject to independent verification. Require exact PR-head GitHub Actions before merge and independently merged-main Actions/Pages after merge. Real graphical desktop/mobile play is still outstanding.
+Focused tests are `tests/adventure-cast-009c2.test.mjs` (9), plus the **609** accepted regressions. Historical revision tests construct genuine old saves without the rev10-only cast. **Accepted 618/618** on PR #46 exact head Actions 40398262634 and independent merged main Actions 40398455467. Pages 40398455740 SUCCESS. Real graphical desktop/mobile play is still outstanding.
