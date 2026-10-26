@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.35",
   "checkpoint": "009-C3",
-  "state": "candidate_revision11_objective_triggered_npc_return_route",
+  "state": "accepted_revision11_npc_return_routes_626_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,18 +16,18 @@
   "automated_tests": 626,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify PR #48 exact latest head deterministic regression suite (expected 626/626) before merge. Then verify independent main Actions and Pages; mark accepted only with verified evidence.",
-    "Move beyond authored NPC return routes toward source-grounded local threat perception, defensive reactions, human NPC medical consequences and real action economy.",
-    "Implement Evolved equipment-limited survivor weapon attacks, creature defense and damage resolution across both adventures without hardcoded research encounter assumptions.",
-    "Preserve immutable Long Count rev1–10/Nublar and their original content/fingerprints; maintain separated scenario and core mechanical authority.",
-    "Complete real desktop/mobile graphical gameplay smoke for After the Storm and Long Count, including NPC departure/arrival and Party/Focus/Spectator; later procedural Cinematic and continuing Campaign generators."
+    "Next: add perception-grounded nearby threat responses for independently moving human NPCs, including genuine Evolved reaction/action budgets, health/injury and safety constraints; do not forge combat or an island-wide wildlife sim.",
+    "Build source-legal player offensive equipment combat, carrying limits and source-appropriate dinosaur reactions in both playable adventure paths.",
+    "Keep rev1–11 scenario manifests immutable; continue replacing Nublar-specific shared-engine code with adventure-driven data while preserving all 626 accepted regression tests.",
+    "Complete manual graphical desktop/mobile smoke for The Long Count (actual report then NPC return route, quiet and predator seeds), Nublar and Party/Focus/Spectator switches.",
+    "Then design structurally variable original Cinematic adventures and continuing Campaigns through the same compiled schema and bounded AI Game Mother."
   ],
   "acceptance_criteria": [
-    "Checkpoint from main 020e3c97c33bf6b0ec68b38b1f876a1c30592710 (009-C2 v0.7.34, 618/618, main CI and Pages green).",
-    "Long Count rev11 triggered return route is valid source-authored physical graph, completion prerequisites, deterministic no-roll movement and audit history.",
-    "Long Count rev10 frozen exactly in ridge-survey-rev10.mjs; historical rev1–10 saves neither inherit nor require autonomous movement records.",
-    "Eight new focused tests plus 618 baseline; exact PR head and merged main CI/Pages require independent success before acceptance.",
-    "One bounded NPC return path does not constitute autonomous NPC combat, generic AI Game Mother, server-held secrets or full scenario generation. Manual graphical smoke outstanding."
+    "009-C3 PR #48 exact source head bd44955ea05c871af1570e0ec85b2045f07978f8 Actions 40422528987 SUCCESS 626/626.",
+    "009-C3 merged main source 5c883577bb861f341d4e565d7c23498a5492d849 Actions 40422688451 SUCCESS 626/626; Pages 40422687402 SUCCESS.",
+    "An NPC's route-after-objective physical moves are source-authored, limited to connected rooms, correctly paced, committed to history and independently regenerated for save validation; dialogue history stays physically tied to its original beat.",
+    "Research rev1–10 and Nublar stay immutable; no full human NPC Evolved combat, AI planning or remote omniscience is implied.",
+    "Manual desktop/mobile graphical smoke remains outstanding; confidential GM state requires server-side isolation, not browser-only data."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +40,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-C3 is candidate on PR #48 and not accepted or published until successful source CI, independently merged-main Actions and GitHub Pages. Accepted prior main 020e3c97c33bf6b0ec68b38b1f876a1c30592710 had Actions 40399069477 and Pages 40399068666 SUCCESS.",
+  "pages_deployment": "009-C3 accepted source main 5c883577bb861f341d4e565d7c23498a5492d849: independent main Actions https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40422688451 SUCCESS (626/626 tests) and Pages https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40422687402 SUCCESS. PR #48 final source head bd44955ea05c871af1570e0ec85b2045f07978f8 Actions 40422528987 SUCCESS 626/626. Documentation-only acceptance PR and its own main CI/Pages separately pending. Manual desktop/mobile graphical QA still outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -969,6 +969,16 @@
     "form": "Optional validated objective-triggered contiguous return_route, one real room per eligible roster round, source-defined cadence.",
     "replay": "All expected movement reconstructed from objective records, beat count and immutable authored route; missing/faked moves and positions reject as saves.",
     "limits": "No NPC independent combat, skills, omniscient predator avoidance, death or human NPC action turns; graphical browser QA pending.",
-    "candidateTests": "618 baseline + 8 source/NPC autonomy tests = 626 expected; CI and Pages pending."
+    "candidateTests": "626/626 verified exact PR head and independently merged source main",
+    "acceptance": {
+      "pr": 48,
+      "sourceHead": "bd44955ea05c871af1570e0ec85b2045f07978f8",
+      "prCI": "40422528987",
+      "mergedSourceMain": "5c883577bb861f341d4e565d7c23498a5492d849",
+      "mainCI": "40422688451",
+      "mainPages": "40422687402",
+      "tests": 626,
+      "manualGraphicalQa": "pending"
+    }
   }
 }
