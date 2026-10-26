@@ -28,7 +28,7 @@ test('009-C2: validated, seeded physical supporting cast is a separate data pack
 test('009-C2: original rev9 fingerprint and saves do not acquire new NPC history',()=>{
  const original=compileAdventure(RIDGE_SURVEY_REV9,{seed:quiet});
  const s=fresh(quiet);s.adventureBinding=adventureBinding(original);
- delete s.supportingCast;delete s.conversationRecords;
+ delete s.supportingCast;delete s.conversationRecords;delete s.npcAutonomyRecords; s.npcAutonomyRecords=undefined;
  assert.equal(isPartySave(s),true);
  assert.equal(partyView(s).supportingCast.length,0);
  assert.notEqual(original.fingerprint,adventureFingerprint(compileSelectedAdventure('ridge-survey',quiet).definition));
