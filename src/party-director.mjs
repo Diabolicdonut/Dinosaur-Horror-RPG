@@ -160,6 +160,13 @@ export function chooseCompanionAction(observation){
    return proposal('surgery',op.id,'surgical_repair','Operate on a nearby survivor whose injury requires surgery.');
  }
  if(o.dinosaurs.length){
+   // Research companions may withdraw along observed physical exits while
+   // the survey does not yet implement predator combat rounds.
+   if(o.adventureId==='ridge-survey'&&o.dinosaurs.some(d=>d.kind==='velociraptor'))
+    return o.exits.length?
+     proposal('move',o.exits[0],'withdraw_from_predator',
+      'Withdraw through a real adjacent exit from a visible predator.') :
+     proposal('wait','','avoid_dinosaur','No connected retreat is available.');
    if(o.hidden)return proposal('wait','','avoid_dinosaur','Remain concealed from the dinosaur.');
    if(o.equipment?.includes('service carbine')||o.equipment?.includes('tranquilizer launcher')||
       o.inventory.includes('service carbine')||o.inventory.includes('tranquilizer launcher'))
