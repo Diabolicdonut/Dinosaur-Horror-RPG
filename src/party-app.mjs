@@ -154,6 +154,7 @@ function show(){
  if(v.wildlifeEncounter?.title)scene.push('LIVING DINOSAUR · '+v.wildlifeEncounter.title+' — '+v.wildlifeEncounter.description);
  else if(v.wildlifeEncounter?.description)scene.push('WILDLIFE · '+v.wildlifeEncounter.description);
  if(v.dialogueOpportunities?.length)scene.push('COMPANIONS · A teammate is here to talk or plan with.');
+  for(const npc of v.supportingCast||[])scene.push('PERSON · '+npc.name+' ('+npc.role+') — '+npc.description);
  if(v.parkGuide)scene.push('PARK EMPLOYEE · '+v.parkGuide.name+' ['+v.parkGuide.status+'] — '+v.parkGuide.description);
  if(v.personalLight.carried)scene.push('LIGHT SUPPLIES · '+v.batterySupplies.carried+' spare cell(s) carried; lamp charge '+v.personalLight.charge+'.');
  if(v.rescueEnding)scene.push('RESCUE CONSEQUENCE · '+v.rescueEnding.text);
@@ -205,6 +206,8 @@ function show(){
   ...(v.availableDangerEvents||[]).map(e=>['danger '+e.id,'Attempt challenge · '+e.title+' ('+e.skill+')']),
   ...(v.wildlifeEncounter?.choices||[]).map(o=>['wildlife '+o.id,o.label+(o.skill?' ('+o.skill+')':'')]),
   ...(v.dialogueOpportunities||[]).map(o=>['talk '+o.recipientId+' '+o.topic,o.label+' · '+o.recipientName]),
+   ...(v.supportingCast||[]).flatMap(n=>n.topics.map(t=>[
+    'npc '+n.id+' '+t.id,'Ask '+n.name+' · '+t.prompt])),
   ...(v.parkGuide?.options||[]).map(o=>['guide '+o.id,o.label+(o.skill?' ('+o.skill+')':'')]),
   ...(v.batteryActions||[]).map(o=>['battery '+o.id,o.label]),
   ...v.items.map(i=>['take '+i.id,'Take '+i.name]),
