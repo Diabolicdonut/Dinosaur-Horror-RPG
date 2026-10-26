@@ -77,9 +77,15 @@ export function isSelectedAdventureSave(s){
        JSON.stringify(stock,Object.keys(stock).sort())||
      !validObjectiveRecords(compiled,s)||
      (s.outcome==='rescued')!==(s.adventureOutcome==='completed')||
-     s.dinosaurs.some((d,i)=>d.id!==template.initialCreatures[i].id||
-       d.kind!==template.initialCreatures[i].species||
-       !world.hasRoom(d.location)))return false;
+     s.dinosaurs.some((d,i)=>{
+       const original=template.initialCreatures[i];
+       const response=animalApproachCircumstance(situated(s),d.id,original.location);
+       const fled=response&&response.to===d.location&&s.actions.some(a=>
+         a.kind==='wildlife'&&a.target==='approach'&&a.success===false);
+       return d.id!==original.id||d.kind!==original.species||
+         d.disposition!==original.disposition||d.defeated!==false||
+         !world.hasRoom(d.location)||(d.location!==original.location&&!fled);
+     }))return false;
   return true;
  }catch{return false;}
 }
