@@ -14,6 +14,7 @@ import {cinematicAct,availableCinematicEvents,validCinematicRecords,
 import {commitAuthorizedObjective,validObjectiveRecords,objectiveStatus} from './adventure-objectives.mjs';
 import {makeParty,validateParty} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
+import {resolveClinicalAid,resolveRally,pendingLethal} from './evolved-injuries.mjs';
 import {passageCircumstance,objectiveCircumstance,
  animalApproachCircumstance,localSituationCues} from './adventure-situations.mjs';
 
@@ -179,7 +180,8 @@ export function selectedAdventureView(s,{actorId=null}={}){
   observations:[],wonder:null,wonderJournal:[],visibleDinosaurs:[],
   inventory:actor.inventory.map(id=>({id,name:world.itemLabel(id)})),
   health:actor.health,healthMax:actor.healthMax,stress:actor.stress,
-  injuries:actor.criticalInjuries||[],medicalUrgency:[],
+  injuries:actor.criticalInjuries||[],
+  medicalUrgency:pendingLethal(actor).map(w=>({code:w.code,deadline:w.deadline,nextDeathAt:w.nextDeathAt})),
   broken:actor.broken,dead:actor.dead,panicState:null,hidden:false,
   flags:copy(s.flags),
   actors:s.actors.map(a=>({id:a.id,name:a.name,career:a.career,
@@ -215,7 +217,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   return result;
  }
  if(action.kind==='look')return reject(previous,'Inspection is free; no turn was spent.');
- if(!['move','sneak','rush','wait','take','give','use','wildlife','danger'].includes(action.kind))
+ if(!['move','sneak','rush','wait','take','give','use','wildlife','danger','aid','rally'].includes(action.kind))
   return reject(previous,'This adventure currently supports travel, survey interactions, observation, items and waiting.');
  if(active.dead||active.broken)return reject(previous,'This survivor cannot act.');
  let s=copy(previous),actor=s.actors[s.cursor],rolled=null;
@@ -238,6 +240,26 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
     resolved.strike.damage?
      'The startled dinosaur strikes for '+resolved.strike.damage+' damage.':
      'The animal lashes out but does not injure them.');
+ }else if(action.kind==='aid'||action.kind==='rally'){
+  const patient=s.actors.find(a=>a.id===action.target);
+  if(!patient||patient.dead||patient.location!==actor.location||
+     patient.id===actor.id||(!patient.broken&&!pendingLethal(patient).length))
+   return reject(previous,'A living, injured, colocated teammate is required.');
+  const seed=nextSeed(s);
+  const cure=action.kind==='aid'?
+   resolveClinicalAid(actor,patient,{seed,time:s.clock.explorationStretches*600,
+    medicalGear:actor.gear?.some(i=>['medical bag','first aid pouch','first aid kit'].includes(i))}):
+   resolveRally(actor,patient,{seed});
+  if(!cure.accepted)return reject(previous,cure.reason);
+  rolled=cure.roll;
+  const actorIndex=s.actors.findIndex(a=>a.id===actor.id);
+  const patientIndex=s.actors.findIndex(a=>a.id===patient.id);
+  s.actors[actorIndex]=cure.medicAfter||cure.commanderAfter;
+  s.actors[patientIndex]=cure.patient;
+  actor=s.actors[actorIndex];
+  result={kind:action.kind,success:cure.success,patientId:patient.id};
+  description=actor.name+' attempts '+(action.kind==='aid'?'first aid':'a Command rally')+
+   ' for '+patient.name+(cure.success?', and the attempt succeeds.':', without immediate recovery.');
  }else if(['move','sneak','rush'].includes(action.kind)){
   const dest=world.resolveExit(at,action.target);
   if(!dest)return reject(previous,'Destination is not physically adjacent.');
