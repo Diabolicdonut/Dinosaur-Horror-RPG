@@ -4,6 +4,7 @@ import {makeParty} from '../src/characters.mjs';
 import {compileSelectedAdventure} from '../src/adventure-catalog.mjs';
 import {validateAdventureDefinition,compileAdventure,adventureBinding} from '../src/adventure-definition.mjs';
 import {RIDGE_SURVEY_REV5} from '../adventures/ridge-survey-rev5.mjs';
+import {RIDGE_SURVEY_REV6} from '../adventures/ridge-survey-rev6.mjs';
 import {localPredator,resolvePredatorContact,validPredatorContacts}
  from '../src/adventure-predator-contact.mjs';
 import {newPartyIncident,isPartySave,partyView,partyStep} from '../src/party-engine.mjs';
@@ -13,7 +14,14 @@ const predatorSeed=series.find(i=>compileSelectedAdventure('ridge-survey',i)
  .hiddenFacts.predatorPresence.id==='raptor-territory');
 const quietSeed=series.find(i=>compileSelectedAdventure('ridge-survey',i)
  .hiddenFacts.predatorPresence.id==='quiet-range');
-const fresh=(seed=predatorSeed)=>newPartyIncident({adventureId:'ridge-survey',seed,roster});
+// Existing 009-B2b2c2b invariants apply to the immutable automatic defense
+// revision. The current Rev7 tests live in a distinct focused test module.
+const fresh=(seed=predatorSeed)=>{
+ const s=newPartyIncident({adventureId:'ridge-survey',seed,roster});
+ s.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV6,{seed}));
+ delete s.pendingPredatorResponse;
+ return s;
+};
 function move(s,to){
  const r=partyStep(s,'move '+to);
  assert.equal(r.accepted,true,r.reason);
@@ -26,7 +34,7 @@ test('009-B2b2c2b: old revision 5 remains immutable; new threat protocol is revi
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}));
  delete old.predatorContacts;
  assert.equal(isPartySave(old),true);
- assert.equal(compileSelectedAdventure('ridge-survey',s.initialSeed).revision,6);
+ assert.equal(compileSelectedAdventure('ridge-survey',s.initialSeed).revision,7);
  assert.equal(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}).revision,5);
 });
 test('009-B2b2c2b: every source creature threat must name an authorized Evolved profile',()=>{
