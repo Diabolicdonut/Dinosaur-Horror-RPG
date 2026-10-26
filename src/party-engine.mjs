@@ -678,6 +678,8 @@ export function parsePartyAction(input) {
  if(wildlife)return {kind:'wildlife',target:wildlife[1],push};
  const talk=line.match(/^(?:talk|speak)\s+(pc-[1-8])\s+(check-in|plan)$/);
  if(talk)return {kind:'dialogue',target:talk[2],recipientId:talk[1],push:0};
+  const npc=line.match(/^(?:npc|talk(?: to)?|speak(?: with)?)\s+([a-z][a-z0-9-]+)\s+(?:about\s+)?([a-z][a-z0-9-]+)$/);
+  if(npc)return {kind:'npc',target:npc[1]+':'+npc[2],push:0};
  const danger=line.match(/^(?:danger|attempt danger|resolve danger)\s+([a-z0-9-]+)$/);
  if(danger)return {kind:'danger',target:danger[1],push};
  const scene=line.match(/^(?:scene|experience scene|play scene)\s+([a-z0-9-]+)$/);
