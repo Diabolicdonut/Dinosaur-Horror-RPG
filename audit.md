@@ -6,7 +6,7 @@
 
 **Implementation:** New `src/adventure-combat-scheduler.mjs` defines generic Evolved numbered initiative with source speed 1–2 animal slots, deterministic seed-based ordered cards, authentic quick/full actor action budgets, explicit initiative ownership, spend limits and newly seeded next-round card draws. No Nublar or research room/species text is hardcoded. Every update returns a new state; malformed cards, unsupported actions, incorrect active actors and forged budgets are rejected. This is infrastructure for 009-B2b2c2c2, **not live playable combat**, creature AI, injury clock or source weapon rules.
 
-**Validation:** Eight new regression tests plus 583 accepted = **591/591** PR #40 exact head `75f5ae419d74fa5257fd15b50bf16251683b14c5` in Actions 40326573259. Merged code commit `272f31fef09683ceb9345a4cfb4d2578442e74b3`, independent main Actions and Pages pending final verification. Historical saved scenarios unchanged. Next integrate and validate actual combat actions and clinical timing. Desktop/mobile graphical QA outstanding.
+**Validation:** Eight new regression tests plus 583 accepted = **591/591** PR #40 exact head `75f5ae419d74fa5257fd15b50bf16251683b14c5` in Actions 40326573259. Merged code commit `272f31fef09683ceb9345a4cfb4d2578442e74b3`, independent main Actions 40326736184 SUCCESS (591/591) and Pages 40326735763 SUCCESS; manual graphical QA remains outstanding. Historical saved scenarios unchanged. Next integrate and validate actual combat actions and clinical timing. Desktop/mobile graphical QA outstanding.
 
 
 ## Checkpoint 009-B2b2c2c1 — Player-Selected Evolved Opening Defense (accepted) — 2026-10-26
