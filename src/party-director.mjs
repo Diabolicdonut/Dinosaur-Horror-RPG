@@ -260,7 +260,7 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    return noChange(previous,'AI control changed before this decision.');
  const pending=previous.combat?.pendingReaction||previous.pendingPredatorResponse||previous.combatReaction;
  const turn=selectedCombatSlot(previous)||activeCombatSlot(previous);
- const predator=turn?.kind==='dinosaur'&&!pending;
+ const predator=turn?.kind==='dinosaur';
  const actor=predator?null:previous.actors.find(a=>a.id===(pending?.victimId||turn?.actorId||activeTurnId(previous)));
  const remoteCombatActor=Boolean(previous.scenario==='ridge-survey'&&previous.combat&&actor&&
   !previous.dinosaurs.some(d=>d.disposition==='predatory'&&d.location===actor.location));
