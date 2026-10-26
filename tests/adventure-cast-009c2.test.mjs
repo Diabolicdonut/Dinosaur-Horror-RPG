@@ -15,8 +15,8 @@ const doAction=(s,action)=>{const r=partyStep(s,action);assert.equal(r.accepted,
 
 test('009-C2: validated, seeded physical supporting cast is a separate data package',()=>{
  const compiled=compileSelectedAdventure('ridge-survey',quiet),s=fresh(quiet);
- assert.equal(compiled.revision,10);
- assert.equal(s.adventureBinding.revision,10);
+ assert.equal(compiled.revision,11);
+ assert.equal(s.adventureBinding.revision,11);
  assert.deepEqual(s.supportingCast.map(x=>x.id),['leena-harrow','tomas-wren']);
  assert.equal(s.supportingCast[0].location,'field-camp');
  assert.equal(isPartySave(s),true);
