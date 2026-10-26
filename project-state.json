@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.33",
   "checkpoint": "009-C1",
-  "state": "candidate_adventure_owned_scenario_material_variable_acts_609_regressions",
+  "state": "accepted_adventure_owned_scenario_material_variable_acts_609_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,18 +16,18 @@
   "automated_tests": 609,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Validate PR #44 exact-head CI for new revision9 adventure-owned dossiers; independently verify merged-main Actions and Pages and update acceptance records only with direct evidence.",
-    "Expand generic validated adventure package support for named NPC cast, private motives, local dossiers and original scene triggers, with actor-observation privacy; do not hardcode the Free League Alien scenarios or impose a mandatory three-act progression on generated content.",
-    "Finish full source-grounded, equipment-conserved survivor offensive combat, species-aware predator/NPC turns and clinically faithful injuries; preserve original research rev1–8 and Nublar saves.",
-    "Complete real desktop/mobile browser smoke for physical The Long Count contact, combat escape and triggered dossier documents, and Nublar Party/Focus/Spectator.",
-    "After broader two-adventure gameplay parity, generate structurally varied authored Cinematic adventures and ongoing campaign chapters through validated manifests and bounded AI Game Mother."
+    "Implement independent authorable NPC/cast profiles, motives, physical starting positions, player-bounded conversation and genuinely committed story-card/agenda rewards when Evolved-appropriate, inside the same validated scenario package rather than hardcoded to After the Storm.",
+    "Implement survivor offensive weapon attacks, gear conservation and species-aware opponent defense/behavior, reusing canonical Evolved routines across both playable adventures.",
+    "Reduce hardcoded Nublar singleton dependencies in party-engine.mjs toward a single fully adventure-neutral rules engine while retaining all 609 accepted regressions and immutable research revisions.",
+    "Validate actual desktop/mobile Party/Focus/Spectator browser play including scenario handouts, seeded animal absence/presence and live research retreat.",
+    "Only after two-adventure gameplay parity and trusted bounded authoring, introduce procedural Cinematic and continuing Campaign adventure packages; no forced three-act or compulsory fight formula."
   ],
   "acceptance_criteria": [
-    "Candidate 009-C1 requires deterministic no-callback scenarioMaterial manifest validation, fingerprint binding, source references to real objective/event triggers and seeded variant conditions.",
-    "Original private Free League Chariot of the Gods, Destroyer of Worlds and Heart of Darkness used only to study the division of scenario vs reusable rules; do not include commercial source prose, maps or proprietary NPCs in GitHub.",
-    "Long Count newly authored revision9 demonstrates player briefing, GM reference (not returned to player projection), act and seat-linked private agendas, scene and objective-triggered story cards/handouts. Story Point rewards and human NPCs not yet implemented.",
-    "Previously accepted Long Count rev1–8 remain physically, mechanically and narratively identical via immutable compiled revisions and fingerprints; Nublar, Worker and solo remain isolated.",
-    "600 baseline + 9 new scenario material and variable-act tests = 609 in PR candidate source CI 40357775949 candidate pending final verification. PR exact documentation-inclusive head, merged main Actions and Pages are independent acceptance gates. Manual graphics QA outstanding."
+    "Source PR #44 final head 74e0dd069e8f40c7e3a4450a15455f6eaf22b31e independent Actions 40357970045 SUCCESS 609/609.",
+    "Source main e3178e98d2e0214a9d01db7b19a9b3ddc14527bc independent Actions 40358102862 SUCCESS 609/609 and GitHub Pages 40358099111 SUCCESS.",
+    "Only original Dinosaur content; three privately uploaded Free League Alien scenario books used as structure references, never copied into public repository.",
+    "Versioned Long Count revision9 has safe typed adventure dossiers and one-through-five optional Cinematic acts, original role agendas and trigger-bound story cards/handouts, no fabricated facts/rewards and no private non-owner agenda in projected player UI.",
+    "Historic Long Count rev1–8 saves, Nublar rescues, existing Evolved combats and Worker remain unchanged. Browser-source GM secret confidentiality, NPC agent behaviors, Story Point agenda rewards, procedural generators and manual desktop/mobile smoke remain outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +40,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Last confirmed source main 009-B2b2c2c2b eed9f2ab29c9991ab00c76172dbf45440ce69d9c had Actions and Pages SUCCESS; acceptance ledger main fe88be827266a4883346446a802a24b4a39ca09f Actions 40335952016 SUCCESS and Pages 40335951816 SUCCESS. 009-C1 remains PR #44 candidate until independent merge; source candidate Actions 40356640292 passed 607/607.",
+  "pages_deployment": "009-C1 accepted source main e3178e98d2e0214a9d01db7b19a9b3ddc14527bc: GitHub main Actions https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40358102862 SUCCESS (609/609) and Pages https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40358099111 SUCCESS; source PR #44 final head 74e0dd069e8f40c7e3a4450a15455f6eaf22b31e Actions 40357970045 SUCCESS (609/609). Acceptance ledger-only follow-up still requires its own CI. No manual desktop/mobile graphical QA.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -926,8 +926,18 @@
     "content": "player briefing; GM notes (not projected); seat/act private agendas; scene/objective-triggered cards and handouts; seed-conditioned reports",
     "referencePolicy": "Private Free League Alien RPG scenarios Chariot of the Gods, Destroyer of Worlds, Heart of Darkness consulted only for structural comparison; no copyrighted source text/art committed.",
     "sourceCI": "https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40356640292",
-    "tests": "609/609 targeted candidate (verification pending)",
+    "tests": "609/609 accepted PR source + main source",
     "limitations": "No Story Point awards; no living NPC dossiers; no procedural scenario author; no truly confidential client-shipped secrets.",
-    "actCount": "Optional one to five Cinematic acts per authored adventure, rather than a universal three-act requirement."
+    "actCount": "Optional one to five Cinematic acts per authored adventure, rather than a universal three-act requirement.",
+    "acceptance": {
+      "pr": 44,
+      "sourcePRHead": "74e0dd069e8f40c7e3a4450a15455f6eaf22b31e",
+      "sourceCI": "40357970045",
+      "mainSource": "e3178e98d2e0214a9d01db7b19a9b3ddc14527bc",
+      "mainCI": "40358102862",
+      "pages": "40358099111",
+      "tests": 609,
+      "manualGraphicalQa": "pending"
+    }
   }
 }
