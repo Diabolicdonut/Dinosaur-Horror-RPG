@@ -16,8 +16,9 @@ export function selectedCombatSlot(s){return s?.scenario==='ridge-survey'&&s.com
  active(s):null;}
 export function validSelectedCombat(s){
  if(s.adventureBinding?.revision<8)return s.combat===null&&
-  s.combatReaction===undefined&&s.combatRoundRecords===undefined&&
-  s.combatDamageRecords===undefined;
+  (s.combatReaction===undefined||s.combatReaction===null)&&
+  (s.combatRoundRecords===undefined||Array.isArray(s.combatRoundRecords)&&!s.combatRoundRecords.length)&&
+  (s.combatDamageRecords===undefined||Array.isArray(s.combatDamageRecords)&&!s.combatDamageRecords.length);
  if(!Array.isArray(s.combatRoundRecords)||s.combatRoundRecords.length>200||
     !Array.isArray(s.combatDamageRecords)||s.combatDamageRecords.length>400||
     !(s.combatReaction===null||typeof s.combatReaction==='object'))return false;
