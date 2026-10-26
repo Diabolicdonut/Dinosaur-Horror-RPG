@@ -1,6 +1,6 @@
 # 009-C3 — Physically Grounded Supporting NPC Return
 
-**Candidate — October 26, 2026** · Prior accepted **009-C2**, version **0.7.34**, **618/618** tests, verified main `020e3c97c33bf6b0ec68b38b1f876a1c30592710`.
+**Accepted — October 26, 2026** · Prior accepted **009-C2**, version **0.7.34**, **618/618** tests, verified main `020e3c97c33bf6b0ec68b38b1f876a1c30592710`.
 
 ## Purpose
 
@@ -32,4 +32,4 @@ The `npcAutonomyRecords` are checked against source conditions for **every roste
 
 ## Candidate verification
 
-The source branch is `work/009-c3-npc-autonomy`, PR #48. Eight focused NPC autonomy tests plus the previous 618 tests = **626 expected tests**, pending exact-head PR Actions verification, independent merged-main Actions and Pages success. Manual graphical desktop/mobile gameplay testing remains outstanding.
+The source branch is `work/009-c3-npc-autonomy`, PR #48. Eight focused NPC autonomy tests plus the previous 618 tests = **626/626 accepted**: PR #48 head `bd44955ea05c871af1570e0ec85b2045f07978f8` Actions 40422528987 SUCCESS; independently merged source main `5c883577bb861f341d4e565d7c23498a5492d849` Actions 40422688451 SUCCESS and Pages 40422687402 SUCCESS. Manual graphical desktop/mobile gameplay testing remains outstanding.

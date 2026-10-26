@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-C3 — Objective-triggered supporting NPC physical travel (candidate) — 2026-10-26
+## Checkpoint 009-C3 — Objective-triggered supporting NPC physical travel (accepted) — 2026-10-26
 
 **Recovery:** GitHub main `020e3c97c33bf6b0ec68b38b1f876a1c30592710`, accepted 009-C2 v0.7.34, had **618/618** green and successful main Actions 40399069477 / Pages 40399068666, with no outstanding PRs.
 
@@ -8,7 +8,7 @@
 
 **Explicit scope:** This is **bounded autonomous goal-driven travel**, not yet independent Evolved-compliant NPC perception/combat/critical injury or generalized AI planning. Leena Harrow continues coordinating from camp. Rev1–10 saves, Nublar and Worker are unchanged; GM secrets are still browser-inspectable. See [technical contract](docs/ADVENTURE-NPC-AUTONOMY-009C3.md).
 
-**Validation gate:** 618 baseline + 8 focused source-authorized NPC replay tests = **626 targeted**. PR #48 exact-head Actions, then independent merged-main Actions and Pages required. Graphical mobile/desktop smoke still outstanding.
+**Acceptance:** 618 baseline + 8 focused source-authorized NPC replay tests = **626/626**. [PR #48](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/48) final head `bd44955ea05c871af1570e0ec85b2045f07978f8` passed [Actions 40422528987](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40422528987). Independently merged source `main` `5c883577bb861f341d4e565d7c23498a5492d849` passed [Actions 40422688451](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40422688451) 626/626, and [Pages 40422687402](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40422687402) SUCCESS. Acceptance-ledger-only CI and manual graphical QA remain separate.
 
 
 ## Checkpoint 009-C2 — Adventure-owned supporting cast, colocated dialogues (accepted) — 2026-10-26
