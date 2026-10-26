@@ -152,3 +152,38 @@ test('009-B2b2c1: noncombat scenic wonder and risky animal encounter remain inde
  assert.equal(second.state.cinematicRecords.length,1);
  assert.equal(isPartySave(second.state),true);
 });
+
+test('009-B2b2c1: Evolved medical aid treats only a real colocated injured teammate',()=>{
+ const party=makeParty({seed:51,size:2,careers:['medic','scientist']});
+ let s=fresh(nervous,party);
+ s.actors[1].health=0;s.actors[1].broken=true;
+ const before=structuredClone(s);
+ const treated=partyStep(s,'aid '+party[1].id);
+ assert.equal(treated.accepted,true,treated.reason);
+ assert.equal(treated.state.beat,before.beat+1);
+ assert.equal(treated.state.actions.at(-1).skill,'medical_aid');
+ assert.equal(treated.state.actors[1].health>=0,true);
+ assert.equal(isPartySave(treated.state),true);
+ assert.deepEqual(s,before);
+});
+test('009-B2b2c1: Evolved Command rally never heals a distant person by narrative fiat',()=>{
+ const party=makeParty({seed:58,size:2,careers:['supervisor','scientist']});
+ let s=fresh(nervous,party);
+ s.actors[1].health=0;s.actors[1].broken=true;
+ s.actors[1].location='river-crossing';
+ const denied=partyStep(s,'rally '+party[1].id);
+ assert.equal(denied.accepted,false);
+ assert.strictEqual(denied.state,s);
+ s.actors[1].location='field-camp';
+ const attempted=partyStep(s,'rally '+party[1].id);
+ assert.equal(attempted.accepted,true,attempted.reason);
+ assert.equal(attempted.state.actions.at(-1).skill,'command');
+ assert.equal(isPartySave(attempted.state),true);
+});
+test('009-B2b2c1: uninjured teammates cannot be healed or rallied for free skill rolls',()=>{
+ const party=makeParty({seed:41,size:2});
+ const s=fresh(nervous,party);
+ assert.equal(partyStep(s,'aid '+party[1].id).accepted,false);
+ assert.equal(partyStep(s,'rally '+party[1].id).accepted,false);
+ assert.equal(isPartySave(s),true);
+});
