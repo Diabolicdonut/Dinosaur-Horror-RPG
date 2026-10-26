@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // not yet runnable by the legacy After the Storm-specific Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:4,
+ schemaVersion:1,id:'ridge-survey',revision:5,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -63,9 +63,20 @@ export const RIDGE_SURVEY={
    attackerDice:4,baseDamage:1,
    variant:{slot:'wildlifeBehavior',choice:'nervous'}}
  ],
- initialCreatures:[{id:'grazer-1',species:'parasaurolophus',
-  location:'survey-ridge',disposition:'neutral'}],
+ initialCreatures:[
+  {id:'grazer-1',species:'parasaurolophus',location:'survey-ridge',disposition:'neutral'},
+  {id:'hunter-1',species:'velociraptor',location:'forest-blind',
+   disposition:'predatory',
+   when:{slot:'predatorPresence',choice:'raptor-territory'},
+   patrol:{path:['forest-blind','river-crossing'],cadence:2}}
+ ],
  variants:{
+  predatorPresence:[
+   {id:'quiet-range',fact:'no_predator',clueRoom:'forest-blind',
+    description:'The soft earth shows older harmless tracks, with no fresh predator sign.'},
+   {id:'raptor-territory',fact:'raptor_patrol',clueRoom:'forest-blind',
+    description:'Fresh narrow claw tracks cross the forest approach; a hunter may be active in the basin.'}
+  ],
   researchObstacle:[
    {id:'flooded-ford',fact:'flood',clueRoom:'river-crossing',
     description:'The river is visibly rising, making the forest ford treacherous.',
