@@ -22,7 +22,7 @@ test('009-B2b2c1: current research adventure is revision 5; immutable rev1/2/3 r
  for(const [def,rev] of [[RIDGE_SURVEY_REV1,1],[RIDGE_SURVEY_REV2,2],[RIDGE_SURVEY_REV3,3]]){
   const old=structuredClone(s);
   old.adventureBinding=adventureBinding(compileAdventure(def,{seed:old.initialSeed}));
-  delete old.supportingCast;delete old.conversationRecords;
+  delete old.supportingCast;delete old.conversationRecords; old.npcAutonomyRecords=undefined;
   delete old.perilRecords;
   assert.equal(old.adventureBinding.revision,rev);
   assert.equal(isPartySave(old),true);
