@@ -121,7 +121,7 @@ test('009-B2b2c2c2b: Focus ownership and Spectator predator actions respect real
 test('009-B2b2c2c2b: immutable rev7 save can replay existing opening reaction without live rounds',()=>{
  const seed=safeSeed;let old=fresh(seed);
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV7,{seed}));
- old.supportingCast=undefined;old.conversationRecords=undefined;
+ old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;
  assert.equal(isPartySave(old),true);
  for(const room of ['rocky-ascent','survey-ridge','forest-blind']){
   old=partyStep(old,'move '+room).state;
