@@ -68,7 +68,7 @@ export function validSupportingCastState(compiled,s){
   const npc=s.supportingCast.find(n=>n.id===r?.npcId);
   const source=compiled.definition.supportingCast.find(n=>n.id===r?.npcId);
   const topic=source?.topics.find(t=>t.id===r?.topicId);
-  if(!npc||!topic||!selected(compiled,topic)||
+  if(!npc||!topic||!selected(compiled,topic)||!eventOccurred(s,topic.requires)||
      !s.actors.some(a=>a.id===r.actorId)||!Number.isSafeInteger(r.beat)||
      r.beat<0||r.beat> s.beat||r.beat<last||
      r.location!==npc.location||
