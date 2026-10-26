@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B2b2c2b — Source-Evolved Predator Opening Contact (candidate) — 2026-10-25
+## Checkpoint 009-B2b2c2b — Source-Evolved Predator Opening Contact (accepted) — 2026-10-25
 
 **Recovery:** Current accepted `main` `43ca8ffa720d1df4c5e7530fb4094b67a3e1926d` is 009-B2b2c2a, version 0.7.28, 560 passing regressions, Actions and Pages green, no open pull requests. New implementation advances that state rather than the user's older earlier reported checkpoint.
 
@@ -9,6 +9,8 @@
 **History:** `adventures/ridge-survey-rev5.mjs` preserves the exact previous predator-patrol-only definition; Rev1–5 saved expeditions never retroactively acquire hostile contact rules. Rev6 is the new authored scenario. Nublar rescue and separate solo/Worker remain unchanged.
 
 **Testing:** 12 new focused cases plus existing 560 for **572/572 candidate**. The previous patrol-only no-RNG case continues to test actual immutable Rev5 rather than incorrectly asserting contact consumes no dice in Rev6. Browser module cache revisions and historical browser tests refreshed. Exact-head GitHub CI, merged-main Actions and Pages still required. Manual desktop/mobile graphical gameplay QA outstanding.
+
+**Acceptance:** [PR #36](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/36) exact final head `a6ed68d6631b1a772a5efca68d386442939e888e` passed **572/572** regression tests in CI [40267769753](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40267769753). Source main `99d204b0a99292e36b1799d8de65a340e7070e23` independently passed [Actions 40267847224](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40267847224) **572/572** and [Pages 40267847147](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40267847147). Acceptance-ledger-only PR must pass its own checks. No desktop/mobile graphical smoke has been performed.
 
 **Limitations:** This is source opening initiative and automatic defensive reaction, **not full 10-second Evolved combat rounds** or explicit choice-driven attack/reaction turn budget. Independent human NPCs, full medical death-clock, generated Cinematic stories and Campaigns are not yet implemented. Next milestone 009-B2b2c2c builds those shared combat capabilities.
 

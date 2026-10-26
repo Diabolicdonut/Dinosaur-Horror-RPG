@@ -1,14 +1,14 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2c2b source Evolved first contact candidate 572/572; full combat/NPC parity and manual QA outstanding). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2c2b accepted 572/572, Evolved predator contact deployed; full combat/NPC parity and manual QA outstanding). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
 
-## 009-B2b2c2b — Source-Evolved opening predator contact (candidate, 2026-10-25)
+## 009-B2b2c2b — Source-Evolved opening predator contact (accepted, 2026-10-25)
 
 New authored *Long Count* revision 6 adds a source-bounded predator contact protocol. A reusable generic resolver verifies living actor and fixed-seed existing velociraptor truly share a physical room **after** a committed turn, then calls Evolved passive detection, numbered initiative using two predator-speed cards, and source creature attack with a defensive Mobility dodge only when awareness and initiative permit. This may cause no attack, miss, damage, or critical injury. Actors can leave along graph exits and remote predators remain secret. Rev1–5 research saves and Nublar rescue rules remain immutable. **Opening contact is not full ongoing combat or NPC agency.** Next 009-B2b2c2c must provide explicit player reactions and 10-second combat-turn fidelity, clinical clocks, source movement/stealth and human NPC encounters.
 
-**Gate:** 560 accepted + 12 new = 572 total tests, exact PR and merged-main CI/Pages before acceptance; manual UI smoke not completed.
+**Gate:** 560 accepted + 12 new = **572 accepted** tests, source main Actions 40267847224 and Pages 40267847147 green; manual UI smoke not completed.
 
 ## 009-B2b2c2a — Seed-conditional animal presence and physical patrol (accepted, 2026-10-25)
 

@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.29",
   "checkpoint": "009-B2b2c2b",
-  "state": "candidate_evolved_predator_opening_contacts_572_tests",
+  "state": "accepted_009_b2b2c2b_evolved_predator_opening_contact_572_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,14 +16,14 @@
   "automated_tests": 572,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify final PR #36 head has 572/572, merge only after green, confirm independent source-main Actions and Pages, then finalize accepted audit/project-state.",
-    "Next 009-B2b2c2c: full Evolved 10-second combat rounds, explicit player defensive choices, retreat/stealth, personal weapons and critical-injury/death clock in The Long Count; opening contact is NOT equivalent to combat parity.",
-    "Preserve 572 regressions, historical research Rev1–5 bound saves, new Rev6 source-authorized contact, Nublar Evolved pursuit/rescue, Party/Focus/Spectator, solo and Worker.",
-    "Continue extracting autonomous creature behavior and physical human NPCs into adventure-independent deterministic services. Only after two scenario parity gates, implement generated Cinematic adventures, Campaign chapters and a bounded AI Game Mother.",
-    "Hands-on desktop/mobile browser QA of both adventures, control modes, saved past revisions, predator/no-predator seeds and private clues remains outstanding."
+    "Implement 009-B2b2c2c full Evolved source 10-second combat rounds and initiative slots, explicit player defense/retreat, physically permitted evasive movement, medical/death-clock handling, all from adventure-independent runtime modules.",
+    "Preserve 572 accepted regressions, Nublar source combat and rescue, old ridge-survey revision 1–5 save bindings, rev6 seeded predator opening-contact mechanics, all three control modes, legacy solo and Worker.",
+    "Continue grounded NPC agency and autonomous predator sensory logic without assuming a threat must occur; allow expeditions with no predators and peaceful observation, protect hidden information.",
+    "After cross-scenario battle/NPC parity, support real authored replay variation and generated Cinematic/Campaign scenarios with bounded AI adjudication.",
+    "Conduct actual graphical desktop/mobile smoke for both adventures, old saves, control modes, source Evolved detection and defensive damage, predator-free seeds and private knowledge; still outstanding."
   ],
   "acceptance_criteria": [
-    "560 previous automated cases + 12 source-contact regressions = 572; exact final PR head and independently merged main Actions + Pages required.",
+    "Accepted source 009-B2b2c2b: 560 previous regressions + 12 new source contact tests = 572/572, exact PR #36 final head a6ed68d6631b1a772a5efca68d386442939e888e green and merged source main 99d204b0a99292e36b1799d8de65a340e7070e23 independently Actions 40267847224 SUCCESS and Pages 40267847147 SUCCESS.",
     "Only physically colocated existing Velociraptor under source-supported validated Rev6 threat definition may generate opening Evolved passive detection, numbered initiative (two speed slots), canonical creature attack with defensive Mobility dodge and critical-injury enrichment.",
     "Predator-free seeds remain nonthreatening. A predator encounter may resolve with no strike, defensive miss or authentic damage; actual movement along legal authored edges and player future exit remain possible.",
     "Local-only contact records validate actor, source observation/initiative consistency, encounter beat, real predator's patrolled room and no forged damage or off-map creature.",
@@ -40,7 +40,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2c2b candidate PR #36; final-head CI and independently merged-main Actions + Pages required. Previous accepted main 43ca8ffa720d1df4c5e7530fb4094b67a3e1926d passed 560 tests and Pages. Manual desktop/mobile graphical smoke outstanding.",
+  "pages_deployment": "Accepted 009-B2b2c2b source main 99d204b0a99292e36b1799d8de65a340e7070e23: Actions 40267847224 SUCCESS (572/572) and Pages 40267847147 SUCCESS. Documentation-only acceptance merge separately requires Actions+Pages. Manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
