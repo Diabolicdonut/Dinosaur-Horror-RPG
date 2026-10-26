@@ -33,7 +33,7 @@ test('009-B2b2c2c2b: revision 8 actually engages Evolved source combat only afte
  assert.ok(threatened.length>0);
  assert.ok(Number.isInteger(safeSeed));
  const pending=enter(safeSeed);
- assert.equal(pending.adventureBinding.revision,8);
+ assert.equal(pending.adventureBinding.revision,9);
  assert.equal(pending.combat,null);
  assert.equal(pending.clock.combatSeconds,0);
  const s=engaged(safeSeed);
