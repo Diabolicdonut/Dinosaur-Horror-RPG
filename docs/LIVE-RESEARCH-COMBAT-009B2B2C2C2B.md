@@ -1,6 +1,6 @@
 # 009-B2b2c2c2b — Live research encounter rounds (revision 8)
 
-**Candidate, October 26, 2026.** *The Long Count* revision 8 introduces playable, persisted, source-style 10-second combat rounds after a real seed-conditioned predator contact and explicit opening defense. It does not change any historical rev1–7 manifest, the Nublar rescue combat pipeline, the legacy solo browser, or the AI Worker.
+**Accepted, October 26, 2026; merged main `eed9f2ab29c9991ab00c76172dbf45440ce69d9c`.** *The Long Count* revision 8 introduces playable, persisted, source-style 10-second combat rounds after a real seed-conditioned predator contact and explicit opening defense. It does not change any historical rev1–7 manifest, the Nublar rescue combat pipeline, the legacy solo browser, or the AI Worker.
 
 ## Mechanics and boundaries
 
@@ -18,4 +18,4 @@ This is **live survival and escape combat**, not full offensive tactical combat 
 
 ## Acceptance tests
 
-Use `npm test` (Node 20+), GitHub Actions on the exact PR head, and independent merged `main` Actions + Pages verification. Focused regressions: `tests/live-research-combat-009b2b2c2c2b.test.mjs` and preceding rev7/reactive-defense/scheduler suites. Verify actual UI travel, defense, focus and spectator turns on both desktop and mobile separately. **Do not declare deployment accepted based on draft branch success alone.**
+Use `npm test` (Node 20+), GitHub Actions on the exact PR head, and independent merged `main` Actions + Pages verification. Focused regressions: `tests/live-research-combat-009b2b2c2c2b.test.mjs` and preceding rev7/reactive-defense/scheduler suites. Verify actual UI travel, defense, focus and spectator turns on both desktop and mobile separately. **Accepted verification:** PR #42 final head Actions 40335113980 succeeded (600/600); independent merged-main Actions 40335353051 and Pages 40335351681 succeeded. Manual desktop/mobile graphical smoke testing remains outstanding.

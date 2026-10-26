@@ -1,12 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## Checkpoint 009-B2b2c2c2b — The Long Count live combat rounds (source candidate) — 2026-10-26
+## Checkpoint 009-B2b2c2c2b — The Long Count live combat rounds (accepted) — 2026-10-26
 
 **Recovery:** Accepted main `6dd52888dbc175d5eb115def97a4a1d5dcc492b6`, checkpoint 009-B2b2c2c2a v0.7.31, 591 passing tests and independently green main Actions/Pages. Its generic scheduler was groundwork only, not playable.
 
 **Implementation:** New research *The Long Count* **revision 8** imports the generic Evolved combat scheduler into the selected-adventure Party runtime. A real seed-conditioned, physically colocated raptor plus a genuinely resolved opening defense now starts numbered initiative and 10-second combat rounds, independent of Nublar. Creature initiative declares a source physical attack before the actual defender decides **Defend** or **Decline**; deterministic dice, wounds and round medical clock commit effects. Real adjacent retreat, inventory handling, first aid, and quick/full action budgets operate under the live encounter. Party/Focus/Spectator ownership and browser display are connected. Previous research revisions 1–7 are immutable, including the copied revision7 source; historical saves keep their original rule set and fingerprint. The legacy rescue, solo Worker and experimental AI model routes are unchanged. See [technical report](docs/LIVE-RESEARCH-COMBAT-009B2B2C2C2B.md).
 
 **Validation:** 9 focused live encounter tests including completed second-round progression plus 591 prior regressions = **600/600 on PR candidate source head `c2d3f1dbc458fcfe633bad64b6e62230878a3e8b`, [Actions 40334670203](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40334670203)**. Documentation-inclusive exact-head CI and independently merged-main Actions and Pages must still pass before claiming complete acceptance. No manual desktop/mobile graphical QA has yet been performed.
+
+**Acceptance:** [PR #42](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/42) final source head `b5624cb11d235e07af555adef16141fe2389a467` passed **600/600** in [Actions 40335113980](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335113980). Merged source `main` `eed9f2ab29c9991ab00c76172dbf45440ce69d9c` independently passed **600/600** in [Actions 40335353051](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335353051) and [Pages 40335351681](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335351681) **SUCCESS**. The ledger-only follow-up must pass its own checks. Manual visual smoke is still outstanding.
 
 **Remaining:** Research survivor offensive weapon actions, full NPC tactical behavior, advanced stealth/cover, and rich Evolved combat parity are not implemented; generating novel scenarios and campaigns remains later work. This is real playable *survival/retreat* combat, not finished battle parity. Continue without changing historical saves.
 

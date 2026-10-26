@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.32",
   "checkpoint": "009-B2b2c2c2b",
-  "state": "implemented_revision8_live_research_combat_rounds_600_regressions",
+  "state": "accepted_revision8_live_research_combat_rounds_600_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,18 +16,17 @@
   "automated_tests": 600,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Extend The Long Count rev8's now-live escape/survival combat to source-validated human attacks, carried gear and credible weapon effects. Do not claim full combat parity: current player choices are physical retreat, inventory and first aid.",
-    "Strengthen human and creature initiative controllers, species-aware stealth/cover/recovery and full clinical scenarios. Preserve Nublar and research rev1–7 historical saves and source event journals.",
-    "Verify PR #42 exact-head Actions; merge only with passing 600-test CI, then separately verify main Actions and Pages deployment and update the acceptance ledger.",
-    "Complete actual desktop and mobile graphical gameplay smoke testing; CI and Pages do not substitute for visual testing.",
-    "After two adventures achieve gameplay parity, develop seeded structurally variable Cinematic modules, procedurally generated adventures, persistent Campaign chapters and bounded AI Game Mother."
+    "Complete offensive research-survivor combat with source-authorized weapons, attack rolls, physical equipment limits and persistent damage; expand save/replay and browser tests without hardcoded scenario rules.",
+    "Improve shared species-aware predator/human NPC autonomy, credible stealth and combatant movement, recovery and source-aligned injury rules. Keep research historical rev1–7 and the Nublar rescue unchanged.",
+    "Run real graphical desktop/mobile gameplay smoke tests for The Long Count (live predator confrontation and successful retreat), Nublar rescue, Focus and Spectator agency.",
+    "Only after the two distinct adventures have full gameplay parity, introduce structurally variable authored Cinematic modules, new procedural scenarios, ongoing Campaign chapters and bounded AI Game Mother."
   ],
   "acceptance_criteria": [
-    "Revision8 Long Count only: opening predator reaction starts live Evolved numbered initiative when an actual physically colocated predator is present.",
-    "Source quick/full actions, genuine connected retreats, finite items, actor and predator turn controllers, persisted defend/decline strikes, Evolved injuries and 10-second rounds are deterministic and replayable.",
-    "Revision1–7 research saves and Nublar remain valid and isolated; AI and Worker implementations unchanged.",
-    "591 accepted baseline + 9 new focused live combat tests = 600 total. GitHub PR #42 source CI 40334670203 600/600 green before documentation-only follow-up. Exact documentation-inclusive head and merged main Actions/Pages verification are required.",
-    "Player offensive weapon actions, advanced creature AI and human NPC combat, full Evolved parity, procedural adventures, and desktop/mobile manual graphical QA remain unfinished."
+    "Accepted source PR #42 exact final head b5624cb11d235e07af555adef16141fe2389a467: GitHub Actions 40335113980 SUCCESS; 600/600 automated tests.",
+    "Merged source main eed9f2ab29c9991ab00c76172dbf45440ce69d9c: independent GitHub Actions 40335353051 SUCCESS (600/600), GitHub Pages deployment 40335351681 SUCCESS.",
+    "Long Count revision8: real seed-conditioned predator contact starts Evolved numbered initiative, quick/full combat actions, source-authorized retreat, persistent defender choice, injury clock and fresh rounds.",
+    "Historical research rev1–7 and Nublar remains isolated; AI Worker unchanged. Source defensive and damage rolls are authoritative.",
+    "Manual graphical desktop/mobile smoke remains outstanding; offense and full tactical Evolved combat parity, human NPCs and generated adventures are future work."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +39,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2c2c2a source main was green. Revision8 combat candidate on PR #42 passed 600/600 on source head c2d3f1dbc458fcfe633bad64b6e62230878a3e8b (Actions 40334670203). Independent documentation-inclusive PR head and merged main Actions plus GitHub Pages must be checked; manual graphical QA pending.",
+  "pages_deployment": "009-B2b2c2c2b accepted source main eed9f2ab29c9991ab00c76172dbf45440ce69d9c. Independent main Actions https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335353051 SUCCESS (600/600). Pages https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335351681 SUCCESS. No real graphical desktop/mobile smoke yet. Acceptance-ledger-only follow-up may trigger new checks.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -902,8 +901,18 @@
     "scheduler": "src/adventure-combat-scheduler.mjs",
     "historicalManifest": "adventures/ridge-survey-rev7.mjs",
     "currentManifest": "adventures/ridge-survey.mjs",
-    "sourceCi": "https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40334670203",
+    "sourceCi": "https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40335113980",
     "sourceTests": "600/600",
-    "limitations": "No player predator attack/weapon resolution, advanced creature tactics or full manual graphical verification."
+    "limitations": "No player predator attack/weapon resolution, advanced creature tactics or full manual graphical verification.",
+    "acceptance": {
+      "sourcePR": 42,
+      "mergedMain": "eed9f2ab29c9991ab00c76172dbf45440ce69d9c",
+      "sourceHead": "b5624cb11d235e07af555adef16141fe2389a467",
+      "sourceActions": "40335113980",
+      "mainActions": "40335353051",
+      "mainPages": "40335351681",
+      "tests": 600,
+      "manualGraphicalQa": "pending"
+    }
   }
 }
