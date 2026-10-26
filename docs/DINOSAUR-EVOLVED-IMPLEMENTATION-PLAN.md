@@ -1,8 +1,16 @@
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
-**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-25 (009-B2b2c2b accepted 572/572, Evolved predator contact deployed; full combat/NPC parity and manual QA outstanding). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
+**Purpose:** Shared, living product vision, mechanical contract, long-range roadmap and development acceptance policy for Dinosaur Horror RPG. **Updated:** 2026-10-26 (009-B2b2c2c1 candidate player-chosen predator reaction 583/583; full source combat/NPC parity and manual graphical QA pending). **Originally approved mechanical direction:** 2026-10-22. This file is a plan, not evidence that all listed systems are implemented.
 
 **Project:** A personal-use browser RPG initially set in the Jurassic Park / Isla Nublar world. **The runtime game engine must be wholly adventure-agnostic.** The existing `After the Storm` incident is only a sample fixture, not the product's required map, rescue quest, NPC cast, creature set or dramatic structure. Future Game Mother-generated adventures must vary in objective, setting, people, species, scenes, causes and outcomes while sharing one deterministic Evolved-based engine. See the authoritative [Adventure Package / Game Engine Separation Contract](ADVENTURE-ENGINE-SEPARATION.md). The goal remains dinosaur survival horror, action, wonder and human stories—not park management.
+
+## 009-B2b2c2c1 — Explicit player defense against opening Evolved strikes (candidate, 2026-10-26)
+
+A new research adventure revision 7 opts into `evolved_reaction`, preserving the accepted revision 6 file verbatim. Actual coclocated predatory contact still requires real Evolved passive Observation and numbered initiative; if a dangerous incoming attack qualifies, the action queue interrupts for the threatened actor to choose **Defend** (source Close Combat opposed roll) or **Decline**. This response is available to whichever control mode owns that actor, and autonomous party members may choose the legitimate defense. The original Evolved attack dice, defense and injury system resolve the outcome. One ten-second combat response is tracked while prior exploration action cost is not repeated. Quiet expeditions do not generate predator reactions; remote/forged threats are rejected.
+
+**This does not yet implement** continuous 10-second combat rounds, full initiative-slot action budgets, attack weapons or source clinical death-clock ticks. Continue 009-B2b2c2c2 to extract multi-round source encounter turns into a reusable adventure-agnostic subsystem before claiming two-scenario feature parity.
+
+**Gate:** baseline 572 tests plus 11 new focused cases = **583**. Exact PR and merged-main Actions/Pages plus real desktop/mobile graphical smoke still required.
 
 ## 009-B2b2c2b — Source-Evolved opening predator contact (accepted, 2026-10-25)
 
