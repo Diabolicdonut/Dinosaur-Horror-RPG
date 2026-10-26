@@ -32,14 +32,16 @@ export function validPredatorContacts(compiled,state){
   const d=defs.find(x=>x.id===r?.creatureId);
   const key=r?.actorId+':'+r?.beat;
   if(!d||seen.has(key)||!state.actors?.some(a=>a.id===r.actorId)||
-   !state.actions?.some(a=>a.actorId===r.actorId&&a.beat===r.beat-1)||
+   (!state.actions?.some(a=>a.actorId===r.actorId&&a.beat===r.beat-1)&&
+    r.beat-1>=(state.actions?.[0]?.beat??0))||
    !Number.isSafeInteger(r.beat)||r.beat<1||r.beat>state.beat||r.beat<prev||
    !compiled.definition.rooms[r.room]||
    !['human_spots_first','creature_sees_first','simultaneous','human_sees_first'].includes(r.awareness)||
    typeof r.predatorFirst!=='boolean'||typeof r.attack!=='boolean'||
    !Number.isInteger(r.damage)||r.damage<0||r.damage>11||
    (r.attack===false&&r.damage!==0)||
-   (r.attack===true&&!r.predatorFirst&&!r.surprised))
+   r.surprised!==(r.awareness==='creature_sees_first')||
+   r.attack!==((r.surprised||r.awareness==='simultaneous')&&r.predatorFirst))
    return false;
   seen.add(key);prev=r.beat;return true;
  });
