@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // not yet runnable by the legacy After the Storm-specific Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:6,
+ schemaVersion:1,id:'ridge-survey',revision:7,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -66,7 +66,7 @@ export const RIDGE_SURVEY={
  initialCreatures:[
   {id:'grazer-1',species:'parasaurolophus',location:'survey-ridge',disposition:'neutral'},
   {id:'hunter-1',species:'velociraptor',location:'forest-blind',
-   disposition:'predatory',threat:{protocol:'evolved_contact'},
+   disposition:'predatory',threat:{protocol:'evolved_reaction'},
    when:{slot:'predatorPresence',choice:'raptor-territory'},
    patrol:{path:['forest-blind','river-crossing'],cadence:2}}
  ],
