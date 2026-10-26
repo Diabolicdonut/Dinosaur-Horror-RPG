@@ -31,7 +31,7 @@ export function validateSupportingCastDefinition(def){
   if(npc.autonomy!==undefined){
    const a=npc.autonomy;
    if(!keys(a,['kind','trigger','path','cadence'])||
-    a.kind!=='return_route'||!triggerValid(def,a.trigger)||
+    a.kind!=='return_route'||!triggerValid(def,a.trigger)||a.trigger.kind!=='objective'||
     !Array.isArray(a.path)||a.path.length<2||a.path.length>12||
     a.path[0]!==npc.location||!Number.isInteger(a.cadence)||
     a.cadence<1||a.cadence>4||new Set(a.path).size!==a.path.length||
