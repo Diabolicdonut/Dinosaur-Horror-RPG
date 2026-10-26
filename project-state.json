@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.28",
   "checkpoint": "009-B2b2c2a",
-  "state": "candidate_seeded_physical_predator_patrol_560_tests",
+  "state": "accepted_009_b2b2c2a_conditional_predator_population_560_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,14 +16,14 @@
   "automated_tests": 560,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify exact final PR #34 560/560, merge on success, independently verify main Actions and Pages; then record accepted 009-B2b2c2a evidence.",
-    "Implement 009-B2b2c2b true Evolved predator awareness, initiative, player defensive reaction, physical attack/escape and time-based injury/medical care; require source-valid decisions and ability to avoid the creature rather than guaranteeing an ambush.",
-    "Develop generic physically situated human NPC behavior, dialogue, agendas and companion interactions that work with selected AdventureInstances, not only the Nublar park guide.",
-    "Preserve immutable Long Count rev1/rev2/rev3/rev4 save content, new rev5 seed-conditional predator presence, all 560 regressions and original Nublar rescue behavior plus independent solo/Worker.",
-    "Finish two-adventure feature parity before structurally varied procedural Cinematic adventures, recurring Campaign chapters and typed AI Game Mother. Manual desktop/mobile graphical QA remains outstanding."
+    "Continue 009-B2b2c2b: physically located Velociraptor awareness, Evolved combat initiative, defensive reactions, honest fleeing/hiding opportunities and attack consequences in The Long Count; preserve some expeditions with no predators.",
+    "Add species-aware source-valid autonomous pursuit and NPC agency without cheating on room graphs, seeded hidden facts, action time or creature position. Reuse existing Nublar Evolved source combat instead of a second inconsistent combat rule.",
+    "Keep all 560 accepted tests and immutable research rev1–4 saves, new rev5 seeded physically patrolling raptor, and existing Party/Focus/Spectator/Nublar/legacy solo behavior.",
+    "After source combat and NPC parity across two adventures, introduce meaningful authored replay diversity, procedurally generated Cinematic adventures and continuing Campaign chapters with bounded AI Game Mother.",
+    "Run actual desktop/mobile graphical QA of selected adventures, predator sightings/retreat, saved past versions, Evolved skill rolls and actor-private knowledge; this remains outstanding."
   ],
   "acceptance_criteria": [
-    "Original 547 accepted tests plus 13 new tests for seed-conditional animal presence, immutable rev4 saves, typed adjacent patrol routes, local-only discovery, actor-controlled withdrawal and forged movement rejection: 560 target.",
+    "Accepted 009-B2b2c2a: previous 547 +13 seed/patrol tests = 560 passing; PR #34 final head b4a7903577f99624012789d6467640dde9c6a3aa and merged source main 1a30ff1ffd73a4cb98de0ba767b082b1bafc9551 validated. Actions 40265924855 and Pages 40265924390 both successful.",
     "Predator existence is fixed by the original scenario seed: some expeditions have a physically situated Velociraptor and others have no predator. No director-authored surprise creature spawns or obligatory raptor contact.",
     "Persist creature locations and bounded adjacent patrol records; advance only once per completed human party round according to an authored cadence, without rolling Evolved dice, dealing invisible injury, modifying objectives or moving animals off-map.",
     "Local views and companion observations can identify only physically colocated predator instances. Offline companion AI may withdraw along a real available exit instead of claiming unsupported research-scenario combat.",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2c2a candidate PR #34: 560/560 pre-documentation CI passed; final head and accepted-main Actions/Pages must be checked independently. Last accepted 009-B2b2c1 main 10cb0fd53d458ed18d4df3bda51614d85aaa3b43 547/547 and Pages green. Manual desktop/mobile browser QA outstanding.",
+  "pages_deployment": "Accepted 009-B2b2c2a source main 1a30ff1ffd73a4cb98de0ba767b082b1bafc9551: GitHub Actions 40265924855 SUCCESS (560/560) and Pages 40265924390 SUCCESS. Documentation-only acceptance PR requires its own final CI and Pages. Manual desktop/mobile graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
