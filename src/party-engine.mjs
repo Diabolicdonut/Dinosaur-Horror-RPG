@@ -668,7 +668,7 @@ export function parsePartyAction(input) {
  const push=/^push(?:\s|:)/.test(line)?1:0;
  if(push)line=line.replace(/^push(?:\s|:)+/,'');
  if(['look','status','inventory'].includes(line))return {kind:'look',target:'',push:0};
- const reaction=line.match(/^react(?:ion)?\\s+(defend|decline)$/);
+ const reaction=line.match(/^react(?:ion)?\s+(defend|decline)$/);
  if(reaction)return {kind:'react',target:reaction[1],push:0};
  if(/^(?:battery\s+replace|replace\s+(?:the\s+)?(?:flashlight\s+)?battery|swap\s+(?:the\s+)?battery|reload\s+(?:the\s+)?(?:flashlight|headlamp))$/.test(line))
   return {kind:'battery',target:'replace',push:0};
