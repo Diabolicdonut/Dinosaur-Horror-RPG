@@ -37,7 +37,9 @@ export function validPredatorContacts(compiled,state){
   const actor=state.actors?.find(a=>a.id===r?.actorId);
   if(!d||seen.has(key)||!actor||
    r.room!==physicalRoom||
-   (r.beat===state.beat&&actor.location!==r.room)||
+   (r.beat===state.beat&&actor.location!==r.room&&
+    !(state.adventureBinding?.revision>=8&&state.actions?.some(a=>
+      a.actorId===r.actorId&&Number.isInteger(a.combatRound))))||
    (!state.actions?.some(a=>a.actorId===r.actorId&&a.beat===r.beat-1)&&
     r.beat-1>=(state.actions?.[0]?.beat??0))||
    !Number.isSafeInteger(r.beat)||r.beat<1||r.beat>state.beat||r.beat<prev||

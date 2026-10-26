@@ -18,7 +18,7 @@ const move=(state,to)=>{
 };
 test('009-B2b2b: three acts exist as validated data, no Nublar dependency',()=>{
  const instance=compileSelectedAdventure('ridge-survey',5);
- assert.equal(instance.revision,7);
+ assert.equal(instance.revision,8);
  assert.deepEqual(instance.definition.cinematic.acts.map(a=>a.number),[1,2,3]);
  assert.equal(cinematicAct(instance,fresh()).number,1);
  assert.equal(cinematicAct(compileAdventure(RIDGE_SURVEY_REV1,{seed:5}),fresh()),null);

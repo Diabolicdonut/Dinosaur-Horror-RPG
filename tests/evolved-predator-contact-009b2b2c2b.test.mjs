@@ -34,7 +34,7 @@ test('009-B2b2c2b: old revision 5 remains immutable; new threat protocol is revi
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}));
  delete old.predatorContacts;
  assert.equal(isPartySave(old),true);
- assert.equal(compileSelectedAdventure('ridge-survey',s.initialSeed).revision,7);
+ assert.equal(compileSelectedAdventure('ridge-survey',s.initialSeed).revision,8);
  assert.equal(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}).revision,5);
 });
 test('009-B2b2c2b: every source creature threat must name an authorized Evolved profile',()=>{

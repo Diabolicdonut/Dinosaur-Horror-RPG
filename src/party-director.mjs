@@ -5,9 +5,10 @@ import { SCENARIO } from './scenario.mjs?v=007l2a';
 import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2c1';
 import {createAdventureWorld} from './adventure-world.mjs';
 const SURVEY_WORLD=createAdventureWorld(compileSelectedAdventure('ridge-survey',0));
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009b2b2c2c1';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009b2b2c2c2b';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
+import {selectedCombatSlot} from './adventure-combat-live.mjs';
 
 export const CONTROL_MODES=Object.freeze(['party','focus','spectator']);
 export const SPEED_OPTIONS=Object.freeze([400,800,1200,2000]);
@@ -17,8 +18,10 @@ function insist(s){if(!isPartySave(s))throw new RangeError('Invalid party incide
 function noChange(s,reason){return {accepted:false,state:s,reason};}
 export function currentOwner(s){
  insist(s);
- const id=s.combat?.pendingReaction?.victimId||s.pendingPredatorResponse?.victimId||activeTurnId(s);
- if(activeCombatSlot(s)?.kind==='dinosaur'&&!s.combat?.pendingReaction)return 'ai';
+ const turn=selectedCombatSlot(s)||activeCombatSlot(s);
+ const id=s.combat?.pendingReaction?.victimId||s.pendingPredatorResponse?.victimId||
+  s.combatReaction?.victimId||turn?.actorId||activeTurnId(s);
+ if(turn?.kind==='dinosaur'&&!s.combat?.pendingReaction&&!s.combatReaction)return 'ai';
  return s.control.mode==='party'||
    (s.control.mode==='focus'&&s.control.focusedActorId===id)?'human':'ai';
 }
@@ -26,7 +29,9 @@ export function cameraActorId(s){
  insist(s);
  return s.control.cameraMode==='follow' ?
    (s.combat?.pendingReaction?.victimId||s.pendingPredatorResponse?.victimId||
-    (activeCombatSlot(s)?.kind==='dinosaur'?s.control.cameraActorId:activeTurnId(s))) : s.control.cameraActorId;
+    s.combatReaction?.victimId||
+    ((selectedCombatSlot(s)||activeCombatSlot(s))?.kind==='dinosaur'?
+     s.control.cameraActorId:(selectedCombatSlot(s)?.actorId||activeTurnId(s)))) : s.control.cameraActorId;
 }
 /** Mode switches apply only between completed actions, no simulation time or RNG. */
 export function setControlMode(previous,{mode,focusedActorId=null}={}){
@@ -253,16 +258,20 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
    return noChange(previous,'Outdated AI decision rejected.');
  if(expectedEpoch!==null&&expectedEpoch!==previous.control.epoch)
    return noChange(previous,'AI control changed before this decision.');
- const pending=previous.combat?.pendingReaction||previous.pendingPredatorResponse;
- const predator=activeCombatSlot(previous)?.kind==='dinosaur';
- const actor=predator?null:previous.actors.find(a=>a.id===(pending?.victimId||activeTurnId(previous)));
+ const pending=previous.combat?.pendingReaction||previous.pendingPredatorResponse||previous.combatReaction;
+ const turn=selectedCombatSlot(previous)||activeCombatSlot(previous);
+ const predator=turn?.kind==='dinosaur';
+ const actor=predator?null:previous.actors.find(a=>a.id===(pending?.victimId||turn?.actorId||activeTurnId(previous)));
+ const remoteCombatActor=Boolean(previous.scenario==='ridge-survey'&&previous.combat&&actor&&
+  !previous.dinosaurs.some(d=>d.disposition==='predatory'&&d.location===actor.location));
  const choice=pending?
   {kind:'react',target:'defend',goal:'survive',reason:'Use an available quick action to defend before the attack.'}:
   predator?
    {kind:'predator',target:'',goal:'hunt',reason:'Creature initiative turn.'}:
-   chooseCompanionAction(actorObservation(previous,actor.id));
+   remoteCombatActor?{kind:'end',target:'',goal:'disengage',reason:'No local combat target remains.'}:
+    chooseCompanionAction(actorObservation(previous,actor.id));
  let resolved=partyStep(previous,{kind:choice.kind,target:choice.target},
-  {actorId:pending?.victimId||(predator?previous.dinosaurs[0].id:actor.id),
+  {actorId:pending?.victimId||(predator?(previous.scenario==='ridge-survey'?turn.actorId:previous.dinosaurs[0].id):actor.id),
    source:'ai',reactionPrompt:true});
  if(!resolved.accepted){
    // A safe, deterministic fallback never forges a success or spends an invalid check.
@@ -277,7 +286,7 @@ export function runAutonomousTurn(previous,{singleStep=false,expectedBeat=null,e
   result:resolved.result
  };
  const s=resolved.state;
- const record={beat:previous.beat,actorId:predator?previous.dinosaurs[0].id:actor.id,
+ const record={beat:previous.beat,actorId:predator?turn.actorId:actor.id,
    proposed:{...choice},acceptedAction:s.actions.at(-1)?.kind||'wait',
    actionIndex:s.actions.length-1,controlEpoch:previous.control.epoch};
  s.aiDecisions.push(record);
