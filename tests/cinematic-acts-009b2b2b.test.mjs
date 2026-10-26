@@ -173,6 +173,7 @@ test('009-B2b2b: Rev1 and Rev2 saves keep their old bindings and show no new scr
  for(const [definition,rev] of [[RIDGE_SURVEY_REV1,1],[RIDGE_SURVEY_REV2,2]]){
   const old=fresh();
   old.adventureBinding=adventureBinding(compileAdventure(definition,{seed:old.initialSeed}));
+ old.supportingCast=undefined;old.conversationRecords=undefined;
   delete old.cinematicRecords;
   assert.equal(old.adventureBinding.revision,rev);
   assert.equal(isPartySave(old),true);
