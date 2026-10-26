@@ -6,7 +6,7 @@ import { SCENARIO } from './scenario.mjs?v=007l1';
 import {compileSelectedAdventure} from './adventure-catalog.mjs';
 import {createAdventureWorld} from './adventure-world.mjs';
 import {newSelectedAdventureIncident,isSelectedAdventureSave,
- selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009c1';
+ selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009c2';
 import {commitAuthorizedObjective,validObjectiveRecords} from './adventure-objectives.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
