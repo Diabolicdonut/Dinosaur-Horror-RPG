@@ -11,9 +11,9 @@ const chosen=Array.from({length:120},(_,i)=>i)
  .find(seed=>compileSelectedAdventure('ridge-survey',seed).hiddenFacts.researchObstacle.fact==='flood');
 const fresh=()=>newPartyIncident({adventureId:'ridge-survey',seed:chosen,roster});
 
-test('009-B2b2a: new seeded mechanics use new immutable adventure revision 2',()=>{
+test('009-B2b2a: seeded mechanics remain available on immutable newer authored revisions',()=>{
  const current=fresh();
- assert.equal(current.adventureBinding.revision,2);
+ assert.equal(current.adventureBinding.revision,3);
  assert.equal(isPartySave(current),true);
  const original=compileAdventure(RIDGE_SURVEY_REV1,{seed:chosen});
  assert.equal(original.revision,1);
