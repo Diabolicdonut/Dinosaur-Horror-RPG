@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.33",
   "checkpoint": "009-C1",
-  "state": "candidate_adventure_owned_scenario_material_607_regressions",
+  "state": "candidate_adventure_owned_scenario_material_variable_acts_609_regressions",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,7 +13,7 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 607,
+  "automated_tests": 609,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
     "Validate PR #44 exact-head CI for new revision9 adventure-owned dossiers; independently verify merged-main Actions and Pages and update acceptance records only with direct evidence.",
@@ -27,7 +27,7 @@
     "Original private Free League Chariot of the Gods, Destroyer of Worlds and Heart of Darkness used only to study the division of scenario vs reusable rules; do not include commercial source prose, maps or proprietary NPCs in GitHub.",
     "Long Count newly authored revision9 demonstrates player briefing, GM reference (not returned to player projection), act and seat-linked private agendas, scene and objective-triggered story cards/handouts. Story Point rewards and human NPCs not yet implemented.",
     "Previously accepted Long Count rev1–8 remain physically, mechanically and narratively identical via immutable compiled revisions and fingerprints; Nublar, Worker and solo remain isolated.",
-    "600 baseline + 7 new scenario material tests = 607 in PR candidate source CI 40356640292 SUCCESS before documentation updates. PR exact documentation-inclusive head, merged main Actions and Pages are independent acceptance gates. Manual graphics QA outstanding."
+    "600 baseline + 9 new scenario material and variable-act tests = 609 in PR candidate source CI 40357775949 candidate pending final verification. PR exact documentation-inclusive head, merged main Actions and Pages are independent acceptance gates. Manual graphics QA outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -926,7 +926,8 @@
     "content": "player briefing; GM notes (not projected); seat/act private agendas; scene/objective-triggered cards and handouts; seed-conditioned reports",
     "referencePolicy": "Private Free League Alien RPG scenarios Chariot of the Gods, Destroyer of Worlds, Heart of Darkness consulted only for structural comparison; no copyrighted source text/art committed.",
     "sourceCI": "https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40356640292",
-    "tests": "607/607 source candidate before documentation",
-    "limitations": "No Story Point awards; no living NPC dossiers; no procedural scenario author; no truly confidential client-shipped secrets."
+    "tests": "609/609 targeted candidate (verification pending)",
+    "limitations": "No Story Point awards; no living NPC dossiers; no procedural scenario author; no truly confidential client-shipped secrets.",
+    "actCount": "Optional one to five Cinematic acts per authored adventure, rather than a universal three-act requirement."
   }
 }
