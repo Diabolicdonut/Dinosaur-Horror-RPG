@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-B2b2a — Causal Seeded Complications and Wildlife Response (candidate) — 2026-10-25
+
+**Recovery:** Main `2f33d2990f8b45618e178fb1c157a7d6471bee75`, accepted 009-B2b1 v0.7.24, **508/508** regression cases, GitHub Actions and Pages successful; no open PRs and no cross-project inputs.
+
+**Implementation:** First actual runtime application of independently compiled scenario **seed variations** in *The Long Count*. New `src/adventure-situations.mjs` projects a validated AdventureInstance's chosen hidden circumstances into local physical cues, a typed hazardous passage Evolved check, typed objective check modifiers, and a typed non-hostile wildlife response. The data-only schema rejects impossible exits, unsupported check skills, nonadjacent animal movement and unknown objectives. The flooded ford can stop a crossing after a real Mobility check, charging one exploration action and preserving an alternate ridge route; wind-damaged equipment makes radio transmission harder; missing/reordered records make research harder. Selected clues are visible only when a survivor is physically at the authored clue location. The original adventure seed fixes the choices reproducibly without consuming the Evolved action RNG or leaking remote facts in actor views.
+
+**Wonder and danger:** A peaceful Parasaurolophus can always be watched without a roll, time still passes as appropriate; grazing animals permit a cautious approach without a roll. A seeded wary animal responds to a failed Survival approach by moving from its actual ridge location to the adjacent forest blind, instead of spawning a predator or automatically attacking. Valid saves reject forged relocation without a recorded failed approach. Nublar, the solo game and Worker unchanged. Browser module revisions updated coherently so prior cached Party modules do not suppress new logic.
+
+**Tests:** +10 new regression cases for seed identity, schema validation, local-only secrets, Evolved passage success/failure, alternate access route, objective modifiers, safe watching, real adjacent animal flight, save tampering and original rescue parity. Retain 508 previous cases for **518/518 candidate checks**. PR #27 and accepted-main CI/Pages must be confirmed independently. Manual graphical QA remains outstanding.
+
+**Deliberate limits:** Not full 009-B2b2: research adventure still does not simulate active predators, injury/combat ecology, dynamic weather, companion/NPC relationships, three-act scene sequencing or procedural Campaigns. This is constrained *situation-level seed variation* (difficulty, path and animal reaction), NOT evidence of structurally different complete generated stories or cinematic playthroughs. Next 009-B2b2b: reusable three-act Cinematic framework with optional events and physically grounded triggers; then continuing creature, medical and NPC extraction.
+
+
 ## Checkpoint 009-B2b1 — Selected Second Party Adventure (accepted) — 2026-10-25
 
 **Recovery:** Verified current GitHub main `c96fc43b76f354a56eb29903b1c690cb20815363`, accepted 009-B2a v0.7.23, 494/494, Actions/Pages green, no open PRs. No other project inputs used.

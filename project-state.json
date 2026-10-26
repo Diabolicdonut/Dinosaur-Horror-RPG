@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.24",
-  "checkpoint": "009-B2b1",
-  "state": "accepted_009_b2b1_selected_research_party_vertical_slice_508_tests",
+  "version": "0.7.25",
+  "checkpoint": "009-B2b2a",
+  "state": "candidate_seeded_causal_situations_518_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,22 +13,22 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 508,
+  "automated_tests": 518,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement 009-B2b2 selected AdventureInstance routing for generic creature/NPC, director, scene and medical-combat behaviors; converge the two transitional Party execution paths toward truly independent, source-valid scenarios.",
-    "Preserve 508 accepted regression tests and original After the Storm mechanics, accepted saves, three control modes, 009-B2b1 research story, Evolved rules, Wonder, finite equipment, guide rescue, legacy solo and deployed Worker isolation.",
-    "Expand research adventure with grounded animal behavior and danger, scene cadence, actual human relationships and meaningful seeded hidden facts, without a full ecological population simulator or compulsory violence.",
-    "Require the same full two-adventure playable-source-fidelity gate before claiming engine/adventure separation complete; after that implement authored variability, generated Cinematic adventures, then durable Campaign episodes and bounded AI Game Mother.",
-    "Perform actual desktop/mobile interactive browser smoke including selecting both adventures, character/focus/spectator, save/reload, action cost, Evolved rolls and privacy. This QA remains OUTSTANDING."
+    "Verify exact-head 009-B2b2a 518/518 CI, merge code and independently confirm accepted-main Actions and Pages; record acceptance only after both are successful.",
+    "Implement 009-B2b2b reusable data-driven three-act Cinematic director and independent physically situated NPC and creature event opportunities; maintain genuinely optional events and variable danger, never guaranteed attack.",
+    "Continue convergence of After the Storm and The Long Count onto one fully adventure-independent Party/Focus/Spectator core for Evolved stress, medical, creature pursuit/combat, weather, equipment, saves and causal scenes, with no regressions.",
+    "After two complete feature-parity adventures, add full structurally varied authored instances, procedurally generated Cinematic adventures, continuing Campaign chapters and bounded typed AI Game Mother.",
+    "Manual desktop/mobile interactive graphical smoke with both adventures, changing modes and save/reload remains outstanding."
   ],
   "acceptance_criteria": [
-    "Accepted 009-B2b1: baseline 494 tests plus 14 end-to-end selected-adventure cases (508/508) passed in exact PR #25 final-head CI and separately merged-main Actions 40246877401; Pages 40246876975 successful.",
-    "Party browser can choose After the Storm or The Long Count; selection creates appropriately bound saves and objective lists without changing old rescue mechanics.",
-    "Compiled adventure data defines allowed objective interaction targets and source-legal skills (or explicitly routine no-roll interaction), avoiding a user/AI skip-objective command.",
-    "The Long Count is now a bounded playable field-research and exploration slice through the Party API; its creature and Cinematic systems are NOT feature-parity with After the Storm and this does NOT complete 009-B.",
-    "Do not falsely claim open-ended adventure generation, fully generic director, realistic physical herbivore danger, manual desktop/mobile graphical QA or Cloudflare redeployment.",
-    "Do not claim manual browser QA or fully adventure-independent director; 009-B2b2+ still needed for creature, NPC, medical/combat and Cinematic feature parity across both selected stories."
+    "Retain 508 accepted automated regressions and add 10 new physical-suspense/seed tests: 518 total; do not accept until exact PR and merged-main tests and Pages all pass.",
+    "Validate data-only, seed-locked, physically attached passage penalties, objective penalties and nonhostile herbivore reactions without introducing arbitrary rolls or changing Evolved dice or skill success.",
+    "Failed flooded-ford crossing spends an actual Evolved Mobility check and time without moving; an alternate legal route remains. Other seeded faults apply source check modifiers instead of inventing completed objectives.",
+    "Wary Parasaurolophus may flee one authored adjacent edge after a failed close Survival approach; safe observation and grazing approach need no roll or forced combat. Falsified uncaused animal relocation is rejected.",
+    "Only local situational cues are player-visible; initial seed and remote hidden facts do not appear in normal actor views. Preserve historical Party-v3 save envelope and Nublar/Evolved/solo/Worker behavior.",
+    "Do not claim full 009-B scenario parity, living predator threat, full injury/combat/director/NPC systems, fully procedural story generation, or completed manual browser QA."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Accepted 009-B2b1 main 33b2d5b1500ad6e65109e787ed2baae942d6701d: Actions 40246877401 SUCCESS (508/508) and Pages 40246876975 SUCCESS. Manual desktop/mobile graphical smoke QA remains outstanding. Full 009-B engine independence not yet accepted.",
+  "pages_deployment": "009-B2b2a candidate: PR #27; final exact-head and merged-main CI/Pages needed. Accepted 009-B2b1 source main 2f33d2990f8b45618e178fb1c157a7d6471bee75 Actions+Pages successful (508/508). Manual desktop/mobile QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
