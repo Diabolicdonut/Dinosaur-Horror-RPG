@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## Checkpoint 009-C2 — Adventure-owned supporting cast, colocated dialogues (candidate) — 2026-10-26
+
+**Recovery:** GitHub main `b57d2f92a99e1aad3db8e3b3d40d2d534761da8a` is authoritative; checkpoint 009-C1 v0.7.33, 609 passing tests, main Actions 40358871376 and Pages 40358869938 succeeded. PR #46 branches from that exact accepted commit; no newer accepted main was found.
+
+**Implementation:** A completely optional, JSON-only, fingerprinted `supportingCast` field validates original NPC identity, authored location, role, visible description, stance, private motive, topic text, actual scenario event/objective prerequisites, and latent seed variant. Generic `src/adventure-supporting-cast.mjs` initializes fixed positions, projects only colocated available people/topics and commits a repeat-safe conversation by an actual present survivor to the deterministic action/event journal. Conversations are free optional roleplay scenes, do **not** roll dice or change time, equipment, world, objectives, stress or Story Points. *The Long Count* **rev10** adds Leena Harrow at field camp and Tomas Wren at survey ridge, with seed-truthful wildlife comments and objective-gated field-record discussion. Rev9 is frozen under its own immutable source; historical rev1–9 saves do not gain NPC state or retroactively change. Nublar, solo and Worker remain unaffected.
+
+**Constraints:** These authored NPCs **do not move, initiate dialogue, act on motives, fight or use Evolved human NPC rules** yet. NPC private motives do not appear in player views but are **not confidential against client-source inspection**. This is supporting-character content and a grounded dialogue interface, not autonomous NPC simulation or a scenario generator. See [technical report](docs/ADVENTURE-SUPPORTING-CAST-009C2.md).
+
+**Acceptance pending:** 609 prior tests + 9 new source/presence/privacy/evidence/replay tests = 618 targeted. Require PR exact-head CI, then merged main Actions and Pages. Manual desktop/mobile graphical smoke still outstanding; live weapon combat and gameplay parity are next.
+
+
 ## Checkpoint 009-C1 — Original adventure scenario dossiers and character agendas (accepted) — 2026-10-26
 
 **Recovery:** Accepted GitHub main `fe88be827266a4883346446a802a24b4a39ca09f`, checkpoint 009-B2b2c2c2b v0.7.32, source 600/600 regressions; independent Actions and Pages successful. Reviewed the privately uploaded official Free League `Chariot of the Gods`, `Destroyer of Worlds`, and `Heart of Darkness` for adventure *structure* only. They are not imported, reproduced, renamed or turned into Jurassic Park adventures.
