@@ -160,9 +160,9 @@ export function validateAdventureDefinition(def){
   const ci=def.cinematic;
   if(!ci||typeof ci!=='object'||Array.isArray(ci)||
      Object.keys(ci).some(k=>!['acts','events'].includes(k))||
-     !Array.isArray(ci.acts)||ci.acts.length!==3||
+     !Array.isArray(ci.acts)||ci.acts.length<1||ci.acts.length>5||
      !Array.isArray(ci.events)||ci.events.length>32)reject('cinematic structure');
-  for(let i=0;i<3;i++){
+  for(let i=0;i<ci.acts.length;i++){
    const act=ci.acts[i];
    if(!act||act.number!==i+1||!text(act.title)||!text(act.objective)||
       !Array.isArray(act.unlocksAfter)||
@@ -176,7 +176,7 @@ export function validateAdventureDefinition(def){
   const eventIds=new Set();
   for(const event of ci.events){
    if(!event||!key(event.id)||eventIds.has(event.id)||
-      ![1,2,3].includes(event.act)||!rooms[event.room]||
+      (!Number.isInteger(event.act)||event.act<1||event.act>ci.acts.length)||!rooms[event.room]||
       !text(event.title)||!text(event.text)||!['wonder','dread','human','discovery'].includes(event.theme)||
       Object.keys(event).some(k=>!['id','act','room','title','text','theme',
        'creatureId','requiresCompanion','variant'].includes(k)))reject('cinematic event');
