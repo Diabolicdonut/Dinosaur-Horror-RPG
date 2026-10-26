@@ -12,7 +12,7 @@ const uint=x=>Number.isSafeInteger(x)&&x>=0&&x<=0xffffffff;
 function existing(compiled){
  if(!validateCompiledAdventure(compiled))throw new RangeError('Validated adventure required.');
  return compiled.definition.initialCreatures.filter(d=>
-  d.threat?.protocol==='evolved_contact'&&
+  ['evolved_contact','evolved_reaction'].includes(d.threat?.protocol)&&
   (!d.when||compiled.hiddenFacts[d.when.slot]?.id===d.when.choice));
 }
 export function localPredator(compiled,state,actorId){
@@ -53,7 +53,7 @@ export function validPredatorContacts(compiled,state){
  });
 }
 export function resolvePredatorContact(compiled,previous,
- {actorId,observationSeed,initiativeSeed,attackSeed,dodgeSeed,time=0}={}){
+ {actorId,observationSeed,initiativeSeed,attackSeed,dodgeSeed,time=0,deferDefense=false}={}){
  const beast=localPredator(compiled,previous,actorId);
  const reject=reason=>({accepted:false,state:previous,reason});
  if(!beast)return reject('No physically colocated living predator has been encountered.');
@@ -79,6 +79,14 @@ export function resolvePredatorContact(compiled,previous,
  // a cinematic beat. Even after discovery, an actual initiative advantage
  // and a source Evolved attack roll are required for a strike.
  const attack=(surprised||detection.outcome==='simultaneous')&&predatorFirst;
+ if(attack&&deferDefense){
+  return {accepted:true,actorAfter:copy(actor),strike:null,
+   pending:{victimId:actorId,creatureId:beast.id,room:actor.location,
+    beat,awareness:detection.outcome,predatorFirst,surprised,attack:true,
+    attackSeed,dodgeSeed},record:null,detection,initiative:order,
+   result:{kind:'predator_contact',creatureId:beast.id,
+    awareness:detection.outcome,attackPending:true,damage:0}};
+ }
  let strike=null,after=copy(actor);
  if(attack){
   strike=applyCreatureAttack(actor,{seed:attackSeed,
@@ -98,4 +106,55 @@ export function resolvePredatorContact(compiled,previous,
   result:{kind:'predator_contact',creatureId:beast.id,
    awareness:detection.outcome,attack,damage:record.damage,
    critical:record.critical??null}};
+}
+
+// Resolve a saved voluntary reaction without rolling a second surprise or
+// substituting a new creature. No action can be taken while it is pending.
+export function resolveDeferredPredatorContact(compiled,state,choice,{time=0}={}){
+ const reject=reason=>({accepted:false,state,reason});
+ const p=state?.pendingPredatorResponse;
+ if(!p||!['defend','decline'].includes(choice)||
+    !Number.isSafeInteger(p.beat)||p.beat!==state.beat||
+    !existing(compiled).some(d=>d.id===p.creatureId&&
+      d.threat?.protocol==='evolved_reaction')||
+    !localPredator(compiled,state,p.victimId)||
+    !state.dinosaurs.some(d=>d.id===p.creatureId&&d.location===p.room)||
+    ![p.attackSeed,p.dodgeSeed].every(uint))
+  return reject('No eligible, physically grounded predator defense is pending.');
+ const victim=state.actors.find(a=>a.id===p.victimId);
+ const beast=state.dinosaurs.find(d=>d.id===p.creatureId);
+ const stats=DINO_SPECIES[beast.kind];
+ if(!stats)return reject('No supported Evolved creature attack profile.');
+ const strike=applyCreatureAttack(victim,{seed:p.attackSeed,
+  attackerDice:stats.attack,baseDamage:stats.baseDamage,
+  defend:choice==='defend',defenderSeed:p.dodgeSeed});
+ const after=enrichInjuries(strike.after,time,p.attackSeed);
+ if(strike.evade){
+  after.stress=strike.evade.after.stress;
+  after.stressResponses=strike.evade.after.stressResponses;
+ }
+ const record={creatureId:p.creatureId,actorId:p.victimId,room:p.room,
+  beat:p.beat,awareness:p.awareness,predatorFirst:p.predatorFirst,
+  surprised:p.surprised,attack:true,damage:strike.damage,reaction:choice,
+  ...(strike.critical?{critical:strike.critical.code}:{})};
+ return {accepted:true,actorAfter:after,strike,record,
+  result:{kind:'predator_contact',creatureId:p.creatureId,attack:true,
+   reaction:choice,damage:strike.damage,critical:record.critical??null}};
+}
+export function validPendingPredatorResponse(compiled,state){
+ const p=state?.pendingPredatorResponse;
+ if(p===undefined||p===null)return true;
+ if(!existing(compiled).some(d=>d.id===p.creatureId&&
+    d.threat?.protocol==='evolved_reaction'))return false;
+ const victim=state.actors?.find(a=>a.id===p.victimId);
+ if(!victim||victim.dead||victim.broken||victim.location!==p.room||
+    !state.dinosaurs?.some(d=>d.id===p.creatureId&&!d.defeated&&d.location===p.room)||
+    p.beat!==state.beat||!Number.isSafeInteger(p.beat)||
+    p.awareness!=='creature_sees_first'&&p.awareness!=='simultaneous'||
+    p.predatorFirst!==true||p.attack!==true||
+    p.surprised!==(p.awareness==='creature_sees_first')||
+    ![p.attackSeed,p.dodgeSeed].every(uint)||
+    state.predatorContacts?.some(r=>r.actorId===p.victimId&&r.beat===p.beat))
+  return false;
+ return true;
 }
