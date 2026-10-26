@@ -1,3 +1,4 @@
+import {validateScenarioMaterialDefinition} from './adventure-scenario-material.mjs';
 // 009-A — data-only, replaceable adventure manifests.
 // A manifest describes physical starts, routes, objectives and latent variants;
 // never arbitrary JS effect handlers or modifications of Evolved mechanics.
@@ -21,7 +22,7 @@ export function adventureFingerprint(def){
 }
 export function validateAdventureDefinition(def){
  if(!def||typeof def!=='object'||Array.isArray(def))reject('expected object');
- const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic','perils'];
+ const allowed=['schemaVersion','id','revision','title','premise','start','rooms','startItems','itemNames','objectives','flags','initialCreatures','variants','cinematic','perils','scenarioMaterial'];
  if(Object.keys(def).some(k=>!allowed.includes(k)))reject('unknown top-level field');
  if(def.schemaVersion!==ADVENTURE_SCHEMA_VERSION||!key(def.id)||
     !Number.isSafeInteger(def.revision)||def.revision<1||
@@ -218,6 +219,7 @@ export function validateAdventureDefinition(def){
    }
   }
  }
+ validateScenarioMaterialDefinition(def);
  // A fully serializable manifest may not contain executable callbacks, NaN or
  // undefined; recursive JSON roundtrip also prevents prototype-bearing values.
  const normalized=clone(def);
