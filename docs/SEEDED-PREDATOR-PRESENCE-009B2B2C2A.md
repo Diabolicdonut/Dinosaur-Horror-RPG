@@ -1,0 +1,10 @@
+# 009-B2b2c2a — Seeded Predator Population and Physical Patrol
+
+**Why:** An Alien-style game can contain an actual predator without guaranteeing a predator encounter. The Game Mother must commit the predator's presence and path before play, not conjure it for a scare.
+
+## Contract
+A creature definition may include `when: {slot,choice}` referencing a real seeded adventure variation, and a patrol with connected cyclic `path` (first room is authored creature origin, physically adjacent every step including the return edge) and cadence of one to three complete Party rounds. The general `initialAdventureCreatures(compiled)` resolves whether any optional creature actually exists. `advanceAutonomousCreatures` advances each existing patrolling animal only once per due completed Party round, with original seed truth and fixed physical paths. The world never creates, deletes or teleports animals for pacing; past patrols are saved and validated by `validateCreatureContinuity`. No offscreen movements are narrated globally.
+
+**Example:** *The Long Count* rev5 optionally includes an actual hunter at the forest blind. It patrols toward the adjacent river crossing and back. Some seeds give only the original Parasaurolophus. The Evolved hero must be in the same room to have a direct sighting; absent predators cannot be seen and remote hidden coordinates aren't exposed. Companion AI reacts to a locally witnessed predator by moving through a real exit, never issuing unsupported combat.
+
+**Source and limits:** No new Evolved dice mechanic is introduced here. **This predator presently does not attack, initiate combat, use sophisticated sensory behavior or cause injury.** Source Evolved autonomous threat, initiative, player evasion/defense, persistent injury clocks and full NPC behavior are deferred to 009-B2b2c2b and beyond. Existing Nublar raptor combat remains intact, and old research rev1–4 saves are preserved. Target acceptance is 560/560 automated tests, accepted PR and main Actions+Pages; no actual manual desktop/mobile smoke.
