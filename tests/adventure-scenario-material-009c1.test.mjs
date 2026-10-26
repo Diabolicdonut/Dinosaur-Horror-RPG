@@ -18,7 +18,7 @@ const advance=(s,command)=>{const r=partyStep(s,command);assert.equal(r.accepted
 
 test('009-C1: third-party style narrative dossier is data-only and revision-bound',()=>{
  const compiled=compileSelectedAdventure('ridge-survey',quietSeed);
- assert.equal(compiled.revision,10);
+ assert.equal(compiled.revision,11);
  assert.equal(isPartySave(create(quietSeed)),true);
  assert.ok(compiled.definition.scenarioMaterial.briefing.text);
  assert.ok(compiled.definition.scenarioMaterial.gmOnly.secrets.length);
