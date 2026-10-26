@@ -175,8 +175,8 @@ test('browser includes scene choices and pressure; no new Worker or global ecolo
   readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b2c1'));
- assert(app.includes('party-engine.mjs?v=009b2b2c1'));
+ assert(html.includes('party-app.mjs?v=009b2b2c2a'));
+ assert(app.includes('party-engine.mjs?v=009b2b2c2a'));
  assert(app.includes('Experience scene'));
  assert(app.includes('v.encounterPressure.label'));
  assert(engine.includes('availableSceneEvents:availableSceneEvents'));

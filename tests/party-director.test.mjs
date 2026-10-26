@@ -250,8 +250,8 @@ test('UI mode controls and versioned browser entrypoint exist and parse',async()
  for(const id of ['owner','control-summary','control-mode','focus-actor','camera-mode',
   'camera-actor','sim-step','sim-pause','sim-resume','playback-speed','playback-status'])
   assert(html.includes('id="'+id+'"'),id);
- assert(html.includes('./src/party-app.mjs?v=009b2b2c1'));
- assert(app.includes("from './party-director.mjs?v=009b2b2c1'"));
+ assert(html.includes('./src/party-app.mjs?v=009b2b2c2a'));
+ assert(app.includes("from './party-director.mjs?v=009b2b2c2a'"));
  assert(app.includes("upgradePartySave(loaded)"));
  assert(app.includes('expectedEpoch'));
  assert(app.includes('document.hidden'));
