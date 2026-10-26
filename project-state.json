@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.25",
   "checkpoint": "009-B2b2a",
-  "state": "candidate_seeded_causal_situations_518_tests",
+  "state": "candidate_seeded_causal_situations_and_revisioned_saves_522_tests",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,7 +13,7 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 518,
+  "automated_tests": 522,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
     "Verify exact-head 009-B2b2a 518/518 CI, merge code and independently confirm accepted-main Actions and Pages; record acceptance only after both are successful.",
@@ -23,10 +23,11 @@
     "Manual desktop/mobile interactive graphical smoke with both adventures, changing modes and save/reload remains outstanding."
   ],
   "acceptance_criteria": [
-    "Retain 508 accepted automated regressions and add 10 new physical-suspense/seed tests: 518 total; do not accept until exact PR and merged-main tests and Pages all pass.",
+    "Retain 508 accepted automated regressions, add 10 physical-suspense tests plus 4 historical revision/save-preservation tests: 522 total; verify exact final PR head, merged-main Actions and Pages.",
     "Validate data-only, seed-locked, physically attached passage penalties, objective penalties and nonhostile herbivore reactions without introducing arbitrary rolls or changing Evolved dice or skill success.",
     "Failed flooded-ford crossing spends an actual Evolved Mobility check and time without moving; an alternate legal route remains. Other seeded faults apply source check modifiers instead of inventing completed objectives.",
     "Wary Parasaurolophus may flee one authored adjacent edge after a failed close Survival approach; safe observation and grazing approach need no roll or forced combat. Falsified uncaused animal relocation is rejected.",
+    "Historical 009-B2b1 research revision 1 Party saves retain their exact original bound fingerprint and gameplay; new seeded consequences are a distinct research manifest revision 2. Do not silently rewrite old situations.",
     "Only local situational cues are player-visible; initial seed and remote hidden facts do not appear in normal actor views. Preserve historical Party-v3 save envelope and Nublar/Evolved/solo/Worker behavior.",
     "Do not claim full 009-B scenario parity, living predator threat, full injury/combat/director/NPC systems, fully procedural story generation, or completed manual browser QA."
   ],
@@ -41,7 +42,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-B2b2a candidate: PR #27; final exact-head and merged-main CI/Pages needed. Accepted 009-B2b1 source main 2f33d2990f8b45618e178fb1c157a7d6471bee75 Actions+Pages successful (508/508). Manual desktop/mobile QA outstanding.",
+  "pages_deployment": "009-B2b2a source PR #27 merged main 590c639421caed0f7920813fc72be6c4707efab2 with Actions 40259944918 and Pages 40259944941 successful (518/518). Compatibility follow-up PR #28 adds 4 regression tests and must pass exact-head+merged-main Actions and Pages separately. Manual graphical QA outstanding.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {

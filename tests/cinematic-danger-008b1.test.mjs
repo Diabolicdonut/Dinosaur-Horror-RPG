@@ -145,8 +145,8 @@ test('browser exposes real current-act and optional skill challenge, not an auto
   readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009b2b2a'));
- assert(app.includes('party-engine.mjs?v=009b2b2a'));
+ assert(html.includes('party-app.mjs?v=009b2b2a1'));
+ assert(app.includes('party-engine.mjs?v=009b2b2a1'));
  assert(app.includes('CINEMATIC ACT'));
  assert(app.includes('Attempt challenge'));
  assert(engine.includes("result(hazard.skill,hazard.context)"));
