@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.34",
   "checkpoint": "009-C2",
-  "state": "candidate_revision10_supporting_cast_dialogue_618_regressions",
+  "state": "accepted_revision10_supporting_cast_dialogue_618_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -23,12 +23,12 @@
     "Complete real desktop/mobile Party/Focus/Spectator graphical gameplay smoke tests; later build original generated Cinematic/Campaign packages from these reusable validators."
   ],
   "acceptance_criteria": [
-    "Source candidate based on accepted main b57d2f92a99e1aad3db8e3b3d40d2d534761da8a, checkpoint 009-C1 v0.7.33, 609/609; existing main Actions 40358871376 and Pages 40358869938 succeeded.",
-    "Add nine focused NPC cast, evidence, seed, privacy, history and no-fabricated-content tests: expected 618 total; exact PR head and main independently require CI evidence.",
-    "Long Count rev10 adds two static NPCs with real authored colocated rooms, public descriptions, private motives, evidence/seed-conditioned one-time conversations and scene journal records; no autonomous NPC decision engine, source combat/skill dice or Story Point awards.",
-    "Preserve historical rev1–9 manifests and save content. Invalid cross-revision casts, remote conversations, source-varied knowledge, and invented actors must reject.",
-    "Alien RPG uploaded books remain private structural references only; do not copy licensed scenarios/assets to public GitHub. GM/private cast motivations are omitted from player projections but not secure in shipped browser JS.",
-    "Manual graphical desktop/mobile smoke remains outstanding; actual NPC agency and shared Evolved offensive combat parity not complete."
+    "PR #46 exact source head a15237c45cb897ab1d9284d1f3f2a85767d09d08 Actions 40398262634 SUCCESS: 618/618 tests.",
+    "Independently merged main source 01bdd1972086b53c44ae82da1d484d903fa8ea88 Actions 40398455467 SUCCESS (618/618) and Pages 40398455740 SUCCESS.",
+    "Long Count rev10 optional JSON supportingCast creates two fixed-location authored original humans with scenario-bound spoken words, motivations, seed/earned-evidence disclosures and action/event records; no autonomous behavior or Evolved social effects implied.",
+    "Historic Long Count rev1–9 manifests stay immutable. Legacy saves contain no rev10 cast; rejection protects from invented remote NPCs and invalid cross-revision cast state.",
+    "Uploaded copyrighted Alien RPG adventures remain private structural references only; no licensed text/assets committed. GM motives are not projected but browser-hosted content is inspectable.",
+    "Manual desktop/mobile graphical smoke, source-parity offensive weapon combat, autonomous NPC movement and AI Game Mother remain outstanding."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -41,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "Prior accepted main b57d2f92a99e1aad3db8e3b3d40d2d534761da8a: Actions 40358871376 SUCCESS (609/609) and Pages 40358869938 SUCCESS. 009-C2 candidate not deployed/accepted until exact PR-head Actions and independently main Actions/Pages pass.",
+  "pages_deployment": "009-C2 accepted source main 01bdd1972086b53c44ae82da1d484d903fa8ea88: independent main Actions https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40398455467 SUCCESS (618/618 tests); GitHub Pages https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40398455740 SUCCESS. PR #46 exact source head a15237c45cb897ab1d9284d1f3f2a85767d09d08 Actions 40398262634 SUCCESS (618/618). Manual graphical desktop/mobile QA outstanding. Acceptance-ledger-only follow-up requires its own checks.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -949,7 +949,17 @@
     "schema": "optional supportingCast entries in JSON-only fingerprinted AdventureDefinition",
     "presentation": "physically colocated public NPCs and only currently earned topics",
     "replay": "stable compiled variants, no state-mutation except optional journal/action/event",
-    "tests": "candidate 618/618 expected pending exact CI",
-    "scope": "fixed-position NPC dialogue, no autonomous AI or hidden source security"
+    "tests": "618/618 accepted exact PR source and independent main",
+    "scope": "fixed-position NPC dialogue, no autonomous AI or hidden source security",
+    "acceptance": {
+      "pr": 46,
+      "finalHead": "a15237c45cb897ab1d9284d1f3f2a85767d09d08",
+      "prActions": "40398262634",
+      "mergedSourceMain": "01bdd1972086b53c44ae82da1d484d903fa8ea88",
+      "mainActions": "40398455467",
+      "mainPages": "40398455740",
+      "tests": 618,
+      "manualGraphicalQa": "pending"
+    }
   }
 }
