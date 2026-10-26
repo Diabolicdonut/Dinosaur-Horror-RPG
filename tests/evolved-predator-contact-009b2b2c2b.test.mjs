@@ -19,6 +19,7 @@ const quietSeed=series.find(i=>compileSelectedAdventure('ridge-survey',i)
 const fresh=(seed=predatorSeed)=>{
  const s=newPartyIncident({adventureId:'ridge-survey',seed,roster});
  s.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV6,{seed}));
+ s.supportingCast=undefined;s.conversationRecords=undefined;
  delete s.pendingPredatorResponse;
  return s;
 };
@@ -32,6 +33,7 @@ test('009-B2b2c2b: old revision 5 remains immutable; new threat protocol is revi
  const s=fresh(),old=structuredClone(s);
  assert.equal(s.adventureBinding.revision,6);
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:s.initialSeed}));
+ old.supportingCast=undefined;old.conversationRecords=undefined;
  delete old.predatorContacts;
  assert.equal(isPartySave(old),true);
  assert.equal(compileSelectedAdventure('ridge-survey',s.initialSeed).revision,10);
@@ -139,6 +141,7 @@ test('009-B2b2c2b: seeded contact journals reject forged awareness, acts and dam
 test('009-B2b2c2b: prior revision 5 patrol shares space harmlessly without retroactive attacks',()=>{
  let old=fresh();
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV5,{seed:old.initialSeed}));
+ old.supportingCast=undefined;old.conversationRecords=undefined;
  delete old.predatorContacts;
  const progressed=toBlind(old);
  assert.equal(progressed.predatorContacts,undefined);
