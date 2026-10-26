@@ -124,13 +124,16 @@ test('009-B2b2c2a: current save validation rejects physically impossible creatur
   t=>t.creatureRecords[0].to='rocky-ascent',
   t=>t.creatureRecords[0].beat=0,
   t=>t.creatureRecords.push({...t.creatureRecords[0]}),
-  t=>t.dinosaurs.push({...t.dinosaurs[1],id:'forged-raptor'}),
-  t=>{t.adventureBinding.revision=4}
+  t=>t.dinosaurs.push({...t.dinosaurs[1],id:'forged-raptor'})
  ]){
   const forged=structuredClone(s);change(forged);
   assert.equal(validateCreatureContinuity(manifest,forged),false);
   assert.equal(isPartySave(forged),false);
  }
+ const wrongRevision=structuredClone(s);
+ wrongRevision.adventureBinding.revision=4;
+ assert.equal(isPartySave(wrongRevision),false,
+  'revision fingerprint and presence cannot be substituted');
 });
 test('009-B2b2c2a: animal autonomy never awards scenario objectives or a rescue outcome',()=>{
  let s=fresh();
