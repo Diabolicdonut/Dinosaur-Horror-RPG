@@ -1,6 +1,6 @@
 # 009-C4 — Physically Observed NPC Danger and Bounded Withdrawal
 
-**Candidate:** October 27, 2026. **Previously accepted:** gameplay checkpoint 009-C3, v0.7.35, 626 gameplay tests; complete scope audit 009-R1, 633 tests, final main `4a181d62ef8a4c611a20a14077b930b7bc1a8a4d`, successful GitHub Actions and Pages. This is an incremental NPC agency feature, **not** full Evolved human NPC combat.
+**Accepted:** October 27, 2026. **Previously accepted:** gameplay checkpoint 009-C3, v0.7.35, 626 gameplay tests; complete scope audit 009-R1, 633 tests, final main `4a181d62ef8a4c611a20a14077b930b7bc1a8a4d`, successful GitHub Actions and Pages. This is an incremental NPC agency feature, **not** full Evolved human NPC combat.
 
 ## What this actually implements
 
@@ -19,6 +19,6 @@ Source mechanics intentionally use the **same zero-stress ordinary d6 opposed-aw
 
 ## Acceptance and follow-on
 
-Tests under `tests/adventure-npc-danger-009c4.test.mjs` verify seeded quiet/predator truth, passive observation win/tie/loss, real one-edge withdrawal, strict save replay, authoring rejection, historical rev11 compatibility and control-mode independence. The previous full-suite baseline is **633** after the audited roadmap, so **642** expected tests require exact-head PR CI and independent merged-main CI/Pages acceptance. Real hands-on mobile/desktop graphical smoke remains outstanding.
+Tests under `tests/adventure-npc-danger-009c4.test.mjs` verify seeded quiet/predator truth, passive observation win/tie/loss, real one-edge withdrawal, strict save replay, authoring rejection, historical rev11 compatibility and control-mode independence. The full-suite baseline was **633** after the audited roadmap. All **642/642** tests (nine new) passed on PR #54 head `1c04735266fe480253171daea4c12aee59327776` [Actions 40530825616](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40530825616). Independently merged source main `e9a45a73e0263ab27856362b31aa467a68de8603` passed [Actions 40531101618](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40531101618) **642/642** and [Pages 40531099741](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40531099741) **SUCCESS**. Real hands-on mobile/desktop graphical smoke remains outstanding.
 
 **Next milestones:** true, physically local human NPC Evolved initiative, defensive choices, stress, injuries, combat and resource conservation; source-equipment-limited survivor offensive combat and nonlethal retreat; further generalization of the Nublar-specific Party path. Preserve low-threat and pure wonder play; do not design the game around a compulsory monster fight or a large population/ecology simulator.
