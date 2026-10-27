@@ -16,108 +16,154 @@
     "note": "This measures the specified first-playable foundation, not unlimited future campaigns."
   },
   "roadmap": {
-    "label": "Full approved Dinosaur Horror RPG delivery roadmap",
-    "scope": "Bounded, reviewable delivery scope across Evolved mechanics, game engine, adventure content, autonomy, AI, generation, security and QA. Not a claim that an infinite supply of stories can ever be exhausted.",
+    "label": "Complete approved Dinosaur Horror RPG development roadmap",
+    "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "Only accepted source-backed gates earn points; partially implemented gates receive no credit until their whole acceptance requirement passes. Weights are planning choices, not automated estimates of code quantity.",
+    "note": "38/100 points are accepted as of checkpoint 009-C3. Partial and planned gates earn zero until each documented acceptance condition is independently demonstrated. Weights are explicit planning allocations, not time-to-completion estimates.",
     "gates": [
       {
         "id": "evolved-rules",
-        "label": "Evolved dice, stress, injuries and core rules baseline",
+        "label": "Evolved dice, stress, injury and core resolution baseline",
         "weight": 8,
         "status": "accepted",
-        "evidence": "docs/EVOLVED-RULES-AUTHORITY.md; project-state.json"
+        "evidence": "src/evolved-checks.mjs; src/evolved-injuries.mjs; tests/evolved-checks.test.mjs",
+        "acceptance": "Existing certified deterministic dice, pushed checks, stress, opposed checks, injury foundations and documented reference boundaries; does not certify every optional Evolved rule."
       },
       {
         "id": "control-modes",
-        "label": "Party, Focus and Spectator with character control",
+        "label": "Party, Focus and Spectator control modes",
         "weight": 7,
         "status": "accepted",
-        "evidence": "src/party-director.mjs; tests/party-director.test.mjs"
+        "evidence": "src/party-director.mjs; tests/party-director.test.mjs",
+        "acceptance": "Switchable one-survivor, whole-party and spectator ownership; deterministic turns, manual step/pause, and save validation."
       },
       {
         "id": "adventure-manifests",
-        "label": "Versioned validated scenario packages and seeded variants",
+        "label": "Versioned compiled adventure packages and seeded variants",
         "weight": 8,
         "status": "accepted",
-        "evidence": "src/adventure-definition.mjs; docs/ADVENTURE-ENGINE-SEPARATION.md"
+        "evidence": "src/adventure-definition.mjs; tests/adventure-definition-009a.test.mjs",
+        "acceptance": "Validated authoring schema, seeded alternate facts, stable fingerprints and preserved historical adventure bindings; universal runtime parity tracked separately."
       },
       {
         "id": "dinosaur-peril",
-        "label": "Physical wildlife and Evolved defensive predator contact",
+        "label": "Persistent local wildlife and Evolved defensive encounters",
         "weight": 7,
         "status": "accepted",
-        "evidence": "src/adventure-predator-contact.mjs; src/adventure-combat-live.mjs"
+        "evidence": "src/adventure-predator-contact.mjs; src/adventure-combat-live.mjs; tests/live-research-combat-009b2b2c2c2b.test.mjs",
+        "acceptance": "Physically grounded animal placement, predator contact, defensive reactions, combat time and injuries in the accepted research implementation; not full offensive parity."
       },
       {
         "id": "scenario-dossiers",
-        "label": "Adventure briefing, agendas, handouts and Story Cards",
+        "label": "Cinematic briefing, agendas, handouts and Story Cards",
         "weight": 4,
         "status": "accepted",
-        "evidence": "docs/SCENARIO-MATERIAL-009C1.md"
+        "evidence": "docs/SCENARIO-MATERIAL-009C1.md; tests/adventure-scenario-material-009c1.test.mjs",
+        "acceptance": "Versioned, source-gated original dossier material; no source-unearned Story Point rewards or secure client-held secrets implied."
       },
       {
         "id": "bounded-npc-movement",
-        "label": "Grounded supporting cast, dialogue and earned NPC return routes",
+        "label": "Physically placed supporting cast, dialogue and return-route autonomy",
         "weight": 4,
         "status": "accepted",
-        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md"
+        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md; tests/adventure-npc-autonomy-009c3.test.mjs",
+        "acceptance": "Local conversations, source-authorized objective-triggered connected movement, save replay evidence and historical rev10 preservation; not independent tactical NPC intelligence."
+      },
+      {
+        "id": "evolved-full-parity",
+        "label": "Complete adopted Evolved Edition mechanics and advancement",
+        "weight": 6,
+        "status": "partial",
+        "evidence": "docs/EVOLVED-RULES-AUTHORITY.md; docs/EVOLVED-DICE-TALENT-STATUS.md",
+        "acceptance": "Audit and integrate applicable talent effects, story point awards/spending, panic consequences, modifiers, helping, combat/medical conditions, advancement and source-defined exceptions in both adventures; invisible rolls remain reproducible."
       },
       {
         "id": "offensive-combat",
-        "label": "Player equipment, offensive combat and creature damage parity",
-        "weight": 8,
+        "label": "Equipment-limited offensive survivor combat and creature consequences",
+        "weight": 7,
         "status": "partial",
-        "evidence": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md"
+        "evidence": "docs/LIVE-RESEARCH-COMBAT-009B2B2C2C2B.md; src/adventure-combat-live.mjs",
+        "acceptance": "Real carried weapons, ammo and equipment state; Evolved initiative/actions, attack rolls, armor, damage, injuries and appropriate dinosaur reactions/retreat across both adventure packages with regression cases."
       },
       {
         "id": "human-npc-agency",
-        "label": "Independent NPC perception, agenda, action economy and injuries",
-        "weight": 9,
+        "label": "Perception-bound independent human NPC choices and consequences",
+        "weight": 7,
         "status": "partial",
-        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md"
+        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md; src/adventure-supporting-cast.mjs",
+        "acceptance": "Characters respond to real local perception, evidence and motives; choose grounded reactions, social behavior, resource actions, Evolved turns, injury and self-preservation without omniscience or forced combat."
       },
       {
         "id": "scenario-independence",
-        "label": "Remove Nublar hardcoding and unify generic engine and saves",
-        "weight": 9,
+        "label": "Fully adventure-independent party/runtime and durable saves",
+        "weight": 7,
         "status": "partial",
-        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md"
+        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md; src/party-engine.mjs; src/adventure-party-runtime.mjs",
+        "acceptance": "Remove remaining hardcoded Nublar game assumptions from shared rules, adjudication and UI; same physical actions/rules/saves across independently defined settings and original adventures; preserve accepted old saves."
+      },
+      {
+        "id": "character-creation",
+        "label": "Complete manual, generated and hybrid characters and progression",
+        "weight": 4,
+        "status": "partial",
+        "evidence": "docs/CHARACTER-GENERATION-MODES.md; docs/EVOLVED-CHARACTER-MATRIX.md; src/characters.mjs",
+        "acceptance": "Any/all characters individually manual, automatic or hybrid with unlocked-field reroll, legal careers/attributes/skills/talents/equipment, relationships/backgrounds, preview/edit/import and Evolved-governed experience/career growth usable in gameplay."
       },
       {
         "id": "ai-gamemother",
-        "label": "Grounded AI Game Mother adjudication and story direction",
-        "weight": 8,
+        "label": "Full grounded natural-language Game Mother and adjudication",
+        "weight": 7,
         "status": "partial",
-        "evidence": "docs/REFEREE-CONTRACT.md; docs/MODEL-ROUTING.md"
+        "evidence": "docs/ARCHITECTURE-AI-GM.md; docs/REFEREE-CONTRACT.md; worker/index.mjs",
+        "acceptance": "Understand open-ended player actions, select warranted rules/stakes, portray distinct people, make bounded creative proposals and exceptions, narrate only committed outcomes and discovered secrets, and honor all control modes and safe engine authority."
+      },
+      {
+        "id": "authored-replayability",
+        "label": "Varied original pregenerated adventures and meaningful replays",
+        "weight": 3,
+        "status": "partial",
+        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; adventures/ridge-survey.mjs",
+        "acceptance": "Several distinct authored adventures with different premises, physical situations and goals; repeated seed runs alter causal secrets/NPCs/animals/scenes/outcomes materially, not only cosmetic names; quiet completions remain possible."
       },
       {
         "id": "cinematic-generator",
-        "label": "Coherent original procedurally generated Cinematic adventures",
-        "weight": 8,
+        "label": "Validated original procedural Cinematic adventure generation",
+        "weight": 5,
         "status": "planned",
-        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md"
+        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; docs/CINEMATIC-SCENE-CONTRACT.md",
+        "acceptance": "Generate and validate coherent new maps, objectives, cast, agendas, clues, scenes, animal behavior, tension shifts and endings; no required three-act sequence or guaranteed carnivore attack, all using the same game engine."
       },
       {
         "id": "campaign-generator",
-        "label": "Persisted episodic campaigns and causally consistent generation",
-        "weight": 7,
+        "label": "Persistent procedurally generated continuing campaigns",
+        "weight": 5,
         "status": "planned",
-        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md"
+        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; docs/CINEMATIC-SCENE-CONTRACT.md",
+        "acceptance": "Persist relationships, wounds, inventory, discovered facts and world consequences across episodes; generate causally connected new dilemmas and varied wonder/action/dread cycles without resets or stale fact contradictions."
+      },
+      {
+        "id": "wonder-dread",
+        "label": "Testable suspense, action and sense-of-wonder design",
+        "weight": 3,
+        "status": "partial",
+        "evidence": "docs/WONDER-AND-DREAD-DESIGN.md; tests/wonder-and-dread.test.mjs",
+        "acceptance": "Multiple optional calm discoveries and beautiful animal scenes, independent herbivore/predator temperaments, justified environmental escalations, quiet exits, recoveries and meaningful choice in authored and generated scenarios, regression-reviewed for tone and agency."
       },
       {
         "id": "graphical-qa",
-        "label": "Desktop and mobile gameplay accessibility and manual QA",
-        "weight": 7,
+        "label": "Desktop/mobile UX, accessibility and release smoke",
+        "weight": 4,
         "status": "planned",
-        "evidence": "project-state.json; docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md"
+        "evidence": "project-state.json; docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
+        "acceptance": "Real graphical desktop and mobile testing of both seeds/scenarios, all three control modes, character builder, save/load/recovery, NPC movement and combat; verify keyboard/touch use and accessible narrative output before sign-off."
       },
       {
         "id": "trusted-gm-secrets",
-        "label": "Server-authoritative private GM information and safe persistence",
-        "weight": 6,
+        "label": "Server-private secrets, safe saves and secure AI access",
+        "weight": 4,
         "status": "partial",
-        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md; worker/index.mjs"
+        "evidence": "docs/ARCHITECTURE-AI-GM.md; docs/ADVENTURE-ENGINE-SEPARATION.md; worker/index.mjs",
+        "acceptance": "Keep unrevealed scenario facts and GM plans unavailable in client source, secure Worker credentials/rate limits, validate trusted state transitions/save migration and fail safely on absent/malformed model responses."
       }
     ]
   }
