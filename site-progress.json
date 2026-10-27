@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "project": "Dinosaur-Horror-RPG",
+  "asOf": "2026-10-26",
+  "revision": "v0.7.35",
+  "revisionSource": {
+    "type": "json",
+    "file": "project-state.json",
+    "path": "version"
+  },
+  "progress": {
+    "label": "First-playable game foundation",
+    "completed": 5,
+    "total": 8,
+    "basis": "Tracked gates: Evolved mechanics; party modes; reusable adventures; live dinosaur peril; source-driven NPC travel. Remaining: offensive combat, procedural adventures, graphical playtest sign-off.",
+    "note": "This measures the specified first-playable foundation, not unlimited future campaigns."
+  }
+}
