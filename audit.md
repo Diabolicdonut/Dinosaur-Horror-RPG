@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-C5 — Source-earned supporting NPC eyewitness warnings (candidate) — 2026-10-27
+
+**Recovery:** Actual main `72955ab3bae3c3a140ccbadc4c253a2331cd6a24`, 009-C4 v0.7.36, **642/642**, successful main Actions and Pages, no open PRs. Preserve all newer accepted checkpoint records, the 18-gate roadmap and the previous rev12 NPC response.
+
+**Source:** Immutable `adventures/ridge-survey-rev12.mjs` preserves the accepted scenario. New *Long Count* rev13 attaches a generic `npc_sighting` prerequisite to Jules Marsh's added warning about a genuinely detected predator. The NPC must have their own independently replay-validated `human_sees_first`/withdraw observation and be physically in conversation range; the prerequisite is checked against its actual historical beat. Purely seeded predator presence, failed awareness, offscreen NPCs, future observations and forged witnesses cannot authorize speech. No new gameplay rulebook attack procedure or mandatory predator fight is invented; partial human-NPC-agency gate remains incomplete.
+
+**Tests:** Eight focused NPC warning checks added to 642 accepted prior tests = **650 candidate**. Source exact-head and independent merged-main CI/Pages release verification required. Graphical QA remains outstanding. Overall approved roadmap stays 38%.
+
+
 ## 009-C4 — Source-bound NPC predator sighting and one-edge retreat (accepted, 2026-10-27)
 
 **Recovery:** GitHub main `4a181d62ef8a4c611a20a14077b930b7bc1a8a4d` was the fully accepted 009-R1 roadmap, with **633/633** green Actions 40523561237, successful Pages 40523559656, and no open PRs. Gameplay remained 009-C3 v0.7.35 (Long Count rev11). Full approved delivery roadmap 18 gates, 38/100 overall and 5/8 foundation.
