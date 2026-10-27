@@ -1,5 +1,8 @@
 # Dinosaur Horror RPG — Isla Nublar Prototype
 
+**009-C5 candidate (v0.7.37):** Jules Marsh can now share a specific local warning **only after** their own Evolved passive sighting genuinely detected the seeded predator and they withdrew to camp. A hypothetical predator, failed perception or later event cannot authorize an earlier conversation. *The Long Count* rev12 is frozen; current rev13 retains all historical saves and scenario-independent source validators. [NPC eyewitness contract](docs/ADVENTURE-NPC-EYEWITNESS-009C5.md). 650 tests targeted, release checks pending. The approved full roadmap is still **38/100**, the human NPC agency gate remains partial, and graphical smoke is not yet complete.
+
+
 A personal-use, browser-based dinosaur survival-horror RPG prototype using *Alien RPG Evolved Edition*-inspired mechanics. **Scenario separation is the approved architecture but is not yet complete**: the current *After the Storm* test adventure still has hardcoded dependencies in the shared party engine. The architecture refactor is now prioritized before expanding scenario-specific gameplay. The final engine must be reusable for independently authored and AI-generated adventures.
 
 **Architecture priority:** [Adventure packages separate from the game engine](docs/ADVENTURE-ENGINE-SEPARATION.md). *After the Storm* is a sample/test adventure, never the hardcoded template for every session. Future scenarios will be created/generated as independently validated packages; the engine alone enforces Evolved actions, physics, saves and consequences. **This is an approved goal, not a completed refactor.**
