@@ -25,8 +25,8 @@ test('009-R1: complete 18-gate roadmap is conservative, fixed to 100 and distinc
  assert.equal(manifest.revisionSource.path,'version');
  assert.equal(manifest.revisionSource.file,'project-state.json');
  assert.equal('v'+state.version,manifest.revision);
- assert.equal(state.checkpoint,'009-C3');
- assert.equal(state.automated_tests,626);
+ assert.equal(state.checkpoint,'009-C4');
+ assert.equal(state.automated_tests,642);
  assert.equal(state.roadmap_coverage.accepted_weight,38);
  assert.equal(state.roadmap_coverage.gates,18);
  assert.equal(state.roadmap_coverage.total_weight,100);
@@ -102,7 +102,7 @@ async function render(config){
 test('009-R1: real browser widget renders 38% roadmap, 63% foundation, expandable criteria',async()=>{
  const ui=await render(manifest);
  const labels=ui.all.filter(x=>x.tagName==='span').map(x=>x.textContent);
- assert.ok(labels.includes('Rev v0.7.35'));
+ assert.ok(labels.includes('Rev '+manifest.revision));
  assert.ok(labels.includes('Roadmap 38%'));
  assert.ok(ui.all.some(x=>x.textContent==='38 of 100 weighted delivery points accepted'));
  assert.ok(ui.all.some(x=>x.textContent==='5 of 8 tracked units complete'));
@@ -128,11 +128,12 @@ test('009-R1: invalid or incomplete accounting withholds overall completion, not
   assert.ok(!spans.includes('Roadmap 38%'));
  }
 });
-test('009-R1: historical accepted game state remains untouched by a roadmap-only audit',()=>{
- assert.equal(state.version,'0.7.35');
- assert.equal(state.checkpoint,'009-C3');
- assert.equal(state.automated_tests,626);
- assert.match(state.state,/accepted_revision11/);
+test('009-R1: accepted roadmap progress remains conserved across 009-C4 gameplay development',()=>{
+ assert.equal(state.version,'0.7.36');
+ assert.equal(state.checkpoint,'009-C4');
+ assert.equal(state.automated_tests,642);
+ assert.ok(state.state.includes('revision12'));
  assert.equal(state.roadmap_coverage.manual_graphical_qa,'not yet completed');
- assert.equal(state.roadmap_coverage.source_update,'roadmap_only_no_gameplay_changes');
+ assert.match(state.roadmap_coverage.source_update,/009-C4/);
+ assert.equal(state.roadmap_coverage.accepted_weight,38);
 });
