@@ -18,7 +18,7 @@ const move=(state,to)=>{
 };
 test('009-B2b2b: three acts exist as validated data, no Nublar dependency',()=>{
  const instance=compileSelectedAdventure('ridge-survey',5);
- assert.equal(instance.revision,11);
+ assert.equal(instance.revision,12);
  assert.deepEqual(instance.definition.cinematic.acts.map(a=>a.number),[1,2,3]);
  assert.equal(cinematicAct(instance,fresh()).number,1);
  assert.equal(cinematicAct(compileAdventure(RIDGE_SURVEY_REV1,{seed:5}),fresh()),null);
@@ -173,7 +173,7 @@ test('009-B2b2b: Rev1 and Rev2 saves keep their old bindings and show no new scr
  for(const [definition,rev] of [[RIDGE_SURVEY_REV1,1],[RIDGE_SURVEY_REV2,2]]){
   const old=fresh();
   old.adventureBinding=adventureBinding(compileAdventure(definition,{seed:old.initialSeed}));
- old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;
+ old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;old.npcDangerRecords=undefined;
   delete old.cinematicRecords;
   assert.equal(old.adventureBinding.revision,rev);
   assert.equal(isPartySave(old),true);
