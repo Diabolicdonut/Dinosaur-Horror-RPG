@@ -1,9 +1,9 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c3';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c4';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c3';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c4';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
