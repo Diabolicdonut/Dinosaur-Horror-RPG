@@ -1,5 +1,16 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-C4 — Source-bound NPC predator sighting and one-edge retreat (candidate, 2026-10-27)
+
+**Recovery:** GitHub main `4a181d62ef8a4c611a20a14077b930b7bc1a8a4d` was the fully accepted 009-R1 roadmap, with **633/633** green Actions 40523561237, successful Pages 40523559656, and no open PRs. Gameplay remained 009-C3 v0.7.35 (Long Count rev11). Full approved delivery roadmap 18 gates, 38/100 overall and 5/8 foundation.
+
+**Implementation:** Keep `adventures/ridge-survey-rev11.mjs` identical to the previously accepted current source. In rev12, Jules Marsh at the river crossing receives an optional compile-validated **withdraw_on_sighting** contract: independent seeded unpushed Evolved-style Wits+Observation d6 pool opposed by a source-supported creature's Observation pool, requiring genuine predator co-location after authorized physical patrol; only a strict human win allows a one-adjacent-room retreat. Ties/losses hold. The engine reconstructs historical movement and NPC perception records from source/seed/actual ticks, rejects forgery, and projects only physically witnessed withdrawal; no survivor dice, equipment, injuries, combat initiative or clock are fabricated. All other scenario save versions and existing NPC routes retain their own authority.
+
+**Limits:** This is a narrow exploration-period NPC awareness and reaction, **not** full mechanically simulated Evolved human NPCs or reliable protection when contact occurs. Quiet-range seeds remain predator-free. Private GM scenario source is still browser inspectable. [Specification](docs/ADVENTURE-NPC-DANGER-009C4.md). The overarching human-NPC-agency roadmap gate remains `partial`, contributing **zero new points**.
+
+**Acceptance gate:** 633 previous full-suite tests + nine new focused NPC danger tests = **642 expected**. Verify exact PR-head Actions, independently merged-main Actions/Pages and historical rev1–11; desktop/mobile manual visual smoke remains open.
+
+
 ## 009-R1 — Full approved roadmap coverage and visible acceptance criteria (accepted) — 2026-10-27
 
 **Recovery:** Before any edits, GitHub `main` was `31cd3360783ee6056b4a099cb9071eb9e3aa3eaa`, with successful current-commit Actions and Pages, no open pull requests, and game checkpoint **009-C3**, version **0.7.35**, accepted **626/626** tests. A full 14-gate roadmap / 38% overall progress indicator was already installed in `site-progress.json`/`site-progress.js` and all three browser entry pages. This milestone improves and verifies that design rather than claiming to invent it.
