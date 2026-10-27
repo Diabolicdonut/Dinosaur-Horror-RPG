@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## 009-C4 — Source-bound NPC predator sighting and one-edge retreat (candidate, 2026-10-27)
+## 009-C4 — Source-bound NPC predator sighting and one-edge retreat (accepted, 2026-10-27)
 
 **Recovery:** GitHub main `4a181d62ef8a4c611a20a14077b930b7bc1a8a4d` was the fully accepted 009-R1 roadmap, with **633/633** green Actions 40523561237, successful Pages 40523559656, and no open PRs. Gameplay remained 009-C3 v0.7.35 (Long Count rev11). Full approved delivery roadmap 18 gates, 38/100 overall and 5/8 foundation.
 
@@ -8,7 +8,7 @@
 
 **Limits:** This is a narrow exploration-period NPC awareness and reaction, **not** full mechanically simulated Evolved human NPCs or reliable protection when contact occurs. Quiet-range seeds remain predator-free. Private GM scenario source is still browser inspectable. [Specification](docs/ADVENTURE-NPC-DANGER-009C4.md). The overarching human-NPC-agency roadmap gate remains `partial`, contributing **zero new points**.
 
-**Acceptance gate:** 633 previous full-suite tests + nine new focused NPC danger tests = **642 expected**. Verify exact PR-head Actions, independently merged-main Actions/Pages and historical rev1–11; desktop/mobile manual visual smoke remains open.
+**Acceptance:** 633 existing suite + nine new NPC danger tests = **642/642**. [PR #54](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/54) exact final head `1c04735266fe480253171daea4c12aee59327776` passed [Actions 40530825616](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40530825616) (642/642). Independently merged source main `e9a45a73e0263ab27856362b31aa467a68de8603` passed [Actions 40531101618](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40531101618) (642/642) and [Pages 40531099741](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40531099741) SUCCESS. Documentation-only acceptance PR and its own main CI/Pages independently checked. Manual graphical/touch smoke remains outstanding.
 
 
 ## 009-R1 — Full approved roadmap coverage and visible acceptance criteria (accepted) — 2026-10-27
