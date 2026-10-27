@@ -33,7 +33,7 @@ function researchUntilReport(){
 
 test('009-C3: source-authored NPC return requires an objective and uses a connected route',()=>{
  const manifest=compileSelectedAdventure('ridge-survey',quiet);
- assert.equal(manifest.revision,12);
+ assert.equal(manifest.revision,13);
  assert.equal(manifest.definition.supportingCast[2].autonomy.kind,'return_route');
  assert.deepEqual(manifest.definition.supportingCast[2].autonomy.path,
   ['survey-ridge','rocky-ascent','field-camp']);
