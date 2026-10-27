@@ -55,7 +55,7 @@ export function validateSupportingCastDefinition(def){
      !key(topic.id)||topics.has(topic.id)||!prose(topic.prompt)||
      !prose(topic.reply)||topic.reply.length>500||
      (topic.requires!==undefined&&!(
-       (topic.requires.kind==='npc_sighting'&&def.revision>=13&&
+       (topic.requires&&topic.requires.kind==='npc_sighting'&&def.revision>=13&&
         keys(topic.requires,['kind','id'])&&
         Object.keys(topic.requires).length===2&&
         topic.requires.id===npc.id&&npc.dangerResponse!==undefined)||
