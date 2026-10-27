@@ -213,8 +213,8 @@ test('browser and parsers expose meaningful choices, not a hidden simulator',asy
   readFile(new URL('../src/party-engine.mjs',import.meta.url),'utf8'),
   readFile(new URL('../src/scenario.mjs',import.meta.url),'utf8')
  ]);
- assert(html.includes('party-app.mjs?v=009c3'));
- assert(app.includes('party-engine.mjs?v=009c3'));
+ assert(html.includes('party-app.mjs?v=009c4'));
+ assert(app.includes('party-engine.mjs?v=009c4'));
  assert(app.includes('v.wildlifeEncounter?.choices'));
  assert(app.includes('v.dialogueOpportunities'));
  assert.equal(parsePartyAction('wildlife watch').kind,'wildlife');
