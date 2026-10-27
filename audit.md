@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-R1 — Full approved roadmap coverage and visible acceptance criteria (documentation/UI candidate) — 2026-10-27
+
+**Recovery:** Before any edits, GitHub `main` was `31cd3360783ee6056b4a099cb9071eb9e3aa3eaa`, with successful current-commit Actions and Pages, no open pull requests, and game checkpoint **009-C3**, version **0.7.35**, accepted **626/626** tests. A full 14-gate roadmap / 38% overall progress indicator was already installed in `site-progress.json`/`site-progress.js` and all three browser entry pages. This milestone improves and verifies that design rather than claiming to invent it.
+
+**Coverage reconciliation:** The entire permanent user vision—hidden-dice Evolved mechanics, separate scenario/game engine, Party/Focus/Spectator, per-character manual/random/hybrid creation, full equipment combat, knowledge-bound human/animal NPCs, authored variation, novel generated Cinematic and continuing Campaign stories, open-ended grounded AI Game Mother, horror/action/wonder alternation, secrecy, save safety and real mobile/desktop QA—now maps to **18 explicit bounded delivery gates**. The earlier six accepted foundations **retain 38/100 earned points**. The unfinished 62 points are rebucketed so full Evolved parity, character progression, authored scenario replayability and emotional design are independently visible; no incomplete subsystem gets an invented fractional award.
+
+**Controls:** New acceptance predicates and sources live in `docs/ROADMAP-COVERAGE.md` and `site-progress.json`; the site indicator shows 38% overall and 63% foundation with individual per-gate requirements. The human-readable living roadmap, README and `project-state.json` now agree about current scope. The true playable build **remains v0.7.35 / 009-C3**, Long Count rev11; historical 626-test acceptance and graphical smoke status are not rewritten. Future accepted feature milestones must update the same weighted ledger. This roadmap-only milestone needs its own PR-head/main CI and Pages checks.
+
+
 ## Checkpoint 009-C3 — Objective-triggered supporting NPC physical travel (accepted) — 2026-10-26
 
 **Recovery:** GitHub main `020e3c97c33bf6b0ec68b38b1f876a1c30592710`, accepted 009-C2 v0.7.34, had **618/618** green and successful main Actions 40399069477 / Pages 40399068666, with no outstanding PRs.
