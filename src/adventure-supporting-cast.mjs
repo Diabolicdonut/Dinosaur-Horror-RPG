@@ -186,12 +186,10 @@ export function advanceSupportingCast(compiled,previous){
    npc.location=record.to;
    s.npcDangerRecords.push(record);
    // Seen danger is not remotely broadcast and cannot move a survivor.
-   for(const observer of s.actors.filter(a=>!a.dead&&a.location===record.from)){
-    s.events.push({beat:record.beat,actorId:observer.id,category:'danger',
-     message:source.name+(record.action==='withdraw'?
-      ' spots a predator and retreats along the adjoining trail.':
-      ' keeps still, unaware of the predator nearby.')});
-   }
+   if(record.action==='withdraw')
+    for(const observer of s.actors.filter(a=>!a.dead&&a.location===record.from))
+     s.events.push({beat:record.beat,actorId:observer.id,category:'danger',
+      message:source.name+' spots a predator and retreats along the adjoining trail.'});
    if(record.action==='withdraw')
     for(const observer of s.actors.filter(a=>!a.dead&&a.location===record.to))
      s.events.push({beat:record.beat,actorId:observer.id,category:'scene',
