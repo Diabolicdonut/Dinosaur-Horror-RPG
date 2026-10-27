@@ -101,7 +101,7 @@ test('009-C3: historic rev10 NPCs cannot inherit autonomous movement retroactive
  delete s.npcAutonomyRecords;delete s.npcDangerRecords;
  assert.equal(isPartySave(s),true);
  for(let i=0;i<4;i++)s=commit(s,'wait');
- assert.equal(s.supportingCast[2].location,'survey-ridge');
+ assert.equal(s.supportingCast[1].location,'survey-ridge');
  assert.equal(s.npcAutonomyRecords,undefined);
  assert.equal(isPartySave(s),true);
 });
