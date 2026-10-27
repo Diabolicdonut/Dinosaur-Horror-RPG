@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.36",
-  "checkpoint": "009-C4",
-  "state": "accepted_revision12_grounded_npc_passive_danger_642_green_main_actions_pages",
+  "version": "0.7.37",
+  "checkpoint": "009-C5",
+  "state": "candidate_rev13_source_bound_npc_eyewitness_warning",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,14 +13,15 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 642,
+  "automated_tests": 650,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Next milestone: real human NPC Evolved turn ownership, consent/control, local danger reaction/defense, carried gear and injury/medical clocks; current Jules warning and withdrawal is NOT a full combat or safety model.",
-    "Implement Evolved survivor offense with actual physical carried weapon gear, ammunition, source attack/armor rules, dinosaur damage/injury responses, and quiet alternatives in research adventure.",
-    "Keep Long Count revisions 1–12 and their save fingerprints immutable; further isolate Nublar-specific Party code from scenario-independent rules.",
-    "Complete manual desktop/mobile graphical smoke of Party/Focus/Spectator, both seeded predator variants, Jules camp retreat, Tomas return, Evolved defense and clean save restoration.",
-    "Then build generative varied Cinematic adventures, persistent Campaign chapters and a grounded Game Mother, respecting 18-gate roadmap accounting."
+    "Validate exact PR #56 head 650/650, merge only if green, independently verify merged-main Actions and GitHub Pages; record accepted state with verified evidence.",
+    "Implement genuinely Evolved-compliant human NPC turn ownership, available reactions, initiative and injuries, without requiring a predator confrontation.",
+    "Add carried-gear survivor offensive combat with ammunition and Evolved armor/damage rules; respect physically present targets and quiet alternatives.",
+    "Maintain immutable Long Count rev1–12 scenario sources/fingerprints and all prior saves; continue removing Nublar-only assumptions from generic Party engine.",
+    "Complete manual desktop/mobile graphical smoke for quiet and predator variants, Jules genuine warning versus hold, Tomas return, Party/Focus/Spectator, wounds and save recovery.",
+    "Then procedurally varied original Cinematic adventures, persistent Campaign chapters and a grounded Game Mother, preserving 18-gate roadmap accounting."
   ],
   "acceptance_criteria": [
     "009-C4 PR #54 exact source head 1c04735266fe480253171daea4c12aee59327776 CI 40530825616 SUCCESS 642/642.",
@@ -996,11 +997,11 @@
       "total": 8,
       "rounded_percent": 63
     },
-    "gameplay_checkpoint": "009-C4",
-    "gameplay_version": "0.7.36",
+    "gameplay_checkpoint": "009-C5",
+    "gameplay_version": "0.7.37",
     "accepted_regressions": 642,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "009-C4 accepted partial human-NPC-agency advancement; no whole gate earned, total 38/100",
+    "source_update": "009-C5 candidate improves human-npc-agency partial gate only; 38/100 unchanged",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
@@ -1013,7 +1014,8 @@
       "previous_gameplay_tests": 626,
       "qa": "manual graphical pending",
       "delivery": "source merged, CI and Pages success"
-    }
+    },
+    "candidate_tests": 650
   },
   "npc_danger_009c4": {
     "status": "accepted",
@@ -1038,5 +1040,14 @@
       "mainPagesStatus": "SUCCESS",
       "manualGraphicalQA": "pending"
     }
+  },
+  "npc_eyewitness_009c5": {
+    "status": "candidate",
+    "report": "docs/ADVENTURE-NPC-EYEWITNESS-009C5.md",
+    "new_scenario_revision": 13,
+    "immutable_prior_revision": 12,
+    "feature": "Local evidence-backed NPC testimony following their own valid passive observed predator contact and legal withdrawal",
+    "limits": "No complete Evolved human NPC combat, advanced relationship simulation, offscreen radio warnings or confidential server GM state",
+    "tests_target": 650
   }
 }
