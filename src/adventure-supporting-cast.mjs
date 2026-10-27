@@ -1,6 +1,6 @@
 // 009-C2: reusable, data-driven physically present supporting cast.
 // NPC notes are not executable scripts; source checks and committed actions own consequences.
-import {detectCreature,DINO_SPECIES} from './evolved-encounters.mjs';
+import {rollDicePool,DINO_SPECIES} from './evolved-encounters.mjs';
 const key=x=>typeof x==='string'&&/^[a-z][a-z0-9_-]{1,63}$/.test(x);
 const prose=x=>typeof x==='string'&&x.trim().length>0&&x.length<=700;
 const keys=(x,allowed)=>x&&typeof x==='object'&&!Array.isArray(x)&&
@@ -115,14 +115,18 @@ function expectedAutonomy(compiled,s){
     const predator=localSourcePredator(compiled,from,round);
     if(predator){
      const seed=sightSeed(s,n.id,tick);
-     const npcActor={id:n.id,attributes:{wits:danger.wits,strength:2,agility:2,empathy:2},
-      skills:{observation:danger.observation},stress:0,resolve:2};
-     const roll=detectCreature(npcActor,{seed,
-      observationDice:DINO_SPECIES[predator.species].observation,cluttered:true});
-     const seesFirst=roll.outcome==='human_sees_first';
+     // Source-equivalent unpushed passive check (Wits + Observation;
+     // zero stress) opposed by the source-defined creature observation pool.
+     // Do not forge a full Evolved NPC character sheet until that feature exists.
+     const human=rollDicePool(danger.wits+danger.observation,seed);
+     const creature=rollDicePool(DINO_SPECIES[predator.species].observation,
+      (seed^0xa5b3579d)>>>0);
+     const awareness=human.successes>creature.successes?'human_sees_first':
+      human.successes<creature.successes?'creature_sees_first':'simultaneous';
+     const seesFirst=awareness==='human_sees_first';
      const to=seesFirst?danger.exit:from;
      dangerRecords.push({id:n.id,beat:tick,creatureId:predator.id,
-      from,to,seed,awareness:roll.outcome,action:seesFirst?'withdraw':'hold'});
+      from,to,seed,awareness,action:seesFirst?'withdraw':'hold'});
      positions[n.id]=to;
      continue; // no second, route movement during one NPC response.
     }
