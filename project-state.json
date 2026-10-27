@@ -541,8 +541,8 @@
     "compatibility": "Party v3 optional coverId/behavior, v2 migration, solo 006.2, Cloudflare Worker v006 unchanged"
   },
   "living_roadmap": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
-  "living_roadmap_last_reconciled": "2026-10-23 / 007-L1 / 0.7.11",
-  "living_roadmap_policy": "Long-range living vision and A-E phase plan; consult current main, this state and newest audit for accepted implementation and test truth. Wonder and Dread is a permanent creative requirement.",
+  "living_roadmap_last_reconciled": "2026-10-27 / full 18-gate delivery audit / gameplay 009-C3 v0.7.35",
+  "living_roadmap_policy": "Full current accepted product scope: docs/ROADMAP-COVERAGE.md + site-progress.json, synchronized with the living implementation plan, source/acceptance audit and project-state.json. 18 weighted gates, 100 total, six source-backed accepted worth 38 points; 5/8 phase foundation separately. Update on every future accepted functional milestone; no credit for partial, planned or documentation-only work. Historical sections remain chronology, not current gameplay status.",
   "stalking_audit": "docs/DINOSAUR-STALKING-007L2A.md",
   "stalking_implementation": {
     "status": "007-L2a accepted on main e10d7f8971ff0194d138633438a7204aac0d8897; 007-L2b1 extends legally approached attacks without replacing stalking.",
@@ -980,5 +980,26 @@
       "tests": 626,
       "manualGraphicalQa": "pending"
     }
+  },
+  "roadmap_coverage": {
+    "document": "docs/ROADMAP-COVERAGE.md",
+    "manifest": "site-progress.json",
+    "reviewed": "2026-10-27",
+    "scope": "Complete bounded playable product including Evolved rules parity, characters, NPCs, original curated and generated Cinematic/Campaign adventures, AI Game Mother, Wonder and Dread, privacy, control modes and desktop/mobile QA",
+    "gates": 18,
+    "total_weight": 100,
+    "accepted_weight": 38,
+    "partial_or_planned_weight": 62,
+    "acceptance_policy": "Only fully validated gates earn weight. Do not infer full completion from current sources/architecture notes.",
+    "foundation": {
+      "accepted": 5,
+      "total": 8,
+      "rounded_percent": 63
+    },
+    "gameplay_checkpoint": "009-C3",
+    "gameplay_version": "0.7.35",
+    "accepted_regressions": 626,
+    "manual_graphical_qa": "not yet completed",
+    "source_update": "roadmap_only_no_gameplay_changes"
   }
 }
