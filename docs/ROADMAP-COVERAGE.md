@@ -1,5 +1,7 @@
 # Dinosaur Horror RPG — Complete Approved Development Roadmap and Coverage
 
+**Current gameplay evidence (2026-10-27):** 009-C4, v0.7.36 introduces source-bounded, zero-stress passive Evolved NPC predator recognition and one-edge withdrawal without adding an accepted delivery gate. PR #54 final head Actions 40530825616 **642/642**, independently merged source main Actions 40531101618 **642/642**, Pages 40531099741 **SUCCESS**. [NPC danger technical contract](ADVENTURE-NPC-DANGER-009C4.md). The overall approved roadmap remains **38/100** accepted; 009-C4 improves the **partial** human-NPC-agency gate only. Real NPC Evolved combat/medical rules and manual graphical QA are still outstanding.
+
 **Current approved audit:** October 27, 2026 · Roadmap milestone **009-R1** · Gameplay checkpoint **009-C3**, version **0.7.35**. PR #52 exact source head `b864e147a4bccbfd95690a552915bedf1bb6a0f5` passed Actions **40522490863** (633/633); independently merged source main `88494b557ecd3ae1bf61276dce4cc58c45479709` passed Actions **40522734372** (633/633) and GitHub Pages **40522733316** SUCCESS. The original gameplay checkpoint remains backed by 626 pre-audit tests. This roadmap-only update adds seven accounting/UI tests and no gameplay mechanics. This document, the top of `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `project-state.json` and `site-progress.json` must agree.
 
 ## What 100% means
