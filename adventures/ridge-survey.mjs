@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // played by the revision-gated selected-adventure Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:11,
+ schemaVersion:1,id:'ridge-survey',revision:12,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -67,6 +67,15 @@ export const RIDGE_SURVEY={
      reply:'The trail branches at the rocky ascent and the river crossing. Both reach the hide, but that does not mean either is safe in every condition.'},
     {id:'report',prompt:'Discuss the recovered transect data',requires:{kind:'objective',id:'recover-transect'},
      reply:'Good. Record what you measured, and leave anything you could not verify clearly marked as uncertain.'}
+   ]},
+  {id:'jules-marsh',name:'Jules Marsh',role:'Hydrology technician',
+   description:'A technician checks the river gauge and records the ford level. The path to camp is immediately upstream.',
+   motive:'Bring back defensible river measurements without endangering the expedition.',
+   location:'river-crossing',stance:'reserved',
+   dangerResponse:{kind:'withdraw_on_sighting',exit:'field-camp',wits:3,observation:2},
+   topics:[
+    {id:'river',prompt:'Ask about the crossing',
+     reply:'The ford looks passable for now, but its depth is changing. I will keep measuring rather than assume yesterday’s route is safe.'}
    ]},
   {id:'tomas-wren',name:'Tomas Wren',role:'Visiting field naturalist',
    description:'A patient observer studies the distant valley beside his telescope. Once the expedition report is transmitted, he packs his notes and walks back toward camp.',
