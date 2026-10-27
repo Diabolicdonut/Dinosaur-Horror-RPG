@@ -1,6 +1,6 @@
 # Dinosaur Horror RPG — Complete Approved Development Roadmap and Coverage
 
-**Current audit:** October 27, 2026. **Gameplay checkpoint:** **009-C3**, version **0.7.35**, **626/626** deterministic tests, accepted source merge and Pages deployment. Latest main inspected before this audit: `31cd3360783ee6056b4a099cb9071eb9e3aa3eaa` (subsequent GitHub merges may advance the SHA without changing the game version). This document, the top of `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `project-state.json` and `site-progress.json` must agree.
+**Current approved audit:** October 27, 2026 · Roadmap milestone **009-R1** · Gameplay checkpoint **009-C3**, version **0.7.35**. PR #52 exact source head `b864e147a4bccbfd95690a552915bedf1bb6a0f5` passed Actions **40522490863** (633/633); independently merged source main `88494b557ecd3ae1bf61276dce4cc58c45479709` passed Actions **40522734372** (633/633) and GitHub Pages **40522733316** SUCCESS. The original gameplay checkpoint remains backed by 626 pre-audit tests. This roadmap-only update adds seven accounting/UI tests and no gameplay mechanics. This document, the top of `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `project-state.json` and `site-progress.json` must agree.
 
 ## What 100% means
 
