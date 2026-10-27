@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
   "asOf": "2026-10-27",
-  "revision": "v0.7.36",
+  "revision": "v0.7.37",
   "revisionSource": {
     "type": "json",
     "file": "project-state.json",
@@ -20,7 +20,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "Only accepted gates earn progress. The new 009-C4 NPC awareness slice remains inside the partial human-NPC-agency gate and does NOT add a point until that gate's entire acceptance passes. No automatic estimates of remaining effort.",
+    "note": "38/100 accepted remains unchanged; partial human NPC agency has gained a rev13 source-evidenced local eyewitness conversation, but full NPC action economy, combat/injury and autonomy remain incomplete. Partial gates earn zero until all acceptance conditions pass.",
     "gates": [
       {
         "id": "evolved-rules",
@@ -91,7 +91,7 @@
         "label": "Perception-bound independent human NPC choices and consequences",
         "weight": 7,
         "status": "partial",
-        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md; src/adventure-supporting-cast.mjs",
+        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md; docs/ADVENTURE-NPC-DANGER-009C4.md; docs/ADVENTURE-NPC-EYEWITNESS-009C5.md",
         "acceptance": "Characters respond to real local perception, evidence and motives; choose grounded reactions, social behavior, resource actions, Evolved turns, injury and self-preservation without omniscience or forced combat."
       },
       {
