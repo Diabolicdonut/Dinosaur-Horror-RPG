@@ -1,7 +1,7 @@
 // A deliberately different authoring fixture. It is a VALIDATED definition,
 // played by the revision-gated selected-adventure Party engine.
 export const RIDGE_SURVEY={
- schemaVersion:1,id:'ridge-survey',revision:12,
+ schemaVersion:1,id:'ridge-survey',revision:13,
  title:'The Long Count',premise:'A research team tracks migrating dinosaurs and must recover ecological survey data before worsening weather.',
  start:'field-camp',
  rooms:{
@@ -75,7 +75,10 @@ export const RIDGE_SURVEY={
    dangerResponse:{kind:'withdraw_on_sighting',exit:'field-camp',wits:3,observation:2},
    topics:[
     {id:'river',prompt:'Ask about the crossing',
-     reply:'The ford looks passable for now, but its depth is changing. I will keep measuring rather than assume yesterday’s route is safe.'}
+     reply:'The ford looks passable for now, but its depth is changing. I will keep measuring rather than assume yesterday’s route is safe.'},
+    {id:'raptor-warning',prompt:'Ask why Jules hurried back from the crossing',
+     requires:{kind:'npc_sighting',id:'jules-marsh'},
+     reply:'I saw a predatory animal at the river crossing. I withdrew to camp before it could get closer. I cannot tell where it went after I left.'}
    ]},
   {id:'tomas-wren',name:'Tomas Wren',role:'Visiting field naturalist',
    description:'A patient observer studies the distant valley beside his telescope. Once the expedition report is transmitted, he packs his notes and walks back toward camp.',
