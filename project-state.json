@@ -1000,6 +1000,19 @@
     "gameplay_version": "0.7.35",
     "accepted_regressions": 626,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "roadmap_only_no_gameplay_changes"
+    "source_update": "roadmap_only_no_gameplay_changes",
+    "acceptance_evidence": {
+      "milestone": "009-R1",
+      "pr": 52,
+      "source_head": "b864e147a4bccbfd95690a552915bedf1bb6a0f5",
+      "source_actions": 40522490863,
+      "merged_source_main": "88494b557ecd3ae1bf61276dce4cc58c45479709",
+      "merged_actions": 40522734372,
+      "merged_pages": 40522733316,
+      "full_regression_tests": 633,
+      "previous_gameplay_tests": 626,
+      "qa": "manual graphical pending",
+      "delivery": "source merged, CI and Pages success"
+    }
   }
 }
