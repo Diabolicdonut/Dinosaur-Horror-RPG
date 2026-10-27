@@ -4,6 +4,7 @@ import {makeParty} from '../src/characters.mjs';
 import {compileSelectedAdventure} from '../src/adventure-catalog.mjs';
 import {compileAdventure,adventureBinding} from '../src/adventure-definition.mjs';
 import {RIDGE_SURVEY_REV10} from '../adventures/ridge-survey-rev10.mjs';
+import {initialSupportingCast} from '../src/adventure-supporting-cast.mjs';
 import {newPartyIncident,isPartySave,partyStep,partyView} from '../src/party-engine.mjs';
 import {advanceSupportingCast} from '../src/adventure-supporting-cast.mjs';
 import {setControlMode} from '../src/party-director.mjs';
@@ -32,19 +33,19 @@ function researchUntilReport(){
 
 test('009-C3: source-authored NPC return requires an objective and uses a connected route',()=>{
  const manifest=compileSelectedAdventure('ridge-survey',quiet);
- assert.equal(manifest.revision,11);
- assert.equal(manifest.definition.supportingCast[1].autonomy.kind,'return_route');
- assert.deepEqual(manifest.definition.supportingCast[1].autonomy.path,
+ assert.equal(manifest.revision,12);
+ assert.equal(manifest.definition.supportingCast[2].autonomy.kind,'return_route');
+ assert.deepEqual(manifest.definition.supportingCast[2].autonomy.path,
   ['survey-ridge','rocky-ascent','field-camp']);
  const s=fresh(quiet);
  assert.equal(s.npcAutonomyRecords.length,0);
- assert.equal(s.supportingCast[1].location,'survey-ridge');
+ assert.equal(s.supportingCast[2].location,'survey-ridge');
  assert.equal(isPartySave(s),true);
 });
 test('009-C3: unearned objective never causes a scripted NPC move, even after several rounds',()=>{
  let s=fresh(quiet);
  for(let i=0;i<6;i++)s=commit(s,'wait');
- assert.equal(s.supportingCast[1].location,'survey-ridge');
+ assert.equal(s.supportingCast[2].location,'survey-ridge');
  assert.deepEqual(s.npcAutonomyRecords,[]);
  assert.equal(isPartySave(s),true);
 });
@@ -54,7 +55,7 @@ test('009-C3: NPC independently completes each physical step after an actual fie
  assert.deepEqual(movement.length,1);
  assert.deepEqual(movement[0],{id:'tomas-wren',beat:s.beat,
   from:'survey-ridge',to:'rocky-ascent'});
- assert.equal(s.supportingCast[1].location,'rocky-ascent');
+ assert.equal(s.supportingCast[2].location,'rocky-ascent');
  assert.equal(partyView(s).supportingCast.length,0,
   'a distant NPC is removed from the current survivor view');
  assert.equal(isPartySave(s),true);
@@ -62,7 +63,7 @@ test('009-C3: NPC independently completes each physical step after an actual fie
  s=commit(s,'wait');
  assert.equal(s.rng,rng,'walking NPCs must not consume Evolved random rolls');
  assert.deepEqual(s.npcAutonomyRecords.map(x=>x.to),['rocky-ascent','field-camp']);
- assert.equal(s.supportingCast[1].location,'field-camp');
+ assert.equal(s.supportingCast[2].location,'field-camp');
  assert.equal(isPartySave(s),true);
  const frozen=structuredClone(s);
  const next=advanceSupportingCast(compileSelectedAdventure('ridge-survey',quiet),s);
@@ -81,7 +82,7 @@ test('009-C3: private NPC movement cannot appear as remote narration',()=>{
 test('009-C3: tampered itinerary or inserted/missing autonomous decisions reject as saves',()=>{
  const good=researchUntilReport();
  for(const edit of [
-  s=>{s.supportingCast[1].location='field-camp';},
+  s=>{s.supportingCast[2].location='field-camp';},
   s=>{s.npcAutonomyRecords=[];},
   s=>{s.npcAutonomyRecords[0].to='field-camp';},
   s=>{s.npcAutonomyRecords[0].beat+=2;},
@@ -96,23 +97,24 @@ test('009-C3: historic rev10 NPCs cannot inherit autonomous movement retroactive
  const original=compileAdventure(RIDGE_SURVEY_REV10,{seed:quiet});
  let s=fresh(quiet);
  s.adventureBinding=adventureBinding(original);
- delete s.npcAutonomyRecords;
+ s.supportingCast=initialSupportingCast(original);
+ delete s.npcAutonomyRecords;delete s.npcDangerRecords;
  assert.equal(isPartySave(s),true);
  for(let i=0;i<4;i++)s=commit(s,'wait');
- assert.equal(s.supportingCast[1].location,'survey-ridge');
+ assert.equal(s.supportingCast[2].location,'survey-ridge');
  assert.equal(s.npcAutonomyRecords,undefined);
  assert.equal(isPartySave(s),true);
 });
 test('009-C3: publisher-authorized route schema rejects teleportation and invented effects',()=>{
  const base=compileSelectedAdventure('ridge-survey',quiet).definition;
  for(const edit of [
-  s=>{s.supportingCast[1].autonomy.path=['survey-ridge','field-camp'];},
-  s=>{s.supportingCast[1].autonomy.path=['survey-ridge','rocky-ascent','survey-ridge'];},
-  s=>{s.supportingCast[1].autonomy.cadence=0;},
-  s=>{s.supportingCast[1].autonomy.trigger={kind:'objective',id:'phantom'};},
-  s=>{s.supportingCast[1].autonomy.kind='teleport';},
-  s=>{s.supportingCast[1].autonomy.forceAttack=true;},
-  s=>{s.supportingCast[1].autonomy.trigger={kind:'scene',id:'living-valley'};}
+  s=>{s.supportingCast[2].autonomy.path=['survey-ridge','field-camp'];},
+  s=>{s.supportingCast[2].autonomy.path=['survey-ridge','rocky-ascent','survey-ridge'];},
+  s=>{s.supportingCast[2].autonomy.cadence=0;},
+  s=>{s.supportingCast[2].autonomy.trigger={kind:'objective',id:'phantom'};},
+  s=>{s.supportingCast[2].autonomy.kind='teleport';},
+  s=>{s.supportingCast[2].autonomy.forceAttack=true;},
+  s=>{s.supportingCast[2].autonomy.trigger={kind:'scene',id:'living-valley'};}
  ]){
   const bad=structuredClone(base);edit(bad);
   assert.throws(()=>compileAdventure(bad,{seed:quiet}),RangeError);
