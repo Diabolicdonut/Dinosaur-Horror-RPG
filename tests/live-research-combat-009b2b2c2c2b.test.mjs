@@ -33,7 +33,7 @@ test('009-B2b2c2c2b: revision 8 actually engages Evolved source combat only afte
  assert.ok(threatened.length>0);
  assert.ok(Number.isInteger(safeSeed));
  const pending=enter(safeSeed);
- assert.equal(pending.adventureBinding.revision,11);
+ assert.equal(pending.adventureBinding.revision,12);
  assert.equal(pending.combat,null);
  assert.equal(pending.clock.combatSeconds,0);
  const s=engaged(safeSeed);
@@ -121,7 +121,7 @@ test('009-B2b2c2c2b: Focus ownership and Spectator predator actions respect real
 test('009-B2b2c2c2b: immutable rev7 save can replay existing opening reaction without live rounds',()=>{
  const seed=safeSeed;let old=fresh(seed);
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV7,{seed}));
- old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;
+ old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;old.npcDangerRecords=undefined;
  assert.equal(isPartySave(old),true);
  for(const room of ['rocky-ascent','survey-ridge','forest-blind']){
   old=partyStep(old,'move '+room).state;

@@ -153,7 +153,7 @@ test('stalking and search decisions replay exactly through JSON save/load',()=>{
 test('007-L1 UI has specific hiding choices and matching browser cache revision',async()=>{
  const html=await readFile(new URL('../party.html',import.meta.url),'utf8');
  const app=await readFile(new URL('../src/party-app.mjs',import.meta.url),'utf8');
- assert(html.includes('party-app.mjs?v=009c3'));
+ assert(html.includes('party-app.mjs?v=009c4'));
  assert(app.includes('Hide behind '));
  assert(app.includes('distantSightings'));
 });

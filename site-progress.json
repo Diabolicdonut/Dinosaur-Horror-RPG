@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
   "asOf": "2026-10-27",
-  "revision": "v0.7.35",
+  "revision": "v0.7.36",
   "revisionSource": {
     "type": "json",
     "file": "project-state.json",
@@ -20,7 +20,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "38/100 points are accepted as of checkpoint 009-C3. Partial and planned gates earn zero until each documented acceptance condition is independently demonstrated. Weights are explicit planning allocations, not time-to-completion estimates.",
+    "note": "Only accepted gates earn progress. The new 009-C4 NPC awareness slice remains inside the partial human-NPC-agency gate and does NOT add a point until that gate's entire acceptance passes. No automatic estimates of remaining effort.",
     "gates": [
       {
         "id": "evolved-rules",
