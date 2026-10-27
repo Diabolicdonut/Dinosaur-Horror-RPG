@@ -1,12 +1,12 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## 009-C5 — Source-earned supporting NPC eyewitness warnings (candidate) — 2026-10-27
+## 009-C5 — Source-earned supporting NPC eyewitness warnings (accepted) — 2026-10-27
 
 **Recovery:** Actual main `72955ab3bae3c3a140ccbadc4c253a2331cd6a24`, 009-C4 v0.7.36, **642/642**, successful main Actions and Pages, no open PRs. Preserve all newer accepted checkpoint records, the 18-gate roadmap and the previous rev12 NPC response.
 
 **Source:** Immutable `adventures/ridge-survey-rev12.mjs` preserves the accepted scenario. New *Long Count* rev13 attaches a generic `npc_sighting` prerequisite to Jules Marsh's added warning about a genuinely detected predator. The NPC must have their own independently replay-validated `human_sees_first`/withdraw observation and be physically in conversation range; the prerequisite is checked against its actual historical beat. Purely seeded predator presence, failed awareness, offscreen NPCs, future observations and forged witnesses cannot authorize speech. No new gameplay rulebook attack procedure or mandatory predator fight is invented; partial human-NPC-agency gate remains incomplete.
 
-**Tests:** Eight focused NPC warning checks added to 642 accepted prior tests = **650 candidate**. Source exact-head and independent merged-main CI/Pages release verification required. Graphical QA remains outstanding. Overall approved roadmap stays 38%.
+**Acceptance:** Eight focused tests added to 642 prior = **650/650**. PR #56 exact source head `a0190b8844818823b024415943b529aea9a2cf78` [Actions 40568651955](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568651955) **650/650 SUCCESS**; merged source main `13b4cb7972dabf46aeff071070ccaab0bc730036` [Actions 40568956404](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568956404) **650/650 SUCCESS**, and [GitHub Pages 40568933558](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568933558) **SUCCESS**. Manual graphical QA remains outstanding. Overall approved roadmap stays **38/100**; this is a partial human-NPC-agency advance, not full Evolved human NPC combat.
 
 
 ## 009-C4 — Source-bound NPC predator sighting and one-edge retreat (accepted, 2026-10-27)
