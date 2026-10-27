@@ -25,8 +25,8 @@ test('009-R1: complete 18-gate roadmap is conservative, fixed to 100 and distinc
  assert.equal(manifest.revisionSource.path,'version');
  assert.equal(manifest.revisionSource.file,'project-state.json');
  assert.equal('v'+state.version,manifest.revision);
- assert.equal(state.checkpoint,'009-C4');
- assert.equal(state.automated_tests,642);
+ assert.equal(state.checkpoint,'009-C5');
+ assert.equal(state.automated_tests,650);
  assert.equal(state.roadmap_coverage.accepted_weight,38);
  assert.equal(state.roadmap_coverage.gates,18);
  assert.equal(state.roadmap_coverage.total_weight,100);
@@ -128,12 +128,12 @@ test('009-R1: invalid or incomplete accounting withholds overall completion, not
   assert.ok(!spans.includes('Roadmap 38%'));
  }
 });
-test('009-R1: accepted roadmap progress remains conserved across 009-C4 gameplay development',()=>{
- assert.equal(state.version,'0.7.36');
- assert.equal(state.checkpoint,'009-C4');
- assert.equal(state.automated_tests,642);
- assert.ok(state.state.includes('revision12'));
+test('009-R1: accepted roadmap progress remains conserved across 009-C5 gameplay development',()=>{
+ assert.equal(state.version,'0.7.37');
+ assert.equal(state.checkpoint,'009-C5');
+ assert.equal(state.automated_tests,650);
+ assert.ok(state.state.includes('rev13'));
  assert.equal(state.roadmap_coverage.manual_graphical_qa,'not yet completed');
- assert.match(state.roadmap_coverage.source_update,/009-C4/);
+ assert.match(state.roadmap_coverage.source_update,/009-C5/);
  assert.equal(state.roadmap_coverage.accepted_weight,38);
 });

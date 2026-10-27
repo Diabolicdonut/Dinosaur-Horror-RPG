@@ -20,7 +20,7 @@ const unnoticed=predatorSeeds.find(seed=>wait(fresh(seed)).npcDangerRecords[0]?.
 
 test('009-C4: rev12 immutable source has a colocated river sampler with bounded observation ratings',()=>{
  const c=compileSelectedAdventure('ridge-survey',safeSeeds[0]);
- assert.equal(c.revision,12);
+ assert.equal(c.revision,13);
  const npc=c.definition.supportingCast.find(n=>n.id==='jules-marsh');
  assert.deepEqual(npc.dangerResponse,
   {kind:'withdraw_on_sighting',exit:'field-camp',wits:3,observation:2});

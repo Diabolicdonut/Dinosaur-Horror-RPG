@@ -54,7 +54,12 @@ export function validateSupportingCastDefinition(def){
    if(!keys(topic,['id','prompt','reply','requires','variant'])||
      !key(topic.id)||topics.has(topic.id)||!prose(topic.prompt)||
      !prose(topic.reply)||topic.reply.length>500||
-     (topic.requires!==undefined&&!triggerValid(def,topic.requires))||
+     (topic.requires!==undefined&&!(
+       (topic.requires&&topic.requires.kind==='npc_sighting'&&def.revision>=13&&
+        keys(topic.requires,['kind','id'])&&
+        Object.keys(topic.requires).length===2&&
+        topic.requires.id===npc.id&&npc.dangerResponse!==undefined)||
+       triggerValid(def,topic.requires)))||
      (topic.variant!==undefined&&!variantValid(def,topic.variant)))
     bad('NPC topic or unsupported disclosure condition');
    topics.add(topic.id);
@@ -66,11 +71,22 @@ function selected(compiled,item){
  return !item.variant||
   compiled.hiddenFacts?.[item.variant.slot]?.id===item.variant.choice;
 }
-function eventOccurred(s,trigger){
- if(!trigger)return true;
- return trigger.kind==='objective'?
-  s.objectiveRecords?.some(x=>x.id===trigger.id):
-  s.cinematicRecords?.some(x=>x.id===trigger.id);
+// NPC perception is earned at a precise tick and may be discussed only when
+// the specific supporting person actually observed a source-grounded creature.
+// A seeded predator existing elsewhere is not evidence for a warning.
+function topicCondition(compiled,s,npc,topic,atBeat=s.beat){
+ if(!topic.requires)return true;
+ const trigger=topic.requires;
+ if(trigger.kind==='npc_sighting'){
+  if(compiled.revision<13||trigger.id!==npc.id)return false;
+  return s.npcDangerRecords?.some(r=>r.id===trigger.id&&
+   r.action==='withdraw'&&r.awareness==='human_sees_first'&&r.beat<=atBeat);
+ }
+ if(trigger.kind==='objective')
+  return s.objectiveRecords?.some(r=>r.id===trigger.id&&r.beat<=atBeat);
+ if(trigger.kind==='scene')
+  return s.cinematicRecords?.some(r=>r.id===trigger.id&&r.beat<=atBeat);
+ return false;
 }
 export function initialSupportingCast(compiled){
  return (compiled.definition.supportingCast||[]).filter(npc=>selected(compiled,npc))
@@ -231,7 +247,7 @@ export function validSupportingCastState(compiled,s){
   const npc=s.supportingCast.find(n=>n.id===r?.npcId);
   const source=compiled.definition.supportingCast.find(n=>n.id===r?.npcId);
   const topic=source?.topics.find(t=>t.id===r?.topicId);
-  if(!npc||!topic||!selected(compiled,topic)||!eventOccurred(s,topic.requires)||
+  if(!npc||!topic||!selected(compiled,topic)||!topicCondition(compiled,s,source,topic,r?.beat)||
      !s.actors.some(a=>a.id===r.actorId)||!Number.isSafeInteger(r.beat)||
      r.beat<0||r.beat> s.beat||r.beat<last||
      r.location!==(modern?locationAt(compiled,s,r.npcId,r.beat):npc.location)||
@@ -253,7 +269,7 @@ export function localSupportingCast(compiled,s,actorId){
  return (s.supportingCast||[]).filter(n=>n.status==='present'&&n.location===actor.location)
  .map(n=>{
   const source=compiled.definition.supportingCast.find(x=>x.id===n.id);
-  const topics=source.topics.filter(t=>selected(compiled,t)&&eventOccurred(s,t.requires)&&
+  const topics=source.topics.filter(t=>selected(compiled,t)&&topicCondition(compiled,s,source,t)&&
    !s.conversationRecords.some(r=>r.actorId===actor.id&&r.npcId===n.id&&r.topicId===t.id))
    .map(t=>({id:t.id,prompt:t.prompt}));
   return {id:n.id,name:source.name,role:source.role,

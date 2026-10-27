@@ -27,14 +27,14 @@ const quietSeed=Array.from({length:300},(_,i)=>i)
 const pending=()=>progress(fresh(dangerSeed));
 
 test('009-B2b2c2c1: new authored research is rev7 and rev6 remains immutable',()=>{
- assert.equal(compiled(dangerSeed).revision,12);
+ assert.equal(compiled(dangerSeed).revision,13);
  const old=fresh(dangerSeed);
  old.adventureBinding=adventureBinding(compileAdventure(RIDGE_SURVEY_REV6,{seed:dangerSeed}));
  old.supportingCast=undefined;old.conversationRecords=undefined; old.npcAutonomyRecords=undefined;old.npcDangerRecords=undefined;
  delete old.pendingPredatorResponse;
  assert.equal(isPartySave(old),true);
  assert.equal(old.adventureBinding.revision,6);
- assert.equal(pending().adventureBinding.revision,12);
+ assert.equal(pending().adventureBinding.revision,13);
 });
 test('009-B2b2c2c1: a quiet expedition has no defensive prompts or predator RNG',()=>{
  let s=progress(fresh(quietSeed));

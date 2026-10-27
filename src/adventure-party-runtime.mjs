@@ -1,9 +1,9 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c4';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c5';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c4';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c5';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
@@ -15,6 +15,7 @@ import {RIDGE_SURVEY_REV8} from '../adventures/ridge-survey-rev8.mjs';
 import {RIDGE_SURVEY_REV9} from '../adventures/ridge-survey-rev9.mjs';
 import {RIDGE_SURVEY_REV10} from '../adventures/ridge-survey-rev10.mjs';
 import {RIDGE_SURVEY_REV11} from '../adventures/ridge-survey-rev11.mjs';
+import {RIDGE_SURVEY_REV12} from '../adventures/ridge-survey-rev12.mjs';
 import {initialSupportingCast,validSupportingCastState,localSupportingCast,
  commitSupportingConversation,advanceSupportingCast} from './adventure-supporting-cast.mjs';
 import {playerScenarioMaterial} from './adventure-scenario-material.mjs';
@@ -65,6 +66,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV10,{seed:s.initialSeed}):
  s.adventureBinding?.revision===11?
  compileAdventure(RIDGE_SURVEY_REV11,{seed:s.initialSeed}):
+ s.adventureBinding?.revision===12?
+ compileAdventure(RIDGE_SURVEY_REV12,{seed:s.initialSeed}):
  compileSelectedAdventure(template.id,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
