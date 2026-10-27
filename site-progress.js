@@ -64,7 +64,8 @@
           ids.has(gate.id) || typeof gate.label !== 'string' ||
           !gate.label.trim() || !Number.isInteger(gate.weight) || gate.weight < 1 ||
           !['accepted','partial','planned'].includes(gate.status) ||
-          typeof gate.evidence !== 'string' || !gate.evidence.trim()) return null;
+          typeof gate.evidence !== 'string' || !gate.evidence.trim() ||
+          typeof gate.acceptance !== 'string' || !gate.acceptance.trim()) return null;
       ids.add(gate.id);
       total += gate.weight;
       if (gate.status === 'accepted') done += gate.weight;
@@ -112,7 +113,13 @@
 #project-progress-status progress{width:100%;height:7px;accent-color:#d8bf7f}
 #project-progress-status .p-secondary{margin-top:12px;border-top:1px solid #526168;padding-top:8px}
 #project-progress-status .p-gates{max-height:184px;overflow-y:auto;margin:8px 0 0;padding:0;list-style:none}
-#project-progress-status .p-gates li{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dotted #526168;color:#dce4e4}
+#project-progress-status .p-gates li{display:block;border-bottom:1px dotted #526168;color:#dce4e4}
+#project-progress-status .p-gates details{background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none}
+#project-progress-status .p-gates summary{display:flex;justify-content:space-between;align-items:start;
+  gap:8px;padding:5px 0;font-size:12px;font-weight:500;list-style:none;cursor:pointer}
+#project-progress-status .p-gates summary:focus-visible{outline:2px solid #d9c080;outline-offset:-2px}
+#project-progress-status .p-gates .p-criteria{padding:1px 0 9px;margin:0;color:#c4d0d0;line-height:1.5}
+#project-progress-status .p-gates summary span:first-child{min-width:0;flex:1}
 #project-progress-status .p-gates span:last-child{white-space:nowrap;opacity:.8;font-variant-numeric:tabular-nums}
 #project-progress-status .p-gates .p-accepted span:last-child{color:#b4e1c1}
 #project-progress-status .p-detail a{color:#e5ce8d}
@@ -146,8 +153,14 @@
       gates.setAttribute('aria-label', 'Roadmap gates and acceptance status');
       for (const gate of roadmap.gates) {
         const item = make('li', 'p-' + gate.status);
-        item.append(make('span', '', gate.label));
-        item.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt'));
+        const gateDetail = make('details');
+        const gateSummary = make('summary');
+        gateSummary.setAttribute('aria-label', gate.label + ': view acceptance requirements');
+        gateSummary.append(make('span', '', gate.label));
+        gateSummary.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt'));
+        gateDetail.append(gateSummary);
+        gateDetail.append(make('p', 'p-criteria', gate.acceptance));
+        item.append(gateDetail);
         gates.append(item);
       }
       body.append(gates);
