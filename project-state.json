@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.35",
-  "checkpoint": "009-C3",
-  "state": "accepted_revision11_npc_return_routes_626_green_main_actions_pages",
+  "version": "0.7.36",
+  "checkpoint": "009-C4",
+  "state": "candidate_revision12_npc_passive_threat_detection_pending_642_test_acceptance",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,14 +13,14 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 626,
+  "automated_tests": 642,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Next: add perception-grounded nearby threat responses for independently moving human NPCs, including genuine Evolved reaction/action budgets, health/injury and safety constraints; do not forge combat or an island-wide wildlife sim.",
-    "Build source-legal player offensive equipment combat, carrying limits and source-appropriate dinosaur reactions in both playable adventure paths.",
-    "Keep rev1–11 scenario manifests immutable; continue replacing Nublar-specific shared-engine code with adventure-driven data while preserving all 626 accepted regression tests.",
-    "Complete manual graphical desktop/mobile smoke for The Long Count (actual report then NPC return route, quiet and predator seeds), Nublar and Party/Focus/Spectator switches.",
-    "Then design structurally variable original Cinematic adventures and continuing Campaigns through the same compiled schema and bounded AI Game Mother."
+    "VERIFY BEFORE ACCEPTING: exact PR 009-C4 head 642/642; independently validate merged-main Actions and GitHub Pages; update status and acceptance audit only with evidence.",
+    "Next NPC milestone: integrate human supporting NPC initiative, danger defense, injuries, stress, survival and properly timed Evolved resources; do not mistake passive perception for combat safety.",
+    "Implement genuinely carried offensive survivor weapons, armor/damage/ammunition and authentic dinosaur reactions across source-authored adventures, with quiet non-combat completions.",
+    "Refactor Nublar-specific Party engine into universal scenario-driven component while retaining historical rev1–12 saves; document code/manifest migration.",
+    "Complete desktop/mobile visual smoke, all control modes and both predator seed variants before any release-quality claim. Then move toward procedural Cinematic and Campaign creation."
   ],
   "acceptance_criteria": [
     "009-C3 PR #48 exact source head bd44955ea05c871af1570e0ec85b2045f07978f8 Actions 40422528987 SUCCESS 626/626.",
@@ -996,11 +996,11 @@
       "total": 8,
       "rounded_percent": 63
     },
-    "gameplay_checkpoint": "009-C3",
-    "gameplay_version": "0.7.35",
-    "accepted_regressions": 626,
+    "gameplay_checkpoint": "009-C4",
+    "gameplay_version": "0.7.36",
+    "accepted_regressions": 633,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "roadmap_only_no_gameplay_changes",
+    "source_update": "009-C4 candidate NPC perception, no full gate earned",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
@@ -1014,5 +1014,17 @@
       "qa": "manual graphical pending",
       "delivery": "source merged, CI and Pages success"
     }
+  },
+  "npc_danger_009c4": {
+    "status": "candidate",
+    "report": "docs/ADVENTURE-NPC-DANGER-009C4.md",
+    "scenario_rev": 12,
+    "frozen_previous_rev": 11,
+    "new_npc": "jules-marsh",
+    "mechanics": "Seeded Evolved-equivalent opposed zero-stress passive Wits+Observation d6 pool, actual colocated authored patrolling raptor, one-edge retreat only on strictly winning sighting; all records replay-verified.",
+    "scope_limits": "No full Evolved NPC sheet, reactions/initiative, injury, defense, physical inventory or survival guarantee. No false predator in quiet seed. Manual graphical testing pending.",
+    "tests_expected": 642,
+    "prior_full_test_suite": 633,
+    "roadmap_delta": 0
   }
 }
