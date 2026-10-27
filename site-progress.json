@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
-  "asOf": "2026-10-26",
+  "asOf": "2026-10-27",
   "revision": "v0.7.35",
   "revisionSource": {
     "type": "json",
@@ -14,5 +14,111 @@
     "total": 8,
     "basis": "Tracked gates: Evolved mechanics; party modes; reusable adventures; live dinosaur peril; source-driven NPC travel. Remaining: offensive combat, procedural adventures, graphical playtest sign-off.",
     "note": "This measures the specified first-playable foundation, not unlimited future campaigns."
+  },
+  "roadmap": {
+    "label": "Full approved Dinosaur Horror RPG delivery roadmap",
+    "scope": "Bounded, reviewable delivery scope across Evolved mechanics, game engine, adventure content, autonomy, AI, generation, security and QA. Not a claim that an infinite supply of stories can ever be exhausted.",
+    "document": "docs/ROADMAP-COVERAGE.md",
+    "note": "Only accepted source-backed gates earn points; partially implemented gates receive no credit until their whole acceptance requirement passes. Weights are planning choices, not automated estimates of code quantity.",
+    "gates": [
+      {
+        "id": "evolved-rules",
+        "label": "Evolved dice, stress, injuries and core rules baseline",
+        "weight": 8,
+        "status": "accepted",
+        "evidence": "docs/EVOLVED-RULES-AUTHORITY.md; project-state.json"
+      },
+      {
+        "id": "control-modes",
+        "label": "Party, Focus and Spectator with character control",
+        "weight": 7,
+        "status": "accepted",
+        "evidence": "src/party-director.mjs; tests/party-director.test.mjs"
+      },
+      {
+        "id": "adventure-manifests",
+        "label": "Versioned validated scenario packages and seeded variants",
+        "weight": 8,
+        "status": "accepted",
+        "evidence": "src/adventure-definition.mjs; docs/ADVENTURE-ENGINE-SEPARATION.md"
+      },
+      {
+        "id": "dinosaur-peril",
+        "label": "Physical wildlife and Evolved defensive predator contact",
+        "weight": 7,
+        "status": "accepted",
+        "evidence": "src/adventure-predator-contact.mjs; src/adventure-combat-live.mjs"
+      },
+      {
+        "id": "scenario-dossiers",
+        "label": "Adventure briefing, agendas, handouts and Story Cards",
+        "weight": 4,
+        "status": "accepted",
+        "evidence": "docs/SCENARIO-MATERIAL-009C1.md"
+      },
+      {
+        "id": "bounded-npc-movement",
+        "label": "Grounded supporting cast, dialogue and earned NPC return routes",
+        "weight": 4,
+        "status": "accepted",
+        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md"
+      },
+      {
+        "id": "offensive-combat",
+        "label": "Player equipment, offensive combat and creature damage parity",
+        "weight": 8,
+        "status": "partial",
+        "evidence": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md"
+      },
+      {
+        "id": "human-npc-agency",
+        "label": "Independent NPC perception, agenda, action economy and injuries",
+        "weight": 9,
+        "status": "partial",
+        "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md"
+      },
+      {
+        "id": "scenario-independence",
+        "label": "Remove Nublar hardcoding and unify generic engine and saves",
+        "weight": 9,
+        "status": "partial",
+        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md"
+      },
+      {
+        "id": "ai-gamemother",
+        "label": "Grounded AI Game Mother adjudication and story direction",
+        "weight": 8,
+        "status": "partial",
+        "evidence": "docs/REFEREE-CONTRACT.md; docs/MODEL-ROUTING.md"
+      },
+      {
+        "id": "cinematic-generator",
+        "label": "Coherent original procedurally generated Cinematic adventures",
+        "weight": 8,
+        "status": "planned",
+        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md"
+      },
+      {
+        "id": "campaign-generator",
+        "label": "Persisted episodic campaigns and causally consistent generation",
+        "weight": 7,
+        "status": "planned",
+        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md"
+      },
+      {
+        "id": "graphical-qa",
+        "label": "Desktop and mobile gameplay accessibility and manual QA",
+        "weight": 7,
+        "status": "planned",
+        "evidence": "project-state.json; docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md"
+      },
+      {
+        "id": "trusted-gm-secrets",
+        "label": "Server-authoritative private GM information and safe persistence",
+        "weight": 6,
+        "status": "partial",
+        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md; worker/index.mjs"
+      }
+    ]
   }
 }
