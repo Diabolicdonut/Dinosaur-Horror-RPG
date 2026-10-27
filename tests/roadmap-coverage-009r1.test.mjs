@@ -132,7 +132,7 @@ test('009-R1: accepted roadmap progress remains conserved across 009-C5 gameplay
  assert.equal(state.version,'0.7.37');
  assert.equal(state.checkpoint,'009-C5');
  assert.equal(state.automated_tests,650);
- assert.ok(state.state.includes('rev13'));
+ assert.match(state.state,/rev13|revision13/);
  assert.equal(state.roadmap_coverage.manual_graphical_qa,'not yet completed');
  assert.match(state.roadmap_coverage.source_update,/009-C5/);
  assert.equal(state.roadmap_coverage.accepted_weight,38);

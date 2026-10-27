@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.37",
   "checkpoint": "009-C5",
-  "state": "candidate_rev13_source_bound_npc_eyewitness_warning",
+  "state": "accepted_revision13_source_bound_npc_eyewitness_warning_650_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,7 +16,6 @@
   "automated_tests": 650,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Validate exact PR #56 head 650/650, merge only if green, independently verify merged-main Actions and GitHub Pages; record accepted state with verified evidence.",
     "Implement genuinely Evolved-compliant human NPC turn ownership, available reactions, initiative and injuries, without requiring a predator confrontation.",
     "Add carried-gear survivor offensive combat with ammunition and Evolved armor/damage rules; respect physically present targets and quiet alternatives.",
     "Maintain immutable Long Count rev1–12 scenario sources/fingerprints and all prior saves; continue removing Nublar-only assumptions from generic Party engine.",
@@ -41,7 +40,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-C4 source PR #54 final head 1c04735266fe480253171daea4c12aee59327776 Actions 40530825616 SUCCESS 642/642; independently merged gameplay main e9a45a73e0263ab27856362b31aa467a68de8603 Actions 40531101618 SUCCESS 642/642 and Pages 40531099741 SUCCESS. Documentation-only acceptance PR and final main validation separate. Manual browser QA pending.",
+  "pages_deployment": "009-C5 source 13b4cb7972dabf46aeff071070ccaab0bc730036: main Actions 40568956404 SUCCESS (650/650) and Pages 40568933558 SUCCESS. PR #56 head a0190b8844818823b024415943b529aea9a2cf78 Actions 40568651955 SUCCESS (650/650). Manual graphical smoke outstanding; later documentation-only acceptance merge requires its own CI/Pages.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -999,9 +998,9 @@
     },
     "gameplay_checkpoint": "009-C5",
     "gameplay_version": "0.7.37",
-    "accepted_regressions": 642,
+    "accepted_regressions": 650,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "009-C5 candidate improves human-npc-agency partial gate only; 38/100 unchanged",
+    "source_update": "009-C5 accepted: genuine eyewitness local conversation advances partial human-npc-agency; 38/100 gate total unchanged",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
@@ -1042,12 +1041,20 @@
     }
   },
   "npc_eyewitness_009c5": {
-    "status": "candidate",
+    "status": "accepted",
     "report": "docs/ADVENTURE-NPC-EYEWITNESS-009C5.md",
     "new_scenario_revision": 13,
     "immutable_prior_revision": 12,
     "feature": "Local evidence-backed NPC testimony following their own valid passive observed predator contact and legal withdrawal",
     "limits": "No complete Evolved human NPC combat, advanced relationship simulation, offscreen radio warnings or confidential server GM state",
-    "tests_target": 650
+    "tests_target": 650,
+    "sourceHead": "a0190b8844818823b024415943b529aea9a2cf78",
+    "sourcePR": 56,
+    "sourceCI": 40568651955,
+    "sourceMain": "13b4cb7972dabf46aeff071070ccaab0bc730036",
+    "mainCI": 40568956404,
+    "mainPages": 40568933558,
+    "regressions": 650,
+    "manual_graphical_qa": "pending"
   }
 }

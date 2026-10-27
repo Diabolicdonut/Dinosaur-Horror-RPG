@@ -1,6 +1,6 @@
 # 009-C5 — NPC Eyewitness Evidence and Local Warnings
 
-**Source candidate:** October 27, 2026. Based on accepted **009-C4**, version **0.7.36**, 642 regression tests; latest accepted source main `72955ab3bae3c3a140ccbadc4c253a2331cd6a24`.
+**Accepted source:** October 27, 2026. Based on accepted **009-C4**, version **0.7.36**, 642 regression tests; latest accepted source main `72955ab3bae3c3a140ccbadc4c253a2331cd6a24`.
 
 ## Source-backed knowledge, not omniscient story dialogue
 
@@ -24,4 +24,4 @@ In *The Long Count* Jules Marsh at River Crossing already has a real bounded pas
 
 This is **earned NPC information transfer**, not full AI human NPC decision-making, cinematic NPC social rolls, automatic combat defense, injuries, personal inventory, progression, target memory, or threat tactics. The supporting cast's browser source content remains inspectable; game-master confidentiality requires a trusted server. Manual graphical desktop/mobile smoke is still outstanding. The approved full 18-gate roadmap remains **38/100 earned**: `human-npc-agency` remains `partial`.
 
-**Candidate verification:** Eight new tests extend 642 accepted baseline to 650 targeted, including physical locality, genuinely earned eyewitness warning, honest quiet and unnoticed outcomes, authored trigger rejection, replay validation and immutable rev12 history. Verify exact PR head and independent merged-main Actions and Pages before accepting.
+**Acceptance:** Eight new regression tests extend 642 prior tests to **650/650**: PR #56 exact source head `a0190b8844818823b024415943b529aea9a2cf78` [Actions 40568651955](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568651955) **650/650 SUCCESS**; merged source main `13b4cb7972dabf46aeff071070ccaab0bc730036` [Actions 40568956404](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568956404) **650/650 SUCCESS**, and [GitHub Pages 40568933558](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40568933558) **SUCCESS**. Real desktop/mobile graphical smoke remains pending.
