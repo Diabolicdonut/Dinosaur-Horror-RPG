@@ -5,23 +5,23 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <meta name="theme-color" content="#09130f"/>
 <meta name="description" content="Dinosaur Horror RPG, experimental multi-character incident with shared world time."/>
-<title>Party Adventures 009-B2b1 — Dinosaur Horror RPG</title>
+<title>Party Adventures — Dinosaur Horror RPG</title>
 <link rel="stylesheet" href="./src/characters.css?v=007l2a"/>
 <link rel="stylesheet" href="./src/party.css?v=007l2a"/>
 </head>
 <body>
 <main class="lab">
 <header class="mast">
-  <div><p class="eyebrow">ISLA NUBLAR / 1993 / EMERGENCY TEAM SIMULATION</p>
+  <div><p class="eyebrow">ORIGINAL DINOSAUR ADVENTURES / PARTY ENGINE</p>
     <h1>CONTAINMENT <span>LOST</span></h1>
-    <p>CHECKPOINT 007-L2a · STALKING · FACING · PREDATOR SENSES</p>
+    <p>009-D1 · AUTHOR-DEFINED ADVENTURES · EVOLVED DICE</p>
   </div>
   <nav class="nav"><a class="secondary" href="./characters.html">← Personnel Registry</a>
     <a class="secondary" href="./index.html">Legacy solo incident</a></nav>
 </header>
 <section class="notice">
  <strong>Playable multi-character development build.</strong>
- Your survivors share one persistent incident. Choose a rescue or field-research adventure and start it with the same party; starting another adventure replaces the current Party save, while legacy solo saves remain separate. Switch between Party Control, one-character control with autonomous companions, or Spectator Mode at any time. Computer companions use an offline, rules-bounded decision policy. Dinosaur encounters now draw initiative for exposed survivors and the raptor’s two turns per round. Full and quick actions have separate budgets, with reserved defensive reactions. Surprise and ambush still determine initiative. A survivor targeted by a close-combat strike can defend or decline before the roll. Viewpoint-limited glimpses, local physical cover, slower clue-driven stalking and facing-dependent predator vision now follow deterministic map geometry. Outside combat, quiet movement can suppress noise; the velociraptor hunts through connected rooms and cannot pass the secured maintenance door. Dim outdoor zones impair Observation unless a survivor switches on their own powered light. Lamps may attract nearby predators and batteries drain as exploration stretches pass. Alerted animals conduct ten-minute zone searches. Survivors can move quietly, ordinarily or noisily; group members spend their own actions and keep their own observations. Critical medical clocks and recovery remain active. Optional animal ecology and rainforest wonder discoveries remain available, with personal journal memory and no mechanical reward. Original solo saves remain separate.
+ Your survivors share one persistent incident. Choose a rescue, upland survey or estuary adventure and start it with the same party; starting another adventure replaces the current Party save, while legacy solo saves remain separate. Switch between Party Control, one-character control with autonomous companions, or Spectator Mode at any time. Computer companions use an offline, rules-bounded decision policy. Dinosaur encounters now draw initiative for exposed survivors and the raptor’s two turns per round. Full and quick actions have separate budgets, with reserved defensive reactions. Surprise and ambush still determine initiative. A survivor targeted by a close-combat strike can defend or decline before the roll. Viewpoint-limited glimpses, local physical cover, slower clue-driven stalking and facing-dependent predator vision now follow deterministic map geometry. Outside combat, quiet movement can suppress noise; the velociraptor hunts through connected rooms and cannot pass the secured maintenance door. Dim outdoor zones impair Observation unless a survivor switches on their own powered light. Lamps may attract nearby predators and batteries drain as exploration stretches pass. Alerted animals conduct ten-minute zone searches. Survivors can move quietly, ordinarily or noisily; group members spend their own actions and keep their own observations. Critical medical clocks and recovery remain active. Optional animal ecology and rainforest wonder discoveries remain available, with personal journal memory and no mechanical reward. Original solo saves remain separate.
 </section>
 <section class="panel control-strip" aria-label="Party incident controls">
  <div><small>ACTION BEAT</small><strong id="beat">000</strong></div>
@@ -31,7 +31,8 @@
  <div class="control-buttons">
   <label>Adventure <select id="adventure-select">
    <option value="nublar-after-the-storm">After the Storm — Rescue</option>
-   <option value="ridge-survey">The Long Count — Research</option>
+   <option value="ridge-survey">The Long Count — Upland Research</option>
+   <option value="tidal-nursery">The Tidal Nursery — Quiet Estuary</option>
   </select></label>
   <button type="button" id="save-incident" class="secondary">Save</button>
   <button type="button" id="load-incident" class="secondary">Load</button>
@@ -124,7 +125,7 @@
 </div>
 <footer>007-L2a integrates seeded 1–10 initiative cards, two raptor turns per combat round, and full/quick budgets into the playable party scheduler. Stand Watch reserves a quick defensive dodge if one remains available. Critical injury effects, lethal intervals, First Aid, Rally, Surgery and safe recovery now persist and progress with world time. Round-lethal death checks now resolve at the wounded survivor’s own completed turn. Reactive Close Combat defense is a persistent, pre-roll human choice; detailed ranged defenses, infection complications and creature-specific attack tables remain future work.</footer>
 </main>
-<script type="module" src="./src/party-app.mjs?v=009c5"></script>
+<script type="module" src="./src/party-app.mjs?v=009d1"></script>
 <script defer src="./site-progress.js" data-site-progress></script>
 </body>
 </html>
