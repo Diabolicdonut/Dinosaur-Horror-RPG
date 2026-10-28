@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.39",
   "checkpoint": "009-D2",
-  "state": "candidate_009d2_cross_adventure_npc_pending_ci",
+  "state": "accepted_009d2_cross_adventure_npc_665_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,7 +16,7 @@
   "automated_tests": 665,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Verify 009-D2 NPC cross-adventure source CI, exact source main Actions and Pages before accepting; preserve archived Tidal Nursery rev1 saves and keep roadmap 38/100.",
+    "009-D3: add independently meaningful mechanically governed NPC choices and supporting-cast agency in a second adventure, or equipment-limited Evolved offensive combat, using source-verified encounters; keep old saved adventures and 18-gate roadmap intact.",
     "Implement mechanically grounded Evolved human NPC combat initiative ownership and bounded actions, realistic injury/medical consequences and source-specific vulnerability without obligatory fights.",
     "Add equipment-limited survivor offensive combat with true carried gear, ammunition, armor, injury and species-driven retreat/behavior.",
     "Continue replacing remaining Nublar-only Party assumptions with scenario-independent mechanics before unlimited validated Cinematic/Campaign generation.",
@@ -24,6 +24,10 @@
     "Protect private Game Mother secrets and evidence, maintain the 18-gate full vision roadmap at accepted-only 38/100 until a full gate finishes."
   ],
   "acceptance_criteria": [
+    "009-D2 source PR #61 exact head 5f4bd60f3c9f57369925804a4bc9096630b965b8 Actions 40727120403 SUCCESS 665/665 and syntax checks.",
+    "009-D2 independent merged source main 215682077129bbf2c11a77d03a350da7d94070b1 Actions 40727332147 SUCCESS 665/665 and Pages 40727330374 SUCCESS.",
+    "Tidal Nursery revision 2 includes genuinely local NPC conversations, objective-gated disclosure and connected source-authorized return route; exact rev1 source and older saves preserved.",
+    "009-D2 does not finish Evolved NPC combat, offensive weapons, fully universal runtime, Cinematic/Campaign generation, manual graphical QA or accepted whole roadmap gates: 38/100 full and 5/8 foundation.",
     "009-D1 source PR #59 head acd3afd694a891d9f51ea1ad0837dbfcf481d026 CI 40702638677 SUCCESS 657/657.",
     "009-D1 merged source main fc4a8ca085b32905f75b673f544ffe0f813395b0 CI 40703031919 SUCCESS 657/657; Pages 40703030381 SUCCESS.",
     "New original Tidal Nursery rev1 uses four source-authored connected rooms, seeded spring-tide/radio impediments and actual Observation/Comtech outcomes; no compulsory predator.",
@@ -1000,9 +1004,9 @@
     },
     "gameplay_checkpoint": "009-D2",
     "gameplay_version": "0.7.39",
-    "accepted_regressions": 650,
+    "accepted_regressions": 665,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "009-D2 candidate: source-defined estuary NPC dialogue and contiguous objective-triggered return route; 38/100 accepted weight unchanged; CI/Pages/manual graphical checks pending.",
+    "source_update": "009-D2 accepted: NPC dialogue and source-authorized return routes work in independent Tidal Nursery rev2, preserving rev1 and Long Count saves; PR #61 and independent main 665/665 Actions and Pages success. Weighted full scope unchanged 38/100; graphical smoke outstanding.",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
@@ -1082,7 +1086,7 @@
     "mainPagesStatus": "success"
   },
   "adventure_crosspack_npc_009d2": {
-    "status": "candidate_pending_verification",
+    "status": "accepted",
     "version": "0.7.39",
     "report": "docs/ADVENTURE-ENGINE-NPC-009D2.md",
     "sourceAdventure": "adventures/tidal-nursery.mjs",
@@ -1090,6 +1094,15 @@
     "frozenHistorical": "adventures/tidal-nursery-rev1.mjs",
     "testTarget": 665,
     "wholeRoadmapAccepted": 38,
-    "manualGraphicalQA": "pending"
+    "manualGraphicalQA": "pending",
+    "sourcePR": 61,
+    "sourceHead": "5f4bd60f3c9f57369925804a4bc9096630b965b8",
+    "sourceActions": 40727120403,
+    "sourceTests": "665/665",
+    "sourceMain": "215682077129bbf2c11a77d03a350da7d94070b1",
+    "mainActions": 40727332147,
+    "mainTests": "665/665",
+    "mainPages": 40727330374,
+    "mainPagesStatus": "success"
   }
 }

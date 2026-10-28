@@ -1,10 +1,10 @@
 # Dinosaur Horror RPG — Engineering audit
 
-## 009-D2 — Cross-adventure supporting character behavior (source pending verification) — 2026-10-28
+## 009-D2 — Cross-adventure supporting character behavior (accepted) — 2026-10-28
 
-**Recovered baseline:** accepted main `4437315c7ec1801c89f2352c9bca2d1ea00f6d82`, v0.7.38, 009-D1, 657/657. **New candidate:** v0.7.39, eight new NPC parity/compatibility tests target 665. Source activation now follows scenario-defined cast and return-route evidence while retaining historical Long Count revision gates. Added source-local estuary cast, physically connected objective-activated return route and frozen Tidal Nursery rev1 source for old saves. [Technical report](docs/ADVENTURE-ENGINE-NPC-009D2.md).
+**Recovered baseline:** accepted main `4437315c7ec1801c89f2352c9bca2d1ea00f6d82`, v0.7.38, 009-D1, 657/657. **Accepted release:** v0.7.39, eight new NPC parity/compatibility tests bring the suite to 665/665. Source activation now follows scenario-defined cast and return-route evidence while retaining historical Long Count revision gates. Added source-local estuary cast, physically connected objective-activated return route and frozen Tidal Nursery rev1 source for old saves. [Technical report](docs/ADVENTURE-ENGINE-NPC-009D2.md).
 
-**Verification boundary:** PR Actions, independently merged main Actions and Pages, and manual graphical QA are NOT yet accepted. Overall roadmap unchanged **38/100**; no full NPC agency or full scenario-independent system claimed.
+**Verified acceptance:** PR [#61](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/61) exact head `5f4bd60f3c9f57369925804a4bc9096630b965b8` passed [Actions 40727120403](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727120403) **665/665** plus syntax; independently merged `main` `215682077129bbf2c11a77d03a350da7d94070b1` passed [Actions 40727332147](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727332147) **665/665** and [Pages 40727330374](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727330374) **SUCCESS**. Manual desktop/mobile graphical QA remains outstanding. Overall accepted roadmap unchanged **38/100**, foundation 5/8; no full NPC agency or universal scenario engine claimed.
 
 ---
 
