@@ -3,11 +3,11 @@
 // Party members are Evolved-valid actors. This bounded game prototype does not
 // yet implement combat, autonomous companions, or complete Evolved time scales.
 import { SCENARIO } from './scenario.mjs?v=007l1';
-import {compileSelectedAdventure} from './adventure-catalog.mjs';
+import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009d2';
 import {createAdventureWorld} from './adventure-world.mjs';
 import {newSelectedAdventureIncident,isSelectedAdventureSave,
- selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009c5-009d1';
-import {isStandaloneAdventureId} from './adventure-catalog.mjs';
+ selectedAdventureView,selectedAdventureStep} from './adventure-party-runtime.mjs?v=009d2';
+import {isStandaloneAdventureId} from './adventure-catalog.mjs?v=009d2';
 import {commitAuthorizedObjective,validObjectiveRecords} from './adventure-objectives.mjs';
 import {adventureBinding,validAdventureBinding} from './adventure-definition.mjs';
 import {sceneForActor} from './cinematic-scenes.mjs';
