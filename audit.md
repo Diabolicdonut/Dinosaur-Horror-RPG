@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-D1 — Source and independent main acceptance — 2026-10-28
+
+**Accepted 009-D1 (v0.7.38, 2026-10-28):** PR [#59](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/59) exact head `acd3afd694a891d9f51ea1ad0837dbfcf481d026` passed [Actions 40702638677](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40702638677) **657/657**; independently merged source `main` `fc4a8ca085b32905f75b673f544ffe0f813395b0` passed [Actions 40703031919](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703031919) **657/657** and [Pages 40703030381](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703030381) **SUCCESS**. No manual graphical sign-off. **Roadmap stays 38/100, foundation 5/8**, since neither the scenario-independence nor authored-replayability gate is fully accepted.
+
+The new *Tidal Nursery* package is exposed in `party.html`. The same standalone runtime resolves the selected package's graph, stock, objective checks, save binding and control modes. No new NPC combat or procedural generator has been claimed; legacy Long Count revisions and Nublar remain isolated. See `docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md`.
+
+---
+
+
 ## 009-D1 — Multi-package standalone game runtime and original Tidal Nursery — 2026-10-28 (source pending acceptance)
 
 **Recovery:** main `c9291f61d2942cc00b4d2518a0d296e5f2048fe5` at checkpoint 009-C5 / v0.7.37, 650/650 Actions and Pages green. Original Long Count revision 13 and frozen revisions 1–12 protected; Nublar remains the legacy separate incident. Full approved 18-gate scope is **38/100 accepted**, first playable **5/8**.

@@ -1,5 +1,7 @@
 # 009-D1 — Independent adventure gameplay and source-bound Party runtime
 
+**Acceptance:** Verified 2026-10-28. Source PR #59 exact head `acd3afd694a891d9f51ea1ad0837dbfcf481d026` [Actions 40702638677](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40702638677) 657/657; independently merged main `fc4a8ca085b32905f75b673f544ffe0f813395b0` [Actions 40703031919](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703031919) 657/657; [Pages 40703030381](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703030381) SUCCESS. Manual graphical testing outstanding; 38/100 unchanged.
+
 **Scope:** Scenario separation and second original playable adventure, not NPC combat,
 unlimited procedural generation or complete Evolved rules parity.
 
@@ -52,6 +54,4 @@ the `scenario-independence` and `authored-replayability` gates remain
 
 ## Validation
 
-Automated regression suite, exact PR-head GitHub Actions, independent
-post-merge main Actions and GitHub Pages are required before claiming
-this milestone accepted. Historical fingerprints must remain stable.
+Automated regression suite passed **657/657** on exact source PR head and independently merged main. GitHub Pages succeeded. The new seven tests establish source and save compatibility, but real desktop/mobile browser smoke remains outstanding.

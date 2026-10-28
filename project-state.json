@@ -2,7 +2,7 @@
   "project": "Dinosaur Horror RPG",
   "version": "0.7.38",
   "checkpoint": "009-D1",
-  "state": "009d1_second_authored_adventure_shared_standalone_engine_pending_final_ci",
+  "state": "accepted_009d1_independent_estuary_adventure_657_green_main_actions_pages",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -16,18 +16,19 @@
   "automated_tests": 657,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Complete acceptance verification of independent estuary adventure, three-way catalog routing and legacy saves on final PR and merged main.",
-    "Implement full human NPC Evolved turn ownership, reactions, injury and accountable action economy without forced carnivore encounters.",
-    "Add real carried-gear survivor offensive combat, ammunition, target armor and creature consequences.",
-    "Continue Nublar engine separation, variable Cinematic generator, long-form Campaign and private GM state.",
-    "Perform manual desktop/mobile graphical testing for all three authored adventures and each control mode."
+    "Implement mechanically grounded Evolved human NPC combat initiative ownership and bounded actions, realistic injury/medical consequences and source-specific vulnerability without obligatory fights.",
+    "Add equipment-limited survivor offensive combat with true carried gear, ammunition, armor, injury and species-driven retreat/behavior.",
+    "Continue replacing remaining Nublar-only Party assumptions with scenario-independent mechanics before unlimited validated Cinematic/Campaign generation.",
+    "Complete desktop/mobile manual graphical smoke in Nublar, Long Count and Tidal Nursery, all three control modes and historical saves.",
+    "Protect private Game Mother secrets and evidence, maintain the 18-gate full vision roadmap at accepted-only 38/100 until a full gate finishes."
   ],
   "acceptance_criteria": [
-    "009-C4 PR #54 exact source head 1c04735266fe480253171daea4c12aee59327776 CI 40530825616 SUCCESS 642/642.",
-    "009-C4 independently merged source main e9a45a73e0263ab27856362b31aa467a68de8603 CI 40531101618 SUCCESS 642/642; Pages 40531099741 SUCCESS.",
-    "Long Count rev12 bounded NPC observation and one-edge withdrawal only when physically co-located with a seeded Evolved-profile predator; source-legal opposed passive pools and replay-validated movement/seed records.",
-    "Long Count original rev11 frozen and old saves remain unchanged, quiet-range remains genuinely predator-free; no unilateral NPC combat, wounds, attack, source GM secrecy or manual graphical QA claimed.",
-    "18-gate roadmap remains at 38/100 overall and 5/8 first-playable; human NPC agency is still partial and no new points earned."
+    "009-D1 source PR #59 head acd3afd694a891d9f51ea1ad0837dbfcf481d026 CI 40702638677 SUCCESS 657/657.",
+    "009-D1 merged source main fc4a8ca085b32905f75b673f544ffe0f813395b0 CI 40703031919 SUCCESS 657/657; Pages 40703030381 SUCCESS.",
+    "New original Tidal Nursery rev1 uses four source-authored connected rooms, seeded spring-tide/radio impediments and actual Observation/Comtech outcomes; no compulsory predator.",
+    "Standalone engine now resolves selected source rooms, stock, objectives, maps, save identity, companion routing and physical interactions rather than a Long Count singleton.",
+    "Long Count rev1–13, Nublar legacy game and existing save compatibility are preserved. No full NPC combat, offensive equipment combat, generator or manual GUI smoke claimed.",
+    "18-gate full roadmap unchanged at 38/100 accepted, first playable 5/8; partial scenario independence and authored replayability advanced but not fully accepted."
   ],
   "worker_url": "https://dinosaur-rpg.diabolicdonut.workers.dev/",
   "worker_source": "worker/index.mjs",
@@ -40,7 +41,7 @@
   ],
   "worker_rate_limit": "Optional Cloudflare GM_LIMITER binding (30/min in Wrangler config); not active through dashboard paste unless independently configured",
   "worker_deployment": "User confirmed Worker v006 deployed and operational with authorized Sol referee; no Worker source changes for this bugfix.",
-  "pages_deployment": "009-C5 source 13b4cb7972dabf46aeff071070ccaab0bc730036: main Actions 40568956404 SUCCESS (650/650) and Pages 40568933558 SUCCESS. PR #56 head a0190b8844818823b024415943b529aea9a2cf78 Actions 40568651955 SUCCESS (650/650). Manual graphical smoke outstanding; later documentation-only acceptance merge requires its own CI/Pages.",
+  "pages_deployment": "009-D1 v0.7.38 gameplay source main fc4a8ca085b32905f75b673f544ffe0f813395b0; Actions 40703031919 SUCCESS 657/657; GitHub Pages 40703030381 SUCCESS; manual desktop/mobile graphical smoke remains outstanding. Worker untouched.",
   "ai_scope": "now implemented: local command engine, Luna text intent, Sol narration, four bounded Sol-refereed improvised actions (investigate, distract, barricade, conceal), strict validation; full compound/novel effects and persistent NPCs not yet supported",
   "canonical_model_routing": "docs/MODEL-ROUTING.md",
   "worker_models": {
@@ -1058,7 +1059,7 @@
     "manual_graphical_qa": "pending"
   },
   "adventure_multi_package_009d1": {
-    "status": "implementation_pending_ci",
+    "status": "accepted",
     "version": "0.7.38",
     "report": "docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md",
     "sourceAdventure": "adventures/tidal-nursery.mjs",
@@ -1068,6 +1069,15 @@
     "testTarget": 657,
     "roadmapAccepted": 38,
     "roadmapTotal": 100,
-    "manualGraphicalQA": "pending"
+    "manualGraphicalQA": "pending",
+    "sourcePR": 59,
+    "sourceHead": "acd3afd694a891d9f51ea1ad0837dbfcf481d026",
+    "sourceActions": 40702638677,
+    "sourceTests": "657/657",
+    "sourceMain": "fc4a8ca085b32905f75b673f544ffe0f813395b0",
+    "mainActions": 40703031919,
+    "mainTests": "657/657",
+    "mainPages": 40703030381,
+    "mainPagesStatus": "success"
   }
 }
