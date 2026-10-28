@@ -2,7 +2,7 @@
 // schema/compiler does not import individual settings or scenario content.
 import {AFTER_THE_STORM} from '../adventures/after-the-storm.mjs';
 import {RIDGE_SURVEY} from '../adventures/ridge-survey.mjs?v=009c5';
-import {TIDAL_NURSERY} from '../adventures/tidal-nursery.mjs';
+import {TIDAL_NURSERY} from '../adventures/tidal-nursery.mjs?v=009d2';
 import {compileAdventure,validateAdventureDefinition} from './adventure-definition.mjs?v=009c5';
 const copies=Object.freeze({
  'nublar-after-the-storm':AFTER_THE_STORM,

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
   "asOf": "2026-10-28",
-  "revision": "v0.7.38",
+  "revision": "v0.7.39",
   "revisionSource": {
     "type": "json",
     "file": "project-state.json",
@@ -20,7 +20,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "Accepted whole-product weight remains 38/100. 009-D1 adds an independently playable original estuary adventure and removes Long Count singleton map/stock/save/view assumptions from the standalone runtime; scenario independence and authored variety are still partial. NPC action economy, offensive combat, procedural Cinematic/Campaign and graphical QA remain open.",
+    "note": "009-D2 source candidate adds estuary supporting cast and earned return-route behavior without completing any larger 18-gate acceptance area. Whole-product accepted progress remains 38/100; CI, Pages and graphical playtest sign-off are pending.",
     "gates": [
       {
         "id": "evolved-rules",

@@ -1,5 +1,8 @@
 # Dinosaur Horror RPG — Complete Approved Development Roadmap and Coverage
 
+> **009-D2 source candidate (2026-10-28, v0.7.39):** New Tidal Nursery rev2 demonstrates locally witnessed conversations and a source-defined NPC return route after a real field objective. Frozen estuary rev1 remains available for old saves; previous Long Count/Nublar remain separate. Historical revision numbers are no longer the sole switch for supporting-cast activation in new adventure packages. Eight new tests target **665** total; CI and Pages acceptance remain unverified. Whole-product roadmap remains **38/100**, foundation **5/8**. [Implementation and boundaries](ADVENTURE-ENGINE-NPC-009D2.md).
+
+
 **009-D1 accepted gameplay (2026-10-28, v0.7.38):** A third authored, source-isolated estuary adventure now exercises the same standalone Party runtime. The shared runtime uses the chosen scenario's source-defined rooms, stock, objectives, saves and local companion navigation, while historical Long Count fingerprints/saves remain frozen. See [009-D1 engine boundary](ADVENTURE-ENGINE-MULTIPACK-009D1.md). **Accepted overall remains 38/100 and foundation 5/8**: this improves but does not finish the scenario-independence and authored-replayability gates. Full universal engine, offensive combat, genuine NPC Evolved actions, procedural episodes and graphical QA remain unfinished. Exact PR-head and independently merged main Actions **657/657 SUCCESS**; Pages **SUCCESS**. See the technical contract for exact run IDs.
 
 

@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.38",
-  "checkpoint": "009-D1",
-  "state": "accepted_009d1_independent_estuary_adventure_657_green_main_actions_pages",
+  "version": "0.7.39",
+  "checkpoint": "009-D2",
+  "state": "candidate_009d2_cross_adventure_npc_pending_ci",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,9 +13,10 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 657,
+  "automated_tests": 665,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
+    "Verify 009-D2 NPC cross-adventure source CI, exact source main Actions and Pages before accepting; preserve archived Tidal Nursery rev1 saves and keep roadmap 38/100.",
     "Implement mechanically grounded Evolved human NPC combat initiative ownership and bounded actions, realistic injury/medical consequences and source-specific vulnerability without obligatory fights.",
     "Add equipment-limited survivor offensive combat with true carried gear, ammunition, armor, injury and species-driven retreat/behavior.",
     "Continue replacing remaining Nublar-only Party assumptions with scenario-independent mechanics before unlimited validated Cinematic/Campaign generation.",
@@ -997,11 +998,11 @@
       "total": 8,
       "rounded_percent": 63
     },
-    "gameplay_checkpoint": "009-C5",
-    "gameplay_version": "0.7.37",
+    "gameplay_checkpoint": "009-D2",
+    "gameplay_version": "0.7.39",
     "accepted_regressions": 650,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "009-C5 accepted: genuine eyewitness local conversation advances partial human-npc-agency; 38/100 gate total unchanged",
+    "source_update": "009-D2 candidate: source-defined estuary NPC dialogue and contiguous objective-triggered return route; 38/100 accepted weight unchanged; CI/Pages/manual graphical checks pending.",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
@@ -1015,7 +1016,7 @@
       "qa": "manual graphical pending",
       "delivery": "source merged, CI and Pages success"
     },
-    "candidate_tests": 650
+    "candidate_tests": 665
   },
   "npc_danger_009c4": {
     "status": "accepted",
@@ -1062,7 +1063,7 @@
     "status": "accepted",
     "version": "0.7.38",
     "report": "docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md",
-    "sourceAdventure": "adventures/tidal-nursery.mjs",
+    "sourceAdventure": "adventures/tidal-nursery-rev1.mjs",
     "sourceRevision": 1,
     "scope": "Standalone adventure catalog routing and source-based maps, item stock, objectives, save validation and companion route planning; peaceful four-room Tidal Nursery with seeded tide/radio complications",
     "retained": "Long Count historical rev1-12 and current rev13; legacy Nublar implementation unchanged",
@@ -1079,5 +1080,16 @@
     "mainTests": "657/657",
     "mainPages": 40703030381,
     "mainPagesStatus": "success"
+  },
+  "adventure_crosspack_npc_009d2": {
+    "status": "candidate_pending_verification",
+    "version": "0.7.39",
+    "report": "docs/ADVENTURE-ENGINE-NPC-009D2.md",
+    "sourceAdventure": "adventures/tidal-nursery.mjs",
+    "sourceRevision": 2,
+    "frozenHistorical": "adventures/tidal-nursery-rev1.mjs",
+    "testTarget": 665,
+    "wholeRoadmapAccepted": 38,
+    "manualGraphicalQA": "pending"
   }
 }

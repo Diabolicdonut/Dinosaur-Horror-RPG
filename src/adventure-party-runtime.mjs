@@ -1,7 +1,7 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure,isStandaloneAdventureId} from './adventure-catalog.mjs?v=009c5-009d1';
+import {compileSelectedAdventure,isStandaloneAdventureId} from './adventure-catalog.mjs?v=009d2';
 import {createAdventureWorld} from './adventure-world.mjs';
 import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c5-009d1';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
@@ -16,8 +16,10 @@ import {RIDGE_SURVEY_REV9} from '../adventures/ridge-survey-rev9.mjs';
 import {RIDGE_SURVEY_REV10} from '../adventures/ridge-survey-rev10.mjs';
 import {RIDGE_SURVEY_REV11} from '../adventures/ridge-survey-rev11.mjs';
 import {RIDGE_SURVEY_REV12} from '../adventures/ridge-survey-rev12.mjs';
+import {TIDAL_NURSERY as TIDAL_NURSERY_REV1} from '../adventures/tidal-nursery-rev1.mjs';
 import {initialSupportingCast,validSupportingCastState,localSupportingCast,
- commitSupportingConversation,advanceSupportingCast} from './adventure-supporting-cast.mjs';
+ commitSupportingConversation,advanceSupportingCast,castUsesMovementHistory,
+ castUsesDangerHistory} from './adventure-supporting-cast.mjs?v=009d2';
 import {playerScenarioMaterial} from './adventure-scenario-material.mjs';
 import {selectedCombatSlot,validSelectedCombat,beginSelectedCombat,selectedCombatStep}
  from './adventure-combat-live.mjs';
@@ -41,7 +43,8 @@ const copy=x=>JSON.parse(JSON.stringify(x));
 // Legacy saves remain valid: the earlier prototype used a fixed compiled
 // scenario, while its previously-unused latent variants were never revealed.
 // The incident's original seed now determines its stable private situation.
-const situated=s=>s.scenario==='ridge-survey'?(s.adventureBinding?.revision===1?
+const situated=s=>s.scenario==='tidal-nursery'&&s.adventureBinding?.revision===1?
+ compileAdventure(TIDAL_NURSERY_REV1,{seed:s.initialSeed}):s.scenario==='ridge-survey'?(s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV1,{seed:s.initialSeed}):
  s.adventureBinding?.revision===2?
  compileAdventure(RIDGE_SURVEY_REV2,{seed:s.initialSeed}):
@@ -175,10 +178,10 @@ export function newSelectedAdventureIncident({seed=1993,roster=null,adventureId=
    cameraActorId:actors[0].id,paused:true,speedMs:1200,epoch:0},
   controlHistory:[],aiDecisions:[],combat:null,objectiveRecords:[],cinematicRecords:[],perilRecords:[],creatureRecords:[],predatorContacts:[],pendingPredatorResponse:null,
   ...(compiled.revision>=8?{combatReaction:null,combatRoundRecords:[],combatDamageRecords:[]}:{}),
-   ...(compiled.revision>=10?{supportingCast:initialSupportingCast(compileSelectedAdventure(template.id,seed)),
+   ...(template.supportingCast!==undefined?{supportingCast:initialSupportingCast(compiled),
     conversationRecords:[],
-     ...(compiled.revision>=11?{npcAutonomyRecords:[]}: {}),
-     ...(compiled.revision>=12?{npcDangerRecords:[]}: {})}:{}),
+     ...(castUsesMovementHistory(compiled)?{npcAutonomyRecords:[]}: {}),
+     ...(castUsesDangerHistory(compiled)?{npcDangerRecords:[]}: {})}:{}),
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
@@ -482,7 +485,7 @@ export function selectedAdventureStep(previous,raw,opts={},parser){
   Math.floor(s.clock.explorationActions/s.actors.length);
  if(situated(s).definition.initialCreatures.some(d=>d.patrol))
   s=advanceAutonomousCreatures(situated(s),s);
- if(s.adventureBinding.revision>=11)
+ if(castUsesMovementHistory(situated(s)))
   s=advanceSupportingCast(situated(s),s);
  // An opening source Evolved contact is possible only after a committed action.
  // The immutable Rev1–5 manifests cannot trigger this new hostile procedure.

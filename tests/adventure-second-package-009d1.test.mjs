@@ -14,14 +14,14 @@ function act(s,command){
 const selections=Array.from({length:80},(_,i)=>({seed:i,
  condition:compileSelectedAdventure('tidal-nursery',i).hiddenFacts.estuaryConditions.id}));
 test('009-D1: second original, separately compiled source is catalogued and validates',()=>{
- assert.ok(listAdventureDefinitions().some(x=>x.id==='tidal-nursery'&&x.revision===1));
+ assert.ok(listAdventureDefinitions().some(x=>x.id==='tidal-nursery'&&x.revision===2));
  assert.equal(isStandaloneAdventureId('tidal-nursery'),true);
  assert.equal(isStandaloneAdventureId('nublar-after-the-storm'),false);
  assert.notEqual(TIDAL_NURSERY.rooms['nesting-pool'].name,'Survey Ridge');
  for(const {seed} of selections.slice(0,8)){
   const c=compileSelectedAdventure('tidal-nursery',seed);
   assert.equal(c.definition.id,'tidal-nursery');
-  assert.equal(c.revision,1);
+  assert.equal(c.revision,2);
   assert.equal(c.definition.initialCreatures.length,1);
  }
 });
@@ -38,7 +38,7 @@ test('009-D1: fresh estuary play uses authored rooms, starting stock and objecti
  assert.equal(s.dinosaurs[0].kind,'parasaurolophus');
  assert.equal(s.pendingPredatorResponse,null);
  assert.equal(s.combat,null);
- assert.equal(s.supportingCast,undefined,'no Long Count NPC may be inherited');
+ assert.deepEqual(s.supportingCast.map(n=>n.id),['mara-venn','ivo-pell'],'only the estuary source cast may be present');
  assert.deepEqual(Object.keys(s.flags).sort(),['returned','samplesSecured','signalSent']);
  assert.ok(!s.events[0].message.includes('canvas camp'));
 });
