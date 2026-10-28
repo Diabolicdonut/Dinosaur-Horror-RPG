@@ -1,9 +1,9 @@
 // 009-B2b1: selected-adventure exploration runtime behind the existing Party API.
 // Purely manifest-driven room graph, stock and objective rules. The existing
 // Evolved Nublar director/combat remains on its original compatibility path.
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009c5';
+import {compileSelectedAdventure,isStandaloneAdventureId} from './adventure-catalog.mjs?v=009c5-009d1';
 import {createAdventureWorld} from './adventure-world.mjs';
-import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c5';
+import {adventureBinding,validAdventureBinding,compileAdventure} from './adventure-definition.mjs?v=009c5-009d1';
 import {RIDGE_SURVEY_REV1} from '../adventures/ridge-survey-rev1.mjs';
 import {RIDGE_SURVEY_REV2} from '../adventures/ridge-survey-rev2.mjs';
 import {RIDGE_SURVEY_REV3} from '../adventures/ridge-survey-rev3.mjs';
@@ -38,13 +38,10 @@ import {passageCircumstance,objectiveCircumstance,
  animalApproachCircumstance,localSituationCues} from './adventure-situations.mjs';
 
 const copy=x=>JSON.parse(JSON.stringify(x));
-const compiled=compileSelectedAdventure('ridge-survey',0);
-const world=createAdventureWorld(compiled);
-const template=compiled.definition;
 // Legacy saves remain valid: the earlier prototype used a fixed compiled
 // scenario, while its previously-unused latent variants were never revealed.
 // The incident's original seed now determines its stable private situation.
-const situated=s=>s.adventureBinding?.revision===1?
+const situated=s=>s.scenario==='ridge-survey'?(s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV1,{seed:s.initialSeed}):
  s.adventureBinding?.revision===2?
  compileAdventure(RIDGE_SURVEY_REV2,{seed:s.initialSeed}):
@@ -68,7 +65,8 @@ const situated=s=>s.adventureBinding?.revision===1?
  compileAdventure(RIDGE_SURVEY_REV11,{seed:s.initialSeed}):
  s.adventureBinding?.revision===12?
  compileAdventure(RIDGE_SURVEY_REV12,{seed:s.initialSeed}):
- compileSelectedAdventure(template.id,s.initialSeed);
+ compileSelectedAdventure('ridge-survey',s.initialSeed)):
+ compileSelectedAdventure(s.scenario,s.initialSeed);
 const integers=x=>Number.isSafeInteger(x)&&x>=0;
 function nextSeed(s){
  let x=s.rng>>>0;
@@ -83,15 +81,17 @@ function countInventory(s){
   ...s.actors.flatMap(a=>a.inventory)])counts[item]=(counts[item]||0)+1;
  return counts;
 }
-function originalStock(){
+function originalStock(template){
  const counts={};
  for(const item of [...template.startItems,...Object.values(template.rooms).flatMap(r=>r.items)])
   counts[item]=(counts[item]||0)+1;
  return counts;
 }
-const stock=originalStock();
 export function isSelectedAdventureSave(s){
  try{
+  if(!isStandaloneAdventureId(s?.scenario))return false;
+  const instance=situated(s),template=instance.definition,
+   world=createAdventureWorld(instance),stock=originalStock(template);
   if(!s||s.kind!=='dinosaur-party-incident'||s.version!==3||
      s.scenario!==template.id||!s.adventureBinding||
      !validAdventureBinding(s.adventureBinding,situated(s))||
@@ -151,8 +151,11 @@ export function isSelectedAdventureSave(s){
   return true;
  }catch{return false;}
 }
-export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
+export function newSelectedAdventureIncident({seed=1993,roster=null,adventureId='ridge-survey'}={}){
+ if(!isStandaloneAdventureId(adventureId))throw new RangeError('Unknown standalone adventure.');
  if(!integers(seed)||seed>0xffffffff)throw new RangeError('Seed must be a uint32.');
+ const compiled=compileSelectedAdventure(adventureId,seed);
+ const template=compiled.definition,world=createAdventureWorld(compiled);
  const party=roster??makeParty({seed,size:3});
  const errors=validateParty(party);
  if(errors.length||party.length<1||party.length>8)
@@ -179,14 +182,18 @@ export function newSelectedAdventureIncident({seed=1993,roster=null}={}){
   rooms:world.initialRoomItems(),
   dinosaurs:initialAdventureCreatures(compileSelectedAdventure(template.id,seed)),
   events:[{beat:0,actorId:null,category:'system',message:
-   'The research party gathers at the canvas camp to begin its ecological survey.'}],
+   adventureId==='ridge-survey'?
+    'The research party gathers at the canvas camp to begin its ecological survey.':
+    'The field team gathers at '+world.roomName(world.start)+' to begin '+template.title+'.'}],
   actions:[]};
 }
 function nextObjective(s){
+ const template=situated(s).definition;
  return template.objectives.find(o=>!objectiveStatus(situated(s),s).completedIds.includes(o.id));
 }
 export function selectedAdventureView(s,{actorId=null}={}){
  if(!isSelectedAdventureSave(s))throw new RangeError('Invalid selected adventure save.');
+ const instance=situated(s),template=instance.definition,world=createAdventureWorld(instance);
  const actor=s.actors.find(a=>a.id===actorId)||s.actors[s.cursor];
  const room=world.room(actor.location);
  const progress=objectiveStatus(situated(s),s);
@@ -264,6 +271,7 @@ function normalize(raw,parser){
 }
 export function selectedAdventureStep(previous,raw,opts={},parser){
  if(!isSelectedAdventureSave(previous))throw new RangeError('Invalid selected adventure save.');
+ const manifest=situated(previous),template=manifest.definition,world=createAdventureWorld(manifest);
  if(previous.pendingPredatorResponse){
   const pending=previous.pendingPredatorResponse;
   const victim=previous.actors.find(a=>a.id===pending.victimId);

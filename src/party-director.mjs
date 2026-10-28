@@ -2,10 +2,10 @@
 // and safe one-actor-at-a-time spectator simulation.
 // These are original Dinosaur Horror game controls, not Evolved Edition procedures.
 import { SCENARIO } from './scenario.mjs?v=007l2a';
-import {compileSelectedAdventure} from './adventure-catalog.mjs?v=009b2b2c2c1';
+import {compileSelectedAdventure,isStandaloneAdventureId} from './adventure-catalog.mjs?v=009b2b2c2c1';
 import {createAdventureWorld} from './adventure-world.mjs';
 const SURVEY_WORLD=createAdventureWorld(compileSelectedAdventure('ridge-survey',0));
-import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009c5';
+import { isPartySave, partyView, partyStep } from './party-engine.mjs?v=009c5-009d1';
 import {TRAUMA,pendingLethal} from './evolved-injuries.mjs';
 import {activeTurnId,activeCombatSlot} from './combat-turns.mjs?v=007l2b1';
 import {selectedCombatSlot} from './adventure-combat-live.mjs';
@@ -85,7 +85,9 @@ export function setPlayback(previous,{paused=null,speedMs=null}={}){
 }
 function shortestNext(from,destination,adventureId='nublar-after-the-storm'){
  if(from===destination)return null;
- const rooms=adventureId==='ridge-survey'?SURVEY_WORLD:null;
+ const rooms=isStandaloneAdventureId(adventureId)?
+ (adventureId==='ridge-survey'?SURVEY_WORLD:
+ createAdventureWorld(compileSelectedAdventure(adventureId,0))):null;
  if(rooms?(!rooms.hasRoom(from)||!rooms.hasRoom(destination)):
    (!SCENARIO.rooms[from]||!SCENARIO.rooms[destination]))return null;
  const q=[[from,[]]],seen=new Set([from]);
@@ -167,7 +169,7 @@ export function chooseCompanionAction(observation){
  if(o.dinosaurs.length){
    // Research companions may withdraw along observed physical exits while
    // the survey does not yet implement predator combat rounds.
-   if(o.adventureId==='ridge-survey'&&o.dinosaurs.some(d=>d.kind==='velociraptor'))
+   if(isStandaloneAdventureId(o.adventureId)&&o.dinosaurs.some(d=>d.kind==='velociraptor'))
     return o.exits.length?
      proposal('move',o.exits[0],'withdraw_from_predator',
       'Withdraw through a real adjacent exit from a visible predator.') :

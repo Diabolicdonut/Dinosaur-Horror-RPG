@@ -1,8 +1,8 @@
 {
   "project": "Dinosaur Horror RPG",
-  "version": "0.7.37",
-  "checkpoint": "009-C5",
-  "state": "accepted_revision13_source_bound_npc_eyewitness_warning_650_green_main_actions_pages",
+  "version": "0.7.38",
+  "checkpoint": "009-D1",
+  "state": "009d1_second_authored_adventure_shared_standalone_engine_pending_final_ci",
   "branch": "main",
   "canonical_rules": "docs/RULES-BASELINE.md",
   "canonical_scenario": "src/scenario.mjs",
@@ -13,14 +13,14 @@
   "secondary_reference": "Year Zero Mini.pdf (tertiary background only)",
   "locations": 7,
   "persistent_dinosaurs": 1,
-  "automated_tests": 650,
+  "automated_tests": 657,
   "api_status": "Live Worker v006 and Sol referee previously verified in user's 2026-10-21 19:45Z report. Most recent upload was an exact duplicate of original report (same SHA-256 and generated_at), so it cannot confirm whether game build 006.1 fixes ran.",
   "next_actions": [
-    "Implement genuinely Evolved-compliant human NPC turn ownership, available reactions, initiative and injuries, without requiring a predator confrontation.",
-    "Add carried-gear survivor offensive combat with ammunition and Evolved armor/damage rules; respect physically present targets and quiet alternatives.",
-    "Maintain immutable Long Count rev1–12 scenario sources/fingerprints and all prior saves; continue removing Nublar-only assumptions from generic Party engine.",
-    "Complete manual desktop/mobile graphical smoke for quiet and predator variants, Jules genuine warning versus hold, Tomas return, Party/Focus/Spectator, wounds and save recovery.",
-    "Then procedurally varied original Cinematic adventures, persistent Campaign chapters and a grounded Game Mother, preserving 18-gate roadmap accounting."
+    "Complete acceptance verification of independent estuary adventure, three-way catalog routing and legacy saves on final PR and merged main.",
+    "Implement full human NPC Evolved turn ownership, reactions, injury and accountable action economy without forced carnivore encounters.",
+    "Add real carried-gear survivor offensive combat, ammunition, target armor and creature consequences.",
+    "Continue Nublar engine separation, variable Cinematic generator, long-form Campaign and private GM state.",
+    "Perform manual desktop/mobile graphical testing for all three authored adventures and each control mode."
   ],
   "acceptance_criteria": [
     "009-C4 PR #54 exact source head 1c04735266fe480253171daea4c12aee59327776 CI 40530825616 SUCCESS 642/642.",
@@ -127,7 +127,7 @@
     "same_as_previous": true,
     "not_new_test": true
   },
-  "browser_asset_cache_revision": "007l2a",
+  "browser_asset_cache_revision": "009c5-009d1",
   "primary_rulebook_reference": "User private Library: Alien RPG - Evolved Edition.pdf (Free League; accepted 2026-10-22)",
   "rules_authority_policy": "docs/EVOLVED-RULES-AUTHORITY.md",
   "authority_decision_date": "2026-10-22",
@@ -1056,5 +1056,18 @@
     "mainPages": 40568933558,
     "regressions": 650,
     "manual_graphical_qa": "pending"
+  },
+  "adventure_multi_package_009d1": {
+    "status": "implementation_pending_ci",
+    "version": "0.7.38",
+    "report": "docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md",
+    "sourceAdventure": "adventures/tidal-nursery.mjs",
+    "sourceRevision": 1,
+    "scope": "Standalone adventure catalog routing and source-based maps, item stock, objectives, save validation and companion route planning; peaceful four-room Tidal Nursery with seeded tide/radio complications",
+    "retained": "Long Count historical rev1-12 and current rev13; legacy Nublar implementation unchanged",
+    "testTarget": 657,
+    "roadmapAccepted": 38,
+    "roadmapTotal": 100,
+    "manualGraphicalQA": "pending"
   }
 }

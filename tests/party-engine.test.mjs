@@ -179,7 +179,8 @@ test('multi-character incident browser and validated roster transfer have isolat
  assert(app.includes('sessionStorage.removeItem(LAUNCH)'));
  assert(app.includes('state.startingRoster'));
  assert(app.includes("newPartyIncident({...setup,adventureId:$('adventure-select').value})"));
- assert(page.includes('STALKING · FACING · PREDATOR SENSES'));
+ assert(page.includes('009-D1 · AUTHOR-DEFINED ADVENTURES · EVOLVED DICE'));
+ assert(page.includes('<option value="tidal-nursery">'));
  const characters=await readFile(new URL('../characters.html',import.meta.url),'utf8');
  assert(characters.includes('id="start-party"'));
 

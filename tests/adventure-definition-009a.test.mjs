@@ -11,9 +11,9 @@ const storm=()=>getAdventureDefinition('nublar-after-the-storm');
 const ridge=()=>getAdventureDefinition('ridge-survey');
 const fails=(obj)=>assert.throws(()=>validateAdventureDefinition(obj),RangeError);
 
-test('two versioned independent packages are registered, not the same fixed evacuation plot',()=>{
+test('three versioned independent packages are registered, not the same fixed evacuation plot',()=>{
  const list=listAdventureDefinitions();
- assert.deepEqual(list.map(x=>x.id),['nublar-after-the-storm','ridge-survey']);
+ assert.deepEqual(list.map(x=>x.id),['nublar-after-the-storm','ridge-survey','tidal-nursery']);
  assert.equal(storm().schemaVersion,1);
  assert.equal(ridge().schemaVersion,1);
  assert.equal(storm().start,'control');
@@ -33,8 +33,8 @@ test('accepted After the Storm map, items and objective route match existing sce
  assert.deepEqual(s.startItems,SCENARIO.startItems);
  assert.equal(s.objectives.at(-1).room,'helipad');
 });
-test('both packages compile to separately immutable-by-value serialized adventure instances',()=>{
- for(const id of ['nublar-after-the-storm','ridge-survey']){
+test('all registered packages compile to separately immutable-by-value serialized adventure instances',()=>{
+ for(const id of ['nublar-after-the-storm','ridge-survey','tidal-nursery']){
   const compiled=compileSelectedAdventure(id,1993);
   assert(validateCompiledAdventure(compiled));
   assert.equal(compiled.schemaVersion,ADVENTURE_SCHEMA_VERSION);

@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
-  "asOf": "2026-10-27",
-  "revision": "v0.7.37",
+  "asOf": "2026-10-28",
+  "revision": "v0.7.38",
   "revisionSource": {
     "type": "json",
     "file": "project-state.json",
@@ -20,7 +20,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "38/100 accepted remains unchanged; partial human NPC agency has gained a rev13 source-evidenced local eyewitness conversation, but full NPC action economy, combat/injury and autonomy remain incomplete. Partial gates earn zero until all acceptance conditions pass.",
+    "note": "Accepted whole-product weight remains 38/100. 009-D1 adds an independently playable original estuary adventure and removes Long Count singleton map/stock/save/view assumptions from the standalone runtime; scenario independence and authored variety are still partial. NPC action economy, offensive combat, procedural Cinematic/Campaign and graphical QA remain open.",
     "gates": [
       {
         "id": "evolved-rules",
@@ -99,7 +99,7 @@
         "label": "Fully adventure-independent party/runtime and durable saves",
         "weight": 7,
         "status": "partial",
-        "evidence": "docs/ADVENTURE-ENGINE-SEPARATION.md; src/party-engine.mjs; src/adventure-party-runtime.mjs",
+        "evidence": "docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md; src/adventure-party-runtime.mjs; tests/adventure-second-package-009d1.test.mjs",
         "acceptance": "Remove remaining hardcoded Nublar game assumptions from shared rules, adjudication and UI; same physical actions/rules/saves across independently defined settings and original adventures; preserve accepted old saves."
       },
       {
@@ -123,7 +123,7 @@
         "label": "Varied original pregenerated adventures and meaningful replays",
         "weight": 3,
         "status": "partial",
-        "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; adventures/ridge-survey.mjs",
+        "evidence": "adventures/tidal-nursery.mjs; adventures/ridge-survey.mjs; tests/adventure-second-package-009d1.test.mjs",
         "acceptance": "Several distinct authored adventures with different premises, physical situations and goals; repeated seed runs alter causal secrets/NPCs/animals/scenes/outcomes materially, not only cosmetic names; quiet completions remain possible."
       },
       {
