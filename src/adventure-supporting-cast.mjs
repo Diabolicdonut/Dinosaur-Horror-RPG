@@ -88,6 +88,15 @@ function topicCondition(compiled,s,npc,topic,atBeat=s.beat){
   return s.cinematicRecords?.some(r=>r.id===trigger.id&&r.beat<=atBeat);
  return false;
 }
+// Older Long Count saves used revision gates; new adventures opt in via source.
+export function castUsesMovementHistory(compiled){
+ return compiled.revision>=11||
+  Boolean(compiled.definition.supportingCast?.some(n=>n.autonomy||n.dangerResponse));
+}
+export function castUsesDangerHistory(compiled){
+ return compiled.revision>=12||
+  Boolean(compiled.definition.supportingCast?.some(n=>n.dangerResponse));
+}
 export function initialSupportingCast(compiled){
  return (compiled.definition.supportingCast||[]).filter(npc=>selected(compiled,npc))
   .map(npc=>({id:npc.id,location:npc.location,status:'present'}));
@@ -125,7 +134,7 @@ function expectedAutonomy(compiled,s){
   const round=tick/members;
   for(const n of live){
    const source=compiled.definition.supportingCast.find(x=>x.id===n.id);
-   const danger=compiled.revision>=12?source.dangerResponse:null;
+   const danger=castUsesDangerHistory(compiled)?source.dangerResponse:null;
    const from=positions[n.id];
    if(danger){
     const predator=localSourcePredator(compiled,from,round);
@@ -179,7 +188,7 @@ export function advanceSupportingCast(compiled,previous){
   JSON.stringify(previous.npcAutonomyRecords)!==
    JSON.stringify(projected.records.slice(0,previous.npcAutonomyRecords.length)))
   throw new RangeError('NPC movement history is inconsistent before the completed round.');
- if(compiled.revision>=12&&(!Array.isArray(previous.npcDangerRecords)||
+ if(castUsesDangerHistory(compiled)&&(!Array.isArray(previous.npcDangerRecords)||
    previous.npcDangerRecords.length>projected.dangerRecords.length||
    JSON.stringify(previous.npcDangerRecords)!==
     JSON.stringify(projected.dangerRecords.slice(0,previous.npcDangerRecords.length))))
@@ -199,7 +208,7 @@ export function advanceSupportingCast(compiled,previous){
     message:author.name+(observer.location===record.to?
      ' arrives from the adjoining trail.':' heads along the adjoining trail.')});
  }
- if(compiled.revision>=12){
+ if(castUsesDangerHistory(compiled)){
   for(const record of projected.dangerRecords.slice(s.npcDangerRecords.length)){
    const npc=s.supportingCast.find(n=>n.id===record.id);
    const source=compiled.definition.supportingCast.find(n=>n.id===record.id);
@@ -223,8 +232,8 @@ export function validSupportingCastState(compiled,s){
  const introduced=compiled.definition.supportingCast;
  if(introduced===undefined)return s.supportingCast===undefined&&s.conversationRecords===undefined;
  const initial=initialSupportingCast(compiled);
- const modern=compiled.revision>=11;
- const dangerEnabled=compiled.revision>=12;
+ const modern=castUsesMovementHistory(compiled);
+ const dangerEnabled=castUsesDangerHistory(compiled);
  const movement=modern?expectedAutonomy(compiled,s):null;
  if(!Array.isArray(s.supportingCast)||
     !Array.isArray(s.conversationRecords)||s.conversationRecords.length>160||

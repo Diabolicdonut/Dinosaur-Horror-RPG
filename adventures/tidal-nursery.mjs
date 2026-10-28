@@ -1,7 +1,7 @@
-// 009-D1: a second independent, original adventure package.
+// 009-D2: original estuary scenario supports source-driven supporting characters.
 // Quiet ecological wonder and uncertain weather; no mandatory predator.
 export const TIDAL_NURSERY={
- schemaVersion:1,id:'tidal-nursery',revision:1,
+ schemaVersion:1,id:'tidal-nursery',revision:2,
  title:'The Tidal Nursery',
  premise:'At an estuary nursery, a field team must retrieve migration readings and secure a safe return before the incoming tide.',
  start:'supply-shelter',
@@ -35,6 +35,32 @@ export const TIDAL_NURSERY={
    room:'supply-shelter',requires:['signal-field-team'],
    interaction:{target:'secure the expedition',skill:null},
    effects:[{type:'flag',name:'returned',value:true},{type:'end',outcome:'completed'}]}
+ ],
+ supportingCast:[
+  {id:'mara-venn',name:'Mara Venn',role:'Estuary logistics coordinator',
+   description:'Mara checks tide charts beneath the shelter awning. She does not leave the base.',
+   motive:'Keep the expedition safe and the evidence reliable without promising dramatic sightings.',
+   location:'supply-shelter',stance:'cooperative',
+   topics:[
+    {id:'routes',prompt:'Ask Mara about the field routes',
+     reply:'The boardwalk reaches the nursery. The knoll offers another connected way in. Take the route that is safe under the conditions you can actually see.'},
+    {id:'safe-return',prompt:'Tell Mara the field signal was sent',
+     requires:{kind:'objective',id:'signal-field-team'},
+     reply:'We have a confirmed transmission. Bring everyone back by the connected trail and we can close the expedition.'}
+   ]},
+  {id:'ivo-pell',name:'Ivo Pell',role:'Nursery ecologist',
+   description:'Ivo watches the animals from the low instrument post and will carry his notes back after the samples are recovered.',
+   motive:'Protect the nesting site, and avoid reading predator behavior into ordinary animal caution.',
+   location:'nesting-pool',stance:'cautious',
+   autonomy:{kind:'return_route',trigger:{kind:'objective',id:'recover-samples'},
+    path:['nesting-pool','reed-walk','supply-shelter'],cadence:1},
+   topics:[
+    {id:'herd',prompt:'Ask Ivo about the nursery herd',
+     reply:'The grazers are feeding here on their own terms. Keep your distance and observe how they use the water.'},
+    {id:'observations',prompt:'Compare the recovered migration readings',
+     requires:{kind:'objective',id:'recover-samples'},
+     reply:'Those measurements are useful because we actually collected them. The report should say no more than the evidence supports.'}
+   ]}
  ],
  initialCreatures:[
   {id:'nursery-grazer',species:'parasaurolophus',
