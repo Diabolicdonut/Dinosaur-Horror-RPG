@@ -1,5 +1,18 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-D1 — Multi-package standalone game runtime and original Tidal Nursery — 2026-10-28 (source pending acceptance)
+
+**Recovery:** main `c9291f61d2942cc00b4d2518a0d296e5f2048fe5` at checkpoint 009-C5 / v0.7.37, 650/650 Actions and Pages green. Original Long Count revision 13 and frozen revisions 1–12 protected; Nublar remains the legacy separate incident. Full approved 18-gate scope is **38/100 accepted**, first playable **5/8**.
+
+**Development:** Added the independent `tidal-nursery` original adventure with its own four-room estuary, one neutral Parasaurolophus, three real objective checks and connected return route. Seed-locked, mechanically distinct tide/antenna obstacles are declared in the adventure source; no predator is required. Generalized the selected-adventure Party runtime's map, item/stock, flags, objective, save-fingerprint, action checks, view and initial location to the selected manifest rather than Long Count. Companion route selection now uses the chosen scenario's public source graph. Added a third browser option and refreshed browser assets without invalidating previous test contracts. Seven new objective/source/agency/compatibility tests target **657 total**.
+
+**Boundary:** This is a partial advance for *scenario-independence* and *authored-replayability*, not fully generalized Nublar mechanics, automatically generated episodes or new Evolved combat/medical NPC rules. No whole roadmap gate is newly accepted, so overall **38/100** remains and graphical smoke remains outstanding. See `docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md`.
+
+**Verification:** PR #59 development branch; source CI and independent merged main Actions/Pages to be verified before unconditional acceptance.
+
+---
+
+
 ## 009-C5 — Source-earned supporting NPC eyewitness warnings (accepted) — 2026-10-27
 
 **Recovery:** Actual main `72955ab3bae3c3a140ccbadc4c253a2331cd6a24`, 009-C4 v0.7.36, **642/642**, successful main Actions and Pages, no open PRs. Preserve all newer accepted checkpoint records, the 18-gate roadmap and the previous rev12 NPC response.
