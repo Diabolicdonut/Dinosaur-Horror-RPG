@@ -1,5 +1,14 @@
 # Dinosaur Horror RPG — Engineering audit
 
+## 009-D2 — Cross-adventure supporting character behavior (source pending verification) — 2026-10-28
+
+**Recovered baseline:** accepted main `4437315c7ec1801c89f2352c9bca2d1ea00f6d82`, v0.7.38, 009-D1, 657/657. **New candidate:** v0.7.39, eight new NPC parity/compatibility tests target 665. Source activation now follows scenario-defined cast and return-route evidence while retaining historical Long Count revision gates. Added source-local estuary cast, physically connected objective-activated return route and frozen Tidal Nursery rev1 source for old saves. [Technical report](docs/ADVENTURE-ENGINE-NPC-009D2.md).
+
+**Verification boundary:** PR Actions, independently merged main Actions and Pages, and manual graphical QA are NOT yet accepted. Overall roadmap unchanged **38/100**; no full NPC agency or full scenario-independent system claimed.
+
+---
+
+
 ## 009-D1 — Source and independent main acceptance — 2026-10-28
 
 **Accepted 009-D1 (v0.7.38, 2026-10-28):** PR [#59](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/59) exact head `acd3afd694a891d9f51ea1ad0837dbfcf481d026` passed [Actions 40702638677](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40702638677) **657/657**; independently merged source `main` `fc4a8ca085b32905f75b673f544ffe0f813395b0` passed [Actions 40703031919](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703031919) **657/657** and [Pages 40703030381](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40703030381) **SUCCESS**. No manual graphical sign-off. **Roadmap stays 38/100, foundation 5/8**, since neither the scenario-independence nor authored-replayability gate is fully accepted.
