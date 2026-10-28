@@ -1,6 +1,6 @@
 # 009-D2 — Source-defined NPC behavior across independent adventures
 
-**Status:** candidate implementation, pending pull-request Actions, independent merged-main Actions/Pages, and manual desktop/mobile graphical testing. **Version:** v0.7.39. **Target:** 665/665 Node tests. Overall roadmap remains **38/100 accepted weighted gates** and first playable 5/8. Neither the NPC-agency nor scenario-independence gate is fully accepted by this narrow milestone.
+**Status:** accepted 2026-10-28 after exact source PR [#61](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/61) head `5f4bd60f3c9f57369925804a4bc9096630b965b8` passed [Actions 40727120403](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727120403) **665/665** and syntax checks. Independently merged main `215682077129bbf2c11a77d03a350da7d94070b1` passed [Actions 40727332147](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727332147) **665/665** and [Pages 40727330374](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/40727330374) **SUCCESS**. Manual desktop/mobile graphical testing remains outstanding. **Version:** v0.7.39. Overall roadmap remains **38/100 accepted weighted gates** and first playable 5/8. Neither the NPC-agency nor scenario-independence gate is fully accepted by this narrow milestone.
 
 ## Recovered baseline and purpose
 
@@ -22,4 +22,4 @@ Eight new regression cases cover source identity, local dialogue, remote rejecti
 
 ## Remaining work
 
-Test the exact PR head, independent main Actions and Pages before marking accepted. Manually smoke-test native desktop and mobile browsers, all control modes and both estuary revisions. The same unfinished full-scope gates remain: offensive Evolved combat, independent NPC tactical choices and medical outcomes, universal engine extraction, AI Game Mother, procedural Cinematic/Campaign and secure private GM state.
+The exact PR head, independently merged main Actions and Pages have passed. Manually smoke-test native desktop and mobile browsers, all control modes and both estuary revisions. The same unfinished full-scope gates remain: offensive Evolved combat, independent NPC tactical choices and medical outcomes, universal engine extraction, AI Game Mother, procedural Cinematic/Campaign and secure private GM state.

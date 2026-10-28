@@ -20,7 +20,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "009-D2 source candidate adds estuary supporting cast and earned return-route behavior without completing any larger 18-gate acceptance area. Whole-product accepted progress remains 38/100; CI, Pages and graphical playtest sign-off are pending.",
+    "note": "009-D2 accepted: estuary NPC dialogue and connected, source-verified objective-triggered returns now run in an independent adventure with frozen rev1 save compatibility. Verified 665/665 on exact PR #61 head and merged main, Pages SUCCESS. 18-gate roadmap remains 38/100; action economy, offensive Evolved combat, procedural stories, hidden GM state and manual graphical QA remain incomplete.",
     "gates": [
       {
         "id": "evolved-rules",
