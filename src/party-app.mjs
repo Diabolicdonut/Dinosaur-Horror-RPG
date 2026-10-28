@@ -1,9 +1,10 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
-import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009c5';
+import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009d1';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
-  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009c5';
+  setPlayback,runAutonomousTurn} from './party-director.mjs?v=009d1';
 import {activeCombatSlot,activeTurnId,combatCost} from './combat-turns.mjs?v=007l2b1';
 import {selectedCombatSlot} from './adventure-combat-live.mjs';
+import {isStandaloneAdventureId} from './adventure-catalog.mjs';
 import {TRAUMA,woundModifiers,pendingLethal} from './evolved-injuries.mjs?v=007l2a';
 
 const $=id=>document.getElementById(id);
@@ -51,7 +52,7 @@ function create({roster=null,seed=null}={}){
  else setup=state?.startingRoster&&validateParty(state.startingRoster).length===0?
    {seed:state.initialSeed,roster:state.startingRoster}:(setup??loadSetup());
  state=newPartyIncident({...setup,adventureId:$('adventure-select').value});
- save();announce('New '+(state.scenario==='ridge-survey'?'research':'rescue')+
+ save();announce('New '+(isStandaloneAdventureId(state.scenario)?'field adventure':'rescue')+
   ' incident started. Choose a control mode at any time.');
 }
 function selectedOption(id,label,selected){
@@ -215,7 +216,7 @@ function show(){
   ...v.observations.map(o=>['investigate '+o.id,'Investigate '+o.id]),
   ...(v.wonder&&!v.wonder.discovered&&!v.combat?[
     ['wonder '+v.wonder.id,'Take in the view · '+v.wonder.title]]:[]),
-  ...(v.visibleDinosaurs.length&&v.adventureId!=='ridge-survey'?[['attack dinosaur','Fight the dinosaur']]:[]),
+  ...(v.visibleDinosaurs.length&&!isStandaloneAdventureId(v.adventureId)?[['attack dinosaur','Fight the dinosaur']]:[]),
   ...state.actors.filter(a=>a.location===v.location&&!a.dead&&
       (a.broken||pendingLethal(a).length))
     .map(a=>['aid '+a.id,'First aid: '+a.name]),
@@ -232,12 +233,12 @@ function show(){
     'Follow group to '+v.groupTravel.to]]:[]),
    ...v.availableCover.map(x=>['hide behind '+x.id,'Hide behind '+x.label]),
    ['guard','Stand watch / brace'],['hide','Find cover'],['wait','Wait / Listen'],
-  ...(v.combat&&canScene&&v.adventureId!=='ridge-survey'?v.combat.order.slice(v.combat.index+1).map(slot=>
+  ...(v.combat&&canScene&&!isStandaloneAdventureId(v.adventureId)?v.combat.order.slice(v.combat.index+1).map(slot=>
    ['hold '+slot.card,'Hold for '+(slot.kind==='dinosaur'?'Velociraptor':
       state.actors.find(a=>a.id===slot.actorId)?.name||'survivor')+' (#'+slot.card+')']):[]),
   ...(v.combat?[['end','End combat turn']]:[])
  ];
- const displayed=v.combat&&v.adventureId==='ridge-survey'?
+ const displayed=v.combat&&isStandaloneAdventureId(v.adventureId)?
   actions.filter(([order])=>['end','wait'].includes(order)||
    /^(take|give|aid) /.test(order)):actions;
  $('world-buttons').innerHTML=displayed.map(([order,label])=>{
@@ -274,7 +275,7 @@ function show(){
     'EXPLORATION · 5–10 minute stretches · no combat';
  if(state.outcome!=='playing')announce(state.outcome==='lost'?
   'ALL SURVIVORS LOST — this incident has ended.':
-  (v.adventureId==='ridge-survey'?'The field survey is complete; the team has returned safely.':
+  (isStandaloneAdventureId(v.adventureId)?'The field mission is complete; the team has returned safely.':
    'Rescue objectives complete; this incident has ended.'));
  queueAutoplay();
 }
