@@ -731,7 +731,7 @@ export function parsePartyAction(input) {
  return {kind:'',target:line,push:0};
 }
 export function partyStep(previous,raw,{actorId=null,source='human',reactionPrompt=false}={}) {
- if(previouisStandaloneAdventureId(s?.scenario))
+ if(isStandaloneAdventureId(previous?.scenario))
   return selectedAdventureStep(previous,raw,{actorId,source,reactionPrompt},parsePartyAction);
  if(!isPartySave(previous))throw new RangeError('Invalid party incident.');
  let action=parsePartyAction(raw);
