@@ -271,7 +271,7 @@ function normalize(raw,parser){
 }
 export function selectedAdventureStep(previous,raw,opts={},parser){
  if(!isSelectedAdventureSave(previous))throw new RangeError('Invalid selected adventure save.');
- const instance=situated(previous),template=instance.definition,world=createAdventureWorld(instance);
+ const manifest=situated(previous),template=manifest.definition,world=createAdventureWorld(manifest);
  if(previous.pendingPredatorResponse){
   const pending=previous.pendingPredatorResponse;
   const victim=previous.actors.find(a=>a.id===pending.victimId);
