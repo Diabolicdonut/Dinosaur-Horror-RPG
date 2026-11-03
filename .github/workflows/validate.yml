@@ -3,6 +3,17 @@ on:
   push:
     branches: [main]
   pull_request:
+  # Unlike push, repository_dispatch is not suppressed for GITHUB_TOKEN merges.
+  repository_dispatch:
+    types: [verify-merged-main]
+  # Catch auto-merges that complete after the dispatching job exits, or
+  # any lost dispatch. This is a safety net, not a scheduling SLA.
+  schedule:
+    - cron: '7,37 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
 jobs:
   node-test:
     runs-on: ubuntu-latest
@@ -23,3 +34,25 @@ jobs:
           node --check server.mjs
           node --check worker/index.mjs
           node --check tests/worker.test.mjs
+          node --check .github/scripts/verify-pages.mjs
+          node --check tests/post-merge-ci.test.mjs
+
+  verify-main-pages:
+    name: verify-main-pages
+    needs: node-test
+    if: >-
+      ${{ github.ref == 'refs/heads/main' &&
+          (github.event_name == 'repository_dispatch' ||
+           github.event_name == 'schedule' ||
+           github.event_name == 'workflow_dispatch') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify successful Pages deployment of the tested main SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node .github/scripts/verify-pages.mjs
