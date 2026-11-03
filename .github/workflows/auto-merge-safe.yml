@@ -56,6 +56,40 @@ jobs:
           fi
           gh pr merge "$PR_NUMBER" --repo "$GH_REPO" --auto --squash
 
+
+      - name: Dispatch exact-main CI after a confirmed bot merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # GitHub's GITHUB_TOKEN suppresses ordinary push-triggered Actions
+          # after bot merges. repository_dispatch is an explicit exception.
+          # Native --auto may queue a merge for later; never claim validation
+          # before merged_at and merge_commit_sha are both recorded.
+          for attempt in $(seq 1 12); do
+            merged_at="$(gh api "repos/${GH_REPO}/pulls/${PR_NUMBER}" --jq '.merged_at // ""')"
+            if [[ -n "$merged_at" ]]; then
+              merged_sha="$(gh api "repos/${GH_REPO}/pulls/${PR_NUMBER}" --jq '.merge_commit_sha // ""')"
+              if [[ ! "$merged_sha" =~ ^[a-f0-9]{40}$ ]]; then
+                echo "::error::Merged PR has no valid merge commit SHA."
+                exit 1
+              fi
+              gh api "repos/${GH_REPO}/dispatches" \
+                -f event_type=verify-merged-main \
+                -f "client_payload[merge_sha]=$merged_sha" \
+                -f "client_payload[pr_number]=$PR_NUMBER" >/dev/null
+              echo "Dispatched read-only main CI for bot merge $merged_sha."
+              exit 0
+            fi
+            sleep 10
+          done
+          # Required reviews or checks can defer auto-merge indefinitely.
+          # The independent scheduled main validation remains the fallback.
+          echo "::notice::Auto-merge is pending; scheduled main CI will catch a later merge."
+
       # This workflow deliberately does not change project-state.json,
       # site-progress.json, or audit.md. Gameplay milestones require a
       # separate human-reviewed integration/acceptance process.
