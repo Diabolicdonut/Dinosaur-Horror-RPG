@@ -34,6 +34,8 @@ jobs:
           node --check server.mjs
           node --check worker/index.mjs
           node --check tests/worker.test.mjs
+          node --check .github/scripts/verify-pages.mjs
+          node --check tests/post-merge-ci.test.mjs
 
   verify-main-pages:
     name: verify-main-pages
