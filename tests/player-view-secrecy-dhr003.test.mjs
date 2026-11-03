@@ -131,7 +131,7 @@ test('DHR-003: unearned story cards, witness warnings and offscreen dialogue are
  const ridge=snapshotView(s,id);
  assert.deepEqual(npcIds(ridge),['tomas-wren']);
  assert.equal(ridge.scenarioMaterial.privateStoryCards.length,0);
- s=accepted(s,'scene living-valley',{toString:()=>id}.toString());
+ s=accepted(s,'scene living-valley',id);
  const now=snapshotView(s,id);
  assert.deepEqual(now.scenarioMaterial.privateStoryCards.map(c=>c.id),['the-living-valley']);
  assert.deepEqual(snapshotView(s,s.actors[1].id).scenarioMaterial.privateStoryCards,[]);
