@@ -1,0 +1,61 @@
+name: Queue explicitly approved automatic merge
+on:
+  pull_request_target:
+    types: [labeled, synchronize, ready_for_review, reopened]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  request-auto-merge:
+    name: request-auto-merge
+    if: >-
+      ${{ !github.event.pull_request.draft &&
+          github.event.pull_request.base.ref == 'main' &&
+          contains(github.event.pull_request.labels.*.name, 'safe-auto-merge') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Independently verify initial documentation-only scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          paths="$(gh api --paginate "repos/${GH_REPO}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          if [[ -z "$paths" ]]; then
+            echo "::error::No changed files."
+            exit 1
+          fi
+          while IFS= read -r path; do
+            case "$path" in
+              docs/parallel-development/*.md) ;;
+              *)
+                echo "::error::Automatic merge not authorized for: $path"
+                exit 1
+                ;;
+            esac
+          done <<< "$paths"
+
+      - name: Enable squash auto-merge under existing branch rules
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Reject changed heads since the event's authorization check.
+          current="$(gh api "repos/${GH_REPO}/pulls/${PR_NUMBER}" --jq '.head.sha')"
+          if [[ "$current" != "$HEAD_SHA" ]]; then
+            echo "::error::PR head changed; re-evaluate on the next event."
+            exit 1
+          fi
+          gh pr merge "$PR_NUMBER" --repo "$GH_REPO" --auto --squash
+
+      # This workflow deliberately does not change project-state.json,
+      # site-progress.json, or audit.md. Gameplay milestones require a
+      # separate human-reviewed integration/acceptance process.
