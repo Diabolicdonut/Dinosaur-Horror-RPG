@@ -1,0 +1,45 @@
+name: Verify automatic-merge eligibility
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review, labeled, unlabeled]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  auto-merge-policy:
+    name: auto-merge-policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check pre-approved automatic-merge scope
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          OPTED_IN: ${{ contains(github.event.pull_request.labels.*.name, 'safe-auto-merge') }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$OPTED_IN" != "true" ]]; then
+            echo "Not an opt-in auto-merge PR. Normal branch protection applies."
+            exit 0
+          fi
+
+          # Initial pilot is intentionally documentation-only. Expanding this
+          # allowlist requires a separate reviewed change and additional tests.
+          paths="$(gh api --paginate "repos/${GH_REPO}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          if [[ -z "$paths" ]]; then
+            echo "::error::Opt-in PR has no changed files."
+            exit 1
+          fi
+          while IFS= read -r path; do
+            case "$path" in
+              docs/parallel-development/*.md) ;;
+              *)
+                echo "::error::Not eligible for automatic merge: $path"
+                exit 1
+                ;;
+            esac
+          done <<< "$paths"
+          echo "All changed files are within the initial safe documentation allowlist."
