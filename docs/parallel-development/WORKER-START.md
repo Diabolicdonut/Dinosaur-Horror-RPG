@@ -21,10 +21,10 @@ Use this template to begin a **new, separate GitHub-connected developer chat**. 
 ## Current evidence and limits
 
 - Gameplay checkpoint as of queue creation: **009-D2 / v0.7.39**, 665 accepted baseline regression tests, 18 weighted scope gates with **38/100** accepted points.
-- GitHub workflow tests may run additional tests following queue setup; baseline numbers are historical evidence rather than a guaranteed count of any worker's new commit.
-- **One code worker per source module** when integration collisions are plausible. First recommended wave: #67 (CI), #69 (privacy/security tests), #73 (pure weapon validator), #74 (pure NPC policy).
+- GitHub workflow tests may run additional tests following queue setup; baseline numbers are historical evidence rather than a guaranteed count of any worker's new commit. The first wave added CI verification, a carried-weapon validator, an NPC options policy and security regressions without changing accepted gameplay checkpoint or percentage.
+- **One code worker per source module** when integration collisions are plausible. **Completed first wave:** #67/#80 CI, #69/#79 privacy tests, #73/#77 pure weapon validator, #74/#78 pure NPC policy. **Next recommended wave:** #75 finite ammo, #83 NPC motives, #72 save and replay fixtures, #70 Evolved parity audit.
 - Integrating code PRs is **reviewed**, not authorized for automatic merging. `safe-auto-merge` is the special docs-only opt-in and **must not be applied to gameplay PRs**.
-- Do not enable broader gameplay automatic merging until #67 proves independent post-bot-merge `main` test and deployment evidence.
+- DHR-001 / #67 is integrated and has independent merged-main Actions/Pages success. Its new bot-merge dispatch path still requires a live docs-only auto-merge proof; never enable broader gameplay auto-merging merely because that CI change merged. Gameplay PRs remain explicitly reviewed.
 - If tool access to live GitHub or a needed private Evolved reference is missing, stop without fabricating commits, tests, or rule details and report a concrete blocker.
 
 ## Integration Director's repeatable review
