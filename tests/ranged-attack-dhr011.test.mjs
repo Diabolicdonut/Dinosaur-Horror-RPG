@@ -200,7 +200,7 @@ test('frozen replay, world RNG and pre-weapon historical saves remain unchanged'
   const historical={saveVersion:3,actors:[{id:'pc-1',inventory:[]}],
     rng:1993,beat:0,history:[{kind:'look',seed:11}]};
   const fingerprint=JSON.stringify(historical);
-  assert.match(denied(historical,action(),[],{}),/does not carry/);
+  assert.match(denied(historical,action(),targets(),{}),/does not carry/);
   assert.equal(JSON.stringify(historical),fingerprint);
   assert(!('weapons' in historical));
   assert(!('ammoSpent' in historical));
