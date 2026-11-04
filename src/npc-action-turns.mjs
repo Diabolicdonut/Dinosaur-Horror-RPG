@@ -175,7 +175,7 @@ function receipt(window,sequence,query,proposal,choice,cost){
 }
 function rebuild(compiled,motive,ledger,window){
  if(!exact(window,WINDOW_KEYS))invalid('turn shape');
- if(!data(window))invalid('turn values');
+ if(!data(window))invalid('turn values in '+Object.keys(window).filter(k=>!data(window[k])).join(','));
  if(!Array.isArray(window.history)||window.history.length>2)
   invalid('turn history bound');
  if(!validateCompiledAdventure(compiled))invalid('compiled adventure');
