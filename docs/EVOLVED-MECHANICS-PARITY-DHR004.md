@@ -43,6 +43,14 @@ The primary mechanical authority is the user's **private** Free League *ALIEN RP
 
 Following the original DHR-004 snapshot, separate independently verified PRs added bounded supporting components: DHR-009 / [PR #90](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/90) introduced a **pure, trusted-source-stock-input** ammunition conservation ledger, and DHR-017 / [PR #87](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/87) introduced an **authoring-only** NPC motive/intent binding. The E21 and E26 evidence rows above now acknowledge these modules; both remain **partial**, with no new runtime offensive attacks, human NPC autonomous combat or accepted weighted roadmap points. No claim of full rulebook/mechanics parity is implied.
 
+### Third-wave source inventory (2026-11-03)
+
+Subsequent accepted, independently verified PRs added new **standalone** engine primitives: DHR-010 [PR #98](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/98) gives source-verified *human melee* checks, DHR-011 [PR #99](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/99) gives source-backed *ranged roll proposals* with an uncommitted finite-ammunition spend descriptor, and DHR-018 [PR #100](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/100) adds source-bound *NPC observation and rumor provenance*. Their executable evidence lives in `src/melee-attack.mjs` / `tests/melee-attack-dhr010.test.mjs`, `src/ranged-attack.mjs` / `tests/ranged-attack-dhr011.test.mjs`, and `src/npc-knowledge-provenance.mjs` / `tests/npc-knowledge-provenance-dhr018.test.mjs`.
+
+**No corresponding globally playable implementation exists yet:** E19 and E20 remain **missing in accepted selected-adventure runtime**, because pure checks are not wired into combat encounters and ranged proposal results intentionally have `hit:null` and `damage:null`. E26 remains **partial**, because provenance does not itself make or schedule NPC choices. E21 remains **partial** despite finite-stock accounting. Later DHR-012/013/014/015/016 and DHR-019–024 integrate physics, combat consequences, NPC turns and multiple adventures. The accepted 18-gate roadmap remains **38/100** until the *entire* appropriate acceptance gate is verified.
+
+DHR-055 [PR #97](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/97) hardens the repository Worker request/auth/rate-limit boundary but does **not** establish deployed Cloudflare security or server-private GM state. `GM_REQUIRE_LIMITER=true` in a Wrangler deployment will intentionally refuse paid requests when `GM_LIMITER` is missing. Cloudflare deployment and actual environment bindings require separate live confirmation.
+
 ## Cross-runtime reconciliation
 
 - **Character Lab:** initial attributes/skills/talents, simulated seeded checks, some stress/Resolve and Story Point hooks. It is not equivalent to full campaign playable advancement.
