@@ -1,17 +1,17 @@
-# Dinosaur Horror RPG — Parallel Development Queue v4
+# Dinosaur Horror RPG — Parallel Development Queue v5
 
-**Snapshot:** 2026-11-03 after third integration wave · **Gameplay authority:** 009-D2 / v0.7.39 · **Accepted whole-product roadmap:** 38/100 across 18 gates · **Current exact merged-main validation:** 843/843 tests after 12 bounded developer subtasks. Original accepted baseline: 665 tests; accepted weighted gameplay gates unchanged.
+**Snapshot:** 2026-11-04 after fourth integration wave · **Gameplay authority:** 009-D2 / v0.7.39 · **Accepted whole-product roadmap:** 38/100 across 18 gates · **Current exact merged-main validation:** 902/902 tests after 16 bounded developer subtasks. Original accepted baseline: 665 tests; accepted weighted gameplay gates unchanged.
 
 **Authority and precedence:** This queue is subordinate to `docs/ROADMAP-COVERAGE.md`, `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `docs/EVOLVED-RULES-AUTHORITY.md`, `AGENTS.md`, and current accepted `main`. The historical accepted checkpoint and 38/100 progress are **not** changed by creating assignments. Do not copy private Free League rulebooks or official scenarios into the public repository.
 
 ## Work distribution
 
-- **Completed and merged:** DHR-001/#67 (CI), DHR-003/#69 (secrecy), DHR-004/#70 (Evolved audit), DHR-006/#72 (historical replay), DHR-007/#73 (weapon schema), DHR-008/#74 (NPC options), DHR-009/#75 (ammunition), DHR-010/#81 (melee), DHR-011/#82 (ranged), DHR-017/#83 (NPC motives), DHR-018/#84 (NPC provenance), DHR-055/#85 (Worker hardening). Each accepted developer PR passed independent exact merged-main Actions and Pages deployment. These **12 bounded subtasks** have not yet finished a weighted whole-game gate.
-- **Ready to dispatch:** DHR-002/#68, DHR-005/#71, DHR-012/#102, DHR-013/#103, DHR-019/#101, DHR-025/#91, DHR-027/#92, DHR-028/#93, DHR-029/#94 and DHR-033/#95. Start up to four disjoint worker chats; these ten have accepted prerequisites.
-- **Still dependency-blocked:** the remaining 50 planned subtasks. In particular, DHR-014 and DHR-015 still need DHR-013; DHR-020/021 need DHR-019; DHR-016 ultimately wires combat into actual adventure play. No developer may skip the blocker.
-- **Integration Director:** review gameplay PRs, verify branch CI and independent exact merged-main Actions/Pages, preserve save history and control modes, and never self-apply docs-only `safe-auto-merge` to code. No fractional whole-game gate credit.
-- **Cloudflare deployment caveat:** DHR-055 / PR #97 modified the repository's Worker source and Wrangler configuration. GitHub Actions/Pages green **does not prove the Cloudflare Worker was redeployed**, nor that production `GM_LIMITER` exists. With `GM_REQUIRE_LIMITER=true`, missing binding intentionally returns 503 for paid requests. Verify live deployment and bindings separately before claiming full operational security.
-- **Docs-only bot-merge CI:** DHR-001's independent `repository_dispatch` was proven by [PR #86](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/86) and successful [merged-main engine and Pages check](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41731955040). Gameplay PRs **remain manually review-gated**.
+- **Completed and integrated:** **16** bounded tasks, including the fourth wave DHR-012/#102 (physical ranged eligibility), DHR-013/#103 (armor and human damage), DHR-019/#101 (NPC action chooser) and DHR-025/#91 (Cinematic Story Point earning). Prior completed tasks: DHR-001, 003, 004, 006, 007, 008, 009, 010, 011, 017, 018 and 055. Each developer PR passed fresh required CI and independent exact merged-main Actions/Pages. These are **bounded subtasks**, not weighted whole-project gate acceptance.
+- **Ready to dispatch:** DHR-002/#68, DHR-005/#71, DHR-014/#110, DHR-015/#111, DHR-020/#112, DHR-021/#113, DHR-026/#115, DHR-027/#92, DHR-028/#93, DHR-029/#94, DHR-030/#114 and DHR-033/#95. These **12** assignments have accepted prerequisites, though they must still be coordinated for file conflicts. Start no more than four independent developer chats at a time initially.
+- **Dependency-blocked:** remaining **44** planned subtasks. DHR-016 (actual offensive combat integrated across adventures) still needs DHR-014 and DHR-015 and earlier physical legality contracts. DHR-022 (NPC tactical action execution) still needs DHR-016, DHR-020 and DHR-021. No worker may skip these blockers.
+- **Integration Director:** review gameplay PRs, verify branch CI and independent exact merged-main Actions/Pages, preserve historical saves and three modes. The docs-only `safe-auto-merge` label **never authorizes gameplay auto-merge**. No fractional whole-game gate credit.
+- **Cloudflare Worker caveat:** DHR-055 / PR #97 altered repository Worker source and Wrangler configuration. GitHub Actions/Pages green **does not prove Cloudflare redeployment** nor a production `GM_LIMITER` binding. With `GM_REQUIRE_LIMITER=true`, a missing binding intentionally returns 503 for paid requests. Validate this operationally before claiming full security.
+- **Docs-only bot-merge CI:** DHR-001's `repository_dispatch` was proven by [PR #86](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/86) and successful [merged-main engine and Pages check](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41731955040). Gameplay PRs **remain reviewed manually**.
 
 ## First-wave integration evidence
 
@@ -52,6 +52,19 @@ These four PRs were squash-merged in order after required green source PR-head c
 
 **Exact last merged-main tests:** 843/843 PASS, zero failures, on `b88045b4c5be`. The combat primitives are not wired to selectable in-game attacks, NPC knowledge is not yet an autonomous action scheduler, and the Cloudflare live deployment is unverified. Historical saves, accepted 009-D2 gameplay checkpoint and 38/100 weighted whole-product score stay unchanged.
 
+## Fourth-wave integration evidence
+
+These PRs were manually reviewed and squash-merged sequentially after up-to-date green required status checks, then independently verified for **the exact merged main SHA** in GitHub Actions and Pages:
+
+| Worker | Reviewed PR | Merged main SHA | Exact main engine / Pages |
+|---|---|---|---|
+| DHR-012 / #102 | [#107](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/107) | `fded4ce65023` | [engine 41845055322](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845055322) / [Pages 41845053945](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845053945) |
+| DHR-013 / #103 | [#106](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/106) | `39af94e83800` | [engine 41845437013](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845437013) / [Pages 41845436089](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845436089) |
+| DHR-019 / #101 | [#108](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/108) | `e67aba880430` | [engine 41845707537](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845707537) / [Pages 41845705194](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41845705194) |
+| DHR-025 / #91 | [#109](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/109) | `c93e876f0eb3` | [engine 41846115752](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41846115752) / [Pages 41846115572](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41846115572) |
+
+**Final gameplay integrated-main test suite:** **902/902 passed**, zero failures, commit `c93e876f0eb3`. DHR-012/013 remain standalone physics/damage adapters, DHR-019 is a nonexecuting NPC action chooser, and DHR-025 is a pure Story Point award proposal. **Neither new attack options nor autonomous NPC actions are yet exposed in current adventure gameplay**. Do not claim full Evolved rules or accepted milestone credit. Original gameplay 009-D2 / v0.7.39, historical adventure source revisions, saves and accepted 38/100 18-gate roadmap remain unchanged.
+
 ## Roadmap-mapped assignment catalog
 
 | Queue ID | Readiness | Roadmap gates | Requires accepted | Bounded delivery | GitHub issue |
@@ -67,25 +80,25 @@ These four PRs were squash-merged in order after required green source PR-head c
 | DHR-009 | **Done** | 8 | DHR-007 | Finite ammunition and stock conservation | [#75](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/75) |
 | DHR-010 | **Done** | 8 | DHR-007 | Source-valid melee attack resolver | [#81](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/81) |
 | DHR-011 | **Done** | 8 | DHR-007 | Source-valid ranged attack resolver | [#82](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/82) |
-| DHR-012 | **Ready** | 8 | DHR-011 | Actual range, cover and visibility for shots | [#102](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/102) |
-| DHR-013 | **Ready** | 8 | DHR-010, DHR-011 | Carried armor and critical damage integration | [#103](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/103) |
-| DHR-014 | Blocked | 8,16 | DHR-013 | Injured dinosaur response and grounded retreat | Not opened |
-| DHR-015 | Blocked | 8 | DHR-010, DHR-013 | Reusable multi-round Evolved combat action economy | Not opened |
+| DHR-012 | **Done** | 8 | DHR-011 | Actual range, cover and visibility for shots | [#102](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/102) |
+| DHR-013 | **Done** | 8 | DHR-010, DHR-011 | Carried armor and critical damage integration | [#103](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/103) |
+| DHR-014 | **Ready** | 8,16 | DHR-013 | Injured dinosaur response and grounded retreat | [#110](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/110) |
+| DHR-015 | **Ready** | 8 | DHR-010, DHR-013 | Reusable multi-round Evolved combat action economy | [#111](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/111) |
 | DHR-016 | Blocked | 8,10 | DHR-012, DHR-014, DHR-015 | Offensive combat across Long Count and Tidal Nursery | Not opened |
 | DHR-017 | **Done** | 9 | DHR-008 | Validated finite NPC motives and intentions | [#83](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/83) |
 | DHR-018 | **Done** | 9 | DHR-008 | Witnessed-knowledge/rumor provenance ledger | [#84](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/84) |
-| DHR-019 | **Ready** | 9 | DHR-017, DHR-018 | Bounded motive-aware NPC alternative chooser | [#101](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/101) |
-| DHR-020 | Blocked | 9 | DHR-019 | NPC exploration/combat action budgets | Not opened |
-| DHR-021 | Blocked | 9 | DHR-019 | NPC finite gear and resource choices | Not opened |
+| DHR-019 | **Done** | 9 | DHR-017, DHR-018 | Bounded motive-aware NPC alternative chooser | [#101](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/101) |
+| DHR-020 | **Ready** | 9 | DHR-019 | NPC exploration/combat action budgets | [#112](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/112) |
+| DHR-021 | **Ready** | 9 | DHR-019 | NPC finite gear and resource choices | [#113](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/113) |
 | DHR-022 | Blocked | 9 | DHR-016, DHR-020, DHR-021 | NPC genuine Evolved tactical defense/help/flee | Not opened |
 | DHR-023 | Blocked | 9 | DHR-022 | NPC injuries and legitimate medical response | Not opened |
 | DHR-024 | Blocked | 9,10 | DHR-020, DHR-022, DHR-023 | NPC agency parity across two adventures | Not opened |
-| DHR-025 | **Ready** | 7 | DHR-004 | Source-grounded Story Point earning | [#91](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/91) |
-| DHR-026 | Blocked | 7 | DHR-025 | Source-grounded Story Point spending | Not opened |
+| DHR-025 | **Done** | 7 | DHR-004 | Source-grounded Story Point earning | [#91](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/91) |
+| DHR-026 | **Ready** | 7 | DHR-025 | Source-grounded Story Point spending | [#115](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/115) |
 | DHR-027 | **Ready** | 7 | DHR-004 | Stress/panic consequence parity | [#92](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/92) |
 | DHR-028 | **Ready** | 7 | DHR-004 | Help/cooperation and modifiers parity | [#93](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/93) |
 | DHR-029 | **Ready** | 7 | DHR-004 | Talent legality and triggered effects | [#94](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/94) |
-| DHR-030 | Blocked | 7 | DHR-013 | Clinical injury conditions and real medical clocks | Not opened |
+| DHR-030 | **Ready** | 7 | DHR-013 | Clinical injury conditions and real medical clocks | [#114](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/114) |
 | DHR-031 | Blocked | 7 | DHR-029 | Career experience and advancement | Not opened |
 | DHR-032 | Blocked | 7 | DHR-026, DHR-027, DHR-028, DHR-030, DHR-031 | Full adopted Evolved regression parity audit | Not opened |
 | DHR-033 | **Ready** | 11 | DHR-004 | Legal starting career/skill creation rules | [#95](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/95) |
@@ -141,4 +154,4 @@ These four PRs were squash-merged in order after required green source PR-head c
 
 ## How to start
 
-Copy the template in [WORKER-START.md](WORKER-START.md) into a **new GitHub-connected developer chat**, replacing the issue placeholder with the specific issue number. Recommended next wave: #102 (range/cover and physical visibility), #103 (carried armor and damage), #101 (NPC bounded alternative chooser), #91 (earned Story Points). Keep each worker in its own pure module/feature branch; avoid shared rules edits. Other Ready tasks: #68, #71, #92, #93, #94, #95. The Integrator handles merges and whole-product acceptance; do not dispatch a blocked issue.
+Copy the template in [WORKER-START.md](WORKER-START.md) into a **new GitHub-connected developer chat**, replacing the issue placeholder with the specific issue number. Recommended next wave: **#110 (species-appropriate creature injury/retreat), #111 (multi-round combat turns), #112 (NPC finite action timing), and #113 (NPC finite gear)**. Ensure these workers use separate pure source modules and don't collide on shared runtime. Other Ready tasks: #68, #71, #92–#95, #114 and #115. Integration Director owns merge and release acceptance; do not dispatch blocked issues.
