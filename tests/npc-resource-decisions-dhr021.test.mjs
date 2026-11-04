@@ -108,6 +108,20 @@ test('DHR-021: witnessed, motivated local distress permits only finite, proposed
  assert.equal('receipt' in plan,false);
  assert.deepEqual(w,before);
 });
+test('source items on the floor or held by someone else are not NPC-owned treatment',()=>{
+ const s=source(),w=world(s);
+ w.actors[0].inventory.splice(w.actors[0].inventory.indexOf('medical-pack'),1);
+ w.rooms['supply-shelter'].items.push('medical-pack');
+ const floor=run(s,w);
+ assert.equal(floor.candidates.some(x=>x.itemId==='medical-pack'),false);
+ assert.equal(floor.chosen.kind,'assist');
+ w.rooms['supply-shelter'].items.splice(
+  w.rooms['supply-shelter'].items.indexOf('medical-pack'),1);
+ w.actors[2].inventory.push('medical-pack');
+ const other=run(s,w);
+ assert.equal(other.candidates.some(x=>x.itemId==='medical-pack'),false);
+ assert.equal(other.chosen.kind,'assist');
+});
 test('no witnessed distress, quiet noncombat beat and ordinary supplies permit holding',()=>{
  const s=source(),w=world(s,0),l=compileNpcKnowledgeLedger(s,{
   frames:[frame(s,0)],events:[]});
