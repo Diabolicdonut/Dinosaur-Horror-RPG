@@ -5,7 +5,7 @@ This document governs the additional **execution progress** layer on the existin
 ## Three intentionally distinct views
 
 1. **Roadmap accepted** — the authoritative `site-progress.json.roadmap.gates` weights total **100**. Only gates marked `accepted` earn their entire weight. The current score is **38/100** and remains unchanged by subtask completion. A `partial` gate contributes **zero** unearned points.
-2. **Development execution** — a distinct bar showing the number of `**Done**` DHR assignments in [DEVELOPMENT-QUEUE.md](DEVELOPMENT-QUEUE.md), divided by the **72** currently approved bounded tasks. As of this tracker change it is **12/72 (16.7%)**, with 10 ready and 50 blocked; these are not equal slices of project effort or finished gameplay functionality.
+2. **Development execution** — a distinct bar showing the number of `**Done**` DHR assignments in [DEVELOPMENT-QUEUE.md](DEVELOPMENT-QUEUE.md), divided by the **72** currently approved bounded tasks. At the widget's initial publication it was **12/72 (16.7%)**. After the fourth integration wave the accepted queue is **16/72 (22.2%)**, with 12 ready and 44 dependency-blocked; these numbers are loaded live from the committed queue and are not fixed in the widget. They are not equal slices of project effort or finished gameplay functionality.
 3. **Gate-level partial task status** — each expandable gate lists its mapped `Done / Ready / Blocked` task counts and a subtask completion bar (e.g. offensive combat: **4/9 assigned tasks completed**). Many tasks have dependencies and some contribute to **more than one gate**, so summing all gate task counts would double count work. This bar is *not* a percentage of accepted gate functionality.
 
 ### Data provenance and update procedure
@@ -25,6 +25,8 @@ The existing checked-in **Markdown queue** is the sole source of truth for execu
 - The historical first-playable foundation `5/8` is a third preexisting, deliberately separate count, not a substitute for the complete roadmap.
 - Graphical browser/mobile acceptance and Cloudflare Worker deployment must still be independently performed; green GitHub Pages CI alone does not certify them.
 - The tracker does not assert real-time GitHub issue or PR state; it reflects the accepted, committed queue at the time of page load.
+
+**Regression policy:** The tracker regression tests calculate expected execution counts and gate-level task bars from the current authoritative queue instead of freezing a historical completed count. They verify that completing one available task changes its own and the corresponding gate's task display, while the accepted whole-game weight remains untouched.
 
 ### Regression coverage
 
