@@ -158,6 +158,8 @@ export function compileNpcKnowledgeLedger(compiled,input){
     fromNpcId:event.fromNpcId}));
  }
  entries.sort((a,b)=>a.beat-b.beat||compare(a.id,b.id));
+ Object.freeze(frames);
+ Object.freeze(entries);
  const source=sourceId(compiled);
  const canonical={schemaVersion:1,source,frames,entries};
  return Object.freeze({...canonical,identity:'npc-knowledge-v1:'+
