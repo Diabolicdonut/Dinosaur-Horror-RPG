@@ -139,6 +139,7 @@ test('maximum range is absolute except source-certified Short-to-doorway shot',(
   invalid(f); // nonadjacent doorway cannot be invented
   const distant=fixture();distant.state.actors[1].location='far';
   distant.scene.sameZoneRanges=[];
+  distant.scene.sightlines.push(['camp','far']);
   assert.match(deny(distant,declaration({targetId:'pc-2'})),/maximum/);
 });
 test('a distant four-zone target needs a source-authorized Extreme weapon',()=>{
