@@ -56,7 +56,7 @@ function replay(fixture,initial){
 test('DHR-006: frozen authored revision bytes match accepted main Git blob IDs',async()=>{
   for(const [path,expected] of Object.entries(FROZEN_SOURCE_BLOBS)){
     const bytes=await readFile(new URL('../'+path,import.meta.url));
-    const header=Buffer.from('blob '+bytes.length+'\\0');
+    const header=Buffer.from('blob '+bytes.length+'\0');
     const actual=createHash('sha1').update(header).update(bytes).digest('hex');
     assert.equal(actual,expected,path+' was edited rather than versioned');
   }
