@@ -165,9 +165,23 @@ export function assessRangedGeometry(compiled,state,stock,action,targets,scene) 
   if(!target)return deny('Target absent from actual world.');
   if(target.dead||target.defeated||target.health===0)
     return deny('Target already out of action.');
-  if(state.dinosaurs?.some(d=>d.id===target.id)&&
-    !validateCreatureContinuity(compiled,state))
-    return deny('Creature location or seeded presence cannot be certified.');
+  if(state.dinosaurs?.some(d=>d.id===target.id)) {
+    // The shared continuity checker permits pre-patrol legacy saves without
+    // a creatureRecords array. Certify the actual target position here too:
+    // an original resident, an earned adjacent wildlife retreat, or the
+    // recorded source patrol. Merely moving its saved location proves nothing.
+    const definition=compiled.definition.initialCreatures.find(d=>
+      d.id===target.id&&(!d.when||
+        compiled.hiddenFacts[d.when.slot]?.id===d.when.choice));
+    const escaped=definition&&!definition.patrol&&
+      compiled.definition.rooms[definition.location].exits.includes(target.location)&&
+      state.actions?.some(a=>a.kind==='wildlife'&&a.target==='approach'&&a.success===false);
+    if(!definition||target.kind!==definition.species||
+       target.disposition!==definition.disposition||
+       !validateCreatureContinuity(compiled,state)||
+       (!definition.patrol&&target.location!==definition.location&&!escaped))
+      return deny('Creature location or seeded presence cannot be certified.');
+  }
   const weapon=state.weapons?.find(w=>w.id===action.weaponId);
   if(!weapon||weapon.class!=='ranged'||weapon.ownerId!==shooter.id)
     return deny('Actor lacks the declared physical ranged weapon.');
@@ -199,7 +213,7 @@ export function assessRangedGeometry(compiled,state,stock,action,targets,scene) 
   if(activeCover?.level==='full'&&activeCover.occludes===true)
     return deny('Full barrier entirely blocks line of sight.');
   const belowMin=Math.max(0,min-index);
-  const rangeModifier=-2*belowMin;
+  const rangeModifier=belowMin?-2*belowMin:0;
   const coverModifier=activeCover?.level==='full'?-3:
     activeCover?.level==='partial'?-2:0;
   return Object.freeze({
