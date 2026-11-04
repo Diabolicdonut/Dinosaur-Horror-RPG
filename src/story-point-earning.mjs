@@ -103,7 +103,7 @@ function riskEvidence(compiled,state,actorId,risk,window,achieved){
    r.creatureId===risk.id&&r.actorId===actorId&&r.attack===true);
  }
  const chosen=records.filter(r=>isInt(r.beat)&&r.beat>=window.start&&
-   r.beat<=achieved.beat&&r.room===achieved.room)
+   r.beat<achieved.beat&&r.room===achieved.room)
   .sort((a,b)=>a.beat-b.beat)[0];
  return chosen?{kind:risk.kind,id:risk.id,beat:chosen.beat,room:chosen.room}:null;
 }
@@ -164,7 +164,7 @@ function evaluate(compiled,state,journal){
  * Requiring a source-owned seat-specific Story Card prevents an arbitrary
  * scene or routine objective from being declared agenda progress. The same
  * actor must have completed its physical trigger AND undertaken an actual,
- * local peril or predator attack earlier in that act. Generic GM judgments
+ * local peril or predator attack on an earlier recorded beat in that act. Generic GM judgments
  * about narrative sacrifice require separately verified evidence in the future.
  *
  * Old saves have no award journal: pass undefined/null; the result is an
