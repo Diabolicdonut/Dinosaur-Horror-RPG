@@ -169,7 +169,7 @@ function consume(s,world,c){
     }
   }else if(c.type==='hold'){
     const slot=checkSlot(s,c);
-    if(s.phase!=='turn'||slot.kind!=='human'||!Number.isInteger(c.targetCard))
+    if(s.phase!=='turn'||s.pending||slot.kind!=='human'||!Number.isInteger(c.targetCard))
       reject('initiative hold requires the active human');
     const j=s.order.findIndex((x,i)=>i>s.index&&x.card===c.targetCard);
     if(j<0)reject('cannot hold to an elapsed initiative card');
@@ -179,7 +179,7 @@ function consume(s,world,c){
     setPhase(s);
   }else if(c.type==='declare'){
     const slot=checkSlot(s,c);
-    if(s.phase!=='turn'||!id(c.targetId)||c.targetId===c.actorId||
+    if(s.phase!=='turn'||s.pending||!id(c.targetId)||c.targetId===c.actorId||
        !['melee','ranged'].includes(c.method)||
        !eligible(s.actors.find(a=>a.id===c.targetId),s.location)||
        !eligible(s.actors.find(a=>a.id===c.actorId),s.location)||
