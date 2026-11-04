@@ -84,13 +84,11 @@ function run(s=source(),w=world(s),c=catalog(s),l=replay(s),p=motive(s),query=q(
 }
 function rejects(change,description){
  const s=source(),w=world(s),c=catalog(s),l=replay(s),p=motive(s),query=q();
- const before=JSON.stringify({s,w,c,l,p,query});
  change({s,w,c,l,p,query});
+ const before=JSON.stringify({s,w,c,l,p,query});
  assert.throws(()=>run(s,w,c,l,p,query),RangeError,description);
- assert.equal(runOriginalAfterMutationIfApplicable(),true);
- function runOriginalAfterMutationIfApplicable(){
-  return typeof before==='string'&&before.length>0;
- }
+ assert.equal(JSON.stringify({s,w,c,l,p,query}),before,
+  'rejection never mutates even malformed input');
 }
 test('DHR-021: witnessed, motivated local distress permits only finite, proposed care',()=>{
  const s=source(),w=world(s),before=structuredClone(w),plan=run(s,w);
