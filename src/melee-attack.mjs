@@ -8,6 +8,7 @@
 // equipment table p. 309 and Damage pp. 67-70; existing project adaptations:
 // evolved-checks, evolved-encounters and evolved-injuries. No book text copied.
 import {validateCarriedWeapons} from './carried-weapons.mjs';
+import {validateCharacter} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
 import {spendActionBudget,rollCriticalInjury} from './evolved-encounters.mjs';
 import {woundModifiers,applyNewCritical} from './evolved-injuries.mjs';
@@ -48,7 +49,6 @@ function spend(b,cost){
   return used.budget;
 }
 function checkHuman(a){
-  // resolveSkillCheck will also validate the full career/attribute/skill sheet.
   if(!record(a)||!Number.isSafeInteger(a.healthMax)||a.healthMax<1||
      a.healthMax>30||!Number.isSafeInteger(a.health)||a.health<1||
      a.health>a.healthMax||a.dead===true||a.broken===true||
@@ -59,6 +59,7 @@ function checkHuman(a){
   if((a.armorLevel??0)!==0||a.restrained===true||a.unaware===true||
      a.stunned===true||a.pendingSkip===true||a.cover===true)
     fail('unsupported armor or target condition');
+  if(validateCharacter(a).length)fail('invalid Evolved human character sheet');
 }
 function sourceProfile(weapons,types,id){
   const melee=weapons.filter(w=>w.class==='melee');
