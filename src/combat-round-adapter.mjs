@@ -46,9 +46,9 @@ function checkActors(actors,roster){
 function eligible(actor,location){
   return !!actor&&!actor.dead&&actor.location===location;
 }
-function draw(roster,actors,seed,surpriseIds=[]){
-  const humans=roster.filter(p=>p.kind==='human'&&eligible(actors.find(a=>a.id===p.id),roster.location));
-  const animals=roster.filter(p=>p.kind==='animal'&&eligible(actors.find(a=>a.id===p.id),roster.location));
+function draw(roster,actors,seed,surpriseIds=[],location){
+  const humans=roster.filter(p=>p.kind==='human'&&eligible(actors.find(a=>a.id===p.id),location));
+  const animals=roster.filter(p=>p.kind==='animal'&&eligible(actors.find(a=>a.id===p.id),location));
   const animalSlots=animals.flatMap(a=>Array.from({length:a.speed},(_,i)=>({actorId:a.id,turnIndex:i+1})));
   const animalKeys=animalSlots.map((_,i)=>'dinosaur-'+(i+1));
   const priority=surpriseIds.map(actorId=>{
@@ -136,7 +136,7 @@ function consume(s,world,c){
        d.round!==c.round||!uint(d.seed))reject('uncommitted initiative seed');
     s.usedDrawIds.add(d.id);s.round++;s.elapsedRounds++;
     s.elapsedSeconds+=COMBAT_ROUND_SECONDS;
-    s.order=draw({...s.roster,location:s.location},s.actors,d.seed);
+    s.order=draw(s.roster,s.actors,d.seed,[],s.location);
     s.index=0;s.budgets=Object.fromEntries(
       s.roster.filter(p=>p.kind==='human').map(p=>[p.id,createActionBudget()]));
     s.drawHistory.push({round:s.round,drawId:d.id,seed:d.seed,order:copy(s.order)});
@@ -299,7 +299,7 @@ export function replayCombatRounds(world){
   const surprise=e.surpriseIds??[];
   if(!Array.isArray(surprise)||!uniq(surprise)||surprise.some(x=>!id(x)))
     reject('invalid source surprise roster');
-  const order=draw({...roster,location:e.location},e.actors,first.seed,surprise);
+  const order=draw(roster,e.actors,first.seed,surprise,e.location);
   const s={version:MULTI_ROUND_COMBAT_VERSION,encounterId:e.id,location:e.location,
     roster:copy(roster),actors:copy(e.actors),round:1,index:0,order,
     budgets:Object.fromEntries(roster.filter(p=>p.kind==='human')
