@@ -138,11 +138,13 @@ test('maximum range is absolute except source-certified Short-to-doorway shot',(
   f.scene.doorPositions=[{actorId:'pc-1',toward:'ridge'}];
   invalid(f); // nonadjacent doorway cannot be invented
   const distant=fixture();distant.state.actors[1].location='far';
+  distant.scene.sameZoneRanges=[];
   assert.match(deny(distant,declaration({targetId:'pc-2'})),/maximum/);
 });
 test('a distant four-zone target needs a source-authorized Extreme weapon',()=>{
   const f=fixture();
   f.state.actors[1].location='far';
+  f.scene.sameZoneRanges=[];
   f.scene.weaponRanges[0].maximum='extreme';
   f.scene.sightlines.push(['camp','far']);
   assert.equal(assess(f,declaration({targetId:'pc-2'})).rangeBand,'extreme');
@@ -155,11 +157,13 @@ test('a wall or an undocumented long straight sightline always denies fire',()=>
   assert.match(deny(f),/line of sight/);
   const other=fixture();
   other.state.actors[1].location='ridge';
+  other.scene.sameZoneRanges=[];
   other.scene.sightlines=other.scene.sightlines.filter(
     p=>!(p.includes('camp')&&p.includes('ridge')));
   assert.match(deny(other,declaration({targetId:'pc-2'})),/line of sight/);
   const corridor=fixture();
   corridor.state.actors[1].location='ridge';
+  corridor.scene.sameZoneRanges=[];
   corridor.scene.sightlines=corridor.scene.sightlines.filter(
     p=>!(p.includes('gate')&&p.includes('ridge')));
   assert.match(deny(corridor,declaration({targetId:'pc-2'})),/line of sight/);
