@@ -32,7 +32,7 @@ function validContext(compiled,state){
      !compiled.definition.cinematic||!compiled.definition.scenarioMaterial)
     return false;
   return state.actors.every(actor=>isInt(actor.storyPoints??0)&&
-    actor.storyPoints<=MAX_POINTS);
+    (actor.storyPoints??0)<=MAX_POINTS);
  }catch{return false;}
 }
 function agendaFor(compiled,state,actorId,agendaId,cardId){
@@ -50,7 +50,7 @@ function actWindow(compiled,state,number){
  if(!isInt(number,1)||number>acts.length)return null;
  const fulfilled=act=>{
   const beats=act.unlocksAfter.map(id=>state.objectiveRecords?.find(x=>x.id===id)?.beat);
-  return beats.every(isInt)?Math.max(...beats)+1:null;
+  return beats.every(beat=>isInt(beat))?Math.max(...beats)+1:null;
  };
  const opens=number===1?0:fulfilled(acts[number-1]);
  if(opens===null)return null;
