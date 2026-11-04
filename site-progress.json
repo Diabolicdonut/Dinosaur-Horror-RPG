@@ -16,6 +16,12 @@
     "basis": "Tracked gates: Evolved mechanics; party modes; reusable adventures; live dinosaur peril; source-driven NPC travel. Remaining: offensive combat, procedural adventures, graphical playtest sign-off.",
     "note": "This measures the specified first-playable foundation, not unlimited future campaigns."
   },
+  "execution": {
+    "label": "Development assignments",
+    "source": "docs/parallel-development/DEVELOPMENT-QUEUE.md",
+    "total": 72,
+    "basis": "Merged worker subtask count only; not acceptance credits or proportional engineering effort."
+  },
   "roadmap": {
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",

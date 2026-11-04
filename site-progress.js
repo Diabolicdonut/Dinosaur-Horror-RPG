@@ -75,6 +75,47 @@
     if (total !== 100) return null;
     return {data, done, total, percent: done, gates: data.gates};
   }
+  // A separate, explicitly non-acceptance tracker: completed bounded worker
+  // assignments in the authoritative Markdown queue. Never award gate weight
+  // based on these fractions; one task can contribute to multiple gates.
+  function executionFor(config, markdown, roadmap) {
+    const e = config.execution;
+    if (!e || !roadmap || typeof markdown !== 'string' ||
+        !Number.isSafeInteger(e.total) || e.total < 1 || e.total > 999 ||
+        typeof e.source !== 'string' || !/^[a-zA-Z0-9_./-]+$/.test(e.source) ||
+        e.source.includes('..')) return null;
+    const lines = markdown.split(/\r?\n/).filter(line => /^\| DHR-\d{3} \|/.test(line));
+    if (lines.length !== e.total) return null;
+    const perGate = roadmap.gates.map(() => ({done: 0, ready: 0, blocked: 0, total: 0}));
+    const counts = {done: 0, ready: 0, blocked: 0, total: e.total};
+    const seen = new Set();
+    for (const line of lines) {
+      const cells = line.split('|').slice(1, -1).map(x => x.trim());
+      if (cells.length !== 6) return null;
+      const id = /^DHR-(\d{3})$/.exec(cells[0]);
+      if (!id || seen.has(id[1]) || Number(id[1]) < 1 || Number(id[1]) > e.total)
+        return null;
+      seen.add(id[1]);
+      const status = cells[1] === '**Done**' ? 'done' :
+        cells[1] === '**Ready**' ? 'ready' : cells[1] === 'Blocked' ? 'blocked' : null;
+      if (!status || !cells[4] ||
+          (status === 'done' && !/^\[#\d+\]\(https:\/\/github\.com\//.test(cells[5])))
+        return null;
+      const refs = cells[2].split(',').map(x => x.trim());
+      const parsed = refs.map(x => Number(x));
+      if (!refs.length || parsed.some((n, i) => !/^\d{1,2}$/.test(refs[i]) ||
+          n < 1 || n > perGate.length) || new Set(parsed).size !== parsed.length)
+        return null;
+      counts[status]++;
+      for (const n of parsed) {
+        const bucket = perGate[n - 1];
+        bucket[status]++; bucket.total++;
+      }
+    }
+    if (seen.size !== e.total || counts.done + counts.ready + counts.blocked !== e.total)
+      return null;
+    return {counts, perGate, percent: Math.round(1000 * counts.done / e.total) / 10};
+  }
   function make(tagName, className, value) {
     const e = document.createElement(tagName);
     if (className) e.className = className;
@@ -87,10 +128,12 @@
     try { config = JSON.parse(await getText('site-progress.json')); }
     catch (_) { return; }
     if (!config || config.schemaVersion !== 1) return;
-    const [revision, count] = await Promise.all([
-      revisionFor(config), countFor(config)
-    ]);
     const roadmap = roadmapFor(config);
+    const [revision, count, queueText] = await Promise.all([
+      revisionFor(config), countFor(config),
+      config.execution?.source ? getText(config.execution.source).catch(() => null) : Promise.resolve(null)
+    ]);
+    const execution = executionFor(config, queueText, roadmap);
     const style = document.createElement('style');
     style.textContent = `
 #project-progress-status{position:fixed;bottom:12px;right:12px;z-index:2147483000;
@@ -105,6 +148,10 @@
 #project-progress-status .p-revision{opacity:.85;font-variant-numeric:tabular-nums}
 #project-progress-status .p-pct{border-left:1px solid #637074;padding-left:10px;
   color:#e5ce8d;font-variant-numeric:tabular-nums}
+#project-progress-status .p-work{border-left:1px solid #637074;padding-left:10px;
+  color:#bcded8;font-variant-numeric:tabular-nums}
+#project-progress-status .p-task-summary{font-size:11px;color:#bed1d4;margin:5px 0 7px}
+#project-progress-status .p-task-note{font-size:11px;line-height:1.5}
 #project-progress-status .p-more{opacity:.7;margin-left:auto;font-size:10px}
 #project-progress-status details[open] .p-more{transform:rotate(180deg)}
 #project-progress-status .p-detail{padding:2px 12px 12px;border-top:1px solid #526168}
@@ -138,6 +185,8 @@
       'Roadmap ' + roadmap.percent + '%' :
       (config.roadmap ? 'Roadmap —' :
        (count.percent === null ? 'Progress —' : String(count.percent) + '%'))));
+    if (config.execution) summary.append(make('span', 'p-work', execution ?
+      'Work ' + execution.counts.done + '/' + execution.counts.total : 'Work —'));
     summary.append(make('span', 'p-more', '▾'));
     details.append(summary);
     const body = make('div', 'p-detail');
@@ -151,15 +200,26 @@
       if (roadmap.data.scope) body.append(make('p', '', roadmap.data.scope));
       const gates = make('ul', 'p-gates');
       gates.setAttribute('aria-label', 'Roadmap gates and acceptance status');
-      for (const gate of roadmap.gates) {
+      for (const [index, gate] of roadmap.gates.entries()) {
         const item = make('li', 'p-' + gate.status);
         const gateDetail = make('details');
         const gateSummary = make('summary');
         gateSummary.setAttribute('aria-label', gate.label + ': view acceptance requirements');
         gateSummary.append(make('span', '', gate.label));
-        gateSummary.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt'));
+        const sub = execution?.perGate[index];
+        gateSummary.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt' +
+          (sub?.total ? ' · ' + sub.done + '/' + sub.total + ' tasks' : '')));
         gateDetail.append(gateSummary);
         gateDetail.append(make('p', 'p-criteria', gate.acceptance));
+        if (sub?.total) {
+          const taskBar = make('progress');
+          taskBar.value = sub.done; taskBar.max = sub.total;
+          taskBar.setAttribute('aria-label', gate.label + ' linked development tasks completed');
+          gateDetail.append(taskBar);
+          gateDetail.append(make('p', 'p-task-summary', sub.done + ' completed · ' +
+            sub.ready + ' ready · ' + sub.blocked + ' blocked (' +
+            Math.round(100 * sub.done / sub.total) + '% of linked tasks)'));
+        }
         item.append(gateDetail);
         gates.append(item);
       }
@@ -175,6 +235,28 @@
       }
     } else if (config.roadmap) {
       body.append(make('p', '', 'Roadmap accounting is invalid; overall percentage withheld.'));
+    }
+    if (config.execution) {
+      const work = make('section', 'p-secondary');
+      work.append(make('div', 'p-title', 'Development assignments (not accepted milestones)'));
+      if (execution) {
+        const b = make('progress');
+        b.value = execution.counts.done; b.max = execution.counts.total;
+        b.setAttribute('aria-label', 'Completed developer assignments');
+        work.append(b);
+        work.append(make('p', '', execution.counts.done + ' of ' +
+          execution.counts.total + ' assignments complete (' + execution.percent + '%)'));
+        work.append(make('p', '', execution.counts.ready + ' ready · ' +
+          execution.counts.blocked + ' dependency-blocked'));
+        work.append(make('p', 'p-task-note',
+          'Each roadmap gate shows completed linked tasks when expanded. A task can support multiple gates; task counts are not weighted points and do not award partial acceptance.'));
+        const link = make('a', '', 'View development assignments');
+        link.href = new URL(config.execution.source, root).href;
+        link.target = '_blank'; link.rel = 'noopener noreferrer';
+        work.append(link);
+      } else work.append(make('p', '',
+        'Assignment status unavailable or invalid; accepted roadmap score is unchanged.'));
+      body.append(work);
     }
     const phase = make('div', roadmap ? 'p-secondary' : '');
     phase.append(make('div', 'p-title', String(config.progress?.label || 'Tracked milestone')));
