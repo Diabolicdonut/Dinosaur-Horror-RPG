@@ -191,7 +191,7 @@ export function resolveDinosaurWithdrawal(input,turnCombat) {
     return deny('No later authenticated creature opportunity in this round.');
   const slot=activeAdventureCombatSlot(turnCombat);
   if(slot?.kind!=='dinosaur'||slot.actorId!==injury.creatureId||
-     turnCombat.history.some(h=>h.round===slot.round&&h.card===slot.card&&
+     turnCombat.history.some(h=>h.round===turnCombat.round&&h.card===slot.card&&
        h.actorId===injury.creatureId))
     return deny('The current card cannot move this creature.');
   const next=clone(turnCombat);
