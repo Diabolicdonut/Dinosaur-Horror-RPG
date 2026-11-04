@@ -29,7 +29,9 @@ export const SEED_INCIDENT_FIXTURES = Object.freeze([
   },
   {
     id:'ridge-frozen-rev1', adventureId:'ridge-survey',
-    seed:7, revision:1, scenario:'ridge-survey',
+    // Seed 18 is an actual quiet-range/flooded-ford historical instance;
+    // rev1 never contained the predator introduced by later revisions.
+    seed:18, revision:1, scenario:'ridge-survey',
     start:'field-camp', flags:['dataRecovered','reportSent','teamWithdrawn'],
     historicalSource:'ridge-survey-rev1',
     removeModernFields:['supportingCast','conversationRecords','npcAutonomyRecords','npcDangerRecords'],
