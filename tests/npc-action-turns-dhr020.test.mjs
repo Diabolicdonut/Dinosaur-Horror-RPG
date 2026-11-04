@@ -73,11 +73,12 @@ function explore(w,extra={}){
  return beginNpcActionTurn(w.s,w.l,b);
 }
 function combat(w,seed=27){
- const participants=[...w.l.npcIds];
+ const room=w.l.frames.at(-1).npcRooms[w.id];
+ const participants=w.l.npcIds.filter(id=>w.l.frames.at(-1).npcRooms[id]===room);
  const order=rollInitiative({actorIds:participants,dinosaurTurns:0,seed});
  const slot=order.findIndex(x=>x.actorId===w.id);
  const b={phase:'combat',beat:w.q.beat,round:2,slot,seed,
-  participants,conditions:conditions(w.l)};
+  participants,room,conditions:conditions(w.l)};
  return beginNpcActionTurn(w.s,w.l,b);
 }
 const act=(w,t,choice=w.p.chosen,proposal=w.p,q=w.q)=>
@@ -175,7 +176,7 @@ test('DHR-020: replayed seed chooses real combat initiative, not an NPC-selected
   x=>{x.card=1+x.card;},
   x=>{x.ownerId='leena-harrow';},
   x=>{x.boundary.seed=78;},
-  x=>{x.boundary.slot=(x.boundary.slot+1)%x.boundary.participants.length;},
+  x=>{x.boundary.slot=50;},
   x=>{x.boundary.round=0;}
  ])assert.throws(()=>act(w,altered(t,edit)),RangeError);
 });
@@ -189,8 +190,21 @@ test('DHR-020: invalid initiative rosters, actor identity and rounds fail closed
   x=>{x.round=Infinity;},
   x=>{x.round=1.5;},
   x=>{x.slot=50;},
+  x=>{x.room='unknown-room';},
+  x=>{x.participants.push('leena-harrow');}, // source-remote at river crossing
   x=>{x.phase='flight';}
  ])assert.throws(()=>beginNpcActionTurn(w.s,w.l,altered(t.boundary,edit)),RangeError);
+});
+test('DHR-020: no remote NPC or creature can enter the local combat card roster',()=>{
+ const w=dangerWorld(),t=combat(w),frame=w.l.frames.at(-1);
+ assert.equal(frame.npcRooms[t.ownerId],t.boundary.room);
+ const far=w.l.npcIds.find(id=>frame.npcRooms[id]!==t.boundary.room);
+ if(far){
+  assert.throws(()=>beginNpcActionTurn(w.s,w.l,altered(t.boundary,
+   b=>b.participants.push(far))),RangeError);
+ }
+ const absent=altered(t.boundary,b=>b.room='field-camp');
+ assert.throws(()=>beginNpcActionTurn(w.s,w.l,absent),RangeError);
 });
 test('DHR-020: combat withdrawal costs quick and cannot be repeated for free',()=>{
  const w=dangerWorld(),t=combat(w),first=act(w,t);
