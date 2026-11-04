@@ -51,6 +51,12 @@ Subsequent accepted, independently verified PRs added new **standalone** engine 
 
 DHR-055 [PR #97](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/97) hardens the repository Worker request/auth/rate-limit boundary but does **not** establish deployed Cloudflare security or server-private GM state. `GM_REQUIRE_LIMITER=true` in a Wrangler deployment will intentionally refuse paid requests when `GM_LIMITER` is missing. Cloudflare deployment and actual environment bindings require separate live confirmation.
 
+### Fourth-wave source inventory (2026-11-04)
+
+Reviewed and independently merged-main verified PRs add four more **pure, scenario-independent** contracts: DHR-012 / [PR #107](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/107) adds `src/ranged-geometry.mjs` with source-authored physical range, cover and LOS eligibility; DHR-013 / [PR #106](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/106) adds `src/carried-armor-damage.mjs` for authenticated carried human armor and Evolved injury consequences; DHR-019 / [PR #108](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/108) adds `src/npc-action-choices.mjs` for nonexecuting, provenance-limited NPC intention proposals; DHR-025 / [PR #109](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/109) adds `src/story-point-earning.mjs` for source-backed Cinematic award proposals and replay journals.
+
+**These are NOT full adopted-rules or playable-action parity.** DHR-012's geometric eligibility is not a DHR-011 hit or ammunition transaction; DHR-013 deliberately refuses to turn an unresolved ranged roll into damage, and its armor consequences are not wired into selected-adventure runtime. DHR-019 does not schedule an NPC action, validate physical initiative ownership, spend finite gear or execute a turn. DHR-025 does not award points in live sessions or implement Story Point spending. Corresponding roadmap gates 7, 8 and 9 remain **partial** and unaccepted. E19/E20 remain **missing in selected-adventure runtime**, E21 and E26 remain **partial**. The authorized next work is DHR-014–016, DHR-020–024 and DHR-026; the accepted whole-game score is still **38/100**.
+
 ## Cross-runtime reconciliation
 
 - **Character Lab:** initial attributes/skills/talents, simulated seeded checks, some stress/Resolve and Story Point hooks. It is not equivalent to full campaign playable advancement.
