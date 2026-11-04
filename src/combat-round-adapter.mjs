@@ -66,10 +66,11 @@ function draw(roster,actors,seed,surpriseIds=[],location){
     return {card:slot.card,kind:'animal',...animalSlots[n]};
   });
 }
-function woundCodes(actor,round){
+function woundCodes(actor,round,birthRounds){
   if(!actor||actor.dead)return [];
   return actor.criticalInjuries.filter(w=>w.deadline==='round'&&!w.stabilized&&!w.healed&&
-    w.lastTurnDeathRound!==round&&w.inflictedRound!==round)
+    w.lastTurnDeathRound!==round&&w.inflictedRound!==round&&
+    birthRounds[actor.id+':'+w.code]!==round)
     .map(w=>w.code).sort((a,b)=>a-b);
 }
 function setPhase(s){
@@ -91,7 +92,7 @@ function finishSlot(s){
   const slot=s.order[s.index];
   if(slot.kind==='human'){
     const actor=s.actors.find(a=>a.id===slot.actorId);
-    const due=woundCodes(actor,s.round);
+    const due=woundCodes(actor,s.round,s.woundBirthRounds);
     if(due.length){
       s.phase='medical';s.medical={actorId:slot.actorId,codes:due};
       return;
@@ -111,6 +112,15 @@ function committedProposal(world,commit,action,cost){
 function applyAfter(s,c){
   if(!Array.isArray(c.afterActors))reject('missing committed actor outcome');
   checkActors(c.afterActors,s.roster);
+  // A newly recorded round-lethal wound does not earn a death check on
+  // the same turn it appeared. It first comes due on a later turn.
+  for(const after of c.afterActors){
+    const before=s.actors.find(a=>a.id===after.id);
+    for(const wound of after.criticalInjuries){
+      if(!before.criticalInjuries.some(w=>w.code===wound.code))
+        s.woundBirthRounds[after.id+':'+wound.code]=s.round;
+    }
+  }
   s.actors=copy(c.afterActors);
 }
 function checkSlot(s,c){
@@ -304,7 +314,7 @@ export function replayCombatRounds(world){
     roster:copy(roster),actors:copy(e.actors),round:1,index:0,order,
     budgets:Object.fromEntries(roster.filter(p=>p.kind==='human')
       .map(p=>[p.id,createActionBudget()])),phase:'turn',pending:null,medical:null,
-    elapsedRounds:0,elapsedSeconds:0,history:[],drawHistory:[
+    elapsedRounds:0,elapsedSeconds:0,history:[],woundBirthRounds:{},drawHistory:[
       {round:1,drawId:first.id,seed:first.seed,order:copy(order)}],
     usedDrawIds:new Set([first.id]),usedCommitIds:new Set(),
     usedProposalIds:new Set(),lastOrdinal:0};
