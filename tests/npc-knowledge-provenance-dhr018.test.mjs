@@ -112,22 +112,22 @@ test('DHR-018: independent genuine observation may upgrade knowledge without del
   motiveFlags:{selfPreservation:true},legalExits:['river-crossing']}),[{kind:'hold'}]);
 });
 
-test('DHR-018: later genuine sighting upgrades an earlier attributed report only for that actor',()=>{
- const source=raptor();
- // Jules hears a claim from Leena in camp at beat zero only if locally present.
- // Begin instead with Jules seeing a real predator, then notifying local Leena;
- // Leena cannot become an eyewitness by repeating the same report.
- const frames=[frame(source,0),frame(source,1,{}, {'hunter-1':'river-crossing'}),
-  frame(source,2,{'jules-marsh':'field-camp'}, {'hunter-1':'forest-blind'})];
- const a={id:'eyes',type:'observe',npcId:'jules-marsh',factId:'hunter-1',
-  kind:'danger',beat:1,location:'river-crossing'};
- const b={id:'tells',type:'report',fromNpcId:'jules-marsh',toNpcId:'leena-harrow',
-  factId:'hunter-1',kind:'danger',beat:2,location:'field-camp'};
- const ledger=compileNpcKnowledgeLedger(source,{frames,events:[a,b]});
- assert.deepEqual(npcFactProvenanceAt(ledger,'jules-marsh','hunter-1',2),
-  {status:'observed',witnessed:true,reports:[]});
- assert.deepEqual(npcFactProvenanceAt(ledger,'leena-harrow','hunter-1',2),
-  {status:'reported',witnessed:false,reports:['jules-marsh']});
+test('DHR-018: later independent witnessing upgrades only its recipient, preserving rumor source',()=>{
+ const source=wet(),frames=wetFrames(source);
+ frames.push(frame(source,3,{'ivo-pell':'supply-shelter'},{},['mara-venn']));
+ const rumor={id:'unconfirmed-injury',type:'report',fromNpcId:'mara-venn',
+  toNpcId:'ivo-pell',factId:'distress-mara-venn',kind:'distress',
+  beat:2,location:'supply-shelter'};
+ const evidence={id:'confirmed-injury',type:'observe',npcId:'ivo-pell',
+  factId:'distress-mara-venn',kind:'distress',beat:3,location:'supply-shelter'};
+ const ledger=compileNpcKnowledgeLedger(source,{frames,events:[evidence,rumor]});
+ assert.deepEqual(npcKnownFactsAt(ledger,'ivo-pell',2),[
+  {id:'distress-mara-venn',kind:'distress',source:'reported',local:false}]);
+ assert.deepEqual(npcKnownFactsAt(ledger,'ivo-pell',3),[
+  {id:'distress-mara-venn',kind:'distress',source:'observed',local:true}]);
+ assert.deepEqual(npcFactProvenanceAt(ledger,'ivo-pell','distress-mara-venn',3),
+  {status:'observed',witnessed:true,reports:['mara-venn']});
+ assert.deepEqual(npcKnownFactsAt(ledger,'mara-venn',3),[]);
 });
 
 test('DHR-018: seeded quiet range excludes absent predator even when forged frame claims it',()=>{
