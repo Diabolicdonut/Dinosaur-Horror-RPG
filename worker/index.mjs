@@ -117,7 +117,8 @@ function safePayload(body, mode) {
   if (mode === 'turn' && (typeof payload.input !== 'string' || payload.input.trim().length < 1 || payload.input.length > 400)) return null;
   if (mode === 'narrate' && (!Array.isArray(payload.events) || payload.events.length > 20 ||
     payload.events.some(e => typeof e !== 'string' || e.length > 500))) return null;
-  if (mode === 'dialogue' && (typeof payload.npc !== 'string' || typeof payload.input !== 'string')) return null;
+  if (mode === 'dialogue' && (typeof payload.npc !== 'string' || !payload.npc.trim() || payload.npc.length > 160 ||
+    typeof payload.input !== 'string' || !payload.input.trim() || payload.input.length > 400)) return null;
   if (mode === 'adjudicate' && (
     typeof payload.input !== 'string' || payload.input.length < 1 || payload.input.length > 400 ||
     !Number.isInteger(payload.turn) || payload.turn < 0 ||
@@ -260,34 +261,62 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
         dialogue: modelFor('dialogue', env).model, adjudicate: modelFor('adjudicate', env).model } }, 200, headers);
 
   const type = request.headers.get('Content-Type') || '';
-  if (!type.toLowerCase().startsWith('application/json'))
+  if (!/^application\/json(?:\s*;|\s*$)/i.test(type))
     return jsonResponse({ error: 'expected_json' }, 415, headers);
-  if (Number(request.headers.get('Content-Length')) > MAX_BYTES)
-    return jsonResponse({ error: 'request_too_large' }, 413, headers);
+  const declaredLength = request.headers.get('Content-Length');
+  if (declaredLength !== null) {
+    if (!/^\d+$/.test(declaredLength.trim()))
+      return jsonResponse({ error: 'invalid_content_length' }, 400, headers);
+    if (Number(declaredLength) > MAX_BYTES)
+      return jsonResponse({ error: 'request_too_large' }, 413, headers);
+  }
 
-  // Optional bound rate limiter: dashboard-paste installation requires only two secrets.
-  // The GAME_TOKEN remains mandatory. Without a limiter, use OpenAI spend limits/alerts
-  // and optionally add Cloudflare account-side rate limiting for stronger cost protection.
+  // Wrangler deployments opt into fail-closed limiting. The two-secret dashboard-paste
+  // path remains compatible, but needs separately configured account-side protections.
+  const requireLimiter = env.GM_REQUIRE_LIMITER === true || env.GM_REQUIRE_LIMITER === 'true';
+  if (requireLimiter && !env.GM_LIMITER)
+    return jsonResponse({ error: 'rate_limiter_unavailable' }, 503, headers);
   if (env.GM_LIMITER) {
     if (typeof env.GM_LIMITER.limit !== 'function')
       return jsonResponse({ error: 'rate_limiter_misconfigured' }, 503, headers);
     try {
-      const { success } = await env.GM_LIMITER.limit({ key: 'single-player-ai-gateway' });
-      if (!success) return jsonResponse({ error: 'rate_limited' }, 429, { ...headers, 'Retry-After': '60' });
+      const verdict = await env.GM_LIMITER.limit({ key: 'single-player-ai-gateway' });
+      if (!verdict || typeof verdict.success !== 'boolean')
+        return jsonResponse({ error: 'rate_limiter_failed' }, 503, headers);
+      if (!verdict.success)
+        return jsonResponse({ error: 'rate_limited' }, 429, { ...headers, 'Retry-After': '60' });
     } catch {
       return jsonResponse({ error: 'rate_limiter_failed' }, 503, headers);
     }
   }
 
+  // Count actual UTF-8 bytes (not UTF-16 code units); preserve split multibyte
+  // sequences and reject malformed encoding without contacting the model.
   let body = '';
+  let receivedBytes = 0;
+  const decoder = new TextDecoder('utf-8', { fatal: true });
   try {
     for await (const part of request.body || []) {
-      body += typeof part === 'string' ? part : new TextDecoder().decode(part);
-      if (body.length > MAX_BYTES) return jsonResponse({ error: 'request_too_large' }, 413, headers);
+      const chunk = typeof part === 'string' ? new TextEncoder().encode(part) : part;
+      receivedBytes += chunk.byteLength;
+      if (receivedBytes > MAX_BYTES)
+        return jsonResponse({ error: 'request_too_large' }, 413, headers);
+      body += decoder.decode(chunk, { stream: true });
     }
-    const mode = path.slice('/v1/gm/'.length);
-    const payload = safePayload(JSON.parse(body), mode);
-    if (!payload) return jsonResponse({ error: 'invalid_request_payload' }, 400, headers);
+    body += decoder.decode();
+  } catch {
+    return jsonResponse({ error: 'invalid_json' }, 400, headers);
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(body);
+  } catch {
+    return jsonResponse({ error: 'invalid_json' }, 400, headers);
+  }
+  const mode = path.slice('/v1/gm/'.length);
+  const payload = safePayload(parsed, mode);
+  if (!payload) return jsonResponse({ error: 'invalid_request_payload' }, 400, headers);
+  try {
     const result = await requestOpenAI(mode, payload, env, upstreamFetch);
     return jsonResponse(result, 200, headers);
   } catch (error) {
