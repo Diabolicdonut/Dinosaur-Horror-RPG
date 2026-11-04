@@ -11,7 +11,7 @@ const KINDS=new Set(['hold','withdraw','consider_help','consider_inspection']);
 const CONDITIONS=new Set(['ready','incapacitated','dead']);
 const SOURCE_KEYS=['adventureId','revision','fingerprint','seed'];
 const EXPLORE_KEYS=['phase','beat','slot','conditions'];
-const COMBAT_KEYS=['phase','beat','slot','round','seed','participants','conditions'];
+const COMBAT_KEYS=['phase','beat','slot','round','seed','participants','room','conditions'];
 const WINDOW_KEYS=['schemaVersion','source','ledgerIdentity','boundary','ownerId',
  'card','history','budget','ended','identity'];
 const ENTRY_KEYS=['query','proposal','choice','cost','receipt'];
@@ -104,6 +104,18 @@ function checkedBoundary(history,boundary){
  const slot=order[boundary.slot];
  if(!slot||!history.npcIds.includes(slot.actorId))
   invalid('unknown, remote or non-NPC initiative owner');
+ if(boundary.phase==='combat'){
+  const frame=history.frames.at(-1);
+  if(typeof boundary.room!=='string'||frame.npcRooms[slot.actorId]!==boundary.room)
+   invalid('combat initiative owner is not physically at encounter');
+  // The actual engine must independently attest external survivor positions.
+  // Source-known NPCs and creatures can be rejected for false locality here.
+  for(const id of boundary.participants){
+   if((Object.hasOwn(frame.npcRooms,id)&&frame.npcRooms[id]!==boundary.room)||
+      (Object.hasOwn(frame.creatureRooms,id)&&frame.creatureRooms[id]!==boundary.room))
+    invalid('remote source combat participant');
+  }
+ }
  if(boundary.conditions[slot.actorId]!=='ready')
   invalid('dead, incapacitated or unable-to-act NPC');
  return slot;
@@ -199,6 +211,7 @@ function rebuild(compiled,motive,ledger,window){
 export function beginNpcActionTurn(compiled,ledger,boundary){
  if(!validateCompiledAdventure(compiled))invalid('compiled adventure');
  const history=checkedLedger(compiled,ledger);
+ checkedBoundary(history,boundary); // validate original prototype before clone
  const safe=structuredClone(boundary);
  return makeWindow(compiled,history,safe,createActionBudget(),false);
 }
