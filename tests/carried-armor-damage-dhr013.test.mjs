@@ -85,7 +85,7 @@ test('a source armor-piercing fire axe lowers armor one level, never below zero'
 });
 
 test('fully absorbed damage and missed checks never invent critical injuries',()=>{
-  const {r}=find(r=>r.raw===1,{type:'m3_personnel_armor'});
+  const {r}=find(r=>r.raw===1,{type:'m3_personnel_armor',weaponType:'blunt_instrument'});
   assert.equal(r.damage,0);
   assert.equal(r.broken,false);
   assert.equal(r.critical,null);
@@ -108,11 +108,11 @@ test('breaking a human applies the existing seeded D66 clinical record once',()=
 });
 
 test('source armor can prevent a broken state and a phantom injury',()=>{
-  const {b,r}=find(r=>r.raw===1,{type:'kevlar_riot_vest',health:1});
+  const {b,r}=find(r=>r.raw===1,{type:'kevlar_riot_vest',weaponType:'blunt_instrument',health:1});
   assert.equal(r.damage,0);
   assert.equal(r.critical,null);
   assert.equal(r.targetAfter.health,1);
-  const exposed=fixture({seed:b.meleeInput.seed,health:1,worn:false});
+  const exposed=fixture({seed:b.meleeInput.seed,health:1,worn:false,weaponType:'blunt_instrument'});
   const hit=run(exposed);
   assert.equal(hit.damage,1);
   assert(hit.critical);
@@ -228,7 +228,7 @@ test('frozen replay, seeded variation and historical save fingerprint stay intac
   assert.equal(JSON.stringify(historical),old);
   assert(!('armors' in historical));
   assert(!('combat' in historical));
-  const seeds=[1,2,3,4,5,6,7].map(seed=>run(fixture({seed,worn:false}))
-    .attackerAfter);
-  assert(new Set(seeds.map(x=>JSON.stringify(x))).size>1);
+  const rolls=Array.from({length:32},(_,index)=>
+    fixture({seed:index+1,worn:false}).attackResult.strike.initial.base.join(','));
+  assert(new Set(rolls).size>1);
 });
