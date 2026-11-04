@@ -303,3 +303,46 @@ test('DHR-015: control mode labels cannot inject moves or change deterministic r
     proposalId:'none',action:'move',afterActors:clone(w.actors)}];
   assert.equal(validCombatRounds(ghost),false);
 });
+
+test('DHR-015: a wound inflicted during this turn waits until the following turn to cause a death check',()=>{
+  const w=withOwner('human'),id=current(w).actorId;
+  const after=clone(w.actors);
+  after.find(a=>a.id===id).criticalInjuries.push({
+    code:61,deadline:'round',stabilized:false,healed:false,deathSuccesses:0
+  });
+  act(w,'use',after);
+  const completed=act(w,'move');
+  assert.notEqual(completed.phase,'medical','wound newly appearing this turn cannot check immediately');
+  assert.equal(completed.woundBirthRounds[id+':61'],1);
+  assert.equal(advanceToDraw(w).phase,'draw');
+  w.draws.push({id:'draw-2',encounterId:w.encounter.id,
+    round:2,seed:123,status:'committed'});
+  commit(w,{type:'round_draw',drawId:'draw-2',round:2});
+  for(let i=0;current(w)?.actorId!==id;i++){
+    assert(i<6);
+    if(current(w).kind==='animal')act(w,'move');else end(w);
+  }
+  assert.equal(end(w).phase,'medical');
+});
+test('DHR-015: failed committed round-lethal roll kills once, without speculative rerolls',()=>{
+  const wound={code:62,deadline:'round',stabilized:false,healed:false,
+    deathSuccesses:0,lastTurnDeathRound:0};
+  const w=withOwner('human',{wounds:[wound]});
+  for(let i=0;current(w)?.actorId!=='human-1';i++){
+    assert(i<6);
+    if(current(w).kind==='animal')act(w,'move');else end(w);
+  }
+  const card=current(w).card;
+  assert.equal(end(w).phase,'medical');
+  const after=clone(w.actors);
+  after.find(a=>a.id==='human-1').dead=true;
+  after.find(a=>a.id==='human-1').health=0;
+  after.find(a=>a.id==='human-1').broken=true;
+  after.find(a=>a.id==='human-1').criticalInjuries[0].lastTurnDeathRound=1;
+  const resolved=commit(w,{type:'death_roll',actorId:'human-1',round:1,
+    card,woundCode:62,roll:{skill:'stamina',stressDice:0,push:0,seed:18,success:false},
+    afterActors:after});
+  assert.notEqual(resolved.phase,'medical');
+  assert.equal(resolved.actors.find(a=>a.id==='human-1').dead,true);
+  assert.deepEqual(resolved,state(clone(w)));
+});
