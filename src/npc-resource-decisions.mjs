@@ -192,7 +192,8 @@ export function planNpcResourceDecision(compiled,motive,ledger,query,catalog,wor
  }
  // Prefer equipment-backed care to abstract assistance, and never force
  // an equipment use in a quiet/unknown-world scene.
- const chosen=proposals.find(p=>p.kind==='use_equipment'&&p.targetNpcId)||
+ const chosen=proposals.find(p=>p.kind==='use_equipment'&&p.targetNpcId&&
+   definitions.get(p.itemId)?.role==='medical')||
   proposals.find(p=>p.kind==='assist')||
   proposals.find(p=>p.kind==='use_equipment')||
   proposals.find(p=>p.kind==='offer_equipment')||proposals[0];
