@@ -17,7 +17,7 @@ const step=(state,command)=>{
  assert.equal(isPartySave(result.state),true);
  return result.state;
 };
-function build({exposureFirst=true,exposure=true,closeAct=true,openingPoints=0}={}){
+function build({exposureFirst=true,exposure=true,closeAct=true,openingPoints=0,reverseWait=true}={}){
  // The quiet seed never spawns a compelled predator contact. The nervous
  // wildlife variant offers a real, voluntary risk at the ridge.
  const roster=makeParty({seed:91,size:1,careers:['scientist']});
@@ -39,7 +39,7 @@ function build({exposureFirst=true,exposure=true,closeAct=true,openingPoints=0}=
  const completedScene=()=>{state=step(state,'scene living-valley');};
  const completedRisk=()=>{if(exposure)state=step(state,'danger herd-close-pass');};
  if(exposureFirst){completedRisk();completedScene();}
- else {completedScene();completedRisk();}
+ else {completedScene();if(reverseWait)state=step(state,'wait');completedRisk();}
  const beforeClose=structuredClone(state);
  if(closeAct){
   state=step(state,'move forest-blind');
@@ -90,6 +90,9 @@ test('DHR-025: after-the-fact risk cannot retroactively justify an earlier agend
  const f=build({exposureFirst:false});
  assert.ok(f.state.perilRecords[0].beat>f.state.cinematicRecords[0].beat);
  assert.equal(award(f).accepted,false);
+ const sameBeat=build({exposureFirst:false,reverseWait:false});
+ assert.equal(sameBeat.state.perilRecords[0].beat,sameBeat.state.cinematicRecords[0].beat);
+ assert.equal(award(sameBeat).accepted,false,'Free scenes cannot be backdated by later same-beat hazards.');
 });
 
 test('DHR-025: duplicates, tampering and invented replay receipts fail closed',()=>{
