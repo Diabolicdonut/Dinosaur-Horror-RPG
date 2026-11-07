@@ -1,8 +1,8 @@
-# Authenticated scene-image prototype
+# Authenticated scene-image gateway — testing-friendly usage
 
-The existing `dinosaur-rpg` Worker supports an opt-in `POST /api/scene-image` endpoint alongside unchanged `/v1/gm/*` routes. **No extra OpenAI secret or separate Worker is needed.** It uses `OPENAI_API_KEY` on the server and requires the existing `GAME_TOKEN` supplied as `Authorization: Bearer <GAME_TOKEN>`.
+The existing `dinosaur-rpg` Worker supports on-demand `POST /api/scene-image` next to the existing `/v1/gm/*` routes. The browser supplies the existing `GAME_TOKEN` as `Authorization: Bearer <GAME_TOKEN>`; the OpenAI API key stays on the server. No new secret or separate Worker is needed.
 
-## Request and response
+## Request / response
 
 ```http
 POST https://dinosaur-rpg.diabolicdonut.workers.dev/api/scene-image
@@ -19,23 +19,27 @@ Content-Type: application/json
 }
 ```
 
-On success: `{ "b64_json": "...", "mime_type": "image/jpeg", "model": "gpt-image-2.5-flare" }`. The browser displays `data:image/jpeg;base64,<b64_json>`. The model, output size, quality, format, and image count are controlled **only by the Worker**; browser values are checked for compatibility, not trusted as instructions. The endpoint forwards only the prompt and server-defined constraints; scene metadata is for browser-side consistency and prompt composition.
+Success: `{ "b64_json": "...", "mime_type": "image/jpeg", "model": "gpt-image-2.5-flare" }`. The browser can display `data:image/jpeg;base64,<b64_json>`. Only the validated prompt is forwarded; the server fixes the model, resolution, image count (one), output format and quality.
 
-## Security and practical limits
+## Costs, limits, and protection
 
-- Shared token comparison, secret handling and origin allowlisting are reused. The image route uses its **own strict global Durable Object budget** rather than the approximate location-scoped `GM_LIMITER` used by gameplay. Untrusted web origins are blocked; the image route also supports the `Origin: null` of a downloaded local HTML demo, **only when its Bearer token is correct**. Never embed, export or commit the game token in HTML. The token grants paid API access through the proxy; keep it private, rotate if exposed, and enforce OpenAI budget limits.
-- This is **on-demand**, not per narration turn. Each button press can incur an image-generation charge; the browser disables further requests while one is pending. The authenticated image route must reserve **at most 3 attempts per UTC day, 20 per UTC month, with at least 60 seconds between reservations**, all across Cloudflare locations and sessions. Reservations are written transactionally to a single named SQLite-backed Durable Object **before** calling OpenAI; error responses/timeouts are not refunded because an upstream attempt may still be charged. These are image attempt counts, **not exact USD spending accounting**: image prices depend on output tokens and can change. Set OpenAI project budget alerts/limits separately.
-- Images are returned as base64 and are **not cached** or saved. If the `SCENE_IMAGE_BUDGET` Durable Object is absent or unavailable, image generation **fails closed with 503** while existing GM gameplay remains available. A production multi-user release still needs per-account credentials/quotas, image persistence, and content safeguards.
-- The scene description is **not** authoritative world state. The deterministic engine remains the authority and must guard reveal timing, map geometry and visual continuity.
-- OpenAI image access and any required organization verification must already be available on the OpenAI project. A successful local mock test does not demonstrate that a live OpenAI image was generated.
-- The standalone cinematic audio demo is kept **outside this public repository**, because it contains links to third-party copyrighted audio. Its updated private HTML lets the user enter the existing GAME_TOKEN without storing it in exported markup.
+**No per-session, daily or monthly image-generation cap, and no artificial cooldown.** Earlier 3/day, 20/month and 60-second Durable Object quotas were deliberately removed for repeated simultaneous game testing. No `SCENE_IMAGE_BUDGET` Durable Object binding is required.
 
-## Testing and deployment
+- The existing `GM_LIMITER` Cloudflare rate-limit binding remains an abuse safeguard (configured at 30 requests / 60 seconds); image requests use limiter key `single-player-image-gateway`, independent of gameplay key `single-player-ai-gateway`. It prevents rapid accidental or malicious bursts but does **not** cap total images across sessions or days. Multiple test sessions can generate images within normal burst limits.
+- The existing `GM_REQUIRE_LIMITER=true` in `wrangler.jsonc` makes all billable routes fail closed when the generic limiter is missing; don't disable it for public hosting. No other usage quota is enforced by this project.
+- Each successful or potentially billed image invocation is charged to your **OpenAI API project**, not to your ChatGPT subscription. Estimated standard-rate GPT Image 2.5 Flare medium landscape output cost (1536x1024) is roughly USD $0.0103 plus small prompt input charges, based on typical token usage; exact price varies by usage and settings. Check the API project usage dashboard and spending-alert configuration. With hard project caps removed here, usage can accumulate.
+- `GAME_TOKEN` still guards access; allowed browser origins remain restricted. `Origin: null` is permitted for the local HTML demo with a valid Bearer token. Never commit or share the token; rotate it if exposed. Origin checks alone are not authentication.
+- Image prompts must describe established, player-visible scene facts. The rendered image is **not** authoritative game state. The deterministic engine controls positions, revealed clues, and hidden animals.
+- No automatic image generation per narration turn; the endpoint is opt-in. These images are returned inline as base64 and are not automatically saved to Dropbox or other persistence.
 
-`npm test` covers the new image route's successful proxy call, inherited token protection, origin policy including local HTML, CORS, input validation, upstream error sanitization, unchanged GM status, independent gameplay rate limiting, image cooldown, daily/monthly quota rollover, fail-closed behavior, and paid-attempt reservation semantics. Merge only through the project's existing integration policy. **The pull request itself does not deploy the Cloudflare Worker**; after review and merge, deploy from the merged `worker/wrangler.jsonc` using the established release procedure and confirm the route live.
+## Tests and deployment
 
-## Required Cloudflare binding and verification
+`npm test` covers token/origin validation, CORS, fixed-size/quality/model costs, sanitizer behavior, unauthenticated rejection, independent image/GM minute-rate keys, absence of daily/monthly quotas and cooldown, and no dependency on Durable Objects. Test calls use mocked OpenAI responses and do not create API charges.
 
-The checked-in `worker/wrangler.jsonc` declares `SCENE_IMAGE_BUDGET` mapped to the exported `SceneImageBudget` class, with Cloudflare's SQLite-backed Durable Object `exports` lifecycle configuration. Deploy the **whole Worker module** from the **merged `main`** via `npx wrangler deploy --config worker/wrangler.jsonc` (or `cd worker && npx wrangler deploy`) using an authenticated Cloudflare session. Confirm the namespace was created. Never paste the API key into GitHub or local HTML. This is a new Cloudflare binding but requires **no new secret**.
+After reviewed PR merge, deploy the merged code to the existing Worker via:
 
-Test live without paid generation first: authenticated malformed prompt -> 400; missing token -> 401; with a valid prompt, if budget binding is absent -> 503. An actual image generation test incurs a charge and must be separately authorized; do not claim production deployment or billing verification from GitHub Actions/Pages alone. Keep the project-wide OpenAI usage budget suitably low. Cloudflare strict quota has intentionally no administrator reset endpoint and counters are never derived from client requests.
+```bash
+npx wrangler@latest deploy --config worker/wrangler.jsonc
+```
+
+This does not require provisioning `SCENE_IMAGE_BUDGET`. It does require the configured `GM_LIMITER` and existing `GAME_TOKEN` / `OPENAI_API_KEY` secrets. GitHub Actions and Pages do **not** deploy or verify the live Cloudflare Worker. Verify live authentication and origin handling before making a separately authorized paid image-generation request.

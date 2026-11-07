@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/wrangler.json",
   "name": "dinosaur-rpg",
-  "main": "./cloudflare.mjs",
+  "main": "./index.mjs",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
   "vars": {
@@ -26,19 +26,5 @@
         "period": 60
       }
     }
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "name": "SCENE_IMAGE_BUDGET",
-        "class_name": "SceneImageBudget"
-      }
-    ]
-  },
-  "exports": {
-    "SceneImageBudget": {
-      "type": "durable-object",
-      "storage": "sqlite"
-    }
-  }
+  ]
 }
