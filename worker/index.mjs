@@ -1,4 +1,5 @@
 import { SCENE_IMAGE_PATH, safeSceneImagePayload, requestSceneImage } from './scene-image.mjs';
+export { SceneImageBudget } from './scene-image-budget.mjs';
 
 /**
  * dinosaur-rpg Cloudflare Worker — AI GM gateway (checkpoint 002).
@@ -239,6 +240,7 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   const path = new URL(request.url).pathname;
   const headers = headersFor(origin, env, path);
   const trustedOrigin = !origin || headers['Access-Control-Allow-Origin'] === origin;
+  const isSceneImage = path === SCENE_IMAGE_PATH;
 
   if (path === '/health' && request.method === 'GET')
     return jsonResponse({ service: 'dinosaur-rpg', status: 'online', version: '006', ai_configured: Boolean(env.OPENAI_API_KEY && env.GAME_TOKEN) }, 200, headers);
@@ -277,9 +279,9 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   // Wrangler deployments opt into fail-closed limiting. The two-secret dashboard-paste
   // path remains compatible, but needs separately configured account-side protections.
   const requireLimiter = env.GM_REQUIRE_LIMITER === true || env.GM_REQUIRE_LIMITER === 'true';
-  if (requireLimiter && !env.GM_LIMITER)
+  if (!isSceneImage && requireLimiter && !env.GM_LIMITER)
     return jsonResponse({ error: 'rate_limiter_unavailable' }, 503, headers);
-  if (env.GM_LIMITER) {
+  if (!isSceneImage && env.GM_LIMITER) {
     if (typeof env.GM_LIMITER.limit !== 'function')
       return jsonResponse({ error: 'rate_limiter_misconfigured' }, 503, headers);
     try {
@@ -320,6 +322,31 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   const mode = isImage ? null : path.slice('/v1/gm/'.length);
   const payload = isImage ? safeSceneImagePayload(parsed) : safePayload(parsed, mode);
   if (!payload) return jsonResponse({ error: 'invalid_request_payload' }, 400, headers);
+  if (isImage) {
+    // Strict cross-colocation quota: fail closed if the Durable Object isn't configured.
+    const budget = env.SCENE_IMAGE_BUDGET;
+    if (!budget || typeof budget.idFromName !== 'function' || typeof budget.get !== 'function')
+      return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    let decision;
+    try {
+      const stub = budget.get(budget.idFromName('global-scene-images'));
+      const response = await stub.fetch('https://scene-image-budget.internal/reserve', { method: 'POST' });
+      decision = await response.json();
+      if (!response.ok) {
+        if (response.status === 429 &&
+            ['image_cooldown', 'image_daily_quota', 'image_monthly_quota'].includes(decision?.error) &&
+            Number.isSafeInteger(decision.retryAfter) && decision.retryAfter > 0)
+          return jsonResponse({ error: decision.error }, 429,
+            { ...headers, 'Retry-After': String(decision.retryAfter) });
+        return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+      }
+      if (decision?.allowed !== true || !Number.isSafeInteger(decision.dayRemaining) ||
+          !Number.isSafeInteger(decision.monthRemaining))
+        return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    } catch {
+      return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    }
+  }
   try {
     const result = isImage ? await requestSceneImage(payload, env, upstreamFetch) : await requestOpenAI(mode, payload, env, upstreamFetch);
     return jsonResponse(result, 200, headers);
