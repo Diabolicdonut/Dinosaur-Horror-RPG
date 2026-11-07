@@ -2,29 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { handleRequest } from '../worker/index.mjs';
 import { safeSceneImagePayload, SCENE_IMAGE_MODEL } from '../worker/scene-image.mjs';
-import { SceneImageBudget, reserveSceneImageBudget, SCENE_IMAGE_LIMITS } from '../worker/scene-image-budget.mjs';
 
 const endpoint = 'https://dinosaur-rpg.example/api/scene-image';
 const env = { GAME_TOKEN: 'example-private-game-token', OPENAI_API_KEY: 'never-expose-provider-secret' };
-function budgetNamespace(now = () => Date.now()) {
-  const data = new Map();
-  const storage = {
-    async transaction(fn) {
-      const t = { get: async key => data.get(key), put: async (key, value) => { data.set(key, value); } };
-      return fn(t);
-    }
-  };
-  const instance = new SceneImageBudget({ storage });
-  return {
-    idFromName(name) { assert.equal(name, 'global-scene-images'); return name; },
-    get() {
-      return { fetch: (url, options) => instance.fetch(new Request(url, options)) };
-    },
-    storage, data, instance, now
-  };
-}
 function secured(overrides = {}) {
-  return { ...env, SCENE_IMAGE_BUDGET: budgetNamespace(), ...overrides };
+  // The real Cloudflare binding enforces the generic per-minute abuse limit.
+  // A mocked approval allows verification of old daily/monthly quota removal.
+  return { ...env, GM_REQUIRE_LIMITER: 'true',
+    GM_LIMITER: { limit: async () => ({ success: true }) }, ...overrides };
 }
 const origin = 'https://diabolicdonut.github.io';
 const prompt = 'Photorealistic rainy forest at dusk, two people shelter beneath a concrete canopy, no dinosaur visible.';
@@ -114,86 +99,106 @@ test('existing GM status route still authenticates without a model request', asy
   assert.equal((await response.json()).authenticated, true);
 });
 
-test('images use an independent strict quota and do not consume gameplay GM rate limits', async () => {
-  const response = await handleRequest(req(), secured({ GM_LIMITER: { limit: async () => ({ success: false }) } }), async () => new Response(JSON.stringify({ data: [{ b64_json: 'QUJD' }] })));
-  assert.equal(response.status, 200);
+
+test('image requests have no daily/monthly quota or 60-second cooldown', async () => {
+  let calls = 0;
+  const limiterKeys = [];
+  const safeEnv = secured({ GM_LIMITER: {
+    limit: async ({ key }) => { limiterKeys.push(key); return { success: true }; }
+  } });
+  const upstream = async () => {
+    calls++;
+    return new Response(JSON.stringify({ data: [{ b64_json: 'QUJD' }] }), { status: 200 });
+  };
+  // Exceed old day (3) and month (20) limits without advancing a fake clock.
+  // Calls are allowed here because the minute limiter mock grants them.
+  for (let i = 0; i < 25; i++) {
+    const response = await handleRequest(req(), safeEnv, upstream);
+    assert.equal(response.status, 200, 'request ' + (i + 1));
+  }
+  assert.equal(calls, 25);
+  assert.equal(limiterKeys.length, 25);
+  assert(limiterKeys.every(key => key === 'single-player-image-gateway'));
 });
 
-test('image requests fail closed without quota binding or when quota storage errors', async () => {
-  let calls = 0;
-  const upstream = async () => { calls++; throw new Error('no paid calls'); };
-  const missing = await handleRequest(req(), env, upstream);
-  assert.equal(missing.status, 503);
-  assert.equal((await missing.json()).error, 'image_budget_unavailable');
-  const failed = await handleRequest(req(), secured({ SCENE_IMAGE_BUDGET: {
-    idFromName: () => 'id', get: () => ({ fetch: async () => { throw Error('DO offline'); } })
-  } }), upstream);
-  assert.equal(failed.status, 503);
+test('GM and images have separate per-minute limiter keys', async () => {
+  const keys = [];
+  const safeEnv = secured({ GM_LIMITER: {
+    limit: async ({ key }) => { keys.push(key); return { success: true }; }
+  } });
+  const upstream = async url => {
+    if (url.includes('/images/generations'))
+      return new Response(JSON.stringify({ data: [{ b64_json: 'QUJD' }] }), { status: 200 });
+    throw Error('GM status should never call upstream');
+  };
+  const first = await handleRequest(req(), safeEnv, upstream);
+  assert.equal(first.status, 200);
+  const gm = await handleRequest(req({ path: 'https://dinosaur-rpg.example/v1/gm/status',
+    method: 'GET' }), safeEnv, upstream);
+  assert.equal(gm.status, 200);
+  // Status is zero-cost and does not draw from the limiter.
+  const input = req({ path: 'https://dinosaur-rpg.example/v1/gm/narrate',
+    body: { payload: { events: ['one'], location: 'camp' } } });
+  let gmCalled = false;
+  const result = await handleRequest(input, safeEnv, async (url) => {
+    assert.equal(url, 'https://api.openai.com/v1/responses');
+    gmCalled = true;
+    return new Response(JSON.stringify({ output: [{ content: [{ type: 'output_text', text: '{"text":"Safe narration."}' }] }] }), { status: 200 });
+  });
+  assert.equal(result.status, 200);
+  assert(gmCalled);
+  assert.deepEqual(keys, ['single-player-image-gateway', 'single-player-ai-gateway']);
+});
+
+test('per-minute image rate limit still prevents excessive requests and paid calls', async () => {
+  let calls = 0, key = null;
+  const response = await handleRequest(req(), secured({
+    GM_LIMITER: { limit: async ({ key: bucket }) => {
+      key = bucket;
+      return { success: false };
+    } }
+  }), async () => { calls++; throw Error('must not contact OpenAI'); });
+  assert.equal(response.status, 429);
+  assert.equal((await response.json()).error, 'rate_limited');
+  assert.equal(response.headers.get('Retry-After'), '60');
+  assert.equal(key, 'single-player-image-gateway');
   assert.equal(calls, 0);
 });
 
-test('strict quotas enforce global cooldown, UTC day and month boundaries', async () => {
-  const ns = budgetNamespace();
-  const start = Date.parse('2026-11-07T01:00:00.000Z');
-  const storage = ns.storage;
-  const a = await reserveSceneImageBudget(storage, start);
-  assert.equal(a.allowed, true);
-  assert.equal(a.dayRemaining, SCENE_IMAGE_LIMITS.perDay - 1);
-  const cooldown = await reserveSceneImageBudget(storage, start + 2000);
-  assert.deepEqual({ error: cooldown.error, retryAfter: cooldown.retryAfter },
-    { error: 'image_cooldown', retryAfter: 58 });
-  const b = await reserveSceneImageBudget(storage, start + 60000);
-  const c = await reserveSceneImageBudget(storage, start + 120000);
-  assert.equal(b.allowed, true);
-  assert.equal(c.allowed, true);
-  const exceeded = await reserveSceneImageBudget(storage, start + 180000);
-  assert.equal(exceeded.error, 'image_daily_quota');
-  assert(exceeded.retryAfter > 0);
-  for (let day = 1; day < 7; day++) {
-    const t = start + day * 86400000;
-    for (let j = 0; j < 3; j++) {
-      const out = await reserveSceneImageBudget(storage, t + j * 60000);
-      assert.equal(out.allowed, !(day === 6 && j === 2));
-    }
-  }
-  const exhausted = await reserveSceneImageBudget(storage, start + 7 * 86400000);
-  assert.equal(exhausted.error, 'image_monthly_quota');
-  const reset = await reserveSceneImageBudget(storage, Date.parse('2026-12-01T01:00:00.000Z'));
-  assert.equal(reset.allowed, true);
-  assert.equal(reset.monthRemaining, SCENE_IMAGE_LIMITS.perMonth - 1);
-});
-
-test('quota denial, invalid input and wrong token never reach paid image API', async () => {
-  const ns = budgetNamespace();
-  const fixedEnv = secured({ SCENE_IMAGE_BUDGET: ns });
+test('configured fail-closed limiter protects images but requires no Durable Object binding', async () => {
   let calls = 0;
   const upstream = async () => { calls++; return new Response(JSON.stringify({ data: [{ b64_json: 'QUJD' }] })); };
-  const first = await handleRequest(req(), fixedEnv, upstream);
-  assert.equal(first.status, 200);
-  const denied = await handleRequest(req(), fixedEnv, upstream);
-  assert.equal(denied.status, 429);
-  assert.equal((await denied.json()).error, 'image_cooldown');
-  assert(Number(denied.headers.get('Retry-After')) > 0);
-  assert.equal((await handleRequest(req({ token: 'wrong' }), fixedEnv, upstream)).status, 401);
-  assert.equal((await handleRequest(req({ body: { prompt: 'short' } }), fixedEnv, upstream)).status, 400);
+  const without = await handleRequest(req(), { ...env, GM_REQUIRE_LIMITER: 'true' }, upstream);
+  assert.equal(without.status, 503);
+  assert.equal((await without.json()).error, 'rate_limiter_unavailable');
+  assert.equal(calls, 0);
+  const allowed = await handleRequest(req(), secured(), upstream);
+  assert.equal(allowed.status, 200);
   assert.equal(calls, 1);
 });
 
-test('failed upstream image still consumes reservation to avoid retry-driven bills', async () => {
-  const ns = budgetNamespace();
-  const fixedEnv = secured({ SCENE_IMAGE_BUDGET: ns });
-  const failed = await handleRequest(req(), fixedEnv, async () => new Response('upstream failed', { status: 503 }));
-  assert.equal(failed.status, 502);
-  const second = await handleRequest(req(), fixedEnv, async () => { throw Error('must not call'); });
-  assert.equal(second.status, 429);
+test('invalid auth, origin and payload never reach image generation', async () => {
+  let calls = 0;
+  const upstream = async () => { calls++; throw Error('unreachable'); };
+  for (const input of [
+    req({ token: null }),
+    req({ token: 'incorrect' }),
+    req({ from: 'https://untrusted.example' }),
+    req({ body: { prompt: 'short' } }),
+    req({ body: { prompt, quality: 'max' } }),
+    req({ body: { prompt, model: 'gpt-image-2.5-sunburst' } })
+  ]) {
+    const response = await handleRequest(input, secured(), upstream);
+    assert(response.status >= 400);
+  }
+  assert.equal(calls, 0);
 });
 
-test('gameplay GM rate limit remains fail-closed independently from image quota', async () => {
-  const input = req({ path: 'https://dinosaur-rpg.example/v1/gm/narrate',
-    body: { payload: { events: ['one'], location: 'camp' } } });
-  const response = await handleRequest(input, secured({
-    GM_REQUIRE_LIMITER: 'true',
-    GM_LIMITER: { limit: async () => ({ success: false }) }
-  }), async () => { throw Error('must not call'); });
-  assert.equal(response.status, 429);
+test('upstream failure is sanitized and does not create artificial quota lockout', async () => {
+  const safeEnv = secured();
+  const first = await handleRequest(req(), safeEnv, async () => new Response('provider details', { status: 503 }));
+  assert.equal(first.status, 502);
+  const second = await handleRequest(req(), safeEnv,
+    async () => new Response(JSON.stringify({ data: [{ b64_json: 'QUJD' }] }), { status: 200 }));
+  assert.equal(second.status, 200);
 });
