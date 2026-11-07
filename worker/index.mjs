@@ -1,5 +1,4 @@
 import { SCENE_IMAGE_PATH, safeSceneImagePayload, requestSceneImage } from './scene-image.mjs';
-export { SceneImageBudget } from './scene-image-budget.mjs';
 
 /**
  * dinosaur-rpg Cloudflare Worker — AI GM gateway (checkpoint 002).

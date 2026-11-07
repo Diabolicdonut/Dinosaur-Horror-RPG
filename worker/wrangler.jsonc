@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/wrangler.json",
   "name": "dinosaur-rpg",
-  "main": "./index.mjs",
+  "main": "./cloudflare.mjs",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
   "vars": {
