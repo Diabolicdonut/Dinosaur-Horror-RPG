@@ -1,3 +1,5 @@
+import { SCENE_IMAGE_PATH, safeSceneImagePayload, requestSceneImage } from './scene-image.mjs';
+
 /**
  * dinosaur-rpg Cloudflare Worker — AI GM gateway (checkpoint 002).
  * Secrets: OPENAI_API_KEY, GAME_TOKEN. Never deploy secrets in source.
@@ -81,7 +83,7 @@ export const SCHEMAS = Object.freeze({
   }
 });
 
-function headersFor(origin, env) {
+function headersFor(origin, env, path) {
   const allowed = [...ALLOWED_ORIGINS, env?.ALLOWED_ORIGIN].filter(Boolean);
   const h = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -89,7 +91,8 @@ function headersFor(origin, env) {
     'Vary': 'Origin',
     'X-Content-Type-Options': 'nosniff'
   };
-  if (allowed.includes(origin)) {
+  if (allowed.includes(origin) || (origin === 'null' && path === SCENE_IMAGE_PATH)) {
+    // Local standalone demo uses Origin:null; GAME_TOKEN is still mandatory.
     h['Access-Control-Allow-Origin'] = origin;
     h['Access-Control-Allow-Headers'] = 'Authorization, Content-Type';
     h['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET';
@@ -233,13 +236,14 @@ async function requestOpenAI(mode, payload, env, upstreamFetch) {
 /** Dependency injection supports offline mock tests. Cloudflare uses default export below. */
 export async function handleRequest(request, env, upstreamFetch = fetch) {
   const origin = request.headers.get('Origin');
-  const headers = headersFor(origin, env);
   const path = new URL(request.url).pathname;
+  const headers = headersFor(origin, env, path);
   const trustedOrigin = !origin || headers['Access-Control-Allow-Origin'] === origin;
+  const isSceneImage = path === SCENE_IMAGE_PATH;
 
   if (path === '/health' && request.method === 'GET')
     return jsonResponse({ service: 'dinosaur-rpg', status: 'online', version: '006', ai_configured: Boolean(env.OPENAI_API_KEY && env.GAME_TOKEN) }, 200, headers);
-  if (!ROUTES.includes(path)) return jsonResponse({ error: 'not_found' }, 404, headers);
+  if (!ROUTES.includes(path) && path !== SCENE_IMAGE_PATH) return jsonResponse({ error: 'not_found' }, 404, headers);
   if (!trustedOrigin) return jsonResponse({ error: 'origin_forbidden' }, 403, headers);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   if (request.method !== 'POST' && !(path === '/v1/gm/status' && request.method === 'GET'))
@@ -274,9 +278,9 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   // Wrangler deployments opt into fail-closed limiting. The two-secret dashboard-paste
   // path remains compatible, but needs separately configured account-side protections.
   const requireLimiter = env.GM_REQUIRE_LIMITER === true || env.GM_REQUIRE_LIMITER === 'true';
-  if (requireLimiter && !env.GM_LIMITER)
+  if (!isSceneImage && requireLimiter && !env.GM_LIMITER)
     return jsonResponse({ error: 'rate_limiter_unavailable' }, 503, headers);
-  if (env.GM_LIMITER) {
+  if (!isSceneImage && env.GM_LIMITER) {
     if (typeof env.GM_LIMITER.limit !== 'function')
       return jsonResponse({ error: 'rate_limiter_misconfigured' }, 503, headers);
     try {
@@ -313,11 +317,37 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   } catch {
     return jsonResponse({ error: 'invalid_json' }, 400, headers);
   }
-  const mode = path.slice('/v1/gm/'.length);
-  const payload = safePayload(parsed, mode);
+  const isImage = path === SCENE_IMAGE_PATH;
+  const mode = isImage ? null : path.slice('/v1/gm/'.length);
+  const payload = isImage ? safeSceneImagePayload(parsed) : safePayload(parsed, mode);
   if (!payload) return jsonResponse({ error: 'invalid_request_payload' }, 400, headers);
+  if (isImage) {
+    // Strict cross-colocation quota: fail closed if the Durable Object isn't configured.
+    const budget = env.SCENE_IMAGE_BUDGET;
+    if (!budget || typeof budget.idFromName !== 'function' || typeof budget.get !== 'function')
+      return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    let decision;
+    try {
+      const stub = budget.get(budget.idFromName('global-scene-images'));
+      const response = await stub.fetch('https://scene-image-budget.internal/reserve', { method: 'POST' });
+      decision = await response.json();
+      if (!response.ok) {
+        if (response.status === 429 &&
+            ['image_cooldown', 'image_daily_quota', 'image_monthly_quota'].includes(decision?.error) &&
+            Number.isSafeInteger(decision.retryAfter) && decision.retryAfter > 0)
+          return jsonResponse({ error: decision.error }, 429,
+            { ...headers, 'Retry-After': String(decision.retryAfter) });
+        return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+      }
+      if (decision?.allowed !== true || !Number.isSafeInteger(decision.dayRemaining) ||
+          !Number.isSafeInteger(decision.monthRemaining))
+        return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    } catch {
+      return jsonResponse({ error: 'image_budget_unavailable' }, 503, headers);
+    }
+  }
   try {
-    const result = await requestOpenAI(mode, payload, env, upstreamFetch);
+    const result = isImage ? await requestSceneImage(payload, env, upstreamFetch) : await requestOpenAI(mode, payload, env, upstreamFetch);
     return jsonResponse(result, 200, headers);
   } catch (error) {
     const code = error?.name === 'AbortError' ? 'upstream_timeout'

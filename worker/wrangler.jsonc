@@ -1,7 +1,7 @@
 {
   "$schema": "https://json.schemastore.org/wrangler.json",
   "name": "dinosaur-rpg",
-  "main": "./index.mjs",
+  "main": "./cloudflare.mjs",
   "compatibility_date": "2026-10-20",
   "workers_dev": true,
   "vars": {
@@ -12,7 +12,10 @@
     "GM_REQUIRE_LIMITER": "true"
   },
   "secrets": {
-    "required": ["OPENAI_API_KEY", "GAME_TOKEN"]
+    "required": [
+      "OPENAI_API_KEY",
+      "GAME_TOKEN"
+    ]
   },
   "ratelimits": [
     {
@@ -23,5 +26,19 @@
         "period": 60
       }
     }
-  ]
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "SCENE_IMAGE_BUDGET",
+        "class_name": "SceneImageBudget"
+      }
+    ]
+  },
+  "exports": {
+    "SceneImageBudget": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  }
 }
