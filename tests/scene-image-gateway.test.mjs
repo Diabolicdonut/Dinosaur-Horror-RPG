@@ -5,16 +5,14 @@ import { safeSceneImagePayload, SCENE_IMAGE_MODEL } from '../worker/scene-image.
 
 const endpoint = 'https://dinosaur-rpg.example/api/scene-image';
 const env = { GAME_TOKEN: 'example-private-game-token', OPENAI_API_KEY: 'never-expose-provider-secret' };
-function budgetNamespace(now = () => Date.now()) {
-  const data = new Map();
-  const storage = {
-    async transacfunction secured(overrides = {}) {
-  // The real Cloudflare binding enforces a generic per-minute abuse limit.
-  // The mock grants calls so tests can exercise unlimited-session behavior.
+function secured(overrides = {}) {
+  // The real Cloudflare binding enforces the generic per-minute abuse limit.
+  // A mocked approval allows verification of old daily/monthly quota removal.
   return { ...env, GM_REQUIRE_LIMITER: 'true',
     GM_LIMITER: { limit: async () => ({ success: true }) }, ...overrides };
 }
-shelter beneath a concrete canopy, no dinosaur visible.';
+const origin = 'https://diabolicdonut.github.io';
+const prompt = 'Photorealistic rainy forest at dusk, two people shelter beneath a concrete canopy, no dinosaur visible.';
 
 function req({ path = endpoint, method = 'POST', token = env.GAME_TOKEN, from = origin, body = { prompt }, headers = {} } = {}) {
   const all = { Origin: from, ...headers };
