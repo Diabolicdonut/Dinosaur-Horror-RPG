@@ -547,7 +547,7 @@
     "compatibility": "Party v3 optional coverId/behavior, v2 migration, solo 006.2, Cloudflare Worker v006 unchanged"
   },
   "living_roadmap": "docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
-  "living_roadmap_last_reconciled": "2026-10-27 / full 18-gate delivery audit / gameplay 009-C3 v0.7.35",
+  "living_roadmap_last_reconciled": "2026-11-09 / 009-R2 full 21-gate presentation scope audit / gameplay remains 009-D2 v0.7.39",
   "living_roadmap_policy": "Full current accepted product scope: docs/ROADMAP-COVERAGE.md + site-progress.json, synchronized with the living implementation plan, source/acceptance audit and project-state.json. 18 weighted gates, 100 total, six source-backed accepted worth 38 points; 5/8 phase foundation separately. Update on every future accepted functional milestone; no credit for partial, planned or documentation-only work. Historical sections remain chronology, not current gameplay status.",
   "stalking_audit": "docs/DINOSAUR-STALKING-007L2A.md",
   "stalking_implementation": {
@@ -992,7 +992,7 @@
     "manifest": "site-progress.json",
     "reviewed": "2026-10-27",
     "scope": "Complete bounded playable product including Evolved rules parity, characters, NPCs, original curated and generated Cinematic/Campaign adventures, AI Game Mother, Wonder and Dread, privacy, control modes and desktop/mobile QA",
-    "gates": 18,
+    "gates": 21,
     "total_weight": 100,
     "accepted_weight": 38,
     "partial_or_planned_weight": 62,
@@ -1006,7 +1006,7 @@
     "gameplay_version": "0.7.39",
     "accepted_regressions": 665,
     "manual_graphical_qa": "not yet completed",
-    "source_update": "009-D2 accepted: NPC dialogue and source-authorized return routes work in independent Tidal Nursery rev2, preserving rev1 and Long Count saves; PR #61 and independent main 665/665 Actions and Pages success. Weighted full scope unchanged 38/100; graphical smoke outstanding.",
+    "source_update": "009-R2 roadmap-only presentation scope revision on 2026-11-09; 21 gates, total 100, accepted 38. Functional gameplay authority remains 009-D2; no historical save revision or new gameplay acceptance.",
     "acceptance_evidence": {
       "milestone": "009-R1",
       "pr": 52,
