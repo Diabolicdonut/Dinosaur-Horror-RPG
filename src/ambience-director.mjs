@@ -182,9 +182,15 @@ export function proposeAmbienceCue(registry, {scene, requestedId = null,
 export function playbackDirective(cue, {volume=0.35, muted=false, narrating=false} = {}) {
   if (!cue || cue.type === 'silence' || muted || volume === 0)
     return silence('muted-or-silent');
-  if (cue.type === 'hold') return Object.freeze({type:'hold',trackId:cue.trackId});
-  if (cue.type !== 'ambience' || !SAFE_CUE_ID.test(cue.trackId))
-    return silence('invalid-cue');
+  if (cue.type === 'hold') return SAFE_CUE_ID.test(cue.trackId)
+    ? Object.freeze({type:'hold',trackId:cue.trackId}) : silence('invalid-hold');
+  if (cue.type !== 'ambience' || !SAFE_CUE_ID.test(cue.trackId) ||
+      !safeTrackAssetBinding(cue.trackId,cue.assetKey) ||
+      !Number.isFinite(cue.gainDb) || cue.gainDb < -36 || cue.gainDb > 0 ||
+      !Number.isFinite(cue.duckDuringNarrationDb) ||
+      cue.duckDuringNarrationDb > 0 || cue.duckDuringNarrationDb < -24 ||
+      !Number.isInteger(cue.fadeMs) || cue.fadeMs < 0 || cue.fadeMs > 20000 ||
+      cue.loopRequested !== true) return silence('invalid-cue');
   const safeVolume = boundNumber(volume,0,1,0.35);
   const adjusted = cue.gainDb + 20*Math.log10(safeVolume) +
     (narrating ? cue.duckDuringNarrationDb : 0);
@@ -193,6 +199,11 @@ export function playbackDirective(cue, {volume=0.35, muted=false, narrating=fals
     fadeMs:cue.fadeMs,loopRequested:cue.loopRequested,loopVerified:false});
 }
 const SAFE_CUE_ID = /^amb-v[1-8]-\d{2}$/;
+function safeTrackAssetBinding(trackId, assetKey) {
+  if (typeof assetKey !== 'string') return false;
+  const match = /^Michael Ghelfi - RPG Ambiences Vol\. ([1-8]) - (\d{2}) ([^/\\]+)\.ogg$/.exec(assetKey);
+  return Boolean(match && trackId === 'amb-v' + match[1] + '-' + match[2]);
+}
 
 /** Test/dry-run transport: missing media is silence, never invented playback. */
 export function mockPlayback(directive, {availableAssetKeys=new Set(), transitions=[]} = {}) {
