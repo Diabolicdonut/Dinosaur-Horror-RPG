@@ -1,14 +1,15 @@
-# Dinosaur Horror RPG — Parallel Development Queue v5
+# Dinosaur Horror RPG — Parallel Development Queue v6
 
-**Snapshot:** 2026-11-04 after fourth integration wave · **Gameplay authority:** 009-D2 / v0.7.39 · **Accepted whole-product roadmap:** 38/100 across 18 gates · **Current exact merged-main validation:** 902/902 tests after 16 bounded developer subtasks. Original accepted baseline: 665 tests; accepted weighted gameplay gates unchanged.
+**Snapshot:** 2026-11-09 after 009-R2 presentation scope revision (no new gameplay acceptance) · **Gameplay authority:** 009-D2 / v0.7.39 · **Accepted whole-product roadmap:** 38/100 across 21 gates · **Previous merged-main gameplay baseline:** 902/902 tests after 16 bounded developer subtasks. Original accepted baseline: 665 tests; accepted weighted gameplay gates unchanged.
 
 **Authority and precedence:** This queue is subordinate to `docs/ROADMAP-COVERAGE.md`, `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `docs/EVOLVED-RULES-AUTHORITY.md`, `AGENTS.md`, and current accepted `main`. The historical accepted checkpoint and 38/100 progress are **not** changed by creating assignments. Do not copy private Free League rulebooks or official scenarios into the public repository.
 
 ## Work distribution
 
 - **Completed and integrated:** **16** bounded tasks, including the fourth wave DHR-012/#102 (physical ranged eligibility), DHR-013/#103 (armor and human damage), DHR-019/#101 (NPC action chooser) and DHR-025/#91 (Cinematic Story Point earning). Prior completed tasks: DHR-001, 003, 004, 006, 007, 008, 009, 010, 011, 017, 018 and 055. Each developer PR passed fresh required CI and independent exact merged-main Actions/Pages. These are **bounded subtasks**, not weighted whole-project gate acceptance.
-- **Ready to dispatch:** DHR-002/#68, DHR-005/#71, DHR-014/#110, DHR-015/#111, DHR-020/#112, DHR-021/#113, DHR-026/#115, DHR-027/#92, DHR-028/#93, DHR-029/#94, DHR-030/#114 and DHR-033/#95. These **12** assignments have accepted prerequisites, though they must still be coordinated for file conflicts. Start no more than four independent developer chats at a time initially.
-- **Dependency-blocked:** remaining **44** planned subtasks. DHR-016 (actual offensive combat integrated across adventures) still needs DHR-014 and DHR-015 and earlier physical legality contracts. DHR-022 (NPC tactical action execution) still needs DHR-016, DHR-020 and DHR-021. No worker may skip these blockers.
+- **Ready to dispatch:** DHR-002/#68, DHR-005/#71, DHR-014/#110, DHR-015/#111, DHR-020/#112, DHR-021/#113, DHR-026/#115, DHR-027/#92, DHR-028/#93, DHR-029/#94, DHR-030/#114 and DHR-033/#95. These **12** original assignments have accepted prerequisites, though they must still be coordinated for file conflicts. The separate presentation track adds three independently ready work items: **DHR-073, DHR-077 and DHR-078**; total ready is 15. Start no more than four independent developer chats at a time initially.
+- **Dependency-blocked:** **48** planned subtasks (44 original plus four newly gated presentation assignments). DHR-016 (actual offensive combat integrated across adventures) still needs DHR-014 and DHR-015 and earlier physical legality contracts. DHR-022 (NPC tactical action execution) still needs DHR-016, DHR-020 and DHR-021. No worker may skip these blockers.
+- **009-R2 presentation track:** Seven additional bounded tasks DHR-073–079 (three ready, four blocked) expand the catalog from 72 to **79** tasks; they do not alter the 16 completed integrations or 38/100 accepted score. New Hub prototype is user-supplied and not yet in GitHub source. See [presentation roadmap](../PRESENTATION-AND-HUB-ROADMAP.md). Keep UI shell, SVG renderer, portrait/vitals and audio/media files independently owned until review. Existing gameplay issues #110–113 and handoff PR #118 stay open.
 - **Integration Director:** review gameplay PRs, verify branch CI and independent exact merged-main Actions/Pages, preserve historical saves and three modes. The docs-only `safe-auto-merge` label **never authorizes gameplay auto-merge**. No fractional whole-game gate credit.
 - **Cloudflare Worker caveat:** DHR-055 / PR #97 altered repository Worker source and Wrangler configuration. GitHub Actions/Pages green **does not prove Cloudflare redeployment** nor a production `GM_LIMITER` binding. With `GM_REQUIRE_LIMITER=true`, a missing binding intentionally returns 503 for paid requests. Validate this operationally before claiming full security.
 - **Docs-only bot-merge CI:** DHR-001's `repository_dispatch` was proven by [PR #86](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/86) and successful [merged-main engine and Pages check](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41731955040). Gameplay PRs **remain reviewed manually**.
@@ -141,6 +142,13 @@ These PRs were manually reviewed and squash-merged sequentially after up-to-date
 | DHR-070 | Blocked | 11,17 | DHR-035, DHR-039 | Complete multi-character creation/play UI | Not opened |
 | DHR-071 | Blocked | 17,18 | DHR-003, DHR-024 | Audit spectator/focus observer knowledge bounds | Not opened |
 | DHR-072 | Blocked | 17 | DHR-032, DHR-044, DHR-049, DHR-053, DHR-057, DHR-066, DHR-067, DHR-068, DHR-069, DHR-070, DHR-071 | Independent whole-product acceptance and release proof | Not opened |
+| DHR-073 | **Ready** | 19,10,13 | — | UI-01: production Hub shell and real scenario preview catalog, no demo data masquerading as playable | [#126](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/126) |
+| DHR-074 | Blocked | 19,11,2 | DHR-073 | UI-02: safe validated Party/Focus/Spectator launch bridge and briefing | [#127](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/127) |
+| DHR-075 | Blocked | 19,10,18 | DHR-073 | UI-03: multi-slot historical save archive, strict import/export/migrations | [#128](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/128) |
+| DHR-076 | Blocked | 20,17,18 | DHR-073; PR #118 | UI-04: engine-authorized read-only Level-2 Map and fog/LOS | [#129](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/129) |
+| DHR-077 | **Ready** | 20,7,11,17 | — | UI-05: compact portrait Health/Stress ECG renderer and detail access | [#130](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/130) |
+| DHR-078 | **Ready** | 21,12,16 | — | MEDIA-01: rights-aware curated audio catalog and bounded director | [#131](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/131) |
+| DHR-079 | Blocked | 20,21,12,18 | DHR-073; source-visible presentation contract | MEDIA-02: source-gated scene images and optional full-screen FMV | [#132](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/132) |
 
 ## Parallelism and acceptance rules
 

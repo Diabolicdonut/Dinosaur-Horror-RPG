@@ -12,9 +12,9 @@ const roadmap=manifest.roadmap;
 const points=gates=>gates.reduce((sum,g)=>sum+g.weight,0);
 const accepted=gates=>points(gates.filter(g=>g.status==='accepted'));
 
-test('009-R1: complete 18-gate roadmap is conservative, fixed to 100 and distinct from foundation',()=>{
+test('009-R1: complete 21-gate roadmap is conservative, fixed to 100 and distinct from foundation',()=>{
  assert.equal(manifest.schemaVersion,1);
- assert.equal(roadmap.gates.length,18);
+ assert.equal(roadmap.gates.length,21);
  assert.equal(points(roadmap.gates),100);
  assert.equal(accepted(roadmap.gates),38);
  assert.equal(roadmap.gates.filter(g=>g.status==='accepted').length,6);
@@ -28,7 +28,7 @@ test('009-R1: complete 18-gate roadmap is conservative, fixed to 100 and distinc
  assert.equal(state.checkpoint,'009-D2');
  assert.equal(state.automated_tests,665);
  assert.equal(state.roadmap_coverage.accepted_weight,38);
- assert.equal(state.roadmap_coverage.gates,18);
+ assert.equal(state.roadmap_coverage.gates,21);
  assert.equal(state.roadmap_coverage.total_weight,100);
 });
 test('009-R1: all published gates have unique IDs, source evidence and explicit acceptance boundaries',async()=>{
@@ -54,7 +54,7 @@ test('009-R1: major user-approved project goals have independently tracked remai
  for(const id of ['evolved-full-parity','offensive-combat','human-npc-agency',
   'scenario-independence','character-creation','ai-gamemother','authored-replayability',
   'cinematic-generator','campaign-generator','wonder-dread','graphical-qa',
-  'trusted-gm-secrets'])assert.ok(pending.has(id),id);
+  'trusted-gm-secrets','adventure-hub','tactical-visuals','audio-cinematics'])assert.ok(pending.has(id),id);
 });
 test('009-R1: documentation and all three browser entry points publish consistent scope',async()=>{
  const doc=await load('docs/ROADMAP-COVERAGE.md');
@@ -63,8 +63,8 @@ test('009-R1: documentation and all three browser entry points publish consisten
  for(const gate of roadmap.gates)assert.ok(doc.includes(gate.label),gate.id);
  assert.ok(doc.includes('38 / 100 = 38%'));
  assert.match(doc,/5 \/ 8 = 62\.5%/);
- assert.ok(plan.includes('18 explicitly accepted/partial/planned gates'));
- assert.ok(readme.includes('18 approved delivery gates'));
+ assert.ok(plan.includes('21-gate, 100-point roadmap'));
+ assert.ok(readme.includes('21 approved delivery gates'));
  for(const page of ['index.html','party.html','characters.html']){
   const html=await load(page);
   assert.ok(html.includes('<script defer src="./site-progress.js" data-site-progress></script>'),page);
@@ -107,10 +107,10 @@ test('009-R1: real browser widget renders 38% roadmap, 63% foundation, expandabl
  assert.ok(ui.all.some(x=>x.textContent==='38 of 100 weighted delivery points accepted'));
  assert.ok(ui.all.some(x=>x.textContent==='5 of 8 tracked units complete'));
  const criteria=ui.all.filter(x=>x.className==='p-criteria');
- assert.equal(criteria.length,18);
+ assert.equal(criteria.length,21);
  assert.ok(criteria.some(x=>x.textContent.includes('advancement')));
  const statusList=ui.all.filter(x=>x.tagName==='li');
- assert.equal(statusList.length,18);
+ assert.equal(statusList.length,21);
  assert.equal(ui.frame.attributes['aria-label'],'Project revision and roadmap completion');
 });
 test('009-R1: invalid or incomplete accounting withholds overall completion, not a guessed percentage',async()=>{

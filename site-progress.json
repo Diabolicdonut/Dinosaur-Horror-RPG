@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
-  "asOf": "2026-10-28",
+  "asOf": "2026-11-09",
   "revision": "v0.7.39",
   "revisionSource": {
     "type": "json",
@@ -19,14 +19,14 @@
   "execution": {
     "label": "Development assignments",
     "source": "docs/parallel-development/DEVELOPMENT-QUEUE.md",
-    "total": 72,
+    "total": 79,
     "basis": "Merged worker subtask count only; not acceptance credits or proportional engineering effort."
   },
   "roadmap": {
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
-    "scope": "18 bounded acceptance gates across Evolved parity, party and character options, scenario-independent systems, encounters, authored and generated adventures, Game Mother, wonder and horror, persistence, trust and QA. A finished delivery target—not the impossible exhaustion of endlessly generated stories.",
+    "scope": "21 acceptance gates across adopted Evolved mechanics, scenario-independent Cinematic/Campaign stories, trusted Game Mother, Adventure Hub and multi-save launch, engine-authorized tactical visuals, audio/cinematic presentation, and desktop/mobile QA. This is a fixed 100-point bounded product plan.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "009-D2 accepted: estuary NPC dialogue and connected, source-verified objective-triggered returns now run in an independent adventure with frozen rev1 save compatibility. Verified 665/665 on exact PR #61 head and merged main, Pages SUCCESS. 18-gate roadmap remains 38/100; action economy, offensive Evolved combat, procedural stories, hidden GM state and manual graphical QA remain incomplete.",
+    "note": "009-R2 scope revision on 2026-11-09 added three planned presentation gates with nine points reallocated solely from incomplete gates; six previously accepted foundations retain 38 points. Hub prototype is an unintegrated user-supplied demonstration, not an accepted playable adventure.",
     "gates": [
       {
         "id": "evolved-rules",
@@ -79,7 +79,7 @@
       {
         "id": "evolved-full-parity",
         "label": "Complete adopted Evolved Edition mechanics and advancement",
-        "weight": 6,
+        "weight": 5,
         "status": "partial",
         "evidence": "docs/EVOLVED-RULES-AUTHORITY.md; docs/EVOLVED-DICE-TALENT-STATUS.md",
         "acceptance": "Audit and integrate applicable talent effects, story point awards/spending, panic consequences, modifiers, helping, combat/medical conditions, advancement and source-defined exceptions in both adventures; invisible rolls remain reproducible."
@@ -87,7 +87,7 @@
       {
         "id": "offensive-combat",
         "label": "Equipment-limited offensive survivor combat and creature consequences",
-        "weight": 7,
+        "weight": 6,
         "status": "partial",
         "evidence": "docs/LIVE-RESEARCH-COMBAT-009B2B2C2C2B.md; src/adventure-combat-live.mjs",
         "acceptance": "Real carried weapons, ammo and equipment state; Evolved initiative/actions, attack rolls, armor, damage, injuries and appropriate dinosaur reactions/retreat across both adventure packages with regression cases."
@@ -95,7 +95,7 @@
       {
         "id": "human-npc-agency",
         "label": "Perception-bound independent human NPC choices and consequences",
-        "weight": 7,
+        "weight": 6,
         "status": "partial",
         "evidence": "docs/ADVENTURE-NPC-AUTONOMY-009C3.md; docs/ADVENTURE-NPC-DANGER-009C4.md; docs/ADVENTURE-NPC-EYEWITNESS-009C5.md",
         "acceptance": "Characters respond to real local perception, evidence and motives; choose grounded reactions, social behavior, resource actions, Evolved turns, injury and self-preservation without omniscience or forced combat."
@@ -103,7 +103,7 @@
       {
         "id": "scenario-independence",
         "label": "Fully adventure-independent party/runtime and durable saves",
-        "weight": 7,
+        "weight": 6,
         "status": "partial",
         "evidence": "docs/ADVENTURE-ENGINE-MULTIPACK-009D1.md; src/adventure-party-runtime.mjs; tests/adventure-second-package-009d1.test.mjs",
         "acceptance": "Remove remaining hardcoded Nublar game assumptions from shared rules, adjudication and UI; same physical actions/rules/saves across independently defined settings and original adventures; preserve accepted old saves."
@@ -119,7 +119,7 @@
       {
         "id": "ai-gamemother",
         "label": "Full grounded natural-language Game Mother and adjudication",
-        "weight": 7,
+        "weight": 6,
         "status": "partial",
         "evidence": "docs/ARCHITECTURE-AI-GM.md; docs/REFEREE-CONTRACT.md; worker/index.mjs",
         "acceptance": "Understand open-ended player actions, select warranted rules/stakes, portray distinct people, make bounded creative proposals and exceptions, narrate only committed outcomes and discovered secrets, and honor all control modes and safe engine authority."
@@ -135,7 +135,7 @@
       {
         "id": "cinematic-generator",
         "label": "Validated original procedural Cinematic adventure generation",
-        "weight": 5,
+        "weight": 4,
         "status": "planned",
         "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; docs/CINEMATIC-SCENE-CONTRACT.md",
         "acceptance": "Generate and validate coherent new maps, objectives, cast, agendas, clues, scenes, animal behavior, tension shifts and endings; no required three-act sequence or guaranteed carnivore attack, all using the same game engine."
@@ -143,7 +143,7 @@
       {
         "id": "campaign-generator",
         "label": "Persistent procedurally generated continuing campaigns",
-        "weight": 5,
+        "weight": 4,
         "status": "planned",
         "evidence": "docs/PROCEDURAL-ADVENTURES-REPLAYABILITY.md; docs/CINEMATIC-SCENE-CONTRACT.md",
         "acceptance": "Persist relationships, wounds, inventory, discovered facts and world consequences across episodes; generate causally connected new dilemmas and varied wonder/action/dread cycles without resets or stale fact contradictions."
@@ -159,7 +159,7 @@
       {
         "id": "graphical-qa",
         "label": "Desktop/mobile UX, accessibility and release smoke",
-        "weight": 4,
+        "weight": 3,
         "status": "planned",
         "evidence": "project-state.json; docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md",
         "acceptance": "Real graphical desktop and mobile testing of both seeds/scenarios, all three control modes, character builder, save/load/recovery, NPC movement and combat; verify keyboard/touch use and accessible narrative output before sign-off."
@@ -167,10 +167,34 @@
       {
         "id": "trusted-gm-secrets",
         "label": "Server-private secrets, safe saves and secure AI access",
-        "weight": 4,
+        "weight": 3,
         "status": "partial",
         "evidence": "docs/ARCHITECTURE-AI-GM.md; docs/ADVENTURE-ENGINE-SEPARATION.md; worker/index.mjs",
         "acceptance": "Keep unrevealed scenario facts and GM plans unavailable in client source, secure Worker credentials/rate limits, validate trusted state transitions/save migration and fail safely on absent/malformed model responses."
+      },
+      {
+        "id": "adventure-hub",
+        "label": "Adventure Hub, scenario setup, party launch and multi-save archive",
+        "weight": 4,
+        "status": "planned",
+        "evidence": "docs/PRESENTATION-AND-HUB-ROADMAP.md; src/party-app.mjs",
+        "acceptance": "A production, responsive Adventure Hub browses only actual available scenario manifests, offers a cinematic scenario preview, launch briefing, valid 1–8-person party composition with four-person default, Party/Focus/Spectator control, saved setup preferences, an explicit safe start/continue flow, and a validated multi-slot archive that preserves historical saves without overwrite; demo fixtures and generated previews never masquerade as playable adventures."
+      },
+      {
+        "id": "tactical-visuals",
+        "label": "Engine-authorized Map, portrait vitals and scene imagery",
+        "weight": 3,
+        "status": "planned",
+        "evidence": "docs/PRESENTATION-AND-HUB-ROADMAP.md; src/party-app.mjs",
+        "acceptance": "The gameplay interface presents narrative and commands alongside a read-only Level-2 SVG Map with authenticated actor-visible geometry, lighting, fog, line of sight, pan/zoom and centering, with optionally collapsible portraits and compact accessible Evolved Health/Stress indicators; cinematic stills may replace the right presentation region only from already revealed scenes, without spoilers, invented health/BPM mechanics or input movement buttons."
+      },
+      {
+        "id": "audio-cinematics",
+        "label": "Curated audio direction and optional cinematic playback",
+        "weight": 2,
+        "status": "planned",
+        "evidence": "docs/PRESENTATION-AND-HUB-ROADMAP.md; worker/index.mjs",
+        "acceptance": "A bounded, rights-aware audio manifest and event-driven mixer can play approved low-level ambience, sparse music, and source-authorized creature/effect cues with fade, stop, mute and intentional silence, without leaked unobserved threat knowledge; optional skippable image/fullscreen-video presentations never gate progress or mutate game state, and third-party Dropbox media is tested for access, rights and failure handling."
       }
     ]
   }
