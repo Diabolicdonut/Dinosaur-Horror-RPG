@@ -142,6 +142,18 @@ test('DHR-078: playback directives duck underneath GM speech without changing tr
   assert.equal(playbackDirective(selection({previousTrackId:'amb-v3-04'})).type,'hold');
 });
 
+test('DHR-078: forged mixer asset URLs and gain values fail closed',()=>{
+  const good=selection();
+  for (const forged of [
+    {...good,assetKey:'https://unapproved.example/evil.ogg'},
+    {...good,assetKey:'Michael Ghelfi - RPG Ambiences Vol. 3 - 06 Jungle Rain.ogg'},
+    {...good,gainDb:80},
+    {...good,fadeMs:999999},
+    {...good,duckDuringNarrationDb:100},
+    {...good,loopRequested:false}
+  ]) assert.equal(playbackDirective(forged).type,'silence');
+});
+
 test('DHR-078: missing Dropbox binding is quiet, never an invented audio URL',()=>{
   const plan=playbackDirective(selection());
   const transitions=[];
