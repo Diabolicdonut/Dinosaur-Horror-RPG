@@ -48,7 +48,7 @@ function parseCsv(data) {
   if(v||row.length){row.push(v);rows.push(row);}
   const header=rows.shift()?.map(v=>v.trim().toLowerCase())||[];
   const pathIx=header.findIndex(v=>['path','relative_path','file_path','filename'].includes(v));
-  const urlIx=header.findIndex(v=>['audio_url','raw_url','url','dropbox_link','download_url'].includes(v));
+  const urlIx=['audio_url','raw_url','url','dropbox_link','download_url'].map(v=>header.indexOf(v)).find(i=>i>=0)??-1;
   if(pathIx<0||urlIx<0)throw new TypeError('CSV requires path and audio_url columns');
   return rows.map(r=>[r[pathIx],r[urlIx]]);
 }
