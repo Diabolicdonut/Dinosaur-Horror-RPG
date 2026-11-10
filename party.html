@@ -7,7 +7,7 @@
 <meta name="description" content="Dinosaur Horror RPG, experimental multi-character incident with shared world time."/>
 <title>Party Adventures — Dinosaur Horror RPG</title>
 <link rel="stylesheet" href="./src/characters.css?v=007l2a"/>
-<link rel="stylesheet" href="./src/party.css?v=007l2a"/>
+<link rel="stylesheet" href="./src/party.css?v=dhr-live-audio-1"/>
 </head>
 <body>
 <main class="lab">
@@ -69,6 +69,30 @@
  </div>
  <p class="note">Control mode determines who decides actions; the camera only determines what you see. Switching never rerolls or resets an action. All modes use the same hidden dice and world state.</p>
 </section>
+<section class="panel mother-audio-panel" aria-label="Mother Game Master audio">
+ <div class="agency-heading"><h2>MOTHER / GAME MASTER · AUDIO</h2><span>PRIVATE DROPBOX LIBRARY</span></div>
+ <p class="note">Use your existing <strong>Dinosaur_Horror_Audio_Demo_Complete_15255(1).html</strong> or link CSV/JSON. Import once per browser: links stay on this device, never enter game saves or GitHub. Mother uses only the 94 approved ambience tracks, plus your complete music and dinosaur-effects libraries.</p>
+ <div class="mother-audio-buttons">
+  <label class="mother-file">Import existing Dropbox links <input id="mother-audio-file" type="file" accept=".html,.json,.csv,text/html,application/json,text/csv"/></label>
+  <button type="button" id="mother-audio-enable">Enable audio</button>
+  <button type="button" id="mother-mute" class="secondary">Mute</button>
+  <button type="button" id="mother-audio-forget" class="secondary">Forget local links</button>
+ </div>
+ <div class="mother-audio-controls">
+  <label>Ambience <input type="range" id="mother-ambience-volume" min="0" max="100" value="46" aria-label="Ambience volume"/></label>
+  <label>Music <input type="range" id="mother-music-volume" min="0" max="100" value="29" aria-label="Music volume"/></label>
+  <label>Effects <input type="range" id="mother-effects-volume" min="0" max="100" value="48" aria-label="Effects volume"/></label>
+  <label class="mother-toggle"><input type="checkbox" id="mother-auto-music" checked/> Auto music on earned beats</label>
+  <label class="mother-toggle"><input type="checkbox" id="mother-auto-effects" checked/> Auto creature effects on visible danger</label>
+ </div>
+ <div class="mother-audio-manual">
+  <label>Music track <select id="mother-music-select"><option value="">Auto / no manual song</option></select></label>
+  <button type="button" class="secondary" id="mother-music-play">Play / stop music</button>
+  <label>Effect species <select id="mother-effects-select"><option value="">Select dinosaur</option></select></label>
+  <button type="button" class="secondary" id="mother-effects-play">Preview effect</button>
+ </div>
+ <p class="note" role="status" aria-live="polite" id="mother-audio-status">Loading approved sound library…</p>
+</section>
 <section id="reaction-panel" class="panel reaction-panel" hidden aria-label="Incoming attack defense">
  <strong id="reaction-target">Incoming velociraptor attack</strong>
  <p>The predator has declared its target, but has not rolled its attack. Decide before the strike is resolved.</p>
@@ -125,7 +149,7 @@
 </div>
 <footer>007-L2a integrates seeded 1–10 initiative cards, two raptor turns per combat round, and full/quick budgets into the playable party scheduler. Stand Watch reserves a quick defensive dodge if one remains available. Critical injury effects, lethal intervals, First Aid, Rally, Surgery and safe recovery now persist and progress with world time. Round-lethal death checks now resolve at the wounded survivor’s own completed turn. Reactive Close Combat defense is a persistent, pre-roll human choice; detailed ranged defenses, infection complications and creature-specific attack tables remain future work.</footer>
 </main>
-<script type="module" src="./src/party-app.mjs?v=009d2"></script>
+<script type="module" src="./src/party-app.mjs?v=dhr-live-audio-1"></script>
 <script defer src="./site-progress.js" data-site-progress></script>
 </body>
 </html>
