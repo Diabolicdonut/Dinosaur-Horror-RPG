@@ -70,13 +70,16 @@
  <p class="note">Control mode determines who decides actions; the camera only determines what you see. Switching never rerolls or resets an action. All modes use the same hidden dice and world state.</p>
 </section>
 <section class="panel mother-audio-panel" aria-label="Mother Game Master audio">
- <div class="agency-heading"><h2>MOTHER / GAME MASTER · AUDIO</h2><span>PRIVATE DROPBOX LIBRARY</span></div>
- <p class="note">Use your existing <strong>Dinosaur_Horror_Audio_Demo_Complete_15255(1).html</strong> or link CSV/JSON. Import once per browser: links stay on this device, never enter game saves or GitHub. Mother uses only the 94 approved ambience tracks, plus your complete music and dinosaur-effects libraries.</p>
+ <div class="agency-heading"><h2>MOTHER / GAME MASTER · AUDIO</h2><span>PROTECTED CLOUDFLARE STREAM</span></div>
+ <p class="note">Mother streams the 94 approved ambience recordings plus your complete 38-track music and dinosaur-effects libraries from Dropbox through the game's Cloudflare Worker. No Dropbox link list or recordings are stored on this device.</p>
  <div class="mother-audio-buttons">
-  <label class="mother-file">Import existing Dropbox links <input id="mother-audio-file" type="file" accept=".html,.json,.csv,text/html,application/json,text/csv"/></label>
+  <label class="mother-audio-token-label">Game access token
+   <input id="mother-audio-token" type="password" autocomplete="off" placeholder="Existing Cloudflare GAME_TOKEN" aria-label="Cloudflare game token"/>
+  </label>
+  <label class="mother-toggle"><input type="checkbox" id="mother-audio-remember"/> Remember game token on this device</label>
   <button type="button" id="mother-audio-enable">Enable audio</button>
   <button type="button" id="mother-mute" class="secondary">Mute</button>
-  <button type="button" id="mother-audio-forget" class="secondary">Forget local links</button>
+  <button type="button" id="mother-audio-forget" class="secondary">Forget game token</button>
  </div>
  <div class="mother-audio-controls">
   <label>Ambience <input type="range" id="mother-ambience-volume" min="0" max="100" value="46" aria-label="Ambience volume"/></label>
@@ -91,7 +94,7 @@
   <label>Effect species <select id="mother-effects-select"><option value="">Select dinosaur</option></select></label>
   <button type="button" class="secondary" id="mother-effects-play">Preview effect</button>
  </div>
- <p class="note" role="status" aria-live="polite" id="mother-audio-status">Loading approved sound library…</p>
+ <p class="note" role="status" aria-live="polite" id="mother-audio-status">Enter the game token and enable audio. Cloudflare must have the Dropbox OAuth secrets configured.</p>
 </section>
 <section id="reaction-panel" class="panel reaction-panel" hidden aria-label="Incoming attack defense">
  <strong id="reaction-target">Incoming velociraptor attack</strong>
