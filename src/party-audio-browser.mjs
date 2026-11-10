@@ -1,299 +1,307 @@
-import {createAmbienceRegistry, proposeAmbienceCue} from './ambience-director.mjs';
-import {
-  parseDropboxAudioLinks, publicAudioScene, chooseMusicCue,
-  chooseSpeciesSound, publicAudioSignature
-} from './party-audio-planner.mjs';
+/**
+ * Mother/GM live game audio: authenticated Worker sign requests, then temporary
+ * Worker-only streaming URLs in HTMLAudioElements. Dropbox OAuth and shared
+ * links are NEVER shipped to this public browser app.
+ */
+import {publicAudioScene,chooseMusicCue,speciesFromVisibleView,publicAudioSignature}
+  from './party-audio-planner.mjs';
+import {createAmbienceRegistry,proposeAmbienceCue} from './ambience-director.mjs';
 
-const DB_NAME='dhr-local-audio-links-v1',DB_STORE='catalogs',DB_KEY='current';
+const WORKER_BASE='https://dinosaur-rpg.diabolicdonut.workers.dev';
+const TOKEN_KEY='dinosaur-horror-rpg-remembered-token-v1';
 const SETTINGS_KEY='dhr-party-audio-controls-v1';
-const DEFAULTS={muted:false,ambience:0.46,music:0.29,effects:0.48,autoMusic:true,autoEffects:true};
+const DEFAULTS={muted:false,ambience:0.46,music:0.29,effects:0.48,
+  autoMusic:true,autoEffects:true};
 const $=id=>document.getElementById(id);
-
-function dbOpen(){
-  return new Promise((resolve,reject)=>{
-    if(!('indexedDB' in window)){reject(new Error('IndexedDB unavailable'));return;}
-    const req=indexedDB.open(DB_NAME,1);
-    req.onupgradeneeded=()=>{if(!req.result.objectStoreNames.contains(DB_STORE))
-      req.result.createObjectStore(DB_STORE);};
-    req.onerror=()=>reject(req.error);
-    req.onsuccess=()=>resolve(req.result);
-  });
-}
-async function dbRead(){
-  const db=await dbOpen();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readonly'),rq=tx.objectStore(DB_STORE).get(DB_KEY);
-    rq.onsuccess=()=>resolve(rq.result??null);
-    rq.onerror=()=>reject(rq.error);
-    tx.oncomplete=()=>db.close();
-    tx.onerror=()=>db.close();
-  });
-}
-async function dbWrite(value){
-  const db=await dbOpen();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).put(value,DB_KEY);
-    tx.oncomplete=()=>{db.close();resolve();};
-    tx.onerror=()=>{db.close();reject(tx.error);};
-    tx.onabort=()=>{db.close();reject(tx.error);};
-  });
-}
-async function dbClear(){
-  const db=await dbOpen();
-  return new Promise((resolve,reject)=>{
-    const tx=db.transaction(DB_STORE,'readwrite');
-    tx.objectStore(DB_STORE).delete(DB_KEY);
-    tx.oncomplete=()=>{db.close();resolve();};
-    tx.onerror=()=>{db.close();reject(tx.error);};
-  });
-}
+const linearGain=db=>Math.pow(10,db/20);
+const clamp=v=>Math.min(1,Math.max(0,v));
 function settings(){
-  try {
-    const s=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
-    const valid={...DEFAULTS};
-    if(s&&typeof s==='object'){
-      for(const key of ['ambience','music','effects'])
-        if(Number.isFinite(s[key]))valid[key]=Math.max(0,Math.min(1,s[key]));
-      for(const key of ['muted','autoMusic','autoEffects'])
-        if(typeof s[key]==='boolean')valid[key]=s[key];
-    }
-    return valid;
+  try{
+    const data=JSON.parse(localStorage.getItem(SETTINGS_KEY)||'null');
+    const s={...DEFAULTS};
+    if(!data||typeof data!=='object')return s;
+    for(const key of ['ambience','music','effects'])
+      if(Number.isFinite(data[key]))s[key]=clamp(data[key]);
+    for(const key of ['muted','autoMusic','autoEffects'])
+      if(typeof data[key]==='boolean')s[key]=data[key];
+    return s;
   }catch{return {...DEFAULTS};}
 }
-function linearGain(db){return Math.pow(10,db/20);}
-function clamp(v){return Math.min(1,Math.max(0,v));}
-function selectText(path){
-  const name=path.split('/').at(-1)||path;
-  return name.replace(/\.(mp3|ogg|wav)$/i,'').replace(/_/g,' ');
+function savedToken(){
+  try{return localStorage.getItem(TOKEN_KEY)||'';}catch{return '';}
 }
-class MotherAudioUI {
+function labelFor(path){
+  return (path.split('/').at(-1)||path).replace(/\.(mp3|ogg|wav)$/i,'')
+    .replace(/_/g,' ');
+}
+class MotherWorkerAudio {
   constructor(){
     this.settings=settings();
+    this.token='';
     this.armed=false;
-    this.catalog=null;
     this.registry=null;
-    this.lookup=new Map();
+    this.musicList=[];
+    this.species=[];
     this.desiredId=null;
-    this.previousId=null;
-    this.latestView=null;
-    this.lastEventSignature=null;
-    this.musicAlready=null;
+    this.currentCue=null;
+    this.currentUrl=null;
+    this.currentExpires=0;
     this.active=0;
     this.fadeHandle=null;
+    this.requestId=0;
+    this.lastEventSignature=null;
+    this.latestView=null;
+    this.musicAlready=null;
     this.beds=[new Audio(),new Audio()];
-    this.beds.forEach(a=>{a.loop=true;a.preload='none';a.volume=0;});
-    this.music=new Audio();this.music.preload='none';this.music.loop=false;
+    for(const a of this.beds){a.loop=true;a.preload='none';a.volume=0;}
+    this.music=new Audio();this.music.preload='none';
     this.fx=[new Audio(),new Audio()];this.fx.forEach(a=>a.preload='none');
-    this.fxNext=0;
+    this.fxIndex=0;
     this.bind();
     void this.initialize();
+    // Browser media URLs are intentionally short-lived; refresh only an
+    // already playing bed (not a speculative new scene) before expiration.
+    this.renewal=setInterval(()=>{
+      if(this.armed&&!document.hidden&&!this.settings.muted&&this.currentExpires &&
+        Math.floor(Date.now()/1000)>this.currentExpires-180)
+          void this.update(this.latestView,{force:true});
+    },60000);
   }
-  label(message){$('mother-audio-status').textContent=message;}
+  label(value){$('mother-audio-status').textContent=value;}
+  secret(){return $('mother-audio-token').value.trim();}
   saveSettings(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(this.settings));}catch{}}
+  persistToken(){
+    this.token=this.secret();
+    try{
+      if($('mother-audio-remember').checked)
+        localStorage.setItem(TOKEN_KEY,this.token);
+      else localStorage.removeItem(TOKEN_KEY);
+    }catch{}
+  }
+  clearSound(){
+    if(this.fadeHandle!==null)cancelAnimationFrame(this.fadeHandle);
+    this.fadeHandle=null;this.beds.forEach(a=>a.pause());
+    this.music.pause();this.fx.forEach(a=>a.pause());
+  }
   bind(){
     for(const [id,key] of [['mother-ambience-volume','ambience'],
       ['mother-music-volume','music'],['mother-effects-volume','effects']]){
       $(id).value=String(Math.round(this.settings[key]*100));
-      $(id).addEventListener('input',e=>{
-        this.settings[key]=Number(e.currentTarget.value)/100;
+      $(id).addEventListener('input',event=>{
+        this.settings[key]=clamp(Number(event.currentTarget.value)/100);
         this.saveSettings();this.applyVolumes();
       });
     }
-    for(const [id,key] of [['mother-auto-music','autoMusic'],['mother-auto-effects','autoEffects']]){
+    for(const [id,key] of [['mother-auto-music','autoMusic'],
+      ['mother-auto-effects','autoEffects']]){
       $(id).checked=this.settings[key];
-      $(id).addEventListener('change',e=>{this.settings[key]=e.currentTarget.checked;this.saveSettings();});
+      $(id).addEventListener('change',event=>{
+        this.settings[key]=event.currentTarget.checked;this.saveSettings();
+      });
     }
     $('mother-mute').textContent=this.settings.muted?'Unmute':'Mute';
-    $('mother-mute').addEventListener('click',async()=>{
+    $('mother-mute').addEventListener('click',()=>{
       this.settings.muted=!this.settings.muted;
       $('mother-mute').textContent=this.settings.muted?'Unmute':'Mute';
       this.saveSettings();
-      if(this.settings.muted)this.pauseAll();
-      else if(this.armed) await this.startBed();
+      if(this.settings.muted)this.clearSound();
+      else if(this.armed)void this.startBed();
+    });
+    $('mother-audio-token').addEventListener('input',()=>{
+      if(this.armed){this.armed=false;this.clearSound();this.label('Token changed. Enable audio again.');}
+      this.persistToken();
+    });
+    $('mother-audio-remember').addEventListener('change',()=>this.persistToken());
+    $('mother-audio-forget').addEventListener('click',()=>{
+      this.armed=false;this.clearSound();this.token='';
+      $('mother-audio-token').value='';
+      $('mother-audio-remember').checked=false;
+      try{localStorage.removeItem(TOKEN_KEY);}catch{}
+      this.label('Game token forgotten on this device; no Dropbox files were changed.');
     });
     $('mother-audio-enable').addEventListener('click',async()=>{
-      if(!this.registry){this.label('Audio metadata has not loaded.');return;}
-      if(!this.catalog){this.label('Import your existing link catalog first.');$('mother-audio-file').click();return;}
-      this.armed=true;
-      this.label('Audio enabled. Mother is choosing from approved sounds.');
-      await this.update(this.latestView,{force:true});
-    });
-    $('mother-audio-file').addEventListener('change',async e=>{
-      const file=e.currentTarget.files?.[0];
-      if(!file)return;
-      if(file.size>12_000_000){this.label('Audio catalog exceeds the 12 MB import limit.');return;}
+      if(!this.secret()){this.label('Enter the existing Cloudflare GAME_TOKEN to enable audio.');return;}
+      this.persistToken();
+      if(this.armed&&this.currentUrl&&!this.settings.muted){
+        // A real user gesture for browsers that block play after async sign.
+        try{await this.beds[this.active].play();
+          this.label('Protected audio streaming resumed.');}
+        catch{this.label('Playback was blocked. Tap Enable audio again.');}
+        return;
+      }
       try{
-        if(!this.registry)await this.loadManifest();
-        const parsed=parseDropboxAudioLinks(await file.text(),
-          new Set(this.registry.tracks.map(t=>t.filename)));
-        if(!parsed.counts.ambience||!parsed.counts.music||!parsed.counts.sfx)
-          throw new TypeError('Catalog is missing one or more audio categories');
-        this.assignCatalog(parsed);
-        try {
-          await dbWrite({schemaVersion:1,pairs:parsed.pairs});
-          this.label('Links saved privately in this browser: '+this.countDescription()+'. Tap Enable audio.');
-        }catch{
-          this.label('Links loaded for this tab only (browser storage blocked). Tap Enable audio.');
-        }
-        if(this.armed)await this.update(this.latestView,{force:true});
-      }catch(error){this.label('Cannot import links: '+error.message);}
-      finally{e.currentTarget.value='';}
-    });
-    $('mother-audio-forget').addEventListener('click',async()=>{
-      if(!confirm('Forget all locally stored audio links on this device? Nothing is deleted from Dropbox.'))return;
-      this.pauseAll();this.armed=false;this.catalog=null;this.lookup.clear();
-      this.desiredId=null;this.previousId=null;this.lastEventSignature=null;
-      $('mother-music-select').replaceChildren(new Option('Auto / no manual song',''));
-      $('mother-effects-select').replaceChildren(new Option('Select dinosaur',''));
-      try{await dbClear();this.label('Local Dropbox links forgotten.');}
-      catch{this.label('Links cleared from this tab; browser storage may need manual cleanup.');}
+        const status=await this.api('/v1/media/status',null,'GET');
+        if(!status?.ready)throw new Error('Cloudflare audio is not configured');
+        this.armed=true;this.settings.muted=false;
+        $('mother-mute').textContent='Mute';this.saveSettings();
+        await this.loadLibrary();
+        this.label('Cloudflare audio connected; loading the current approved scene.');
+        await this.update(this.latestView,{force:true});
+      }catch(error){this.armed=false;
+        this.label('Cloudflare audio unavailable: '+error.message+
+          '. The game remains playable without sound.');}
     });
     $('mother-music-play').addEventListener('click',async()=>{
-      if(!this.armed || this.settings.muted){this.label('Enable and unmute audio first.');return;}
-      const selected=$('mother-music-select').value;
-      if(!selected){this.music.pause();this.musicAlready=null;this.label('Music stopped; automatic scene selection remains available.');return;}
-      await this.playMusic(selected,true);
+      if(!this.armed||this.settings.muted){this.label('Enable audio and unmute first.');return;}
+      const path=$('mother-music-select').value;
+      if(!path){this.music.pause();this.musicAlready=null;
+        this.label('Manual music stopped; scene cues remain optional.');return;}
+      await this.playMusic(path,true);
     });
     $('mother-effects-play').addEventListener('click',async()=>{
-      if(!this.armed || this.settings.muted){this.label('Enable and unmute audio first.');return;}
       const species=$('mother-effects-select').value;
-      const sounds=this.catalog?.species[species];
-      if(!sounds?.length){this.label('No effects found for that species.');return;}
-      await this.playEffect(sounds[Math.floor(Math.random()*sounds.length)]);
+      if(!this.armed||this.settings.muted){this.label('Enable audio and unmute first.');return;}
+      if(!this.species.includes(species)){this.label('Select an available species.');return;}
+      await this.playEffect(species,Math.floor(Math.random()*2147483647),true);
     });
     document.addEventListener('visibilitychange',()=>{
-      if(document.hidden)this.pauseAll();
+      if(document.hidden)this.clearSound();
       else if(this.armed&&!this.settings.muted)void this.startBed();
     });
-    window.addEventListener('pagehide',()=>this.pauseAll());
+    window.addEventListener('pagehide',()=>{
+      this.clearSound();clearInterval(this.renewal);
+    });
   }
-  async loadManifest(){
-    const response=await fetch(new URL('../media/ambience-approved.v1.json',import.meta.url),
-      {cache:'no-store',credentials:'omit'});
-    if(!response.ok)throw new Error('Approved ambience manifest unavailable ('+response.status+')');
-    this.registry=createAmbienceRegistry(await response.json());
+  async api(route,payload=null,method='POST'){
+    const token=this.secret();
+    if(!token)throw new Error('GAME_TOKEN required');
+    const response=await fetch(WORKER_BASE+route,{
+      method,
+      headers:{Authorization:'Bearer '+token,
+        ...(method==='POST'?{'Content-Type':'application/json'}:{})},
+      ...(method==='POST'?{body:JSON.stringify(payload)}:{}),
+      cache:'no-store'
+    });
+    if(!response.ok){
+      if(response.status===401)throw new Error('GAME_TOKEN rejected (HTTP 401)');
+      if(response.status===404)throw new Error('Audio Worker update is not deployed (HTTP 404)');
+      if(response.status===503)throw new Error('Dropbox OAuth secrets or rate limiter not configured (HTTP 503)');
+      if(response.status===429)throw new Error('Audio request limit reached; retry shortly');
+      throw new Error('Audio gateway HTTP '+response.status);
+    }
+    const result=await response.json();
+    if(!result||typeof result!=='object')throw new Error('Invalid Worker audio response');
+    return result;
   }
   async initialize(){
+    const previous=savedToken();
+    if(previous){$('mother-audio-token').value=previous;
+      $('mother-audio-remember').checked=true;}
     try{
-      await this.loadManifest();
-      const stored=await dbRead().catch(()=>null);
-      if(stored?.schemaVersion===1&&Array.isArray(stored.pairs)){
-        const parsed=parseDropboxAudioLinks(JSON.stringify(stored.pairs),
-          new Set(this.registry.tracks.map(t=>t.filename)));
-        this.assignCatalog(parsed);
-        this.label('Saved local audio links loaded: '+this.countDescription()+'. Tap Enable audio.');
-      }else this.label('Import your original 15,255-link HTML, JSON or CSV once to use Dropbox audio.');
-    }catch(error){
-      this.label('Audio unavailable: '+error.message+'. The game remains playable without sound.');
-    }
+      const response=await fetch(new URL('../media/ambience-approved.v1.json',import.meta.url),
+        {credentials:'omit',cache:'no-store'});
+      if(!response.ok)throw new Error('Approved audio catalog missing');
+      this.registry=createAmbienceRegistry(await response.json());
+      this.label('Approved ambience library ready. Enter GAME_TOKEN, then enable Cloudflare playback.');
+    }catch(error){this.label('Unable to load approved ambience catalog: '+error.message);}
   }
-  countDescription(){
-    if(!this.catalog)return '0';
-    const {ambience,music,sfx}=this.catalog.counts;
-    return ambience+' ambience, '+music+' music, '+sfx+' effects';
-  }
-  assignCatalog(catalog){
-    this.catalog=catalog;
-    this.lookup=new Map(catalog.pairs);
-    const music=$('mother-music-select'),effects=$('mother-effects-select');
-    music.replaceChildren(new Option('Auto / no manual song',''));
-    for(const path of catalog.music)music.add(new Option(selectText(path),path));
-    effects.replaceChildren(new Option('Select dinosaur',''));
-    for(const folder of Object.keys(catalog.species).sort())
-      effects.add(new Option(folder.replace(/_/g,' ')+' ('+catalog.species[folder].length+')',folder));
+  async loadLibrary(){
+    const list=await this.api('/v1/media/library',null,'GET');
+    if(!Array.isArray(list.music)||!Array.isArray(list.effectSpecies) ||
+       !Array.isArray(list.ambience) || list.ambience.length!==94)
+      throw new Error('Worker audio catalog mismatch');
+    this.musicList=list.music.slice();this.species=list.effectSpecies.slice();
+    $('mother-music-select').replaceChildren(new Option('Auto / no manual song',''));
+    for(const path of this.musicList)
+      $('mother-music-select').add(new Option(labelFor(path),path));
+    $('mother-effects-select').replaceChildren(new Option('Select dinosaur',''));
+    for(const species of this.species)
+      $('mother-effects-select').add(new Option(species.replace(/_/g,' '),species));
   }
   applyVolumes(){
-    if(this.settings.muted){this.pauseAll();return;}
-    const bed=this.beds[this.active];
-    if(this.currentCue&&this.previousId)
-      bed.volume=clamp(this.settings.ambience*linearGain(this.currentCue.gainDb));
-    this.music.volume=clamp(this.settings.music);
-    this.fx.forEach(a=>a.volume=clamp(this.settings.effects));
+    if(this.settings.muted){this.clearSound();return;}
+    if(this.currentCue)this.beds[this.active].volume=
+      clamp(this.settings.ambience*linearGain(this.currentCue.gainDb));
+    this.music.volume=this.settings.music;
+    this.fx.forEach(a=>a.volume=this.settings.effects);
   }
-  pauseAll(){this.beds.forEach(a=>a.pause());this.music.pause();this.fx.forEach(a=>a.pause());}
   async startBed(){
     if(!this.armed||this.settings.muted)return;
-    const bed=this.beds[this.active];
-    if(this.previousId && bed.src && bed.paused)
-      try{await bed.play();}catch{this.label('Audio blocked. Tap Enable audio to retry.');}
-    else if(this.latestView)await this.update(this.latestView,{force:true});
+    const current=this.beds[this.active];
+    if(this.currentUrl && this.currentExpires > Math.floor(Date.now()/1000)+30){
+      try{await current.play();}
+      catch{this.label('Tap Enable audio to allow playback on this device.');}
+    }else await this.update(this.latestView,{force:true});
   }
-  async crossfade(cue,url){
-    if(this.fadeHandle!==null){cancelAnimationFrame(this.fadeHandle);this.fadeHandle=null;}
-    const old=this.beds[this.active], next=this.beds[1-this.active];
-    if(next.src!==url){next.pause();next.src=url;next.load();}
-    next.volume=0;
-    next.loop=true;
-    try{await next.play();}
-    catch{
-      this.label('Dropbox audio could not play. Check the link and browser media support, then tap Enable audio.');
-      this.desiredId=null;return;
-    }
+  async crossfade(cue,result){
+    if(this.fadeHandle!==null)cancelAnimationFrame(this.fadeHandle);
+    const old=this.beds[this.active],next=this.beds[1-this.active];
+    next.pause();next.src=result.url;next.load();next.volume=0;next.loop=true;
     this.active=1-this.active;
-    this.previousId=cue.trackId;
-    this.currentCue=cue;
+    this.currentCue=cue;this.currentUrl=result.url;this.currentExpires=result.expires_at;
+    this.desiredId=cue.trackId;
+    try{await next.play();}
+    catch{this.label('Audio loaded, but playback was blocked. Tap Enable audio again.');return;}
     const target=clamp(this.settings.ambience*linearGain(cue.gainDb));
-    const oldVolume=old.volume;
-    const duration=Math.max(0,cue.fadeMs??3500);
-    const started=performance.now();
+    const oldVolume=old.volume,started=performance.now();
+    const duration=Math.max(0,cue.fadeMs||3500);
     const tick=now=>{
-      const progress=duration?Math.min(1,(now-started)/duration):1;
-      next.volume=clamp(target*progress);
-      old.volume=clamp(oldVolume*(1-progress));
-      if(progress<1)this.fadeHandle=requestAnimationFrame(tick);
-      else {old.pause();old.removeAttribute('src');old.load();this.fadeHandle=null;}
+      const fraction=duration?Math.min(1,(now-started)/duration):1;
+      next.volume=clamp(target*fraction);
+      old.volume=clamp(oldVolume*(1-fraction));
+      if(fraction<1)this.fadeHandle=requestAnimationFrame(tick);
+      else{old.pause();old.removeAttribute('src');old.load();this.fadeHandle=null;}
     };
     this.fadeHandle=requestAnimationFrame(tick);
-    const title=this.registry?.byId[cue.trackId]?.title||cue.trackId;
-    this.label('Now playing: '+title+' · '+this.countDescription());
+    this.label('Mother: '+this.registry.byId[cue.trackId]?.title+' (Cloudflare private stream)');
   }
   async playMusic(path,manual=false){
-    const url=this.lookup.get(path);
-    if(!url||!this.armed||this.settings.muted)return;
+    if(!this.musicList.includes(path)||!this.armed||this.settings.muted)return;
     if(!manual&&this.musicAlready===path&&!this.music.ended)return;
-    this.musicAlready=path;
-    this.music.pause();this.music.src=url;this.music.volume=clamp(this.settings.music);
-    try{await this.music.play();if(manual)this.label('Playing music: '+selectText(path));}
-    catch{this.label('Music could not play from Dropbox; no game action was affected.');}
+    try{
+      const result=await this.api('/v1/media/sign',{path});
+      this.musicAlready=path;
+      this.music.pause();this.music.src=result.url;this.music.volume=this.settings.music;
+      await this.music.play();
+      if(manual)this.label('Music: '+labelFor(path)+' via Cloudflare');
+    }catch{this.label('Music unavailable from private Dropbox stream; game continues.');}
   }
-  async playEffect(path){
-    const url=this.lookup.get(path);
-    if(!url||!this.armed||this.settings.muted)return;
-    const a=this.fx[this.fxNext++%this.fx.length];
-    a.pause();a.src=url;a.volume=clamp(this.settings.effects);
-    try{await a.play();}
-    catch{this.label('Sound effect could not play. You can update its link catalog later.');}
+  async playEffect(species,seed,manual=false){
+    if(!this.species.includes(species)||!this.armed||this.settings.muted)return;
+    try{
+      const result=await this.api('/v1/media/effect',{species,seed});
+      const player=this.fx[this.fxIndex++%this.fx.length];
+      player.pause();player.src=result.url;player.volume=this.settings.effects;
+      await player.play();
+      if(manual)this.label('Effect preview: '+species+' via Cloudflare');
+    }catch{if(manual)this.label('That species effect is unavailable.');}
   }
   async update(view,{force=false}={}){
-    if(!view||!this.registry){this.latestView=view||null;return;}
-    this.latestView=view;
-    if(!this.catalog||!this.armed||this.settings.muted)return;
-    const scene=publicAudioScene(view);
+    this.latestView=view||null;
+    if(!view||!this.registry||!this.armed||this.settings.muted)return;
     const cue=proposeAmbienceCue(this.registry,{
-      scene,previousTrackId:force?null:this.desiredId,settings:{enabled:true,muted:false}
+      scene:publicAudioScene(view),previousTrackId:force?null:this.desiredId,
+      settings:{muted:false,enabled:true}
     });
-    if(cue.type==='ambience' && (this.desiredId!==cue.trackId||force)){
-      const url=this.lookup.get('Ambience/'+cue.assetKey);
-      if(url){this.desiredId=cue.trackId;await this.crossfade(cue,url);}
-    }else if(cue.type==='silence'&&this.previousId){
-      this.desiredId=null;this.previousId=null;this.beds.forEach(a=>a.pause());
+    if(cue.type==='ambience'&&(force||cue.trackId!==this.desiredId)){
+      const requested=++this.requestId;
+      try{
+        const result=await this.api('/v1/media/sign',{path:'Ambience/'+cue.assetKey});
+        if(requested===this.requestId&&this.armed&&!this.settings.muted)
+          await this.crossfade(cue,result);
+      }catch{this.label('Ambience stream unavailable. Gameplay continues silently.');}
+    }else if(cue.type==='silence'){
+      this.requestId++;this.desiredId=null;this.clearSound();
     }
-    const signature=publicAudioSignature(view);
-    if(signature!==this.lastEventSignature){
-      this.lastEventSignature=signature;
+    const eventSignature=publicAudioSignature(view);
+    if(eventSignature!==this.lastEventSignature){
+      this.lastEventSignature=eventSignature;
       if(this.settings.autoMusic){
-        const music=chooseMusicCue(view,this.catalog.music);
-        if(music)void this.playMusic(music);
+        const path=chooseMusicCue(view,this.musicList);
+        if(path)void this.playMusic(path);
       }
       if(this.settings.autoEffects){
-        const effect=chooseSpeciesSound(view,this.catalog);
-        if(effect)void this.playEffect(effect);
+        const event=view.events?.at(-1);
+        const creatures=speciesFromVisibleView(view);
+        if(event?.category==='danger'&&event.beat===view.beat&&creatures.length){
+          const aliases={raptor:'Velociraptor',trex:'TRex'};
+          const matching=creatures.map(n=>aliases[n]||
+            this.species.find(s=>s.replace(/[^a-z]/gi,'').toLowerCase()===n))
+            .find(s=>this.species.includes(s));
+          if(matching)void this.playEffect(matching,view.beat*17+event.message?.length%101||0);
+        }
       }
     }
   }
 }
-
-export function installPartyAudio(){
-  return new MotherAudioUI();
-}
+export function installPartyAudio(){return new MotherWorkerAudio();}
