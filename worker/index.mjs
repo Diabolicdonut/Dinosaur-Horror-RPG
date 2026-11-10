@@ -1,4 +1,5 @@
 import { SCENE_IMAGE_PATH, safeSceneImagePayload, requestSceneImage } from './scene-image.mjs';
+import {MEDIA_ROUTES,handleMediaRequest} from './media-audio.mjs';
 
 /**
  * dinosaur-rpg Cloudflare Worker — AI GM gateway (checkpoint 002).
@@ -243,8 +244,10 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
 
   if (path === '/health' && request.method === 'GET')
     return jsonResponse({ service: 'dinosaur-rpg', status: 'online', version: '006', ai_configured: Boolean(env.OPENAI_API_KEY && env.GAME_TOKEN) }, 200, headers);
-  if (!ROUTES.includes(path) && path !== SCENE_IMAGE_PATH) return jsonResponse({ error: 'not_found' }, 404, headers);
+  if (!ROUTES.includes(path) && path !== SCENE_IMAGE_PATH && !MEDIA_ROUTES.includes(path)) return jsonResponse({ error: 'not_found' }, 404, headers);
   if (!trustedOrigin) return jsonResponse({ error: 'origin_forbidden' }, 403, headers);
+  // Media has its own authentication and signing; it never invokes OpenAI.
+  if (MEDIA_ROUTES.includes(path)) return handleMediaRequest(request,env,upstreamFetch,headers);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   if (request.method !== 'POST' && !(path === '/v1/gm/status' && request.method === 'GET'))
     return jsonResponse({ error: 'method_not_allowed' }, 405, headers);
