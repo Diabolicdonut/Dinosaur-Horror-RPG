@@ -32,3 +32,22 @@
 /* Wonder belongs beside survival: quiet personal discoveries, not danger alerts. */
 .event-entry.wonder{border-left:2px solid #9aa880;padding-left:10px;color:var(--ink)}
 .event-entry.wonder small{color:#c4cb9a}
+
+/* MEDIA-01: progressive browser-only Dropbox audio controls; no layout mutation to saved gameplay. */
+.mother-audio-panel{margin-bottom:12px;background:linear-gradient(125deg,#172c23,#13201e)}
+.mother-audio-panel h2{margin:0;font-size:16px}
+.mother-audio-panel .note{margin:6px 0 12px;line-height:1.6}
+.mother-audio-buttons,.mother-audio-manual{display:flex;gap:10px;align-items:end;flex-wrap:wrap;margin-top:12px}
+.mother-file{position:relative;display:inline-block;padding:9px 13px;border:1px solid var(--gold);border-radius:5px;background:#193126;color:var(--ink);cursor:pointer}
+.mother-file input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.mother-file:focus-within{outline:2px solid var(--gold);outline-offset:2px}
+.mother-audio-controls{display:grid;grid-template-columns:repeat(3,minmax(125px,1fr));gap:8px 18px;margin-top:14px}
+.mother-audio-controls label{font-size:12px;display:grid;gap:5px;color:var(--ink)}
+.mother-audio-controls input[type=range]{width:100%;accent-color:var(--gold)}
+.mother-audio-controls .mother-toggle{display:flex;align-items:center;gap:8px}
+.mother-audio-controls .mother-toggle input{width:auto;accent-color:var(--gold)}
+.mother-audio-manual label{display:grid;gap:5px;min-width:150px;flex:1;font-size:12px}
+.mother-audio-manual select{width:100%;min-height:38px}
+#mother-audio-status{min-height:22px;color:var(--gold)}
+@media(max-width:700px){.mother-audio-controls{grid-template-columns:repeat(2,minmax(0,1fr))}.mother-audio-manual button{flex:1}}
+@media(max-width:410px){.mother-audio-controls{grid-template-columns:1fr}.mother-audio-manual label{flex-basis:100%}}
