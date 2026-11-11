@@ -54,13 +54,20 @@ function stubDropbox(calls=[]){
   };
 }
 
-test('media: public list includes exactly 94 approved ambience, 38 music, 119 species',()=>{
+test('media: public list includes exactly 94 approved ambience, 38 music, 114 consolidated species',()=>{
   const catalog=mediaCatalog();
   const userApproved=JSON.parse(readFileSync(new URL('../media/ambience-approved.v1.json',import.meta.url),'utf8'));
   assert.equal(catalog.ambience.length,94);
   assert.equal(catalog.music.length,38);
-  assert.equal(catalog.effectSpecies.length,119);
+  assert.equal(catalog.effectSpecies.length,114);
   assert.equal(catalog.counts.sfxSourceCount,14767);
+  assert.equal(catalog.counts.sfxSpecies,114);
+  for(const merged of ['Dreadnoughtus_Dom','Giganotosaurus_Dom','Iguanodon_2022',
+    'KentrosaurusCC','Parasaurolophus_Dom'])
+    assert(!catalog.effectSpecies.includes(merged),'retired directory must not be offered: '+merged);
+  for(const current of ['Dreadnoughtus','Giganotosaurus','Iguanadon',
+    'Kentrosaurus','Parasaurolophus'])
+    assert(catalog.effectSpecies.includes(current),'consolidated directory required: '+current);
   assert.deepEqual(new Set(catalog.ambience),
     new Set(userApproved.tracks.map(t=>'Ambience/'+t.filename)));
   assert(!catalog.ambience.some(t=>/Abandoned Shack/i.test(t)));
@@ -72,6 +79,14 @@ test('media: exact paths allowed and unselected tracks/path traversal refused',(
   assert(authorizedAudioPath(BASE_PATH));
   assert(authorizedAudioPath('Music/brief_wonder.mp3'));
   assert(authorizedAudioPath('Sound Effects/Velociraptor/001_00001.wav'));
+  assert(authorizedAudioPath('Sound Effects/Dreadnoughtus/122_1073008358.wav'));
+  assert(authorizedAudioPath('Sound Effects/Giganotosaurus/111_1044079655.wav'));
+  assert(authorizedAudioPath('Sound Effects/Iguanadon/103_1064083350.wav'));
+  assert(authorizedAudioPath('Sound Effects/Kentrosaurus/214_1033120401.wav'));
+  assert(authorizedAudioPath('Sound Effects/Parasaurolophus/126_1027793235.wav'));
+  for(const obsolete of ['Dreadnoughtus_Dom','Giganotosaurus_Dom','Iguanodon_2022',
+    'KentrosaurusCC','Parasaurolophus_Dom'])
+    assert.equal(authorizedAudioPath('Sound Effects/'+obsolete+'/001_test.wav'),false);
   for (const path of [
     'Ambience/Michael Ghelfi - RPG Ambiences Vol. 1 - 01 Alchemy Laboratory.ogg',
     'Ambience/Michael Ghelfi - RPG Ambiences Vol. 9 - 10 Hidden Track.ogg',
