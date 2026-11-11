@@ -22,7 +22,7 @@ Because the public repo cannot configure your Cloudflare account, this PR alone 
 
 - `GET /v1/media/status`, `GET /v1/media/library`: require existing `Authorization: Bearer GAME_TOKEN`, expose only readiness/configuration flags and the public approved asset names. The readiness result intentionally does **not** claim a successful real audio download.
 - `POST /v1/media/sign` with `{"path":"Ambience/Michael Ghelfi - RPG Ambiences Vol. 3 - 04 Jungle.ogg"}` or a selected approved music path. Requires Bearer auth; emits a Worker URL signed with HMAC, exact asset path and expiry. All 306 explicitly rejected ambience tracks remain denied. Music uses 38 known named tracks.
-- `POST /v1/media/effect` with `{"species":"Velociraptor","seed":1234}` requires Bearer auth. The Worker reads that species' real Dropbox folder metadata, rejects entries outside the published 119 known folders and sampled audio formats, chooses a deterministic indexed file and mints its URL. This supports the 14,767 user-supplied creature effects without placing thousands of private links in the repo. File naming alone does not identify exactly what vocalization or action each recording represents. The user intends to refine those classifications later.
+- `POST /v1/media/effect` with `{"species":"Velociraptor","seed":1234}` requires Bearer auth. The Worker reads that species' real Dropbox folder metadata, rejects entries outside the published 114 consolidated folders and sampled audio formats, chooses a deterministic indexed file and mints its URL. This supports the 14,767 user-supplied creature effects without placing thousands of private links in the repo. File naming alone does not identify exactly what vocalization or action each recording represents. The user intends to refine those classifications later.
 - `GET /v1/media/stream?path=...&exp=...&sig=...`: verifies an unexpired HMAC grant and strict allowlist before fetching from the fixed Dropbox root. Returns a streamed audio body with `Content-Type`, `Content-Length`, `Content-Range`, `Accept-Ranges` and inline disposition as applicable, forwarding one validated byte `Range` header to the Dropbox content-download endpoint. It never buffers complete recordings in Worker memory, and returns sanitized upstream errors. The signed URL is a **temporary bearer capability**, so it must not be logged or intentionally shared. The audio files themselves remain streamable to any party temporarily holding that signed URL; this is not DRM.
 
 ### Browser experience
@@ -44,3 +44,19 @@ The browser requests a signed Worker stream per cue, plays in a regular HTML `Au
 `tests/worker-private-dropbox-audio.test.mjs` covers allowlisted paths, missing auth, rejected origin, HMAC issue/tamper/replay/expiration, Worker-only URL, no secret leaks, dropped unknown species, source path stability, OAuth token request, metadata filtering, byte-range 206 and 429/503 conditions. Existing `tests/party-live-dropbox-audio.test.mjs` and `tests/ambience-director-dhr078.test.mjs` exercise quiet/narrative scene choices, category selection and browser interface contracts. Run full `npm test` and syntax checks on the PR head; separately verify desktop/mobile behavior before merge.
 
 **Accepted roadmap remains 21 gates / 38/100**; this media integration cannot earn acceptance until completed and independently validated.
+
+## November 10 audio library consolidation verified on November 11
+
+The canonical user-maintained workbook is `Dinosaur_Audio_Dropbox_Links_Consolidated.xlsx` (15,255 rows), superseding the prior export. Five variant directories have been merged and removed from Dropbox, reducing the active sound-effects directory count from 119 to **114** without removing any of the **14,767** audio recordings:
+
+| Merged folder (retired) | Current folder | New track range | Total files |
+| --- | --- | ---: | ---: |
+| `Dreadnoughtus_Dom` | `Dreadnoughtus` | 069–122 | 122 |
+| `Giganotosaurus_Dom` | `Giganotosaurus` | 063–111 | 111 |
+| `Iguanodon_2022` | `Iguanadon` | 053–103 | 103 |
+| `KentrosaurusCC` | `Kentrosaurus` | 149–214 | 214 |
+| `Parasaurolophus_Dom` | `Parasaurolophus` | 109–126 | 126 |
+
+The exact current spelling `Iguanadon` is intentionally preserved. Dropbox live directory listings validated that all **238/238** migrated file names are present at the expected consolidated destination paths with no track-number gaps. Dropbox shared-link metadata for representative renamed recordings from each group, including range endpoints, resolved to their new file identity and reported public view/download permissions; spot checks are **not** an end-to-end playback validation. Existing public share links **bypass the proposed GAME_TOKEN Worker** until separately revoked. The Worker does not consume the Excel workbook directly: it resolves the current Dropbox folder/file paths using OAuth and restricts its exposed species list to 114 active directories.
+
+DO NOT consider this audio feature deployed, close MEDIA-01, or change the accepted roadmap score until Dropbox Worker secrets, merge/deployment and real browser audio playback tests are completed.
