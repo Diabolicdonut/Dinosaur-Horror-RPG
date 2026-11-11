@@ -168,7 +168,6 @@ export const SFX_SPECIES_FOLDERS = Object.freeze([
   "Dimorphodon",
   "Diplodocus",
   "Dreadnoughtus",
-  "Dreadnoughtus_Dom",
   "Dryosaurus",
   "Dunkleosteus",
   "Edmontosaurus",
@@ -176,7 +175,6 @@ export const SFX_SPECIES_FOLDERS = Object.freeze([
   "Gallimimus",
   "Geosternbergia",
   "Giganotosaurus",
-  "Giganotosaurus_Dom",
   "Gigantspinosaurus",
   "Guanlong",
   "Herrerasaurus",
@@ -184,12 +182,10 @@ export const SFX_SPECIES_FOLDERS = Object.freeze([
   "Hypsilophodon",
   "Ichthyosaurus",
   "Iguanadon",
-  "Iguanodon_2022",
   "IndominusRex",
   "Indoraptor",
   "Irritator",
   "Kentrosaurus",
-  "KentrosaurusCC",
   "Kronosaurus",
   "LiveBait",
   "Lokiceratops",
@@ -213,7 +209,6 @@ export const SFX_SPECIES_FOLDERS = Object.freeze([
   "Pachycephalosaurus",
   "Pachyrhinosaurus",
   "Parasaurolophus",
-  "Parasaurolophus_Dom",
   "Patagotitan",
   "Plesiosaurus",
   "Proceratosaurus",
@@ -256,4 +251,4 @@ export const SFX_SPECIES_FOLDERS = Object.freeze([
   "Yutyrannus",
   "land_Psittacosaurus"
 ]);
-export const MEDIA_FILE_COUNTS = Object.freeze({ambience:94,music:38,sfxSourceCount:14767,sfxSpecies:119});
+export const MEDIA_FILE_COUNTS = Object.freeze({ambience:94,music:38,sfxSourceCount:14767,sfxSpecies:114});
