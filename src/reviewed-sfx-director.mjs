@@ -23,6 +23,10 @@ const INTENT_WORDS=Object.freeze({
   movement:/\b(?:footstep\w*|step\w*|stomp\w*|walk\w*|run\w*|shuffl\w*|rustl\w*|mov\w*)\b/i
 });
 const VALID_INTENTS=new Set(Object.keys(INTENT_WORDS));
+const ENTRY_FIELDS=new Set(['id','kind','species','shared','trackNumber',
+  'ageLabel','ageVerifiedFromAudio','repeatPattern','description',
+  'descriptionType','fileName','dropboxRelativePath','durationSeconds',
+  'source','intentTags','approved']);
 const DISTANCE_DB=Object.freeze({near:0,medium:-6,far:-13});
 const EMPTY=Object.freeze([]);
 function object(value){return value!==null && typeof value==='object' && !Array.isArray(value);}
@@ -62,14 +66,16 @@ export function createReviewedSfxRegistry(manifest,{authorizedPaths}={}){
       throw new TypeError('Unknown reviewed audio row kind');
     if(raw.kind!=='sfx') continue; // Other kinds have their own controllers.
     const m=PATH.exec(raw.dropboxRelativePath||'');
-    if(!ID.test(raw.id||'') || !m || !FOLDER.test(m[1]) ||
+    if(Object.keys(raw).some(field=>!ENTRY_FIELDS.has(field)) ||
+      !ID.test(raw.id||'') || !m || !FOLDER.test(m[1]) ||
       !FILE.test(m[2]) || raw.fileName!==m[2] ||
       raw.species!==m[1] || !FOLDER.test(raw.species||'') ||
       typeof raw.shared!=='boolean' || typeof raw.repeatPattern!=='boolean' ||
       (raw.approved!==undefined && raw.approved!==true) ||
       !safeMetadataText(raw.description) || !sourceValid(raw.source) ||
-      !Number.isFinite(raw.durationSeconds) || raw.durationSeconds<=0 ||
-      raw.durationSeconds>600 ||
+      !(raw.durationSeconds===undefined || raw.durationSeconds===null ||
+        (Number.isFinite(raw.durationSeconds) &&
+         raw.durationSeconds>0 && raw.durationSeconds<=600)) ||
       (raw.ageVerifiedFromAudio!==undefined &&
        typeof raw.ageVerifiedFromAudio!=='boolean') ||
       (raw.ageLabel!==undefined && raw.ageLabel!==null &&
@@ -87,7 +93,7 @@ export function createReviewedSfxRegistry(manifest,{authorizedPaths}={}){
       id:raw.id,assetKey:raw.dropboxRelativePath,species:raw.species,
       shared:raw.shared,description:raw.description||'',
       intentTags:Object.freeze([...intentTags]),
-      durationSeconds:raw.durationSeconds,repeatPattern:raw.repeatPattern,
+      durationSeconds:raw.durationSeconds??null,repeatPattern:raw.repeatPattern,
       ageLabel:raw.ageLabel??null,ageVerifiedFromAudio:raw.ageVerifiedFromAudio===true,
       source:Object.freeze({workbook:raw.source.workbook,sheet:raw.source.sheet,row:raw.source.row})
     });
@@ -169,7 +175,8 @@ export function proposeReviewedSfxCue(registry,{
       a.track.id.localeCompare(b.track.id));
   const chosen=candidates[0]?.track;
   if(!chosen)return silent('no-matching-approved-cue');
-  const durationMs=Math.round(chosen.durationSeconds*1000);
+  const durationMs=chosen.durationSeconds===null?8000:
+    Math.round(chosen.durationSeconds*1000);
   // Repeated files need later auditioned segment boundaries. Never loop a whole
   // repetitive vocalization automatically; cap first presentation to 4.5s.
   const stopAfterMs=Math.min(durationMs,chosen.repeatPattern?4500:12000);
