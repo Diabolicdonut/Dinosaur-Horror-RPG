@@ -227,3 +227,24 @@ test('DHR-080: malformed recent history cannot force errors, no save or secret f
  assert(!JSON.stringify(cue).includes('source'));
  assert(!JSON.stringify(cue).includes('private'));
 });
+
+test('DHR-080: unknown shared-track duration stays unknown in source but plays with bounded fallback',()=>{
+ const m=manifest();
+ m.entries[2].durationSeconds=null;
+ const r=createReviewedSfxRegistry(m,{authorizedPaths:allowed});
+ assert.equal(r.byId[shared.id].durationSeconds,null);
+ const selected=proposeReviewedSfxCue(r,{event:event({
+   species:'Allosaurus',sharedGroup:'TheropodMedium_Shared',
+   intent:'presence',eventId:'shared-unknown-duration'})});
+ assert.equal(selected.type,'sfx');
+ assert.equal(selected.stopAfterMs,8000);
+});
+
+test('DHR-080: no unreviewed URL or credential-bearing extra metadata',()=>{
+ for(const extra of [{url:'https://www.dropbox.com/private'},
+                      {dropboxAccessToken:'secret'}, {use:'No'}]){
+  const m=manifest();
+  Object.assign(m.entries[0],extra);
+  assert.throws(()=>createReviewedSfxRegistry(m,{authorizedPaths:allowed}),TypeError);
+ }
+});
