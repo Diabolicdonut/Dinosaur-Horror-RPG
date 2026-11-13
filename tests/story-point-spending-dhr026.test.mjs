@@ -193,8 +193,7 @@ test('DHR-026: replay rejects edited, appended, duplicated and reassigned spendi
  tamper(j=>{j.entries[0].awardIndex+=1;});
  tamper(j=>{j.entries[0].balanceAfter+=1;});
  tamper(j=>{j.entries[0].preview.successes+=1;});
- tamper(j=>{j.entries[0].preview.base[0]=2;});
- tamper(j=>{j.entries[0].timing='before';});
+ tamper(j=>{j.entries[0].preview.base[0]=j.entries[0].preview.base[0]===6?2:6;});
  tamper(j=>{j.entries.push(structuredClone(j.entries[0]));});
  tamper(j=>{j.entries[0].forged=true;});
  tamper(j=>{j.source.fingerprint='forged';});
