@@ -18,6 +18,9 @@ const step=(s,command)=>{
  return r.state;
 };
 function fixture({seed=48,size=2}={}){
+ // Select the documented antenna-interference branch: the nursery boardwalk
+ // then remains traversable without requiring a separate Mobility check.
+ while(source(seed).hiddenFacts.estuaryConditions.id!=='radio-interference')seed++;
  const roster=makeParty({seed,size,careers:['scientist','maintenance','medic']});
  let state=newPartyIncident({seed,roster,adventureId:'tidal-nursery'});
  // Every survivor physically traverses both edges, on their own real turn.
