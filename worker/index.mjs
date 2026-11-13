@@ -1,3 +1,5 @@
+import { SCENE_IMAGE_PATH, safeSceneImagePayload, requestSceneImage } from './scene-image.mjs';
+
 /**
  * dinosaur-rpg Cloudflare Worker — AI GM gateway (checkpoint 002).
  * Secrets: OPENAI_API_KEY, GAME_TOKEN. Never deploy secrets in source.
@@ -81,7 +83,7 @@ export const SCHEMAS = Object.freeze({
   }
 });
 
-function headersFor(origin, env) {
+function headersFor(origin, env, path) {
   const allowed = [...ALLOWED_ORIGINS, env?.ALLOWED_ORIGIN].filter(Boolean);
   const h = {
     'Content-Type': 'application/json; charset=utf-8',
@@ -89,7 +91,8 @@ function headersFor(origin, env) {
     'Vary': 'Origin',
     'X-Content-Type-Options': 'nosniff'
   };
-  if (allowed.includes(origin)) {
+  if (allowed.includes(origin) || (origin === 'null' && path === SCENE_IMAGE_PATH)) {
+    // Local standalone demo uses Origin:null; GAME_TOKEN is still mandatory.
     h['Access-Control-Allow-Origin'] = origin;
     h['Access-Control-Allow-Headers'] = 'Authorization, Content-Type';
     h['Access-Control-Allow-Methods'] = 'POST, OPTIONS, GET';
@@ -233,13 +236,14 @@ async function requestOpenAI(mode, payload, env, upstreamFetch) {
 /** Dependency injection supports offline mock tests. Cloudflare uses default export below. */
 export async function handleRequest(request, env, upstreamFetch = fetch) {
   const origin = request.headers.get('Origin');
-  const headers = headersFor(origin, env);
   const path = new URL(request.url).pathname;
+  const headers = headersFor(origin, env, path);
   const trustedOrigin = !origin || headers['Access-Control-Allow-Origin'] === origin;
+  const isSceneImage = path === SCENE_IMAGE_PATH;
 
   if (path === '/health' && request.method === 'GET')
     return jsonResponse({ service: 'dinosaur-rpg', status: 'online', version: '006', ai_configured: Boolean(env.OPENAI_API_KEY && env.GAME_TOKEN) }, 200, headers);
-  if (!ROUTES.includes(path)) return jsonResponse({ error: 'not_found' }, 404, headers);
+  if (!ROUTES.includes(path) && path !== SCENE_IMAGE_PATH) return jsonResponse({ error: 'not_found' }, 404, headers);
   if (!trustedOrigin) return jsonResponse({ error: 'origin_forbidden' }, 403, headers);
   if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers });
   if (request.method !== 'POST' && !(path === '/v1/gm/status' && request.method === 'GET'))
@@ -280,7 +284,10 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
     if (typeof env.GM_LIMITER.limit !== 'function')
       return jsonResponse({ error: 'rate_limiter_misconfigured' }, 503, headers);
     try {
-      const verdict = await env.GM_LIMITER.limit({ key: 'single-player-ai-gateway' });
+      // Separate image and GM token buckets with the existing per-minute abuse limiter.
+      // No daily/monthly image count or mandatory delay is enforced.
+      const limiterKey = isSceneImage ? 'single-player-image-gateway' : 'single-player-ai-gateway';
+      const verdict = await env.GM_LIMITER.limit({ key: limiterKey });
       if (!verdict || typeof verdict.success !== 'boolean')
         return jsonResponse({ error: 'rate_limiter_failed' }, 503, headers);
       if (!verdict.success)
@@ -313,11 +320,12 @@ export async function handleRequest(request, env, upstreamFetch = fetch) {
   } catch {
     return jsonResponse({ error: 'invalid_json' }, 400, headers);
   }
-  const mode = path.slice('/v1/gm/'.length);
-  const payload = safePayload(parsed, mode);
+  const isImage = path === SCENE_IMAGE_PATH;
+  const mode = isImage ? null : path.slice('/v1/gm/'.length);
+  const payload = isImage ? safeSceneImagePayload(parsed) : safePayload(parsed, mode);
   if (!payload) return jsonResponse({ error: 'invalid_request_payload' }, 400, headers);
   try {
-    const result = await requestOpenAI(mode, payload, env, upstreamFetch);
+    const result = isImage ? await requestSceneImage(payload, env, upstreamFetch) : await requestOpenAI(mode, payload, env, upstreamFetch);
     return jsonResponse(result, 200, headers);
   } catch (error) {
     const code = error?.name === 'AbortError' ? 'upstream_timeout'
