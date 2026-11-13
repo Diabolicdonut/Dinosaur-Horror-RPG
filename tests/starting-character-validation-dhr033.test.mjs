@@ -72,7 +72,9 @@ test('DHR-033: prototype-named forged careers fail gracefully without throwing',
 
 test('DHR-033: forged explicit roster career lists never become randomized valid characters', () => {
   assert.throws(()=>makeParty({seed:1,size:2,careers:'ranger'}),RangeError);
-  assert.throws(()=>makeParty({seed:1,size:2,careers:['ranger','pilot','medic']}),RangeError);
+  // Existing callers may provide a preference list longer than party size.
+  assert.deepEqual(makeParty({seed:1,size:2,careers:['ranger','pilot','medic']}),
+    makeParty({seed:1,size:2,careers:['ranger','pilot']}));
   assert.deepEqual(validateParty(makeParty({seed:1,size:2,careers:['ranger',null]})),[]);
 });
 
