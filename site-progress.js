@@ -189,14 +189,19 @@
     frame.setAttribute('aria-label', 'Project revision and roadmap completion');
     const details = make('details');
     const summary = make('summary');
-    summary.setAttribute('aria-label', 'Show project revision and progress basis');
+    summary.setAttribute('aria-label', 'Show overall project completion estimate, revision, and progress basis');
     summary.append(make('span', 'p-revision', 'Rev ' + revision));
-    if (config.implementation) summary.append(make('span', 'p-built', implementation ?
-      'Built ~' + implementation.percent + '%' : 'Built —'));
-    summary.append(make('span', 'p-pct', roadmap ?
-      'Roadmap ' + roadmap.percent + '%' :
-      (config.roadmap ? 'Roadmap —' :
-       (count.percent === null ? 'Progress —' : String(count.percent) + '%'))));
+    // One user-facing completion number: estimated total implementation.
+    // Formal accepted gate weight remains independently auditable below.
+    if (config.implementation) {
+      summary.append(make('span', 'p-built', implementation ?
+        'Overall ~' + implementation.percent + '%' : 'Overall —'));
+    } else {
+      summary.append(make('span', 'p-pct', roadmap ?
+        'Roadmap ' + roadmap.percent + '%' :
+        (config.roadmap ? 'Roadmap —' :
+         (count.percent === null ? 'Progress —' : String(count.percent) + '%'))));
+    }
     if (config.execution) summary.append(make('span', 'p-work', execution ?
       'Work ' + execution.counts.done + '/' + execution.counts.total : 'Work —'));
     summary.append(make('span', 'p-more', '▾'));
@@ -204,7 +209,7 @@
     const body = make('div', 'p-detail');
     if (config.implementation) {
       const built = make('section');
-      built.append(make('div', 'p-title', 'Implemented work · evidence-based estimate'));
+      built.append(make('div', 'p-title', 'Overall project completion · engineering estimate'));
       if (implementation) {
         const bar = make('progress');
         bar.value = implementation.points; bar.max = 100;
@@ -228,7 +233,8 @@
       body.append(built);
     }
     if (roadmap) {
-      body.append(make('div', 'p-title', String(roadmap.data.label || 'Approved overall delivery roadmap')));
+      body.append(make('div', 'p-title', 'Formal milestone acceptance · technical detail'));
+      if (roadmap.data.label) body.append(make('p', 'p-task-note', String(roadmap.data.label)));
       const bar = make('progress');
       bar.value = roadmap.done; bar.max = roadmap.total;
       bar.setAttribute('aria-label', 'Accepted overall roadmap weight');

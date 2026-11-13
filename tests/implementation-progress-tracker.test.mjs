@@ -126,7 +126,10 @@ test('Progress: no queue / no reliable denominator withholds estimate without al
 
 test('Progress: main page widget distinguishes implemented from accepted and pending review',()=>{
   const widget=readFileSync(new URL('../site-progress.js',import.meta.url),'utf8');
-  assert(widget.includes('Built ~'));
+  assert(widget.includes('Overall ~'));
+  assert(widget.includes('One user-facing completion number'));
+  assert(widget.includes('Formal milestone acceptance · technical detail'));
+  assert(widget.includes("if (config.implementation) {"));
   assert(widget.includes("'Roadmap ' + roadmap.percent"));
   assert(widget.includes('Estimated from completed queue assignments'));
   assert(widget.includes('See pending pull requests (not counted)'));
@@ -182,8 +185,13 @@ test('Progress: production widget renders the live queue, modeled percentage and
     assert(frame,'progress widget should mount with a readable local queue');
     const summary=frame.children[0]?.children[0];
     const labels=(summary?.children||[]).map(el=>el.textContent);
-    assert(labels.includes('Built ~58%'),'implementation estimate should render from current merged queue');
-    assert(labels.includes('Roadmap 38%'),'formal acceptance must remain exactly 38%');
+    assert(labels.includes('Overall ~58%'),'project-wide implementation estimate should be the visible badge');
+    assert(!labels.some(s=>s.startsWith('Roadmap ')),'formal acceptance must not appear in the collapsed badge');
+    const all=[];
+    function walk(el){all.push(el);for(const child of el.children||[])walk(child);}
+    walk(frame);
+    assert(all.some(el=>el.textContent==='38 of 100 weighted delivery points accepted'),
+      'formal acceptance is preserved in expanded technical details');
     assert(labels.includes('Work 28/79'),'completed assignments must follow current merged queue');
     assert(labels.includes('Rev v0.7.39'),'do not promote historical gameplay checkpoint');
   }finally{
