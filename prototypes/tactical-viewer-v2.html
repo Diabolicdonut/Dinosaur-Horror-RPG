@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="color-scheme" content="dark" />
+<title>Dinosaur Horror — Tactical Viewer Prototype</title>
+<style>
+ :root{--bg:#080e11;--panel:#101a1d;--border:#2b4040;--muted:#869c9c;--ink:#deebe9;--accent:#8cd5c6;--warn:#eabb85}
+ *{box-sizing:border-box}
+ body{margin:0;background:radial-gradient(ellipse at 25% 0%,#172629,#090f13 53%,#070c10);color:var(--ink);font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+ button,select{font:inherit}
+ .app{max-width:1490px;padding:26px 28px 32px;margin:auto}
+ .eyebrow{display:flex;align-items:center;gap:9px;letter-spacing:.22em;text-transform:uppercase;color:#84bdb1;font-size:10px;font-weight:800}
+ .eyebrow:before{content:"";display:block;width:7px;height:7px;background:#87ccbc;border-radius:100%;box-shadow:0 0 12px #8ae1c3}
+ header{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:22px}
+ h1{font-size:clamp(26px,3vw,38px);line-height:1.1;letter-spacing:-.055em;font-weight:660;margin:7px 0 9px}
+ .sub{margin:0;color:var(--muted);font-size:13px;max-width:760px}
+ .prototype{border:1px solid #54726e;border-radius:6px;padding:8px 10px;color:#aacdc6;font-size:10px;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;background:#162727}
+ .layout{display:grid;grid-template-columns:minmax(0,1fr) 308px;align-items:start;gap:16px}
+ .layout.sidebar-hidden{grid-template-columns:minmax(0,1fr)}
+ .layout.sidebar-hidden>.sidebar{display:none}
+ .map-shell{min-width:0;background:#0d181a;border:1px solid #3d5551;border-radius:13px;overflow:hidden;box-shadow:0 22px 70px #0005}
+ .map-head{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;background:#152326;padding:12px 17px;border-bottom:1px solid #36504e}
+ .map-title{color:#d8e8e3;font-weight:700;font-size:13px;letter-spacing:.02em}
+ .map-sub{font-size:10px;color:#90b0a8;letter-spacing:.14em;text-transform:uppercase;margin-top:3px}
+ .pillbox{display:flex;flex-wrap:wrap;gap:7px}
+ .status{font-size:10px;color:#bdd1c6;background:#20312f;border:1px solid #38534d;padding:5px 8px;border-radius:4px;letter-spacing:.06em}
+ .status.danger{border-color:#654c42;color:#efb49a;background:#302521}
+ .viewport{position:relative;background:#0d1c1a;overflow:hidden}
+ #map{display:block;width:100%;height:auto;aspect-ratio:1000 / 640;touch-action:none;cursor:crosshair;user-select:none}
+ #map.panning{cursor:grabbing}
+ .map-toolbar{display:flex;align-items:center;justify-content:space-between;gap:9px;flex-wrap:wrap;padding:8px 12px;background:#101f20;border-bottom:1px solid #324d48}
+ .toolbar-left,.toolbar-right{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+ .map-toolbar button{min-width:33px;min-height:34px;padding:6px 10px;font-size:12px}
+ .map-toolbar button.icon-button{font-size:17px;font-weight:600;padding:3px 9px}
+ .map-toolbar button:disabled{opacity:.35;cursor:not-allowed}
+ .zoom-status{display:inline-flex;min-width:49px;align-items:center;justify-content:center;letter-spacing:.08em;color:#bdd3cc;font-size:11px;font-variant-numeric:tabular-nums}
+ .map-toolbar .button-quiet{background:#192d2c;border-color:#35524b}
+ .map-help{position:absolute;bottom:12px;left:12px;z-index:3;color:#d2e9e0;font-size:11px}
+ .map-help summary{display:inline-flex;align-items:center;gap:6px;border:1px solid #486259;border-radius:6px;padding:6px 10px;background:#0b181bd9;cursor:pointer;list-style:none}
+ .map-help summary::-webkit-details-marker{display:none}
+ .map-help summary:before{content:'?';font-weight:800;font-size:10px;border:1px solid #9ac6b8;border-radius:50%;width:14px;height:14px;text-align:center}
+ .map-help[open]{max-width:min(360px,88%);background:#0b181bef;border:1px solid #486259;border-radius:6px}
+ .map-help[open] summary{border:0;border-bottom:1px solid #486259;border-radius:6px 6px 0 0;width:100%}
+ .map-help p{margin:8px 10px 10px;line-height:1.65}
+ .legend-container{min-width:0}
+ .legend-details summary{list-style:none;cursor:pointer;color:#c6e0d7;font-size:11px;display:inline-flex;align-items:center;gap:6px}
+ .legend-details summary::-webkit-details-marker{display:none}
+ .legend-details summary:before{content:'▸';color:#9acebf}
+ .legend-details[open] summary:before{content:'▾'}
+ .legend-details[open] .legend{padding:10px 0 3px}
+ .legend-details:not([open]) .legend{display:none}
+ .map-footer{min-height:42px}
+ @media(max-width:790px){.map-toolbar{padding:7px 9px}.map-toolbar button{padding:6px 8px}.map-footer{align-items:start}}
+ #map text{pointer-events:none;user-select:none}
+ #map .token{cursor:pointer}
+ #map .token:focus{outline:none}
+ #map .token:focus-visible .selection{stroke:#fff}
+ .map-footer{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between;align-items:center;padding:11px 16px;background:#101b1d;border-top:1px solid #344d4a;color:#a0b8b0;font-size:11px}
+ .legend{display:flex;flex-wrap:wrap;gap:13px}
+ .legend-item{display:flex;align-items:center;gap:7px;white-space:nowrap}
+ .legend-dot{width:10px;height:10px;border-radius:50%;background:#8ae2e3;border:2px solid #dcffff}
+ .legend-dot.red{background:#b95950;border-color:#ff987d}
+ .legend-dot.gold{background:#b9a56d;border-color:#ecd5a0}
+ .legend-dot.grey{background:#384748;border:1px solid #7b9693}
+ .sidebar{display:flex;flex-direction:column;gap:13px}
+ .panel{background:#121e20;border:1px solid #344b48;border-radius:10px;padding:16px}
+ .panel h2{margin:0 0 13px;font-size:12px;text-transform:uppercase;color:#adcac4;letter-spacing:.14em;font-weight:700}
+ .section-title{font-size:10px;text-transform:uppercase;color:#83a299;letter-spacing:.12em;margin:15px 0 8px}
+ .select{width:100%;padding:10px 11px;appearance:none;color:#dff5ed;background:#1b2c2d;border:1px solid #48615a;border-radius:5px;cursor:pointer}
+ .switchline{display:flex;justify-content:space-between;align-items:center;gap:9px;padding:8px 0;border-bottom:1px solid #29403d}
+ .switchline:last-child{border-bottom:0}
+ .switchline label{display:block;cursor:pointer;color:#cfddda;font-size:12px}
+ .switchline small{display:block;color:#78958e;font-size:10px;margin-top:2px}
+ .toggle{appearance:none;position:relative;width:37px;height:21px;border-radius:20px;background:#3c4c4d;border:1px solid #5d6b6b;flex:none;cursor:pointer;transition:background .15s}
+ .toggle:checked{background:#42796a;border-color:#80baa6}
+ .toggle:after{content:"";position:absolute;top:2px;left:2px;height:15px;width:15px;border-radius:50%;background:#d9e6e1;transition:transform .15s}
+ .toggle:checked:after{transform:translateX(16px);background:white}
+ .buttons{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+ button{color:#d4e8e1;background:#233c3b;border:1px solid #4e6a61;border-radius:5px;cursor:pointer;padding:9px 9px;transition:background .15s,transform .15s;white-space:nowrap;font-size:12px}
+ button:hover{background:#32544f}
+ button:active{transform:translateY(1px)}
+ button.primary{background:#397664;border-color:#6bb69e;color:white}
+ button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid #a6e1cd;outline-offset:2px}
+ .readout{color:#c4d8d0;font-size:12px}
+ .readout p{margin:0 0 8px}
+ .readout strong{color:#fff}
+ .log{background:#0c1618;color:#9ac0b5;border:1px solid #2d4640;border-radius:6px;padding:12px;min-height:70px;font-size:12px;line-height:1.55}
+ .log time{color:#d3ac7b;font-variant-numeric:tabular-nums;font-size:10px;margin-right:6px}
+ .meter{width:100%;display:flex;gap:2px;margin:8px 0 6px}
+ .meter span{height:5px;flex:1;background:#28403c;border-radius:2px}
+ .meter span.active{background:#78c7a9}
+ .tip{margin-top:14px;font-size:11px;color:#91aaa4;line-height:1.6}
+ footer{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:17px;font-size:11px;color:#718f88}
+ kbd{background:#223535;border:1px solid #435a54;border-radius:3px;font-size:10px;padding:2px 5px;color:#b5d3c8}
+ @media(max-width:1040px){.layout{grid-template-columns:minmax(0,1fr) 275px}.app{padding:18px 14px}}
+ @media(max-width:790px){header{align-items:start;flex-direction:column}.layout{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr))}.map-hint{max-width:90%}}
+ @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+ <header>
+  <div>
+   <div class="eyebrow">Field systems / prototype 01</div>
+   <h1>Dinosaur Horror <span style="color:#84bbac;font-weight:370">/ Tactical Viewer</span></h1>
+   <p class="sub">An independent, asset-free browser VTT experiment. Explore the compound with pan, zoom, survivor focus, line of sight, lighting, and fog of war.</p>
+  </div>
+  <div class="prototype">Interactive concept · SVG only</div>
+ </header>
+ <main class="layout" id="viewer-layout">
+  <section class="map-shell" aria-label="Interactive field map">
+   <div class="map-head">
+    <div><div class="map-title">SECTOR 04 — GENERATOR COMPOUND</div><div class="map-sub">Isla Selva · 21:47 local · 10 m / 50 SVG units</div></div>
+    <div class="pillbox"><span class="status">● SYSTEM ONLINE</span><span class="status">RAIN / LOW VISIBILITY</span><span class="status danger" id="threat-status">NO VISUAL CONTACT</span></div>
+   </div>
+   <div class="map-toolbar" aria-label="Map navigation controls">
+    <div class="toolbar-left">
+     <button class="icon-button" id="zoom-out" type="button" title="Zoom out" aria-label="Zoom out">−</button>
+     <output class="zoom-status" id="zoom-level" aria-live="polite">100%</output>
+     <button class="icon-button" id="zoom-in" type="button" title="Zoom in" aria-label="Zoom in">+</button>
+     <button class="button-quiet" id="fit-view" type="button" title="Reset zoom and show full map">Fit map</button>
+     <button class="button-quiet" id="center-selected" type="button" title="Center on active survivor">⌖ Center on survivor</button>
+    </div>
+    <div class="toolbar-right">
+     <button class="button-quiet" id="toggle-sidebar" type="button" aria-expanded="true" aria-controls="sidebar">Hide panels</button>
+    </div>
+   </div>
+   <div class="viewport">
+    <svg id="map" viewBox="0 0 1000 640" role="img" aria-label="Top-down tactical map; click open ground to move a selected survivor">
+     <defs>
+      <pattern id="smallGrid" width="25" height="25" patternUnits="userSpaceOnUse"><path d="M25 0 H0 V25" fill="none" stroke="#8ab3a5" stroke-width=".6" opacity=".17"/></pattern>
+      <pattern id="concreteGrid" width="34" height="34" patternUnits="userSpaceOnUse"><path d="M34 0 H0 V34" fill="none" stroke="#7d958a" stroke-width="1" opacity=".25"/></pattern>
+      <pattern id="stipple" width="31" height="29" patternUnits="userSpaceOnUse"><circle r="1.2" cx="12" cy="18" fill="#d0c5a0" opacity=".17"/><path d="M4 2 l6 -4 M27 23 l4 -5" stroke="#698c65" stroke-width="1" opacity=".45"/></pattern>
+      <radialGradient id="lampGlow"><stop offset="0%" stop-color="#ffdb9a" stop-opacity=".45"/><stop offset="50%" stop-color="#ffd18a" stop-opacity=".18"/><stop offset="100%" stop-color="#ffe1ad" stop-opacity="0"/></radialGradient>
+      <radialGradient id="flashGlow"><stop offset="0%" stop-color="#f8ebc0" stop-opacity=".22"/><stop offset="85%" stop-color="#f4e5b5" stop-opacity=".07"/><stop offset="100%" stop-color="#f4e5b5" stop-opacity="0"/></radialGradient>
+      <radialGradient id="radarGlow"><stop offset="0%" stop-color="#bb7768" stop-opacity=".20"/><stop offset="100%" stop-color="#bb7768" stop-opacity="0"/></radialGradient>
+      <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>
+      <mask id="previousMask" maskContentUnits="userSpaceOnUse"><rect width="1000" height="640" fill="black"/><g id="memory-mask" fill="white"/><g id="current-mask-black" fill="black"/></mask>
+      <mask id="unknownMask" maskContentUnits="userSpaceOnUse"><rect width="1000" height="640" fill="white"/><g id="memory-mask-black" fill="black"/></mask>
+      <mask id="visibleMask" maskContentUnits="userSpaceOnUse"><rect width="1000" height="640" fill="black"/><g id="current-mask-white" fill="white"/></mask>
+     </defs>
+     <g id="terrain"></g>
+     <g id="light-layer" pointer-events="none"></g>
+     <g id="objects"></g>
+     <g id="effects" pointer-events="none"></g>
+     <g id="tokens" aria-label="Character tokens"></g>
+     <g id="fog-overlays" pointer-events="none">
+      <rect id="previous-fog" width="1000" height="640" fill="#030a0b" opacity=".76" mask="url(#previousMask)"/>
+      <rect id="unknown-fog" width="1000" height="640" fill="#030809" opacity=".97" mask="url(#unknownMask)"/>
+     </g>
+     <g id="top-labels" pointer-events="none"></g>
+     <g id="debug-layer" pointer-events="none"></g>
+    </svg>
+    <details class="map-help"><summary>Map controls</summary><p>Click clear ground to move. Drag to pan, scroll or pinch to zoom. Double-click a survivor token to center on them. <kbd>1</kbd>–<kbd>3</kbd> choose survivors, <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> move, <kbd>C</kbd> centers, <kbd>0</kbd> fits the map.</p></details>
+   </div>
+   <div class="map-footer">
+    <div class="legend-container"><details class="legend-details" id="legend-details"><summary>Legend</summary><div class="legend">
+     <div class="legend-item"><span class="legend-dot"></span>Survivor</div>
+     <div class="legend-item"><span class="legend-dot red"></span>Visible predator</div>
+     <div class="legend-item"><span class="legend-dot gold"></span>Light / equipment</div>
+     <div class="legend-item"><span class="legend-dot grey"></span>Explored, not currently visible</div>
+    </div></details></div>
+    <span id="coord-readout">MAP SCALE 5 UNITS / METER</span>
+   </div>
+  </section>
+  <aside class="sidebar" id="sidebar">
+   <section class="panel">
+    <h2>Observer &amp; optics</h2>
+    <select class="select" id="active-survivor" aria-label="Choose survivor">
+      <option value="0">A · Dr. Maya Chen</option><option value="1">B · Owen Mercer</option><option value="2">C · Lena Ortiz</option>
+    </select>
+    <div class="section-title">Visibility systems</div>
+    <div class="switchline"><div><label for="fog">Fog of war</label><small>Only discovered regions remain known</small></div><input class="toggle" id="fog" type="checkbox" checked /></div>
+    <div class="switchline"><div><label for="flashlight">Flashlight</label><small>Directional beam, blocked by walls</small></div><input class="toggle" id="flashlight" type="checkbox" checked /></div>
+    <div class="switchline"><div><label for="floodlights">Compound floodlights</label><small>Reveal lit areas with clear sight lines</small></div><input class="toggle" id="floodlights" type="checkbox" /></div>
+    <div class="switchline"><div><label for="los">Show LOS boundaries</label><small>Diagnostic outline of live visibility</small></div><input class="toggle" id="los" type="checkbox" /></div>
+    <div class="buttons"><button id="scan" class="primary" type="button">Sensor ping</button><button id="advance" type="button">Next story beat</button><button id="reveal" type="button">Reveal / hide map</button><button id="reset" type="button">Reset encounter</button></div>
+   </section>
+   <section class="panel readout">
+    <h2>Field telemetry</h2>
+    <p><strong id="readout-name">Dr. Maya Chen</strong> · <span id="readout-mode">Flashlight active</span></p>
+    <p>Visible range: <strong id="readout-range">approximately 60 m (beam)</strong></p>
+    <p>Known predator contact: <strong id="readout-contact">None</strong></p>
+    <div class="section-title">Spatial memory</div>
+    <div class="meter" id="explore-meter"><span class="active"></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <p style="font-size:11px;color:#92aea5;margin-bottom:0" id="explore-text">Areas persist in memory after leaving sight.</p>
+   </section>
+   <section class="panel">
+    <h2>Director feed</h2>
+    <div class="log" id="log" aria-live="polite"><time>21:47</time>The generator compound is dark. Rain cuts across the yard. Something heavy moves beyond the treeline.</div>
+    <div class="tip"><strong style="color:#d5e3dc">Try this:</strong> Move east around the cargo containers. Switch on floodlights. Toggle LOS boundaries and use the sensor ping to see how uncertainty can be represented without revealing the animal.</div>
+   </section>
+  </aside>
+ </main>
+ <footer><span>Standalone browser-only proof of concept · No server, AI calls, image files, libraries or asset downloads</span><span>Illustrative spatial simulation, not yet connected to Dinosaur Horror game state</span></footer>
+</div>
+<script>
+'use strict';
+const NS='http://www.w3.org/2000/svg';
+const $ = id => document.getElementById(id);
+const elem=(tag,attrs={},parent)=>{const el=document.createElementNS(NS,tag);for(const [key,value] of Object.entries(attrs))el.setAttribute(key,String(value));if(parent)parent.appendChild(el);return el};
+const txt=(value,x,y,attrs={},parent)=>{const e=elem('text',{x,y,...attrs},parent);e.textContent=value;return e};
+const polygon=(points,attrs={},parent)=>elem('polygon',{points:points.map(p=>p.join(',')).join(' '),...attrs},parent);
+const rect=(x,y,w,h,attrs={},parent)=>elem('rect',{x,y,width:w,height:h,...attrs},parent);
+const line=(x1,y1,x2,y2,attrs={},parent)=>elem('line',{x1,y1,x2,y2,...attrs},parent);
+const circle=(cx,cy,r,attrs={},parent)=>elem('circle',{cx,cy,r,...attrs},parent);
+const path=(d,attrs={},parent)=>elem('path',{d,...attrs},parent);
+const clamp=(a,lo,hi)=>Math.max(lo,Math.min(hi,a));
+const TAU=Math.PI*2;
+const norm=a=>Math.atan2(Math.sin(a),Math.cos(a));
+function seeded(seed){let n=seed>>>0;return()=>{n=(1664525*n+1013904223)>>>0;return n/4294967296}}
+const random=seeded(714102);
+const world={width:1000,height:640};
+const hardPolys=[
+ [[225,140],[467,140],[467,294],[225,294]],
+ [[622,123],[851,123],[851,278],[622,278]],
+ [[652,405],[772,405],[772,448],[652,448]],
+ [[275,417],[339,417],[339,476],[275,476]],
+ [[470,355],[543,355],[543,399],[470,399]],
+ [[812,345],[895,345],[911,374],[875,408],[810,391]],
+ [[845,465],[913,466],[931,535],[869,552],[826,514]]
+];
+const plantPolys=[
+ [[105,54],[145,31],[186,65],[172,119],[132,139],[92,106]],
+ [[47,411],[99,386],[143,418],[134,471],[84,493],[42,466]],
+ [[84,519],[122,501],[170,535],[160,593],[96,612],[66,571]],
+ [[864,35],[933,41],[966,94],[931,126],[872,101]],
+ [[926,286],[968,287],[998,347],[960,394],[911,367]],
+ [[48,173],[104,168],[134,203],[99,241],[51,225]],
+ [[940,541],[985,526],[1000,578],[979,634],[919,607]]
+];
+const blockers=[...hardPolys,...plantPolys];
+let segments=[];
+for(const poly of blockers) for(let j=0;j<poly.length;j++)segments.push([poly[j],poly[(j+1)%poly.length]]);
+segments.push([[-1,-1],[1001,-1]],[[1001,-1],[1001,641]],[[1001,641],[-1,641]],[[-1,641],[-1,-1]]);
+let state;
+function initialState(){return{
+ players:[{x:373,y:385,angle:-.25,name:'Dr. Maya Chen',letter:'A'},{x:345,y:427,angle:-.4,name:'Owen Mercer',letter:'B'},{x:394,y:450,angle:-.65,name:'Lena Ortiz',letter:'C'}],
+ selected:0,flashlight:true,floodlights:false,fog:true,debug:false,omniscient:false,step:0,
+ dino:{x:826,y:487,angle:Math.PI+.15},history:[],lastSight:null,ping:null,saidSeen:false,
+ time:0
+ }}
+// Camera navigation is visual-only; no game-state coordinates or vision calculations are changed.
+const view={x:0,y:0,w:world.width,h:world.height,zoom:1};
+const maxZoom=5;
+function applyView(x,y,zoom){
+ const z=clamp(zoom,1,maxZoom),w=world.width/z,h=world.height/z;
+ view.x=clamp(x,0,world.width-w);view.y=clamp(y,0,world.height-h);
+ view.w=w;view.h=h;view.zoom=z;
+ $('map').setAttribute('viewBox',`${view.x} ${view.y} ${view.w} ${view.h}`);
+ $('zoom-level').textContent=`${Math.round(z*100)}%`;
+ $('zoom-out').disabled=z<=1.00001;$('zoom-in').disabled=z>=maxZoom-.00001;
+}
+function worldAtClient(clientX,clientY){
+ const svg=$('map'),point=svg.createSVGPoint();point.x=clientX;point.y=clientY;
+ const matrix=svg.getScreenCTM();return matrix?point.matrixTransform(matrix.inverse()):null;
+}
+function zoomAt(newZoom,clientX,clientY){
+ const p=worldAtClient(clientX,clientY);if(!p)return;
+ const fx=(p.x-view.x)/view.w,fy=(p.y-view.y)/view.h;
+ const z=clamp(newZoom,1,maxZoom),w=world.width/z,h=world.height/z;
+ applyView(p.x-fx*w,p.y-fy*h,z);
+}
+function zoomMiddle(factor){const b=$('map').getBoundingClientRect();zoomAt(view.zoom*factor,b.left+b.width/2,b.top+b.height/2)}
+function fitMap(){applyView(0,0,1)}
+function centerOnPlayer(index=state.selected){
+ const p=state.players[index],z=Math.max(view.zoom,1.8);
+ applyView(p.x-world.width/z/2,p.y-world.height/z/2,z);
+}
+const pointers=new Map();
+let drag=null,pinch=null,ignoreClickUntil=0;
+const map=$('map');
+function pinchPoints(){const ps=[...pointers.values()];if(ps.length<2)return null;const a=ps[0],b=ps[1];return {x:(a.x+b.x)/2,y:(a.y+b.y)/2,d:Math.max(1,Math.hypot(a.x-b.x,a.y-b.y))}}
+map.addEventListener('pointerdown',e=>{
+ if(e.button!==0)return;
+ pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size===1){drag={id:e.pointerId,x:e.clientX,y:e.clientY,viewX:view.x,viewY:view.y,viewW:view.w,viewH:view.h,moved:false};pinch=null}
+ else if(pointers.size===2){const pt=pinchPoints();const anchor=worldAtClient(pt.x,pt.y);pinch={distance:pt.d,zoom:view.zoom,anchor};drag=null;ignoreClickUntil=performance.now()+350;
+  for(const id of pointers.keys())try{map.setPointerCapture(id)}catch{} }
+});
+map.addEventListener('pointermove',e=>{
+ if(!pointers.has(e.pointerId))return;
+ pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pointers.size>=2&&pinch){
+  const pt=pinchPoints(),z=clamp(pinch.zoom*pt.d/pinch.distance,1,maxZoom);
+  const bounds=map.getBoundingClientRect(),w=world.width/z,h=world.height/z;
+  const relX=(pt.x-bounds.left)/bounds.width,relY=(pt.y-bounds.top)/bounds.height;
+  applyView(pinch.anchor.x-relX*w,pinch.anchor.y-relY*h,z);
+  ignoreClickUntil=performance.now()+350;e.preventDefault();return;
+ }
+ if(!drag||drag.id!==e.pointerId)return;
+ const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+ if(Math.hypot(dx,dy)>6)drag.moved=true;
+ if(drag.moved){
+  if(!map.hasPointerCapture(e.pointerId))try{map.setPointerCapture(e.pointerId)}catch{}
+  const bounds=map.getBoundingClientRect();
+  applyView(drag.viewX-dx*drag.viewW/bounds.width,drag.viewY-dy*drag.viewH/bounds.height,view.zoom);
+  map.classList.add('panning');ignoreClickUntil=performance.now()+350;e.preventDefault();
+ }
+});
+function stopPointer(e){
+ if(!pointers.has(e.pointerId))return;
+ pointers.delete(e.pointerId);
+ if(drag?.id===e.pointerId&&drag.moved)ignoreClickUntil=performance.now()+350;
+ if(pinch){ignoreClickUntil=performance.now()+350;pinch=null;
+  if(pointers.size===1){const [id,pt]=[...pointers.entries()][0];drag={id,x:pt.x,y:pt.y,viewX:view.x,viewY:view.y,viewW:view.w,viewH:view.h,moved:false}}
+  else drag=null;
+ }else if(drag?.id===e.pointerId)drag=null;
+ if(map.hasPointerCapture(e.pointerId))try{map.releasePointerCapture(e.pointerId)}catch{}
+ if(!pointers.size)map.classList.remove('panning');
+}
+map.addEventListener('pointerup',stopPointer);map.addEventListener('pointercancel',stopPointer);
+window.addEventListener('pointerup',stopPointer);window.addEventListener('pointercancel',stopPointer);
+map.addEventListener('wheel',e=>{e.preventDefault();zoomAt(view.zoom*Math.exp(-e.deltaY*.0015),e.clientX,e.clientY)},{passive:false});
+$('zoom-in').addEventListener('click',()=>zoomMiddle(1.3));
+$('zoom-out').addEventListener('click',()=>zoomMiddle(1/1.3));
+$('fit-view').addEventListener('click',fitMap);
+$('center-selected').addEventListener('click',()=>centerOnPlayer());
+$('toggle-sidebar').addEventListener('click',()=>{
+ const layout=$('viewer-layout'),hidden=layout.classList.toggle('sidebar-hidden');
+ $('toggle-sidebar').textContent=hidden?'Show panels':'Hide panels';
+ $('toggle-sidebar').setAttribute('aria-expanded',String(!hidden));
+});
+function drawBackground(){const terr=$('terrain');terr.replaceChildren();
+ rect(0,0,1000,640,{fill:'#173026'},terr);
+ rect(0,0,1000,640,{fill:'url(#smallGrid)',opacity:'.57'},terr);
+ for(let i=0;i<610;i++){let x=random()*1000,y=random()*640;const shade=['#425d43','#253e31','#63815a','#5d6650','#34503c'][Math.floor(random()*5)];
+  path(`M${x.toFixed(1)} ${y.toFixed(1)} l${(random()*7-3).toFixed(1)} -${(random()*6+1).toFixed(1)}`,{stroke:shade,'stroke-width':random()*1.5+.5,opacity:random()*.55+.14},terr)
+ }
+ path('M0 320 C170 310 190 335 330 342 S640 315 785 337 S960 340 1000 311 L1000 424 C820 433 662 415 503 427 S200 423 0 412Z',{fill:'#3d4437',stroke:'#555b45','stroke-width':2,opacity:'.8'},terr);
+ path('M473 0H572L602 640H445Z',{fill:'#474b3e',opacity:'.78'},terr);
+ path('M480 0H570L597 640H451Z',{fill:'url(#stipple)',opacity:'.7'},terr);
+ rect(178,88,714,474,{fill:'#344840',stroke:'#55695d','stroke-width':2,rx:7},terr);
+ rect(178,88,714,474,{fill:'url(#concreteGrid)',opacity:'.75'},terr);
+ rect(178,88,714,474,{fill:'url(#stipple)',opacity:'.56'},terr);
+ path('M800 550Q811 512 880 500T1000 479V640H787Z',{fill:'#1b4246',stroke:'#486d68','stroke-width':3},terr);
+ for(let i=0;i<17;i++){let x=825+random()*165,y=530+random()*106;path(`M${x} ${y}q${random()*18-9} -4 ${random()*32-16} 2`,{fill:'none',stroke:'#66928c','stroke-width':1,opacity:.26},terr)}
+ // Fence: gaps are real walkable openings; fence does not occlude vision.
+ const fence={stroke:'#9bafa0','stroke-width':3,fill:'none','stroke-dasharray':'6 4'};
+ path('M175 89H892V563H175V399 M175 327V89',fence,terr);
+ for(let y=335;y<392;y+=14)line(170,y,178,y,{stroke:'#d8a46f','stroke-width':3},terr);
+ // Trails to fence gate.
+ path('M177 361H260', {stroke:'#aeb0a0','stroke-width':2,opacity:.35,'stroke-dasharray':'4 6'},terr);
+ // Landscape linework.
+ for(let k=0;k<110;k++){let x=random()*1000,y=random()*640;if(x>200&&x<850&&y>110&&y<550)continue;
+  const r=4+random()*10;circle(x,y,r,{fill:'#244331',stroke:'#33583f','stroke-width':1,opacity:.42},terr)
+ }
+ // Trees and thickets along edges.
+ for(let k=0;k<45;k++){let x,y;if(k<15){x=22+random()*164;y=35+random()*575}else if(k<30){x=863+random()*127;y=20+random()*610}else{x=random()*1000;y=random()<.5?16+random()*90:550+random()*83}
+  const r=12+random()*18;
+  circle(x+3,y+5,r+4,{fill:'#081913',opacity:.4},terr);
+  circle(x,y,r,{fill:['#234e39','#245440','#365b3d','#294d35'][k%4],stroke:'#547452','stroke-width':1.4,opacity:.72},terr);
+  path(`M${x-r/2} ${y-r/3} Q${x} ${y-r/2} ${x+r/2} ${y+r/3}`,{fill:'none',stroke:'#84a27a','stroke-width':1,opacity:.27},terr);
+ }
+ // Structures.
+ building(225,140,242,154,'GENERATOR / EQUIPMENT',terr);
+ building(622,123,229,155,'CONTROL ANNEX',terr);
+ // Containers opaque.
+ container(652,405,120,43,'CARGO 07',terr);
+ container(275,417,64,59,'STORES',terr);
+ container(470,355,73,44,'TRUCK',terr);
+ // Vegetation thickets opaque.
+ for(const poly of plantPolys){polygon(poly,{fill:'#1c3c2c',stroke:'#507750','stroke-width':2},terr);for(const p of poly)circle(p[0],p[1],8,{fill:'#31583c',opacity:.65},terr)}
+ polygon(hardPolys[5],{fill:'#294731',stroke:'#527450','stroke-width':2},terr);
+ polygon(hardPolys[6],{fill:'#25442d',stroke:'#53734d','stroke-width':2},terr);
+ // Misc smaller non-opaque props.
+ for(const [x,y] of [[583,418],[587,456],[569,472],[221,479]]){
+  rect(x,y,19,17,{rx:2,fill:'#77694e',stroke:'#b09a69','stroke-width':2},terr);
+  line(x+4,y+4,x+16,y+14,{stroke:'#b29d77','stroke-width':1},terr)
+ }
+ // Path markers.
+ txt('GATE / WEST ACCESS',187,327,{fill:'#bac7b6','font-size':11,'font-weight':600,'letter-spacing':1.4},terr);
+ txt('MAINTENANCE YARD',388,332,{fill:'#afc0b1','font-size':13,'font-weight':600,'letter-spacing':2.2,opacity:.85},terr);
+ txt('FENCE LINE',750,576,{fill:'#a1c0ac','font-size':10,'letter-spacing':1.8},terr);
+ // North pointer and scale.
+ path('M33 90l14 -35 14 35 -14 -7Z',{fill:'#a4caba',stroke:'#76988a','stroke-width':1},terr);
+ txt('N',43,47,{fill:'#dbe7ce','font-size':14,'font-weight':'bold'},terr);
+ line(47,602,147,602,{stroke:'#e7e7c9','stroke-width':3},terr);
+ line(47,597,47,607,{stroke:'#e7e7c9','stroke-width':2},terr);line(147,597,147,607,{stroke:'#e7e7c9','stroke-width':2},terr);
+ txt('20 m',83,622,{fill:'#dce3d1','font-size':12,'font-weight':650},terr);
+}
+function building(x,y,w,h,name,parent){
+ rect(x+7,y+8,w,h,{fill:'#081510',opacity:.58,rx:3},parent);
+ rect(x,y,w,h,{fill:'#505e54',stroke:'#c1c9b5','stroke-width':4,rx:3},parent);
+ rect(x+13,y+12,w-26,h-24,{fill:'#3a4b48',stroke:'#778f81','stroke-width':1.5},parent);
+ for(let yy=y+33;yy<y+h-10;yy+=40)line(x+13,yy,x+w-13,yy,{stroke:'#627c6e','stroke-width':1.5},parent);
+ for(let xx=x+47;xx<x+w-10;xx+=48)line(xx,y+12,xx,y+h-13,{stroke:'#627c6e','stroke-width':1.5},parent);
+ rect(x+w/2-17,y+h-7,34,14,{fill:'#978662',stroke:'#e6cd98','stroke-width':2},parent);
+ txt(name,x+10,y-13,{fill:'#e6e9cf','font-size':12,'font-weight':700,'letter-spacing':1.3},parent)
+}
+function container(x,y,w,h,label,parent){
+ rect(x+5,y+6,w,h,{rx:3,fill:'#061512',opacity:.5},parent);
+ rect(x,y,w,h,{rx:2,fill:'#7b745b',stroke:'#b7ac83','stroke-width':3},parent);
+ for(let xx=x+8;xx<x+w-4;xx+=11)line(xx,y+5,xx,y+h-5,{stroke:'#9e9271','stroke-width':1,opacity:.7},parent);
+ txt(label,x+6,y+h/2+4,{fill:'#e9dbb5','font-size':10,'font-weight':700,'letter-spacing':1.2},parent)
+}
+function intersectionRay(px,py,dx,dy,ax,ay,bx,by){
+ const sx=bx-ax,sy=by-ay,den=dx*sy-dy*sx;
+ if(Math.abs(den)<1e-9)return null;
+ const qx=ax-px,qy=ay-py;
+ const t=(qx*sy-qy*sx)/den,u=(qx*dy-qy*dx)/den;
+ return t>=0&&u>=0&&u<=1?t:null;
+}
+function cast(ox,oy,ang,maxDist){const dx=Math.cos(ang),dy=Math.sin(ang);let closest=maxDist;
+ for(const [[ax,ay],[bx,by]] of segments){const t=intersectionRay(ox,oy,dx,dy,ax,ay,bx,by);if(t!==null&&t<closest)closest=t}
+ return [ox+closest*dx,oy+closest*dy]
+}
+function visiblePoly(ox,oy,range,angle=null,cone=null){
+ // Dense fixed sampling is smooth; vertex rays ensure wall corners don't leak visibility.
+ let angles=[];
+ if(angle===null){for(let i=0;i<180;i++)angles.push(-Math.PI+i*TAU/180);
+  for(const [a,b] of segments)for(const p of [a,b]){const theta=Math.atan2(p[1]-oy,p[0]-ox);for(const off of [-.00008,0,.00008])angles.push(theta+off)}
+  angles.sort((a,b)=>a-b);return angles.map(a=>cast(ox,oy,a,range));
+ }
+ const start=angle-cone/2,end=angle+cone/2;
+ for(let i=0;i<=90;i++)angles.push(start+cone*i/90);
+ for(const [a,b] of segments)for(const p of [a,b]){let theta=Math.atan2(p[1]-oy,p[0]-ox);
+  const base=Math.round((angle-theta)/TAU);theta+=TAU*base;
+  if(theta>=start&&theta<=end)for(const off of [-.00008,0,.00008])if(theta+off>=start&&theta+off<=end)angles.push(theta+off)
+ }
+ angles.sort((a,b)=>a-b);return [[ox,oy],...angles.map(a=>cast(ox,oy,a,range))]
+}
+function insidePolygon(x,y,poly){let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+ const a=poly[i],b=poly[j];if(((a[1]>y)!==(b[1]>y))&&(x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0]))inside=!inside
+ }return inside}
+function blocked(x,y,r=12){if(x<r||y<r||x>1000-r||y>640-r)return true;
+ for(const poly of blockers){if(insidePolygon(x,y,poly))return true;
+  for(let i=0;i<poly.length;i++){const a=poly[i],b=poly[(i+1)%poly.length];let vx=b[0]-a[0],vy=b[1]-a[1];let t=clamp(((x-a[0])*vx+(y-a[1])*vy)/(vx*vx+vy*vy),0,1);let xx=a[0]+t*vx,yy=a[1]+t*vy;if(Math.hypot(x-xx,y-yy)<r)return true}
+ }
+ return false
+}
+function openSegment(x1,y1,x2,y2){let d=Math.hypot(x2-x1,y2-y1),n=Math.ceil(d/5);
+ for(let i=1;i<=n;i++){let t=i/n;if(blocked(x1+(x2-x1)*t,y1+(y2-y1)*t,11))return false}return true}
+function canSee(a,b,range){const d=Math.hypot(a.x-b.x,a.y-b.y);if(d>range)return false;
+ const ray=cast(a.x,a.y,Math.atan2(b.y-a.y,b.x-a.x),d+2);
+ return Math.hypot(ray[0]-a.x,ray[1]-a.y)>=d-2
+}
+function shapesAsPolys(arr,group){group.replaceChildren();for(const poly of arr)polygon(poly,{},group)}
+let visPaths=[];
+function buildVisibility(recordHistory=true){
+ visPaths=[];
+ for(const p of state.players){visPaths.push(visiblePoly(p.x,p.y,120));}
+ const active=state.players[state.selected];
+ if(state.flashlight)visPaths.push(visiblePoly(active.x,active.y,310,active.angle,.90));
+ if(state.floodlights){for(const lamp of [{x:575,y:305},{x:876,y:300}])visPaths.push(visiblePoly(lamp.x,lamp.y,220))}
+ // Save discovered region as polygons. Persisted in this demo's in-memory scene state.
+ if(recordHistory){for(const poly of visPaths)state.history.push(poly);if(state.history.length>480)state.history.splice(0,100)}
+ shapesAsPolys(visPaths,$('current-mask-white'));
+ shapesAsPolys(visPaths,$('current-mask-black'));
+ shapesAsPolys(state.history,$('memory-mask'));
+ shapesAsPolys(state.history,$('memory-mask-black'));
+ const fogOn=state.fog&&!state.omniscient;
+ $('previous-fog').style.display=fogOn?'':'none';$('unknown-fog').style.display=fogOn?'':'none';
+ const dbg=$('debug-layer');dbg.replaceChildren();
+ if(state.debug){for(const poly of visPaths)polygon(poly,{fill:'#d6f5bd','fill-opacity':'.018',stroke:'#b8e4b8','stroke-width':'1.8','stroke-dasharray':'5 3'},dbg)}
+}
+function inTrueSight(x,y){return visPaths.some(p=>insidePolygon(x,y,p))}
+function pointVisible(x,y){return state.omniscient||!state.fog||inTrueSight(x,y)}
+function buildLights(){const g=$('light-layer');g.replaceChildren();
+ if(state.floodlights){for(const lamp of [{x:575,y:305},{x:876,y:300}]){
+  circle(lamp.x,lamp.y,220,{fill:'url(#lampGlow)',mask:'url(#visibleMask)'},g);
+  circle(lamp.x,lamp.y,8,{fill:'#f9d59e',filter:'url(#softGlow)'},g)
+ }}
+ if(state.flashlight){const p=state.players[state.selected];const poly=visiblePoly(p.x,p.y,320,p.angle,.90);
+  polygon(poly,{fill:'#fae1a0','fill-opacity':'.10'},g);
+  for(let i=0;i<10;i++){const d=22+i*23,a=p.angle;
+   circle(p.x+Math.cos(a)*d,p.y+Math.sin(a)*d,20+i*1.9,{fill:'url(#flashGlow)',opacity:'.72'},g)
+  }
+ }
+}
+function buildObjects(){const g=$('objects');g.replaceChildren();
+ // Lighting props.
+ for(const lamp of [{x:575,y:305},{x:876,y:300}]){
+  circle(lamp.x+3,lamp.y+3,12,{fill:'#09140d',opacity:.65},g);
+  circle(lamp.x,lamp.y,7,{fill:state.floodlights?'#f8d9a1':'#a58f63',stroke:'#dfbb87','stroke-width':2},g);
+  path(`M${lamp.x-11} ${lamp.y+12} h22`,{stroke:'#c4be91','stroke-width':2},g)
+ }
+ // Alarm beacon and nearby frame.
+ circle(866,105,16,{fill:'#c7624a',opacity:'.12'},g);
+ circle(866,105,5,{fill:'#c46d5b',stroke:'#eda28f','stroke-width':1},g);
+ // A small parked quad bike.
+ rect(390,514,58,24,{fill:'#414c43',stroke:'#a1a68d','stroke-width':2,rx:8},g);
+ for(const x of [402,435])for(const y of [511,541])circle(x,y,5,{fill:'#17211b',stroke:'#788b72','stroke-width':2},g);
+ txt('ATV',401,531,{fill:'#cbd9bb','font-size':10,'font-weight':700},g);
+ // Rain streaks: avoid animated layers for low-overhead browser performance.
+ const rain=seeded(228);
+ for(let i=0;i<190;i++){
+  let x=rain()*1000,y=rain()*640,l=5+rain()*11;
+  line(x,y,x-2-l/4,y+l,{stroke:'#99bdb4','stroke-width':rain()<.65?.7:1.2,opacity:rain()*.16+.055},g)
+ }
+}
+function drawDino(){const g=$('tokens');const d=state.dino;
+ const visible=pointVisible(d.x,d.y);
+ if(!visible)return;
+ const wrap=elem('g',{transform:`translate(${d.x} ${d.y}) rotate(${d.angle*180/Math.PI})`},g);
+ circle(0,0,37,{fill:'url(#radarGlow)'},wrap);
+ path('M-27 -5 Q-46 -10 -67 -24 L-48 -3 L-28 8', {fill:'#b46d5d',stroke:'#ff9985','stroke-width':2},wrap);
+ path('M10 -14 L31 -11 L43 -5 L44 9 L28 12 L17 3Z',{fill:'#aa5c4d',stroke:'#ffad91','stroke-width':2},wrap);
+ elem('ellipse',{cx:-6,cy:-1,rx:31,ry:17,fill:'#9d5849',stroke:'#f8a08c','stroke-width':2.3},wrap);
+ path('M-12 -14 L-6 -31 L4 -34 M-12 13 L-6 28 L4 31', {fill:'none',stroke:'#e89a82','stroke-width':6,'stroke-linecap':'round'},wrap);
+ path('M27 -9 l12 -5 M29 10 l10 6', {stroke:'#e89a82','stroke-width':3.2,'stroke-linecap':'round'},wrap);
+ circle(31,-3,2,{fill:'#fff1c7'},wrap);
+ txt('THEROPOD',d.x,d.y-36,{fill:'#ffb2a2','font-size':11,'font-weight':800,'letter-spacing':1.5,'text-anchor':'middle'},g)
+}
+function drawPlayer(p,i){const g=$('tokens'),selected=state.selected===i,highlight=pointVisible(p.x,p.y)||!state.fog||state.omniscient;
+ if(!highlight)return;
+ const grp=elem('g',{class:'token',role:'button',tabindex:'0','aria-label':`Select ${p.name}; double-click to center the view`},g);
+ elem('title',{},grp).textContent=`${p.name} — double-click to center`;
+ grp.addEventListener('click',e=>{e.stopPropagation();if(performance.now()<ignoreClickUntil)return;state.selected=i;$('active-survivor').value=i;log(`${p.name} is now the active observer.`);update(false)});
+ grp.addEventListener('dblclick',e=>{e.preventDefault();e.stopPropagation();state.selected=i;$('active-survivor').value=i;centerOnPlayer(i);log(`Centered view on ${p.name}.`);update(false)});
+ grp.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();state.selected=i;$('active-survivor').value=i;centerOnPlayer(i);update(false)}});
+ if(selected){circle(p.x,p.y,22,{class:'selection',fill:'#80d8c6','fill-opacity':'.08',stroke:'#a4f5df','stroke-width':2,'stroke-dasharray':'4 3'},grp)}
+ path(`M${p.x} ${p.y}L${p.x+Math.cos(p.angle-.32)*29} ${p.y+Math.sin(p.angle-.32)*29}A29 29 0 0 1 ${p.x+Math.cos(p.angle+.32)*29} ${p.y+Math.sin(p.angle+.32)*29}Z`,{fill:'#c7eee3',opacity:selected?'.18':'.08'},grp);
+ circle(p.x,p.y,15,{fill:i===0?'#397b84':i===1?'#487d72':'#677f96',stroke:selected?'#d4fff0':'#a7d5ce','stroke-width':selected?3:2},grp);
+ txt(p.letter,p.x,p.y+4.8,{fill:'#efffff','font-size':15,'font-weight':800,'text-anchor':'middle'},grp);
+ txt(p.name.split(' ').at(-1).toUpperCase(),p.x,p.y-23,{fill:'#d1e9de','font-size':10,'font-weight':750,'letter-spacing':1,'text-anchor':'middle'},grp)
+}
+function buildTokens(){const g=$('tokens');g.replaceChildren();drawDino();state.players.forEach(drawPlayer);
+ const visiblyTracked=inTrueSight(state.dino.x,state.dino.y);
+ if(visiblyTracked){state.lastSight={x:state.dino.x,y:state.dino.y,step:state.step};if(!state.saidSeen){log('VISUAL CONTACT: a large theropod moves near the eastern treeline.');state.saidSeen=true}}
+ else if(state.saidSeen){state.saidSeen=false;log('Visual contact lost. Last observed position retained.')} 
+ const contact=visiblyTracked?'CONFIRMED':state.lastSight?'LOST CONTACT':'UNKNOWN';
+ $('readout-contact').textContent=contact;
+ $('threat-status').textContent=visiblyTracked?'● PREDATOR SPOTTED':state.ping?'⚠ UNCONFIRMED CONTACT':'NO VISUAL CONTACT';
+ const overlay=$('top-labels');overlay.replaceChildren();
+ if(!visiblyTracked&&state.lastSight){const q=state.lastSight;
+  circle(q.x,q.y,23,{fill:'none',stroke:'#c57b68','stroke-width':2,'stroke-dasharray':'6 6',opacity:.5},overlay);
+  txt('LAST SEEN',q.x,q.y-29,{fill:'#cf9783','font-size':10,'text-anchor':'middle','letter-spacing':1.5},overlay)
+ }
+ if(state.ping){const a=state.ping;
+  circle(a.x,a.y,50,{fill:'#dbab71','fill-opacity':'.05',stroke:'#e7ba75','stroke-width':2,'stroke-dasharray':'5 9',opacity:.65},overlay);
+  txt('SOUND / UNCERTAIN',a.x,a.y-57,{fill:'#e8be83','font-size':10,'font-weight':750,'text-anchor':'middle','letter-spacing':1.1},overlay)
+ }
+}
+function update(recordHistory=true){buildVisibility(recordHistory||visPaths.length===0);
+ buildLights();buildObjects();buildTokens();
+ $('active-survivor').value=state.selected;
+ $('fog').checked=state.fog;$('flashlight').checked=state.flashlight;$('floodlights').checked=state.floodlights;$('los').checked=state.debug;
+ $('readout-name').textContent=state.players[state.selected].name;
+ $('readout-mode').textContent=state.flashlight?'Flashlight active':'Ambient visibility only';
+ $('readout-range').textContent=state.flashlight?'approximately 60 m (beam)':'approximately 24 m (ambient)';
+ const progress=clamp(state.history.length/135,0,1);
+ Array.from($('explore-meter').children).forEach((e,i)=>{e.className=i<Math.max(1,Math.floor(progress*8))?'active':''});
+ $('explore-text').textContent=state.fog?'Explored shapes are retained, but no longer-visible areas dim.':'Fog disabled to inspect the complete scene.';
+ $('reveal').textContent=state.omniscient?'Return to fog':'Reveal / hide map';
+}
+function log(msg){const stamp='21:'+String(47+Math.min(12,state.step)).padStart(2,'0');
+ $('log').replaceChildren();const t=document.createElement('time');t.textContent=stamp;$('log').appendChild(t);$('log').append(document.createTextNode(msg));
+}
+function relocate(x,y){const p=state.players[state.selected];const ax=x-p.x,ay=y-p.y,dist=Math.hypot(ax,ay);if(dist<.2)return;
+ p.angle=Math.atan2(ay,ax);
+ // This is a scene viewer, not a movement rules engine. One input moves at most 150px = 30 m.
+ const d=Math.min(dist,145),nx=p.x+ax/dist*d,ny=p.y+ay/dist*d;
+ if(!openSegment(p.x,p.y,nx,ny)){log('Path blocked by solid cover or a building. Walk around it.');update(false);return}
+ p.x=nx;p.y=ny;state.step++;
+ state.ping=null;log(`${p.name} advances through the compound. Sight lines and map memory update.`);update(true)
+}
+function reset(){state=initialState();visPaths=[];fitMap();drawBackground();update(true);log('The compound is dark. Rain obscures the treeline. Start exploring.')}
+$('map').addEventListener('click',e=>{if(performance.now()<ignoreClickUntil)return;const p=worldAtClient(e.clientX,e.clientY);if(p)relocate(p.x,p.y)});
+document.addEventListener('keydown',e=>{
+ if(['INPUT','SELECT','BUTTON','TEXTAREA'].includes(document.activeElement?.tagName))return;
+ if(['1','2','3'].includes(e.key)){state.selected=Number(e.key)-1;update(false);return}
+ if(e.key.toLowerCase()==='c'){centerOnPlayer();return}
+ if(e.key==='0'){fitMap();return}
+ if(e.key==='+'||e.key==='='){zoomMiddle(1.3);return}
+ if(e.key==='-'){zoomMiddle(1/1.3);return}
+ const steps={w:[0,-32],ArrowUp:[0,-32],s:[0,32],ArrowDown:[0,32],a:[-32,0],ArrowLeft:[-32,0],d:[32,0],ArrowRight:[32,0]};
+ const step=steps[e.key];if(step){e.preventDefault();const p=state.players[state.selected];relocate(p.x+step[0],p.y+step[1])}
+});
+$('active-survivor').addEventListener('change',e=>{state.selected=Number(e.target.value);log(`Observer switched to ${state.players[state.selected].name}.`);update(false)});
+$('fog').addEventListener('change',e=>{state.fog=e.target.checked;log(state.fog?'Fog of war restored.':'Fog disabled for comparison.');update(false)});
+$('flashlight').addEventListener('change',e=>{state.flashlight=e.target.checked;log(state.flashlight?'Flashlight beam engaged.':'Flashlight off. Ambient vision remains.');update(true)});
+$('floodlights').addEventListener('change',e=>{state.floodlights=e.target.checked;log(state.floodlights?'Compound floodlights energized.':'Floodlights shut down.');update(true)});
+$('los').addEventListener('change',e=>{state.debug=e.target.checked;update(false)});
+$('reveal').addEventListener('click',()=>{state.omniscient=!state.omniscient;log(state.omniscient?'Developer reveal: all scene assets visible, irrespective of perception.':'Player-knowledge view restored.');update(false)});
+$('reset').addEventListener('click',reset);
+$('scan').addEventListener('click',()=>{const d=state.dino;
+ // Deliberately approximate uncertainty (not an exact target fix).
+ state.ping={x:clamp(d.x-52,40,960),y:clamp(d.y+33,40,600)};
+ log('A low-frequency motion sensor registers an uncertain contact near the east fence. Not a confirmed sighting.');update(false)
+});
+$('advance').addEventListener('click',()=>{
+ const d=state.dino,choices=[[805,485],[796,550],[920,449],[788,308],[887,421],[846,581]];
+ const idx=(state.step+2)%choices.length,p=choices[idx];
+ if(!blocked(p[0],p[1],15)){d.angle=Math.atan2(p[1]-d.y,p[0]-d.x);d.x=p[0];d.y=p[1]}
+ state.step++;state.ping=null;log('A heavy footfall shakes the yard. The predator changes position beyond the available sight lines.');update(true)
+});
+reset();
+</script>
+</body>
+</html>
