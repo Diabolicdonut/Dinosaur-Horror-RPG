@@ -1,0 +1,184 @@
+{
+  "schemaVersion": 1,
+  "issue": "DHR-002",
+  "authority": "docs/qa/DHR-002-GRAPHICAL-QA.md",
+  "statusPolicy": {
+    "default": "NOT_RUN",
+    "allowed": [
+      "PASS",
+      "FAIL",
+      "BLOCKED",
+      "NOT_RUN",
+      "NOT_APPLICABLE"
+    ],
+    "meaning": "A test passes only after an actual browser observation recorded with build, browser, viewport, steps, and evidence; automated Node tests never mark graphical cases PASS."
+  },
+  "scenarios": [
+    {
+      "id": "nublar-after-the-storm",
+      "name": "After the Storm / Isla Nublar",
+      "seed": 9000,
+      "entry": "party.html",
+      "legacyEntry": "index.html",
+      "historicalFixture": "nublar-legacy-unbound-v3",
+      "focus": "legacy-vs-party save isolation; stealth, keycard, power and rescue; active predator risks"
+    },
+    {
+      "id": "ridge-survey",
+      "name": "The Long Count",
+      "seed": 23,
+      "entry": "party.html",
+      "historicalFixture": "ridge-frozen-rev12",
+      "focus": "survey objectives, local NPC dialogue, sightings, optional quiet-path outcome"
+    },
+    {
+      "id": "tidal-nursery",
+      "name": "Tidal Nursery",
+      "seed": 23,
+      "entry": "party.html",
+      "historicalFixture": "tidal-frozen-rev1",
+      "focus": "estuary routes, Parasaurolophus wonder, earned samples/signal and non-combat completion"
+    }
+  ],
+  "modes": [
+    {
+      "id": "party",
+      "label": "Party",
+      "assertion": "Player controls all survivors; camera changes do not spend turns"
+    },
+    {
+      "id": "focus",
+      "label": "Character / Focus",
+      "assertion": "One selected player actor; AI companions take other legal turns"
+    },
+    {
+      "id": "spectator",
+      "label": "Spectator",
+      "assertion": "Pause, resume and single-step autonomous actions; view is never omniscient"
+    }
+  ],
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900,
+      "interaction": "keyboard-mouse"
+    },
+    {
+      "id": "tablet",
+      "width": 820,
+      "height": 1180,
+      "interaction": "touch-and-keyboard"
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844,
+      "interaction": "touch"
+    },
+    {
+      "id": "small-mobile",
+      "width": 320,
+      "height": 568,
+      "interaction": "touch"
+    }
+  ],
+  "browserTargets": [
+    {
+      "id": "chromium-desktop",
+      "engine": "Chromium",
+      "platform": "Windows/macOS/Linux",
+      "scope": "all 36 matrix cases"
+    },
+    {
+      "id": "firefox-desktop",
+      "engine": "Gecko",
+      "platform": "Windows/macOS/Linux",
+      "scope": "targeted parity rerun of at least all three scenarios and modes"
+    },
+    {
+      "id": "safari-ios",
+      "engine": "WebKit",
+      "platform": "iOS",
+      "scope": "touch, orientation, save/restore, audio gesture and at least all three scenarios and modes"
+    },
+    {
+      "id": "chrome-android",
+      "engine": "Chromium",
+      "platform": "Android",
+      "scope": "touch, orientation, save/restore and at least all three scenarios and modes"
+    },
+    {
+      "id": "safari-desktop",
+      "engine": "WebKit",
+      "platform": "macOS",
+      "scope": "keyboard, resize, save, media and a representative scenario"
+    }
+  ],
+  "flows": [
+    {
+      "id": "G01",
+      "name": "Startup/selection",
+      "expect": "Only playable packages can start; distinct scenario title, seed and starting location; legacy incident isolated."
+    },
+    {
+      "id": "G02",
+      "name": "Character lab/roster",
+      "expect": "1-8 validated characters where supported; edit, regenerate, locks, roster export and launch; invalid entries blocked."
+    },
+    {
+      "id": "G03",
+      "name": "Modes and camera",
+      "expect": "Party/Focus/Spectator transitions pause safely and do not alter action count, dice, RNG or inventory; focus ownership differs from camera."
+    },
+    {
+      "id": "G04",
+      "name": "Narrative and checks",
+      "expect": "Commands, context, legal interactions, failed checks and pushed rolls produce engine-consistent logs; unknown commands cannot invent results."
+    },
+    {
+      "id": "G05",
+      "name": "Equipment and inventory",
+      "expect": "Real local item acquisition/consumption; no duplicated gear or remote transfers; sheet matches authoritative view."
+    },
+    {
+      "id": "G06",
+      "name": "Animals and NPCs",
+      "expect": "Quiet/wonder scenes possible; detected threats respect distance/visibility; NPC facts, dialogue and reactions follow physical evidence."
+    },
+    {
+      "id": "G07",
+      "name": "Combat/peril",
+      "expect": "Only source-legal encounters; turn/reaction timing, armor, damage, stress/critical effects and retreat reflect accepted runtime, not future modules."
+    },
+    {
+      "id": "G08",
+      "name": "Save/load/recovery",
+      "expect": "Export/autosave/reload, historical bindings, invalid-save handling, separate solo/Party/Hub demo keys and no silent overwrite."
+    },
+    {
+      "id": "G09",
+      "name": "Responsive/keyboard/touch/a11y",
+      "expect": "No clipped critical controls, trapped focus, inaccessible pointer-only actions or inaccessible feedback across viewports."
+    },
+    {
+      "id": "G10",
+      "name": "Hub/map/portraits",
+      "expect": "Mark demo/reference-only until integrated; when integrated, observer projections, zoom/fog, portrait health/stress, toggles and layout are tested."
+    },
+    {
+      "id": "G11",
+      "name": "Optional media/Worker",
+      "expect": "Without permissions/network, gameplay remains operable; silence/mute/gesture/load failures do not advance turns or reveal hidden facts."
+    }
+  ],
+  "historicalFixtures": [
+    "nublar-bound-v3",
+    "nublar-legacy-unbound-v3",
+    "ridge-current-rev13",
+    "ridge-frozen-rev12",
+    "ridge-frozen-rev1",
+    "tidal-current-rev2",
+    "tidal-frozen-rev1"
+  ]
+}
