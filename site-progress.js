@@ -75,14 +75,54 @@
     if (total !== 100) return null;
     return {data, done, total, percent: done, gates: data.gates};
   }
-  // Keep calculation separate from browser UI; the module checks queue
-  // completeness and merged-main evidence before displaying estimates.
+  // Maintain backward-compatible queue counts when module loading is absent.
+  // The optional engineering metric is withheld if its estimator is unavailable.
+  function executionFor(config, markdown, roadmap) {
+    const e = config.execution;
+    if (!e || !roadmap || typeof markdown !== 'string' ||
+        !Number.isSafeInteger(e.total) || e.total < 1 || e.total > 999 ||
+        typeof e.source !== 'string' || !/^[a-zA-Z0-9_./-]+$/.test(e.source) ||
+        e.source.includes('..')) return null;
+    const lines = markdown.split(/\r?\n/).filter(line => /^\| DHR-\d{3} \|/.test(line));
+    if (lines.length !== e.total) return null;
+    const perGate = roadmap.gates.map(() => ({done: 0, ready: 0, blocked: 0, total: 0}));
+    const counts = {done: 0, ready: 0, blocked: 0, total: e.total};
+    const seen = new Set();
+    const tasks = Object.create(null);
+    for (const line of lines) {
+      const cells = line.split('|').slice(1, -1).map(x => x.trim());
+      if (cells.length !== 6) return null;
+      const id = /^DHR-(\d{3})$/.exec(cells[0]);
+      if (!id || seen.has(id[1]) || Number(id[1]) < 1 || Number(id[1]) > e.total)
+        return null;
+      seen.add(id[1]);
+      const status = cells[1] === '**Done**' ? 'done' :
+        cells[1] === '**Ready**' ? 'ready' : cells[1] === 'Blocked' ? 'blocked' : null;
+      if (!status || !cells[4] ||
+          (status === 'done' && !/^\[#\d+\]\(https:\/\/github\.com\//.test(cells[5])))
+        return null;
+      const refs = cells[2].split(',').map(x => x.trim());
+      const parsed = refs.map(x => Number(x));
+      if (!refs.length || parsed.some((n, i) => !/^\d{1,2}$/.test(refs[i]) ||
+          n < 1 || n > perGate.length) || new Set(parsed).size !== parsed.length)
+        return null;
+      counts[status]++;
+      tasks[id[0]] = {status, gates:parsed};
+      for (const n of parsed) {
+        const bucket = perGate[n - 1];
+        bucket[status]++; bucket.total++;
+      }
+    }
+    if (seen.size !== e.total || counts.done + counts.ready + counts.blocked !== e.total)
+      return null;
+    return {counts, perGate, tasks, percent: Math.round(1000 * counts.done / e.total) / 10};
+  }
   async function developmentFor(config, markdown, roadmap) {
+    const execution = executionFor(config, markdown, roadmap);
     try {
       const helpers = await import(new URL('src/implementation-progress.mjs', root).href);
-      const execution = helpers.executionFor(config, markdown, roadmap);
       return {execution, implementation: helpers.implementationFor(config, execution, roadmap)};
-    } catch (_) { return {execution:null, implementation:null}; }
+    } catch (_) { return {execution, implementation:null}; }
   }
   function make(tagName, className, value) {
     const e = document.createElement(tagName);
@@ -154,11 +194,11 @@
     if (config.implementation) summary.append(make('span', 'p-built', implementation ?
       'Built ~' + implementation.percent + '%' : 'Built —'));
     summary.append(make('span', 'p-pct', roadmap ?
-      'Accepted ' + roadmap.percent + '%' :
-      (config.roadmap ? 'Accepted —' :
+      'Roadmap ' + roadmap.percent + '%' :
+      (config.roadmap ? 'Roadmap —' :
        (count.percent === null ? 'Progress —' : String(count.percent) + '%'))));
     if (config.execution) summary.append(make('span', 'p-work', execution ?
-      'Tasks ' + execution.counts.done + '/' + execution.counts.total : 'Tasks —'));
+      'Work ' + execution.counts.done + '/' + execution.counts.total : 'Work —'));
     summary.append(make('span', 'p-more', '▾'));
     details.append(summary);
     const body = make('div', 'p-detail');
@@ -206,8 +246,8 @@
         const sub = execution?.perGate[index];
         const builtGate = implementation?.perGate[index];
         gateSummary.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt' +
-          (builtGate ? ' · ~' + builtGate.percent + '% built' : '') +
-          (sub?.total ? ' · ' + sub.done + '/' + sub.total + ' tasks' : '')));
+          (sub?.total ? ' · ' + sub.done + '/' + sub.total + ' tasks' : '') +
+          (builtGate ? ' · ~' + builtGate.percent + '% built' : '')));
         gateDetail.append(gateSummary);
         gateDetail.append(make('p', 'p-criteria', gate.acceptance));
         if (sub?.total) {
@@ -248,7 +288,7 @@
         work.append(make('p', '', execution.counts.ready + ' ready · ' +
           execution.counts.blocked + ' dependency-blocked'));
         work.append(make('p', 'p-task-note',
-          'The gate rows show task progress and estimated implementation separately from accepted weight. Assignments can support multiple gates but are normalized within each gate. Partial credits require audited merged-main evidence; review PRs do not count.'));
+          'Each roadmap gate shows completed linked tasks when expanded. A task can support multiple gates; task counts are not weighted points and do not award partial acceptance. The new built estimate uses audited merged-main evidence; review PRs do not count.'));
         const link = make('a', '', 'View development assignments');
         link.href = new URL(config.execution.source, root).href;
         link.target = '_blank'; link.rel = 'noopener noreferrer';
