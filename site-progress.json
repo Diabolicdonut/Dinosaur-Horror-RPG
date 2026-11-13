@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
-  "asOf": "2026-11-09",
+  "asOf": "2026-11-13",
   "revision": "v0.7.39",
   "revisionSource": {
     "type": "json",
@@ -26,7 +26,7 @@
     "label": "Complete approved Dinosaur Horror RPG development roadmap",
     "scope": "21 acceptance gates across adopted Evolved mechanics, scenario-independent Cinematic/Campaign stories, trusted Game Mother, Adventure Hub and multi-save launch, engine-authorized tactical visuals, audio/cinematic presentation, and desktop/mobile QA. This is a fixed 100-point bounded product plan.",
     "document": "docs/ROADMAP-COVERAGE.md",
-    "note": "009-R2 scope revision on 2026-11-09 added three planned presentation gates with nine points reallocated solely from incomplete gates; six previously accepted foundations retain 38 points. Hub prototype is an unintegrated user-supplied demonstration, not an accepted playable adventure.",
+    "note": "009-R2 scope revision on 2026-11-09 added three planned presentation gates with nine points reallocated solely from incomplete gates; six previously accepted foundations retain 38 points. Hub prototype is an unintegrated user-supplied demonstration, not an accepted playable adventure. A separate, clearly labeled implementation estimate now tracks merged intermediate work; it does not change the six accepted gates or 38/100 acceptance.",
     "gates": [
       {
         "id": "evolved-rules",
@@ -197,5 +197,32 @@
         "acceptance": "A bounded, rights-aware audio manifest and event-driven mixer can play approved low-level ambience, sparse music, and source-authorized creature/effect cues with fade, stop, mute and intentional silence, without leaked unobserved threat knowledge; optional skippable image/fullscreen-video presentations never gate progress or mutate game state, and third-party Dropbox media is tested for access, rights and failure handling."
       }
     ]
+  },
+  "implementation": {
+    "label": "Documented engineering implementation (estimate)",
+    "method": "verified-queue-weighted-v1",
+    "scope": "All 21 existing roadmap gates. Accepted gates count fully; unfinished gates receive only normalized credit for verified merged worker tasks and independently audited merged foundations.",
+    "partialAssignments": [
+      {
+        "taskId": "DHR-073",
+        "fraction": 0.2,
+        "mainCommit": "a77fd956e536b0fc94438031a9fc741f8920d8a6",
+        "reason": "The real adventure catalog and approved cinematic prototype were versioned and merged by PR #134; the production Hub shell and launch wiring remain pending in PR #135."
+      },
+      {
+        "taskId": "DHR-078",
+        "fraction": 0.45,
+        "mainCommit": "a2791e23256e9317f753f74f1fcc4bbd16ea9b9b",
+        "reason": "PR #136 merged the verified 94-track ambience allowlist, deterministic director and tests; live Dropbox streaming, reviewed music and species playback remain unverified."
+      },
+      {
+        "taskId": "DHR-079",
+        "fraction": 0.15,
+        "mainCommit": "f2794d627176fdb618b75f5467bb819d1f05893d",
+        "reason": "PRs #123 and #124 merged an authenticated still-image Worker gateway and revised limits, but cinematic presentation, real deployment and source-visible integration remain unfinished."
+      }
+    ],
+    "note": "This is a conservative implementation-coverage estimate, not elapsed effort, delivery forecast, production readiness, or formal acceptance. Pending unmerged PRs are listed separately and earn zero implemented credit. Fractions are explicitly reviewed engineering judgments and are superseded by a Done queue entry.",
+    "reviewDate": "2026-11-13"
   }
 }

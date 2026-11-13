@@ -9,7 +9,11 @@ export const SKILLS = Object.freeze({
   command: 'Command', manipulation: 'Manipulation', medical_aid: 'Medical Aid'
 });
 const career = (label, keyAttribute, keySkills, talents, gear, agendas) =>
-  Object.freeze({ label, keyAttribute, keySkills, talents, gear, agendas });
+  Object.freeze({
+    label, keyAttribute, keySkills: Object.freeze([...keySkills]),
+    talents: Object.freeze([...talents]), gear: Object.freeze([...gear]),
+    agendas: Object.freeze([...agendas])
+  });
 export const CAREERS = Object.freeze({
   tactical: career('Tactical Response Specialist', 'strength', ['close_combat','stamina','ranged_combat'],
     ['Combat Focus', 'Steady Under Fire', 'Careful Aim'],
@@ -60,7 +64,15 @@ function rng(seed) {
   return () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return (x >>> 0) / 4294967296; };
 }
 const pick = (random, values) => values[Math.floor(random() * values.length)];
-const nval = v => Number.isInteger(Number(v)) && v !== '' && v != null ? Number(v) : NaN;
+// Imported and hand-edited sheets must contain actual numeric ratings, not
+// truthy values, arrays or strings which happen to coerce to an integer.
+const nval = v => Number.isInteger(v) ? v : NaN;
+const exactRatings = (record, keys) => {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+  const prototype = Object.getPrototypeOf(record);
+  return (prototype === Object.prototype || prototype === null) &&
+    Object.keys(record).length === keys.length && keys.every(key => has(record,key));
+};
 const clone = v => JSON.parse(JSON.stringify(v));
 export const derived = attributes => ({
   resolve: Math.ceil((attributes.wits + attributes.empathy) / 2),
@@ -68,11 +80,14 @@ export const derived = attributes => ({
 });
 export function validateCharacter(c) {
   const errors = [];
-  if (!c || typeof c !== 'object') return ['Missing character'];
-  const role = CAREERS[c.career];
+  if (!c || typeof c !== 'object' || Array.isArray(c)) return ['Missing character'];
+  // Own keys only: '__proto__' and 'constructor' are not selectable careers.
+  const role = has(CAREERS,c.career) ? CAREERS[c.career] : null;
   if (!role) errors.push('Choose a recognized career.');
   if (typeof c.name !== 'string' || !c.name.trim() || c.name.length > 80) errors.push('Enter a valid name (1–80 characters).');
   if (!c.attributes || typeof c.attributes !== 'object') errors.push('Attributes are required.');
+  else if (!exactRatings(c.attributes,ATTRIBUTES))
+    errors.push('Attributes must contain exactly the four named starting ratings.');
   else {
     const vals = ATTRIBUTES.map(a => nval(c.attributes[a]));
     if (vals.some(v => !Number.isInteger(v))) errors.push('Every attribute must be a whole number.');
@@ -86,6 +101,8 @@ export function validateCharacter(c) {
     }
   }
   if (!c.skills || typeof c.skills !== 'object') errors.push('Skill allocations are required.');
+  else if (!exactRatings(c.skills,Object.keys(SKILLS)))
+    errors.push('Skill allocations must contain exactly the twelve named starting ranks.');
   else {
     const vals = Object.keys(SKILLS).map(k => nval(c.skills[k]));
     if (vals.some(v => !Number.isInteger(v))) errors.push('Every skill must be a whole number.');
@@ -141,9 +158,11 @@ export function generateCharacter({seed = 1993, index = 0, revision = 0, career:
   if (!Number.isInteger(index) || index < 0 || index > 99) throw new RangeError('Roster index must be 0–99.');
   const rand = seededRandom(seed, index, revision);
   const held = new Set(locks);
+  if (choice !== null && choice !== undefined && !has(CAREERS,choice))
+    throw new RangeError('Unknown career');
   const roleId = held.has('career') && existing ? existing.career :
-    (choice && CAREERS[choice] ? choice : pick(rand, CAREER_IDS));
-  const role = CAREERS[roleId];
+    (choice !== null && choice !== undefined ? choice : pick(rand, CAREER_IDS));
+  const role = has(CAREERS,roleId) ? CAREERS[roleId] : null;
   if (!role) throw new RangeError('Unknown career');
   const attributeCaps = Object.fromEntries(ATTRIBUTES.map(a=>[a,[2,a===role.keyAttribute?5:4]]));
   const fixedAttributes = Object.fromEntries(ATTRIBUTES.filter(a=>held.has('attributes.'+a) && existing)
@@ -182,7 +201,10 @@ export function editCharacter(character, patch) {
 }
 export function makeParty({seed=1993,size=3,careers=[]}={}) {
   if (!Number.isInteger(size) || size<1 || size>8) throw new RangeError('Party size must be between 1 and 8.');
-  return Array.from({length:size},(_,i)=>generateCharacter({seed,index:i,career:careers[i]||null}));
+  if (!Array.isArray(careers) ||
+      careers.slice(0,size).some(id => id !== null && id !== undefined && !has(CAREERS,id)))
+    throw new RangeError('Party contains an unknown career selection.');
+  return Array.from({length:size},(_,i)=>generateCharacter({seed,index:i,career:careers[i]??null}));
 }
 export function validateParty(roster) {
   if (!Array.isArray(roster) || roster.length<1 || roster.length>8)
