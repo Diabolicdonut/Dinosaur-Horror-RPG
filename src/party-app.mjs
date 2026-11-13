@@ -1,4 +1,5 @@
 import {validateParty,makeParty,CAREERS} from './characters.mjs?v=007l2a';
+import {installPartyAudio} from './party-audio-browser.mjs';
 import {newPartyIncident,isPartySave,upgradePartySave,partyView,partyStep} from './party-engine.mjs?v=009d2';
 import {currentOwner,cameraActorId,setControlMode,setFocusActor,setCamera,
   setPlayback,runAutonomousTurn} from './party-director.mjs?v=009d2';
@@ -14,6 +15,7 @@ const LAB='dinosaur-character-lab-007';
 const esc=v=>String(v??'').replace(/[&<>"']/g,x=>
   ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[x]));
 let state=null,setup=null,timer=null;
+const motherAudio=installPartyAudio();
 function announce(t){$('party-status').textContent=t;}
 function cancelAuto(){if(timer!==null){clearTimeout(timer);timer=null;}}
 function loadSetup(){
@@ -277,6 +279,7 @@ function show(){
   'ALL SURVIVORS LOST — this incident has ended.':
   (isStandaloneAdventureId(v.adventureId)?'The field mission is complete; the team has returned safely.':
    'Rescue objectives complete; this incident has ended.'));
+ void motherAudio.update(v);
  queueAutoplay();
 }
 function commit(result,label){
