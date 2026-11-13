@@ -1,6 +1,22 @@
 # Dinosaur Horror RPG — Engineering completion tracker (009-R2)
 
-## 2026-11-13 — Wave 1 integration acceptance: four bounded developer assignments
+## 2026-11-13 — Wave 2 integration: four independently merged bounded assignments
+
+The Wave 2 Integration Director reviewed current `main`, relevant issue contracts, code diffs and source-authority documentation, refreshed each isolated PR against the immediately preceding accepted `main`, and squash-merged sequentially only after fresh green PR-head `node-test` plus `auto-merge-policy`. Each **exact newly merged-main commit** independently passed complete `npm test`, syntax checks and GitHub Pages build/deploy:
+
+| PR | Catalogued assignment and bounded scope | Exact main SHA | Exact-main tests | Pages |
+| --- | --- | --- | ---: | --- |
+| [#149](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/149) | DHR-002 — 36-case desktop/mobile graphical QA **framework**; graphical cases remain `NOT_RUN` | `acc0887b79c15afa035785f6db689f7ba251c334` | [1093/1093](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43454185948) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43454185543) |
+| [#150](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/150) | DHR-005 — 21 runtime coupling points and prioritized migration design, **not a generalized engine** | `58310d40b85757018adb4dd334eb7da7cb0bb13b` | [1097/1097](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43454775169) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43454771701) |
+| [#148](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/148) | DHR-033 — source-grounded starting character/skill/career validation and forged-input rejection | `ebad229c7539a130464297fc058000544ee77c84` | [1106/1106](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43455442194) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43455441202) |
+| [#151](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/151) | DHR-029 — four legal, source-reviewed talent-trigger **pre-roll authorization** paths; not live use | `774a07ef960cb8f3486ec0466d73c17ec2c2c784` | [1116/1116](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43456123245) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43456124001) |
+
+**New accepted catalog counts:** **28 Done / 4 Ready / 47 Blocked, out of 79 bounded assignments**. The separate source-derived, 21-gate weighted engineering model yields **58.4/100 estimated implementation points** (**Built ~58%** displayed) from those integrated queue rows and unchanged three previously audited partial foundations. This is an **engineering-coverage proxy, not tested playable product fraction or release readiness**. The original formal 21-gate acceptance ledger, saved source fingerprints, Party/Focus/Spectator controls, Cloudflare Worker and gameplay `009-D2 / v0.7.39` are unchanged.
+
+**Unresolved integration:** DHR-002 documents the browser/mobile QA that still must be performed, not a completed graphical pass; DHR-005 proposes migration tasks, not a migrated shared runtime; DHR-029 remains a source-verified sidecar pending engine-owned check registry/atomic action authorization; DHR-033 fixes starter validation but does not add campaign advancement or all special cinematic equipment. Hub [#135](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/135) was **separately merged by another integration stream** as a preview at `bfc99c5b72a8c68e9c153cd2a9bffbea425a164e` ([engine](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43457051540), [Pages](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43457050739) successful), **without live browser/save-mode QA or final UI-01 acceptance**; DHR-073 remains Ready and receives no extra queue/Gate credit here. Worker/Dropbox audio [#137](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/137) remains **unmerged and on real OAuth/Range/mobile playback QA hold**. Neither independently arrived Hub changes nor audio are part of this four-PR Wave 2 assignment acceptance.
+
+
+## Prior Wave 1 evidence (2026-11-13): four bounded developer assignments
 
 Four independent, source-reviewed Wave 1 PRs were brought up to the then-current accepted `main`, passed fresh exact-PR-head full `npm test`, syntax and required merge-policy checks, then were **squash-merged sequentially**. For **each exact newly merged-main SHA**, engine tests, syntax checks, and GitHub Pages deployment were independently verified:
 
@@ -20,11 +36,11 @@ Four independent, source-reviewed Wave 1 PRs were brought up to the then-current
 
 ## Two different completion metrics
 
-The tracker distinguishes accepted milestones from merged-work engineering coverage. The current catalog has 24 completed of 79 bounded assignments on main. Its binary acceptance gauge can remain static while independently tested work is merged, so the revised widget makes implementation work visible without inflating accepted gates.
+The tracker distinguishes accepted milestones from merged-work engineering coverage. The current catalog has **28 completed of 79 bounded assignments** on main after Wave 2. Its binary acceptance gauge can remain static while independently tested work is merged, so the revised widget makes implementation work visible without inflating accepted gates.
 
-- **Built ~57% (estimate):** engineering implementation coverage across the same 21-gate, 100-point roadmap. Derived from verified merged bounded assignments and audited merged partial foundations.
+- **Built ~58% (estimate):** engineering implementation coverage across the same 21-gate, 100-point roadmap. Derived from verified merged bounded assignments and audited merged partial foundations.
 - **Accepted 38% (exact):** existing formal accepted milestone weight; incomplete gates earn no formal acceptance until full acceptance criteria pass.
-- **Tasks 24/79 (30.4%):** queue assignments already Done; pending review PRs and incomplete assignments are not counted as fully done.
+- **Tasks 28/79 (35.4%):** queue assignments already Done; pending review PRs and incomplete assignments are not counted as fully done.
 
 ## Reproducible estimator
 
@@ -69,7 +85,7 @@ These fractions are deliberately modest, not inferred hours or arbitrary accepta
 4. When a full roadmap gate passes its required acceptance, change only that gate's accepted status using the integrator's acceptance procedure. The 38% formal count then increases legitimately.
 5. If source queue or evidence is invalid, withhold the implementation estimate; never guess a number.
 
-This provides a modeled engineering-coverage gauge without claiming that 57% of gameplay is playable end-to-end. The 38% accepted weighted score remains authoritative.
+This provides a modeled engineering-coverage gauge without claiming that 58% of gameplay is playable end-to-end. The 38% accepted weighted score remains authoritative.
 
 ## Prior PR #143 baseline — verification against the 2026-11-12 accepted main (historical)
 
@@ -80,3 +96,5 @@ Running the same 21-gate weighted calculation on that queue plus the **unchanged
 **Important:** This is a reproducible, judgment-based engineering-coverage proxy, not a calibrated percentage of playable product, hours, or deployment readiness. Its exact value will move when reviewed code is merged and corresponding queue rows are accepted; unmerged #135 Hub and #137 Dropbox Worker/audio remain excluded. Existing accepted `site-progress.json.roadmap.gates` statuses and weights, historical saves and Party/Focus/Spectator controls remain unchanged.
 
 The current Wave 1 verification supersedes this historical 20/79 / 53.0 snapshot. The Dashboard's current primary completion estimate is sourced from the live implementation formula and the current merged queue, not this prose.
+
+The Wave 2 evidence above is the authoritative latest engineering-count snapshot. Earlier 24/79 and 56.7-point passages are retained only as historical review evidence.
