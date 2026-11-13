@@ -1,11 +1,28 @@
-# Development status tracker — accepted gates and partial worker progress
+# Development status tracker — accepted gates and modeled implementation progress
+
+## 2026-11-13 — Wave 1 integration acceptance: four bounded developer assignments
+
+Four independent, source-reviewed Wave 1 PRs were brought up to the then-current accepted `main`, passed fresh exact-PR-head full `npm test`, syntax and required merge-policy checks, then were **squash-merged sequentially**. For **each exact newly merged-main SHA**, engine tests, syntax checks, and GitHub Pages deployment were independently verified:
+
+| PR | Done assignment / scope | Exact merged-main SHA | Merged-main tests | Pages |
+| --- | --- | --- | ---: | --- |
+| [#141](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/141) | DHR-027 / Evolved Freeze panic aftermath resolver | `5cf94acf99962d11aa23dd87d965721dadc2fa0c` | [1036/1036](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43439591635) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43439589809) |
+| [#142](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/142) | DHR-026 / source-earned Story Point spend and replay | `173042f5cc0367578d4c6957a022f01f3ddfd6d3` | [1051/1051](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43440174770) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43440173636) |
+| [#144](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/144) | DHR-028 / pre-roll help and modifier authorization | `8f40d454dbabb736a6b8d057242526a780731d49` | [1065/1065](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43440739399) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43440738098) |
+| [#140](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/140) | DHR-077 / observer-restricted portrait and Evolved vitals UI component | `e2396f7b6311501a1abc4ba7a6627929bfd1553c` | [1075/1075](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43441328401) | [SUCCESS](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43441328097) |
+
+**Bounded integration status:** **24 Done / 8 Ready / 47 Blocked of 79** accepted cataloged assignments. The separate source-verified engineering estimator on this queue and unchanged audited partial credits is **56.7/100 modeled implementation points (badge ~57%)**, not measured playable scope or production readiness. The **21 gate / 100 weight formal acceptance ledger remains 38 accepted** and gameplay release `009-D2 / v0.7.39` remains untouched. Future changes should retain all three separate concepts.
+
+**Not yet runtime-connected:** DHR-027 must be wired to witnessed combat breaks and trusted turn history; DHR-026 to the authoritative Game Mother check/award transaction; DHR-028 to real pre-roll objective actions, helper consent and finite budgets; DHR-077 to an engine-visible observer projector and Party/Focus/Spectator layout with manual desktop/mobile QA. These pure/standalone pieces are merged and tested, **not end-to-end production gameplay**. The independent Hub #135 and Cloudflare/Dropbox live-media #137 remain **unmerged and on existing QA holds**. No shared Party or Worker file, legacy save, Evolved core dice resolver, accepted gate status, roadmap weight, or first-playable count was changed in Wave 1.
+
+
 
 This document governs the additional **execution progress** layer on the existing in-game status popover. It does **not** change the accepted roadmap, historical `009-D2 / v0.7.39` gameplay checkpoint, saves, engine mechanics, or any previously earned point.
 
 ## Three intentionally distinct views
 
 1. **Roadmap accepted** — the authoritative `site-progress.json.roadmap.gates` weights total **100**. Only gates marked `accepted` earn their entire weight. The current score is **38/100** and remains unchanged by subtask completion. A `partial` gate contributes **zero** unearned points.
-2. **Development execution** — a distinct bar showing the number of `**Done**` DHR assignments in [DEVELOPMENT-QUEUE.md](DEVELOPMENT-QUEUE.md), divided by the **79** currently approved bounded tasks. At the widget's initial publication it was **12/72 (16.7%)**. After the 2026-11-12 Integration Director integration wave the accepted queue is **20/79 (25.3%)**, with 12 ready and 47 dependency-blocked; these numbers are loaded live from the committed queue and are not fixed in the widget. They are not equal slices of project effort or finished gameplay functionality.
+2. **Development execution** — a distinct bar showing the number of `**Done**` DHR assignments in [DEVELOPMENT-QUEUE.md](DEVELOPMENT-QUEUE.md), divided by the **79** currently approved bounded tasks. At the widget's initial publication it was **12/72 (16.7%)**. After the 2026-11-13 Wave 1 merge and queue review the current ledger is **24/79 (30.4%)**, with 8 ready and 47 dependency-blocked; these numbers are loaded live from the committed queue and are not fixed in the widget. They are not equal slices of project effort or finished gameplay functionality.
 3. **Gate-level partial task status** — each expandable gate lists its mapped `Done / Ready / Blocked` task counts and a subtask completion bar (showing the present Done/Ready/Blocked numerator and denominator for each gate). Many tasks have dependencies and some contribute to **more than one gate**, so summing all gate task counts would double count work. This bar is *not* a percentage of accepted gate functionality.
 
 ### Data provenance and update procedure
@@ -34,4 +51,4 @@ The existing checked-in **Markdown queue** is the sole source of truth for execu
 
 ### 2026-11-12 execution reconciliation
 
-The 79 approved task rows now read **20 Done / 12 Ready / 47 Blocked**. Only four newly verified cataloged DHR tasks (014, 015, 020, 021) were promoted to Done; DHR-016/#145 is now Ready. Independent prototype #118, 94-track ambience #136, and supplementary reviewed SFX selector #139 do not add completed cataloged DHR tasks or earn full 21-gate acceptance. Hub #135 and Worker audio #137 remain held. **Execution 20/79 (25.3%) is not the approved weighted roadmap 38/100.**
+At the earlier 2026-11-12 checkpoint, the 79 approved task rows read **20 Done / 12 Ready / 47 Blocked**; after Wave 1, they read **24 Done / 8 Ready / 47 Blocked**. Only four newly verified cataloged DHR tasks (014, 015, 020, 021) were promoted to Done; DHR-016/#145 is now Ready. Independent prototype #118, 94-track ambience #136, and supplementary reviewed SFX selector #139 do not add completed cataloged DHR tasks or earn full 21-gate acceptance. Hub #135 and Worker audio #137 remain held. **Execution 24/79 (30.4%) is not the project's source-verified engineering implementation estimate (~57%), nor the formal accepted roadmap weight.**
