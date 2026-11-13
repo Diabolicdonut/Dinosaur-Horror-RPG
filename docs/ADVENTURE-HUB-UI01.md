@@ -24,3 +24,7 @@ Next:
 ## Verification
 
 \`tests/adventure-hub-catalog.test.mjs\` (existing) and \`tests/hub-production-ui-01.test.mjs\` (new) enforce catalog identity, concept lockdown, presence of original JPEG media, no local save mutation, valid navigation/links, and safe art-path mapping. Acceptance still requires GitHub Actions \`npm test\` and real desktop/mobile browser smoke, including source secrecy and historical Party saves. This document does **not** certify manual visual QA.
+
+## Published preview entrance (user-requested)
+
+The repository root `index.html` redirects visitors to `hub.html` for evaluating the cinematic UI-01 shell. The original 006.2 solo game remains completely intact at `index.html?legacy=1` with its unchanged `localStorage` key, save behavior and Evolved/Year Zero resolution; Party and Character Lab links explicitly name that route. `hub.html` also embeds the existing site-progress badge. This preview publication **does not** claim manual graphical QA, production-ready launch/archive/map features or a formally accepted new roadmap gate. UI-02/03/04 remain follow-up work. The gameplay implementation revision remains unchanged.
