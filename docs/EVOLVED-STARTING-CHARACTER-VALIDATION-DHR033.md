@@ -8,7 +8,7 @@ Compared directly against the privately provided *Alien RPG — Evolved Edition*
 
 | Creation feature | Source-supported starting contract | DHR-033 treatment |
 | --- | --- | --- |
-| Career | Career determines key attribute, three key skills and initial career talent options | Retain nine **original Jurassic Park-adapted** careers and existing pairings. Only own, listed career IDs are selectable; reject invalid explicit careers instead of silently randomizing them. |
+| Career | Career determines key attribute, three key skills and initial career talent options | Retain nine **original Jurassic Park-adapted** careers and existing pairings. Only own, listed career IDs are selectable; reject invalid explicit choices in active roster slots instead of silently randomizing them. Preserve the pre-existing behavior of ignoring surplus preferences beyond party size. |
 | Attributes | Standard point-buy: 14 points across four attributes; values 2–4, with career key allowed 5 | Preserve established caps and exact sum. Reject missing, extra, inherited, array-like, and coercible-string/boolean values on imported/manual starter sheets. |
 | Skills | Twelve core skills; starting budget 10; career skills max 3; others max 1; any untrained skill remains attemptable | Preserve sums, noncareer training, and caps. Reject extra/unknown named skills, missing ratings and nonnumeric payloads even when the twelve recognized skills total 10. |
 | Talent | Choose one initial career talent from three | Preserve existing **original park** talent list and its single selected field. Reject outside-career/unknown choices, without claiming published talent effects or implementing triggered abilities. |
