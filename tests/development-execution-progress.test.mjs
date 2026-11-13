@@ -129,7 +129,7 @@ test('invalid or truncated live queue fails closed without changing weighted sco
     q=>q.replace('| '+id+' |','| DHR-999 |'),
     q=>q.replace('| '+id+' |','| '+rows.find(r=>r[0]!==id)[0]+' |'),
     q=>q.replace(row,'| '+id+' | Completed | '+mapped+' |'),
-    q=>q.replace(row,'| '+id+' | '+status+' | 19 |'),
+    q=>q.replace(row,'| '+id+' | '+status+' | 22 |'),
     q=>q.split('\n').filter(l=>!l.startsWith('| '+id+' |')).join('\n'),
     q=>q.replace(row,'| '+id+' | '+status+' | '+mapped+','+mapped.split(',')[0]+' |')
   ];

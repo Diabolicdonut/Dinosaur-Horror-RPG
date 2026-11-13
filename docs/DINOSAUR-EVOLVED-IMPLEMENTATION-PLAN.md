@@ -2,6 +2,8 @@
 
 # Dinosaur Horror RPG — Living Game Vision and Evolved Implementation Roadmap
 
+> **009-R2 CURRENT PRESENTATION SCOPE (2026-11-09; roadmap-only):** The user-approved standalone Adventure Hub prototype and gameplay interface direction now form explicit planned delivery gates 19–21 within a fixed **21-gate, 100-point roadmap (38 accepted)**. This supersedes the historical 18-gate scope count for current planning; existing 009-R1 text remains historical. Implement a real scenario/launch/save Hub, a read-only engine-visible tactical **Map** with portraits/Evolved Health+Stress indicators and optional scene imagery, plus curated sparse Dropbox ambience/audio and later skippable FMVs. See [presentation contract](PRESENTATION-AND-HUB-ROADMAP.md). Prototype demo saves and invented generated adventures are NOT game state. No gameplay or historical saves altered by this scope revision.
+
 > **009-D1 accepted (2026-10-28, v0.7.38):** The standalone Party runtime now accepts an independently authored estuary scenario, *The Tidal Nursery*, using scenario-specific physical rooms, stock, objectives, seed variants, and fingerprinted saves. The browser offers three adventures, while legacy Nublar and immutable Long Count rev1–12 still follow their accepted routes. [Technical boundary](ADVENTURE-ENGINE-MULTIPACK-009D1.md). This is progress toward adventure-independent engine and diverse authored scenes, **not** a completed universal engine, procedural generator, NPC combat, or combat-weapon parity; whole-product progress stays 38/100. PR #59 exact source head and independently merged main Actions each **657/657 SUCCESS**; Pages **SUCCESS**. Manual graphical QA remains outstanding. See technical contract for exact refs.
 
 
@@ -282,3 +284,8 @@ A finished milestone is not "green" merely because an agent says it implemented 
 - If dependencies or milestone numbers change, revise this plan transparently, preserve accepted checkpoints and write an audit entry identifying the decision and why.
 
 **Scope boundaries:** No claim of complete Evolved RAW, 3D free-roaming island, continuous ecology, fully integrated scene director or conversational OpenAI GM until separately implemented and verified. Ecological realism for its own sake is not a gate for playable adventures. No mandatory multiplayer or server-backed saves is assumed for this personal-use single-player project. New capabilities can be proposed and approved without treating this document as unchangeable law.
+
+
+## 009-R2 — Parallel Hub and presentation implementation (planned, 2026-11-09)
+
+The required starting experience is a cinematic Adventure Hub (not a generic landing page). The uploaded standalone HTML is a design reference only; production must use actual adventure manifests, game-valid character rosters and preserved save formats. Core launch is a dependency for connected Map/audio/scene presentation but independent pure renderers/audio metadata can progress in parallel. Work on Gate 19 Hub → Gate 20 Map/portrait/stills and Gate 21 media separately. [Full phased contract and assigned issues](PRESENTATION-AND-HUB-ROADMAP.md). The original action engine, GM adjudication, Evolved injury/stress, and trusted-state privacy remain authoritative; interface controls never grant invisible facts or alter inventory outside validated natural language. The accepted score stays 38/100 until an entire gate meets its documented tests and manual graphical QA.
