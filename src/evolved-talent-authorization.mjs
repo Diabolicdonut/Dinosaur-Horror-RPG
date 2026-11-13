@@ -8,6 +8,7 @@ import {validateCharacter} from './characters.mjs';
 import {resolveSkillCheck} from './evolved-checks.mjs';
 import {spendActionBudget} from './evolved-encounters.mjs';
 import {TRAUMA} from './evolved-injuries.mjs';
+import {SCENARIO} from './scenario.mjs';
 
 const clone=x=>JSON.parse(JSON.stringify(x));
 const plain=x=>x!==null&&typeof x==='object'&&!Array.isArray(x)&&
@@ -42,7 +43,11 @@ const bound=(source,c)=>exact(source,SOURCE)&&same(source,sourceOf(c));
 const empty=c=>({schemaVersion:1,source:sourceOf(c),entries:[]});
 function live(compiled,state){
  try{return validateCompiledAdventure(compiled)&&isPartySave(state)&&
-  state.scenario===compiled.adventureId&&state.initialSeed===compiled.seed&&
+  // Legacy Nublar save identity is SCENARIO.id; its accepted, fixed
+  // adventure binding is compiled at seed 0, independently of game RNG seed.
+  ((state.scenario===compiled.adventureId&&state.initialSeed===compiled.seed)||
+   (state.scenario===SCENARIO.id&&compiled.adventureId==='nublar-after-the-storm'&&
+    compiled.seed===0&&uint(state.initialSeed)))&&
   same(state.adventureBinding,adventureBinding(compiled))&&
   state.outcome==='playing'&&Array.isArray(state.actions)&&
   natural(state.beat)&&uint(state.rng)&&natural(state.control?.epoch)&&
