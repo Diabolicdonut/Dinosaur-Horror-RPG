@@ -115,7 +115,10 @@ test('invalid seed, malformed character and phantom response status fail closed'
   const c=survivor(),e=scene(c);
   assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:-1,ledger:createFreezeLedger()}).reason,'invalid_seed');
   assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:1.4,ledger:createFreezeLedger()}).reason,'invalid_seed');
-  assert.equal(apply({...c,resolve:999},e).reason,'invalid_character');
+  assert.equal(applyFreezeConsequence({
+    character:{...c,resolve:999},encounter:e,eventId:'broken-12',
+    seed:seedFor(c),ledger:createFreezeLedger()
+  }).reason,'invalid_character');
   assert.equal(apply({...c,panicResponses:'freeze'},e).reason,'invalid_panic_state');
   assert.equal(apply({...c,panicResponses:['freeze']},e).reason,'panic_overlap_requires_escalation');
   assert.equal(apply({...c,panicResponses:['flee']},e).reason,'panic_overlap_requires_escalation');
