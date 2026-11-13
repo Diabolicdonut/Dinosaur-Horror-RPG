@@ -24,7 +24,9 @@ test('Progress: 21 roadmap gates total 100 points and preserve exactly 38 accept
 test('Progress: complete authoritative queue is required and all assignments have unique IDs',()=>{
   assert(real);
   assert.equal(real.counts.total,79);
-  assert.equal(real.counts.done,16);
+  assert.equal(real.counts.done,20);
+  assert.equal(real.counts.ready,12);
+  assert.equal(real.counts.blocked,47);
   assert.equal(Object.keys(real.tasks).length,79);
   assert.equal(real.counts.ready+real.counts.blocked+real.counts.done,79);
   assert.equal(executionFor(site,queue.replace('| DHR-079 |','| DHR-099 |'),roadmap),null);
@@ -34,10 +36,11 @@ test('Progress: complete authoritative queue is required and all assignments hav
 
 test('Progress: shows actual merged groundwork instead of frozen 38 percent',()=>{
   assert(built);
-  assert(built.points>49 && built.points<51,
-    'Conservative verified engineering estimate should be near 50%; got '+built.points);
+  assert.equal(built.points,53,
+    'Current audited 20/79 main execution ledger should yield 53.0 modeled points');
+  assert.equal(built.percent,53);
   assert.equal(built.acceptedPoints,38);
-  assert.equal(built.completeAssignments,16);
+  assert.equal(built.completeAssignments,20);
   assert.equal(built.totalAssignments,79);
   assert.equal(built.partialAssignments.length,3);
   assert(built.percent>roadmap.done);
@@ -49,7 +52,12 @@ test('Progress: credits only verified merged work and never an open PR',()=>{
     ['DHR-073','DHR-078','DHR-079']);
   assert(built.partialAssignments.every(p=>/^[0-9a-f]{40}$/.test(p.mainCommit)));
   assert(!JSON.stringify(site.implementation).includes('pull/137'));
-  assert(!JSON.stringify(site.implementation).includes('pull/139'));
+  assert(!JSON.stringify(site.implementation).includes('pull/135'));
+  assert(!JSON.stringify(site.implementation).includes('pull/140'));
+  assert(!JSON.stringify(site.implementation).includes('pull/141'));
+  assert(!JSON.stringify(site.implementation).includes('pull/142'));
+  assert(!JSON.stringify(site.implementation).includes('pull/144'));
+  assert(!JSON.stringify(site.implementation).includes('pull/143'));
   assert(!JSON.stringify(site.implementation).includes('DROPBOX_REFRESH_TOKEN'));
   assert(!JSON.stringify(site.implementation).includes('GAME_TOKEN'));
 });
@@ -125,4 +133,62 @@ test('Progress: main page widget distinguishes implemented from accepted and pen
   assert(widget.includes('estimate withheld'));
   assert(widget.includes('return {execution, implementation:null}'));
   assert(!widget.includes('Promise.allSettled(['));
+});
+
+test('Progress: duplicated audited evidence is rejected even once a task is Done',()=>{
+  const advanced=structuredClone(real);
+  advanced.tasks['DHR-078'].status='done';
+  advanced.counts.done++;
+  advanced.counts.ready--;
+  for(const gate of advanced.tasks['DHR-078'].gates){
+    advanced.perGate[gate-1].done++;
+    advanced.perGate[gate-1].ready--;
+  }
+  const broken=clone();
+  broken.implementation.partialAssignments.push(
+    structuredClone(broken.implementation.partialAssignments.find(p=>p.taskId==='DHR-078')));
+  assert.equal(implementationFor(broken,advanced,roadmap),null);
+});
+
+test('Progress: production widget renders the live queue, modeled percentage and accepted score distinctly',async()=>{
+  const documentBefore=globalThis.document,fetchBefore=globalThis.fetch;
+  class MockElement {
+    constructor(tag){this.tag=tag;this.children=[];this.attributes={};this.textContent='';this.id='';this.className='';}
+    append(...elements){this.children.push(...elements);}
+    appendChild(el){this.append(el);}
+    setAttribute(name,value){this.attributes[name]=String(value);}
+  }
+  const body=new MockElement('body');
+  globalThis.document={
+    currentScript:{src:new URL('../site-progress.js',import.meta.url).href},
+    readyState:'complete',body,head:new MockElement('head'),
+    getElementById:(id)=>body.children.find(x=>x.id===id)||null,
+    createElement:tag=>new MockElement(tag)
+  };
+  globalThis.fetch=async input=>{
+    const url=new URL(input);
+    if(url.protocol!=='file:')throw new Error('Test refuses external network sources');
+    return {ok:true,text:async()=>readFileSync(url,'utf8')};
+  };
+  try{
+    await import(new URL('../site-progress.js?pr143-current-main-smoke',import.meta.url).href);
+    let frame;
+    for(let i=0;i<80;i++){
+      frame=body.children.find(x=>x.id==='project-progress-status');
+      if(frame)break;
+      await new Promise(resolve=>setTimeout(resolve,10));
+    }
+    assert(frame,'progress widget should mount with a readable local queue');
+    const summary=frame.children[0]?.children[0];
+    const labels=(summary?.children||[]).map(el=>el.textContent);
+    assert(labels.includes('Built ~53%'),'implementation estimate should render from current merged queue');
+    assert(labels.includes('Roadmap 38%'),'formal acceptance must remain exactly 38%');
+    assert(labels.includes('Work 20/79'),'completed assignments must follow current merged queue');
+    assert(labels.includes('Rev v0.7.39'),'do not promote historical gameplay checkpoint');
+  }finally{
+    if(documentBefore===undefined)delete globalThis.document;
+    else globalThis.document=documentBefore;
+    if(fetchBefore===undefined)delete globalThis.fetch;
+    else globalThis.fetch=fetchBefore;
+  }
 });

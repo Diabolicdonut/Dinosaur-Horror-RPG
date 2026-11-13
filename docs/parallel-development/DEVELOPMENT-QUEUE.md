@@ -1,17 +1,36 @@
-# Dinosaur Horror RPG — Parallel Development Queue v6
+# Dinosaur Horror RPG — Parallel Development Queue v7
 
-**Snapshot:** 2026-11-09 after 009-R2 presentation scope revision (no new gameplay acceptance) · **Gameplay authority:** 009-D2 / v0.7.39 · **Accepted whole-product roadmap:** 38/100 across 21 gates · **Previous merged-main gameplay baseline:** 902/902 tests after 16 bounded developer subtasks. Original accepted baseline: 665 tests; accepted weighted gameplay gates unchanged.
+**Snapshot:** 2026-11-12 latest verified merged main `f16727f1052601e6019468aaddf256d60dfa9693` · gameplay 009-D2/v0.7.39 unchanged · 1013/1013 main tests · 20/79 assignments Done, 12 Ready, 47 Blocked · 21 roadmap gates, accepted **38/100**.
 
 **Authority and precedence:** This queue is subordinate to `docs/ROADMAP-COVERAGE.md`, `docs/DINOSAUR-EVOLVED-IMPLEMENTATION-PLAN.md`, `docs/EVOLVED-RULES-AUTHORITY.md`, `AGENTS.md`, and current accepted `main`. The historical accepted checkpoint and 38/100 progress are **not** changed by creating assignments. Do not copy private Free League rulebooks or official scenarios into the public repository.
 
+## Fifth-wave Integration Director evidence — 2026-11-12
+
+Six independently reviewed PRs were squash-merged **sequentially** onto current main after fresh up-to-date required checks (`node-test` and `auto-merge-policy`). Each exact merged-main revision subsequently passed engine tests, syntax checks and GitHub Pages deployment.
+
+| PR | Bounded scope (not whole-gate completion) | Exact merged-main SHA | Main tests |
+| --- | --- | --- | --- |
+| [#119](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/119) | DHR-021 finite NPC resource proposal | `e867de82b1b45ab4ea44a2f9b1e946856aecbdf8` | 951/951 |
+| [#120](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/120) | DHR-014 creature injury and conditional withdrawal | `58d433872f336998dab23eb38457b0e74a8f694d` | 964/964 |
+| [#122](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/122) | DHR-015 multi-round Evolved combat adapter | `c9b9819ca936d23e4a0ee82a467d5ec7cc6c6789` | 981/981 |
+| [#121](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/121) | DHR-020 finite NPC initiative reservations | `9f34249633d4f805e9c81af3724e4a5220c4aa49` | 995/995 |
+| [#118](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/118) | Tactical SVG viewer **reference only** | `2c0c29385881d6a44dea38dc7ad768d010b5e4db` | 995/995 |
+| [#139](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/139) | Reviewed deterministic dinosaur SFX chooser **not playback** | `f16727f1052601e6019468aaddf256d60dfa9693` | 1013/1013 |
+
+All had zero failures. Final independent [main engine run](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43357342431) and [replacement Pages deployment](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/43357342072) both succeeded. An earlier final-commit Pages run was cancelled/replaced and is not counted as successful. Cloudflare builds do not prove real Dropbox streaming.
+
+**Execution only:** Four newly completed *cataloged* tasks DHR-014, 015, 020 and 021 raise bounded completed assignments to **20/79 (25.3%)**. The reference-only #118 handoff and supplemental #139 selector are *not* additional DHR queue tasks. The original 94/400 selected ambience from merged #136 remains a partial MEDIA foundation. [DHR-016 / issue #145](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/145) is newly Ready; DHR-022 remains blocked until DHR-016 is integrated.
+
+**Holds:** [PR #135](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/135) needs actual desktop/mobile Hub browser and historical Party save QA; [PR #137](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/137) needs authenticated deployed Cloudflare OAuth/Dropbox, real 206 streaming/listening and rights verification. Both remain **unmerged**. Source PR CI cannot prove either. No live offensive combat, autonomous NPC tactical effects, production tactical map or Dropbox audio is claimed. **Accepted weighted roadmap stays 38/100 across 21 gates**, historical checkpoint **009-D2/v0.7.39**, foundation **5/8** and saves unchanged.
+
 ## Work distribution
 
-- **Completed and integrated:** **16** bounded tasks, including the fourth wave DHR-012/#102 (physical ranged eligibility), DHR-013/#103 (armor and human damage), DHR-019/#101 (NPC action chooser) and DHR-025/#91 (Cinematic Story Point earning). Prior completed tasks: DHR-001, 003, 004, 006, 007, 008, 009, 010, 011, 017, 018 and 055. Each developer PR passed fresh required CI and independent exact merged-main Actions/Pages. These are **bounded subtasks**, not weighted whole-project gate acceptance.
-- **Ready to dispatch:** DHR-002/#68, DHR-005/#71, DHR-014/#110, DHR-015/#111, DHR-020/#112, DHR-021/#113, DHR-026/#115, DHR-027/#92, DHR-028/#93, DHR-029/#94, DHR-030/#114 and DHR-033/#95. These **12** original assignments have accepted prerequisites, though they must still be coordinated for file conflicts. The separate presentation track adds three independently ready work items: **DHR-073, DHR-077 and DHR-078**; total ready is 15. Start no more than four independent developer chats at a time initially.
-- **Dependency-blocked:** **48** planned subtasks (44 original plus four newly gated presentation assignments). DHR-016 (actual offensive combat integrated across adventures) still needs DHR-014 and DHR-015 and earlier physical legality contracts. DHR-022 (NPC tactical action execution) still needs DHR-016, DHR-020 and DHR-021. No worker may skip these blockers.
-- **009-R2 presentation track:** Seven additional bounded tasks DHR-073–079 (three ready, four blocked) expand the catalog from 72 to **79** tasks; they do not alter the 16 completed integrations or 38/100 accepted score. New Hub prototype is user-supplied and not yet in GitHub source. See [presentation roadmap](../PRESENTATION-AND-HUB-ROADMAP.md). Keep UI shell, SVG renderer, portrait/vitals and audio/media files independently owned until review. Existing gameplay issues #110–113 and handoff PR #118 stay open.
+- **Completed and integrated:** **20** bounded DHR assignments. The fifth integration wave added DHR-021/#113 via PR #119, DHR-014/#110 via PR #120, DHR-015/#111 via PR #122 and DHR-020/#112 via PR #121 to 16 previously completed assignments. All four are isolated foundations, not live action execution. The separate #118 handoff and #139 reviewed SFX adapter do not add to the 79-task numerator.
+- **Ready to dispatch:** **12** total: DHR-002/#68, DHR-005/#71, **DHR-016/#145 newly unblocked**, DHR-026/#115, DHR-027/#92, DHR-028/#93, DHR-029/#94, DHR-030/#114, DHR-033/#95, DHR-073/#126, DHR-077/#130 and DHR-078/#131. Some are already assigned in other active worker conversations; check ownership, avoid duplicate starts, and initially limit to four independent chats.
+- **Dependency-blocked:** **47** tasks (43 original plus four presentation assignments). DHR-016 is now Ready based on merged DHR-012/014/015; actual offense must still be wired across selected adventures. DHR-022 remains blocked by real DHR-016 runtime acceptance (despite accepted DHR-020/021 foundations).
+- **009-R2 presentation track:** The 79-task catalogue and 21-gate weighted roadmap remain fixed. Reference-only tactical handoff #118 is merged; #135 Hub shell remains unmerged pending browser and historical save QA. #136's 94-track ambience selector is merged, and #139 reviewed SFX selector is merged as a separate bounded adjunct; neither proves production media. PR #137 Worker audio remains unmerged pending genuine live authorization/deployment/listening.
 - **Integration Director:** review gameplay PRs, verify branch CI and independent exact merged-main Actions/Pages, preserve historical saves and three modes. The docs-only `safe-auto-merge` label **never authorizes gameplay auto-merge**. No fractional whole-game gate credit.
-- **Cloudflare Worker caveat:** DHR-055 / PR #97 altered repository Worker source and Wrangler configuration. GitHub Actions/Pages green **does not prove Cloudflare redeployment** nor a production `GM_LIMITER` binding. With `GM_REQUIRE_LIMITER=true`, a missing binding intentionally returns 503 for paid requests. Validate this operationally before claiming full security.
+- **Cloudflare Worker caveat:** Green GitHub Actions/Pages and Workers build checks do not prove Cloudflare production OAuth secrets, current GAME_TOKEN/GM_LIMITER, Dropbox permission, signed Range playback, or media rights. PR #137 is held until these are tested end-to-end on actual live deployment; never treat CI fakes as real playback.
 - **Docs-only bot-merge CI:** DHR-001's `repository_dispatch` was proven by [PR #86](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pull/86) and successful [merged-main engine and Pages check](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/actions/runs/41731955040). Gameplay PRs **remain reviewed manually**.
 
 ## First-wave integration evidence
@@ -83,14 +102,14 @@ These PRs were manually reviewed and squash-merged sequentially after up-to-date
 | DHR-011 | **Done** | 8 | DHR-007 | Source-valid ranged attack resolver | [#82](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/82) |
 | DHR-012 | **Done** | 8 | DHR-011 | Actual range, cover and visibility for shots | [#102](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/102) |
 | DHR-013 | **Done** | 8 | DHR-010, DHR-011 | Carried armor and critical damage integration | [#103](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/103) |
-| DHR-014 | **Ready** | 8,16 | DHR-013 | Injured dinosaur response and grounded retreat | [#110](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/110) |
-| DHR-015 | **Ready** | 8 | DHR-010, DHR-013 | Reusable multi-round Evolved combat action economy | [#111](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/111) |
-| DHR-016 | Blocked | 8,10 | DHR-012, DHR-014, DHR-015 | Offensive combat across Long Count and Tidal Nursery | Not opened |
+| DHR-014 | **Done** | 8,16 | DHR-013 | Injured dinosaur response and grounded retreat | [#110](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/110) |
+| DHR-015 | **Done** | 8 | DHR-010, DHR-013 | Reusable multi-round Evolved combat action economy | [#111](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/111) |
+| DHR-016 | **Ready** | 8,10 | DHR-012, DHR-014, DHR-015 | Offensive combat across Long Count and Tidal Nursery | [#145](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/145) |
 | DHR-017 | **Done** | 9 | DHR-008 | Validated finite NPC motives and intentions | [#83](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/83) |
 | DHR-018 | **Done** | 9 | DHR-008 | Witnessed-knowledge/rumor provenance ledger | [#84](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/84) |
 | DHR-019 | **Done** | 9 | DHR-017, DHR-018 | Bounded motive-aware NPC alternative chooser | [#101](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/101) |
-| DHR-020 | **Ready** | 9 | DHR-019 | NPC exploration/combat action budgets | [#112](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/112) |
-| DHR-021 | **Ready** | 9 | DHR-019 | NPC finite gear and resource choices | [#113](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/113) |
+| DHR-020 | **Done** | 9 | DHR-019 | NPC exploration/combat action budgets | [#112](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/112) |
+| DHR-021 | **Done** | 9 | DHR-019 | NPC finite gear and resource choices | [#113](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/113) |
 | DHR-022 | Blocked | 9 | DHR-016, DHR-020, DHR-021 | NPC genuine Evolved tactical defense/help/flee | Not opened |
 | DHR-023 | Blocked | 9 | DHR-022 | NPC injuries and legitimate medical response | Not opened |
 | DHR-024 | Blocked | 9,10 | DHR-020, DHR-022, DHR-023 | NPC agency parity across two adventures | Not opened |
@@ -157,9 +176,9 @@ These PRs were manually reviewed and squash-merged sequentially after up-to-date
 3. **Dependencies are blocking.** A task is Ready only when each numbered predecessor has been merged and validated. Issue assignment does not mean features are implemented. Cross-module integration happens in later explicitly named tasks.
 4. **Immutable history and truth.** Do not modify frozen historical adventure revisions, replace Evolved dice with generic probabilities, leak hidden GM truths, force every dinosaur encounter into combat or silently mutate supplies and geography. A generated scenario's facts must be fixed and verifiable.
 5. **PR proof.** Include test commands, exact PR-head result, new tests, happy/failure/forgery/replay cases, save migration impact, UI evidence if applicable, and pending manual checks. Never claim hands-on browser tests without doing them.
-6. **No phantom percentage.** Full 18-gate weights earn credit only when an entire gate is accepted with verified evidence. Partial subtasks remain partial and do not alter 38/100.
+6. **No phantom percentage.** Full 21-gate weights earn credit only when an entire gate is accepted with verified evidence. Partial subtasks remain partial and do not alter 38/100.
 7. **Release means complete bounded vision.** The dependency chain ends at DHR-072 only when rules, creative GM, adventure variety, infinite viable original generation, campaigns, security, three modes and desktop/mobile quality pass all source-defined criteria; it does not mean a fixed quota of dinosaur species.
 
 ## How to start
 
-Copy the template in [WORKER-START.md](WORKER-START.md) into a **new GitHub-connected developer chat**, replacing the issue placeholder with the specific issue number. Recommended next wave: **#110 (species-appropriate creature injury/retreat), #111 (multi-round combat turns), #112 (NPC finite action timing), and #113 (NPC finite gear)**. Ensure these workers use separate pure source modules and don't collide on shared runtime. Other Ready tasks: #68, #71, #92–#95, #114 and #115. Integration Director owns merge and release acceptance; do not dispatch blocked issues.
+Copy the template in [WORKER-START.md](WORKER-START.md) into a **new GitHub-connected developer chat**, substituting the assigned issue number. **Newly unblocked: [DHR-016/#145](https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/issues/145)** for real offensive combat across the two authored adventures, on its own feature branch. Coordinate with active developers before any shared Party-runtime edit. Other unclaimed Ready work includes #68, #71, #94, #95 and #114; assignments #92/#93/#115/#130 may already be underway. DHR-022 remains blocked until integrated DHR-016. Hub #135 requires browser QA before downstream UI launch/save/map dispatch, and live audio #137 stays held.

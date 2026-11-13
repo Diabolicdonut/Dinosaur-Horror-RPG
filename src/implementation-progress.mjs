@@ -60,10 +60,11 @@ export function implementationFor(config, execution, roadmap) {
       roadmap.total!==100) return null;
 
   const partialById=Object.create(null);
+  const allAuditedIds=new Set();
   for (const entry of ledger.partialAssignments) {
     if (!entry || typeof entry.taskId!=='string' ||
         !/^DHR-\d{3}$/.test(entry.taskId) ||
-        Object.hasOwn(partialById,entry.taskId) ||
+        allAuditedIds.has(entry.taskId) ||
         !Number.isFinite(entry.fraction) ||
         entry.fraction<=0 || entry.fraction>=1 ||
         typeof entry.mainCommit!=='string' ||
@@ -71,6 +72,7 @@ export function implementationFor(config, execution, roadmap) {
         typeof entry.reason!=='string' ||
         entry.reason.trim().length<24 || entry.reason.length>450 ||
         !execution.tasks[entry.taskId]) return null;
+    allAuditedIds.add(entry.taskId);
     // Once a task is fully integrated, the queue supersedes the old partial
     // evidence. Never add its fraction a second time.
     if (execution.tasks[entry.taskId].status==='done') continue;

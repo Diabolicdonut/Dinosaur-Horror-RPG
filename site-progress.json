@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "project": "Dinosaur-Horror-RPG",
-  "asOf": "2026-11-12",
+  "asOf": "2026-11-13",
   "revision": "v0.7.39",
   "revisionSource": {
     "type": "json",
@@ -223,6 +223,6 @@
       }
     ],
     "note": "This is a conservative implementation-coverage estimate, not elapsed effort, delivery forecast, production readiness, or formal acceptance. Pending unmerged PRs are listed separately and earn zero implemented credit. Fractions are explicitly reviewed engineering judgments and are superseded by a Done queue entry.",
-    "reviewDate": "2026-11-12"
+    "reviewDate": "2026-11-13"
   }
 }

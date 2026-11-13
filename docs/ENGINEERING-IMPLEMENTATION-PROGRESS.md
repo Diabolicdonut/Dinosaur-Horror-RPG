@@ -1,14 +1,14 @@
 # Dinosaur Horror RPG — Engineering completion tracker (009-R2)
 
-**Proposed tracker revision:** November 12, 2026. The **formal acceptance score remains 38/100**. No existing milestone, historical save, Evolved mechanics, or Worker deployment changes.
+**Reviewed tracker revision:** November 13, 2026, on the accepted 2026-11-12 merge ledger. The **formal acceptance score remains 38/100**. No existing milestone, historical save, Evolved mechanics, or Worker deployment changes.
 
 ## Two different completion metrics
 
-The old tracker displayed only the **38% formally accepted weighted gates** plus 16 of 79 integrated developer assignments. Its binary acceptance gauge can remain static while independently tested work is merged, so the revised widget makes implementation work visible without inflating accepted gates.
+The prior tracker showed the **38% formally accepted weighted gates** and the merged-work task counter, updated to 20 of 79 accepted assignments on main. Its binary acceptance gauge can remain static while independently tested work is merged, so the revised widget makes implementation work visible without inflating accepted gates.
 
-- **Built ~50% (estimate):** engineering implementation coverage across the same 21-gate, 100-point roadmap. Derived from verified merged bounded assignments and audited merged partial foundations.
+- **Built ~53% (estimate):** engineering implementation coverage across the same 21-gate, 100-point roadmap. Derived from verified merged bounded assignments and audited merged partial foundations.
 - **Accepted 38% (exact):** existing formal accepted milestone weight; incomplete gates earn no formal acceptance until full acceptance criteria pass.
-- **Tasks 16/79:** queue assignments already Done; pending review PRs and incomplete assignments are not counted as fully done.
+- **Tasks 20/79 (25.3%):** queue assignments already Done; pending review PRs and incomplete assignments are not counted as fully done.
 
 ## Reproducible estimator
 
@@ -39,7 +39,7 @@ These fractions are deliberately modest, not inferred hours or arbitrary accepta
 
 ## Excluded from built credit
 
-- Open PRs even with green PR-head CI: combat and NPC #119–122, Hub #135, Worker audio #137, reviewed SFX #139 and tactical viewer handoff #118.
+- Open PRs even with green PR-head CI: Hub #135, Worker audio #137, and currently unmerged Evolved, character-portrait and tracker PRs. Combat/NPC #119–122 have since merged and their four completed cataloged assignments are now included in the current queue; #118 is still a nonproduction tactical reference and #139 is an integrated but unassigned reviewed SFX selector, so neither adds another Done queue row.
 - Missing private Dropbox licensing, secrets or audio deployment.
 - Cloudflare Worker configuration or live app operation inferred only from GitHub Actions.
 - Proposals, design notes, prototype demonstrations without code-level implemented functionality.
@@ -53,4 +53,12 @@ These fractions are deliberately modest, not inferred hours or arbitrary accepta
 4. When a full roadmap gate passes its required acceptance, change only that gate's accepted status using the integrator's acceptance procedure. The 38% formal count then increases legitimately.
 5. If source queue or evidence is invalid, withhold the implementation estimate; never guess a number.
 
-This provides a more honest progress gauge without claiming that half of the product is ready to play end-to-end.
+This provides a modeled engineering-coverage gauge without claiming that 53% of gameplay is playable end-to-end. The 38% accepted weighted score remains authoritative.
+
+## 2026-11-13 verification against latest accepted main
+
+Latest accepted baseline before this tracker: `87ecceec88cd033f092716f0d79fc19f0348c9f8`, accepted gameplay checkpoint `009-D2 / v0.7.39`. The merged `DEVELOPMENT-QUEUE.md` contains **20 Done, 12 Ready, 47 Blocked out of 79 assignments**. Four newly Done bounded tasks are DHR-014, DHR-015, DHR-020 and DHR-021, from previously independently verified PRs #120, #122, #121 and #119 respectively; source code is isolated and live offensive combat remains incomplete. The approved reference-only tactical viewer handoff PR #118 and supplemental reviewed SFX selector PR #139 are merged but are not additional cataloged Done tasks.
+
+Running the same 21-gate weighted calculation on that queue plus the **unchanged three audited partial fractions** yields **53.0/100 engineering implementation points (badge Built ~53%)**, vs **38/100 formally accepted**. Linked task counts are weighted per gate; a task can support multiple gate denominators without increasing the number of completed assignments. The browser should display `Built ~53%`, `Roadmap 38%`, and `Work 20/79`, with explanations accessible in the expanded panel. A client-side queue fetch failure or inconsistent evidence must withhold the implementation estimate without inflating formal acceptance.
+
+**Important:** This is a reproducible, judgment-based engineering-coverage proxy, not a calibrated percentage of playable product, hours, or deployment readiness. Its exact value will move when reviewed code is merged and corresponding queue rows are accepted; unmerged #135 Hub and #137 Dropbox Worker/audio remain excluded. Existing accepted `site-progress.json.roadmap.gates` statuses and weights, historical saves and Party/Focus/Spectator controls remain unchanged.
