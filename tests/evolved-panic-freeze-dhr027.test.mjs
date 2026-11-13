@@ -69,7 +69,8 @@ test('verified combat witness and original seeded panic seven install a single F
 
 test('Freeze uses the real Evolved outcome; a claimed panic result cannot manufacture it',()=>{
   const c=survivor(),e=scene(c);
-  const other=seedFor(c,'spooked');
+  const other=Array.from({length:50},(_,i)=>i+1).find(seed=>resolvePanic(c,{seed}).kind!=='freeze');
+  assert.notEqual(other,undefined);
   const out=applyFreezeConsequence({
     character:c,encounter:e,eventId:'broken-12',seed:other,
     panicOutcome:{kind:'freeze',value:7},ledger:createFreezeLedger()
