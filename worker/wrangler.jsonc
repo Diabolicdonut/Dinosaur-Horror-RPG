@@ -12,7 +12,10 @@
     "GM_REQUIRE_LIMITER": "true"
   },
   "secrets": {
-    "required": ["OPENAI_API_KEY", "GAME_TOKEN"]
+    "required": [
+      "OPENAI_API_KEY",
+      "GAME_TOKEN"
+    ]
   },
   "ratelimits": [
     {

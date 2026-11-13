@@ -1,0 +1,1731 @@
+{
+  "schemaVersion": 1,
+  "catalogId": "dhr-mother-ambience-2026-11-09-v1",
+  "sourceWorkbook": "Ambience(2).xlsx",
+  "sourceSelectionColumn": "Use",
+  "reviewedCount": 400,
+  "approvedCount": 94,
+  "excludedCount": 306,
+  "albumSeries": "Michael Ghelfi — RPG Ambiences Vol. 1–8",
+  "storage": {
+    "provider": "dropbox",
+    "mimeType": "audio/ogg",
+    "resolution": "authenticated-resolver-required",
+    "playbackUrlsStored": false
+  },
+  "rights": {
+    "ownerSupplied": true,
+    "licenseStatus": "not-verified-for-public-streaming",
+    "permissionScope": "private use only pending confirmation",
+    "distribution": "no-audio-assets-in-repository"
+  },
+  "policy": {
+    "allowlistOnly": true,
+    "unknownTrack": "deny",
+    "rejectedAbandonedShackWind": "deny",
+    "defaultJungleId": "amb-v3-04",
+    "creatureVocalizationRequiresCommittedAudibleCue": true,
+    "automaticMusic": false,
+    "silenceAllowed": true
+  },
+  "tracks": [
+    {
+      "id": "amb-v1-04",
+      "title": "Blizzard Campfire",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 4,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 04 Blizzard Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "storm",
+        "snow",
+        "wind",
+        "camp",
+        "fire"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-05",
+      "title": "Blizzard",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 5,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 05 Blizzard.ogg",
+      "kind": "ambience",
+      "tags": [
+        "storm",
+        "snow",
+        "wind"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-06",
+      "title": "Campfire At Dusk",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 6,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 06 Campfire At Dusk.ogg",
+      "kind": "ambience",
+      "tags": [
+        "camp",
+        "night",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-07",
+      "title": "Campfire In Woods",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 7,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 07 Campfire In Woods.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-09",
+      "title": "Desert Cave Campfire",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 9,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 09 Desert Cave Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "desert",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-10",
+      "title": "Windy Desert",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 10,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 10 Windy Desert.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert",
+        "wind"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-11",
+      "title": "Dungeon Full Of Monsters",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 11,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 11 Dungeon Full Of Monsters.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "interior"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": true,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-12",
+      "title": "Desert Campfire",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 12,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 12 Desert Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-13",
+      "title": "Dark Humid Cave",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 13,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 13 Dark Humid Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-15",
+      "title": "Epic Savannah",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 15,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 15 Epic Savannah.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-17",
+      "title": "Daytime Forest",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 17,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 17 Daytime Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-19",
+      "title": "Gloomy Cave",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 19,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 19 Gloomy Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-20",
+      "title": "Dead Marshes",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 20,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 20 Dead Marshes.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-21",
+      "title": "Savannah Night Camp",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 21,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 21 Savannah Night Camp.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert",
+        "camp",
+        "night"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-23",
+      "title": "Mysterious Jungle",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 23,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 23 Mysterious Jungle.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "island"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-24",
+      "title": "Swamps",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 24,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 24 Swamps.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-25",
+      "title": "Swamp Campfire",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 25,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 25 Swamp Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-26",
+      "title": "On The Shore",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 26,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 26 On The Shore.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-30",
+      "title": "Sailing Ship",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 30,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 30 Sailing Ship.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-32",
+      "title": "Ship in Storms",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 32,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 32 Ship in Storms.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea",
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-33",
+      "title": "Ship in Storms (No Rain)",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 33,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 33 Ship in Storms (No Rain).ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea",
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-34",
+      "title": "Harbour",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 34,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 34 Harbour.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-35",
+      "title": "Sewers",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 35,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 35 Sewers.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "interior"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-43",
+      "title": "Haunted Forest",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 43,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 43 Haunted Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-48",
+      "title": "Dark Swamp",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 48,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 48 Dark Swamp.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-49",
+      "title": "Desert Cave",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 49,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 49 Desert Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v1-50",
+      "title": "Oasis",
+      "album": "RPG Ambiences Vol. 1",
+      "trackNumber": 50,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 1 - 50 Oasis.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-06",
+      "title": "Taiga",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 6,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 06 Taiga.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-07",
+      "title": "Sea Cave",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 7,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 07 Sea Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "sea"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-08",
+      "title": "Sea Cave Campfire",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 8,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 08 Sea Cave Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "sea",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-09",
+      "title": "Ship Interior",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 9,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 09 Ship Interior.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea",
+        "interior"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-10",
+      "title": "Underwater",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 10,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 10 Underwater.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-23",
+      "title": "Burning Forest",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 23,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 23 Burning Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest",
+        "fire"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-38",
+      "title": "Inside A Volcano",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 38,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 38 Inside A Volcano.ogg",
+      "kind": "ambience",
+      "tags": [
+        "volcanic",
+        "interior",
+        "fire"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-47",
+      "title": "Volcanic Field",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 47,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 47 Volcanic Field.ogg",
+      "kind": "ambience",
+      "tags": [
+        "volcanic"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v2-48",
+      "title": "Darkest Forest",
+      "album": "RPG Ambiences Vol. 2",
+      "trackNumber": 48,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 2 - 48 Darkest Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-04",
+      "title": "Jungle",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 4,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 04 Jungle.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-05",
+      "title": "Jungle Campfire",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 5,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 05 Jungle Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "camp",
+        "fire",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-06",
+      "title": "Jungle Rain",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 6,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 06 Jungle Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "rain",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-07",
+      "title": "Jungle Temple",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 7,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 07 Jungle Temple.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "ruins",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-11",
+      "title": "Realistic Rain",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 11,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 11 Realistic Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "rain"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-12",
+      "title": "Rain And Thunder",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 12,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 12 Rain And Thunder.ogg",
+      "kind": "ambience",
+      "tags": [
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-15",
+      "title": "Common Dungeon",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 15,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 15 Common Dungeon.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "interior"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-17",
+      "title": "Overgrown Ruins",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 17,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 17 Overgrown Ruins.ogg",
+      "kind": "ambience",
+      "tags": [
+        "ruins"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-34",
+      "title": "Desert Canyon",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 34,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 34 Desert Canyon.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-36",
+      "title": "Windy Bamboo Forest",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 36,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 36 Windy Bamboo Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest",
+        "wind"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-37",
+      "title": "Windy Coast",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 37,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 37 Windy Coast.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "wind"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-41",
+      "title": "Windy Countryside",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 41,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 41 Windy Countryside.ogg",
+      "kind": "ambience",
+      "tags": [
+        "meadow",
+        "wind"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-45",
+      "title": "Tar Pits",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 45,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 45 Tar Pits.ogg",
+      "kind": "ambience",
+      "tags": [
+        "volcanic"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v3-47",
+      "title": "Geysers Field",
+      "album": "RPG Ambiences Vol. 3",
+      "trackNumber": 47,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 3 - 47 Geysers Field.ogg",
+      "kind": "ambience",
+      "tags": [
+        "volcanic"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-09",
+      "title": "Cove",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 9,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 09 Cove.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-13",
+      "title": "Desert Valley River",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 13,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 13 Desert Valley River.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert",
+        "river"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-14",
+      "title": "Dinosaurs Jungle",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 14,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 14 Dinosaurs Jungle.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "dinosaur",
+        "island"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": true,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-15",
+      "title": "Dinosaurs Jungle Night Time",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 15,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 15 Dinosaurs Jungle Night Time.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "night",
+        "dinosaur",
+        "island"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": true,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-20",
+      "title": "Forest Nighttime",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 20,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 20 Forest Nighttime.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest",
+        "night"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-22",
+      "title": "Jungle Nighttime",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 22,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 22 Jungle Nighttime.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "night",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-35",
+      "title": "Simple Cave",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 35,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 35 Simple Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-36",
+      "title": "Simple Cave Campfire",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 36,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 36 Simple Cave Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-37",
+      "title": "Simple Humid Cave",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 37,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 37 Simple Humid Cave.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-38",
+      "title": "Simple Humid Cave Campfire",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 38,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 38 Simple Humid Cave Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-40",
+      "title": "Stormy Highlands",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 40,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 40 Stormy Highlands.ogg",
+      "kind": "ambience",
+      "tags": [
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v4-45",
+      "title": "The Hive",
+      "album": "RPG Ambiences Vol. 4",
+      "trackNumber": 45,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 4 - 45 The Hive.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "interior"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": true,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-21",
+      "title": "Building on Fire",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 21,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 21 Building on Fire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "interior",
+        "fire"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-24",
+      "title": "Underwater Lair",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 24,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 24 Underwater Lair.ogg",
+      "kind": "ambience",
+      "tags": [
+        "cave",
+        "sea",
+        "interior"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-25",
+      "title": "Steampunk Engine Room",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 25,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 25 Steampunk Engine Room.ogg",
+      "kind": "ambience",
+      "tags": [
+        "interior"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-34",
+      "title": "Rainy Abandoned City",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 34,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 34 Rainy Abandoned City.ogg",
+      "kind": "ambience",
+      "tags": [
+        "rain",
+        "ruins"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-36",
+      "title": "Forested Cliff",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 36,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 36 Forested Cliff.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-48",
+      "title": "Rainforest",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 48,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 48 Rainforest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "forest",
+        "rain",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-49",
+      "title": "Rainforest Rain",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 49,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 49 Rainforest Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "jungle",
+        "forest",
+        "rain",
+        "island"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v5-50",
+      "title": "Shipwreck on Shore",
+      "album": "RPG Ambiences Vol. 5",
+      "trackNumber": 50,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 5 - 50 Shipwreck on Shore.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v6-26",
+      "title": "Twilight Forest",
+      "album": "RPG Ambiences Vol. 6",
+      "trackNumber": 26,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 6 - 26 Twilight Forest.ogg",
+      "kind": "ambience",
+      "tags": [
+        "forest",
+        "night"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v6-49",
+      "title": "Dinosaur Caravan",
+      "album": "RPG Ambiences Vol. 6",
+      "trackNumber": 49,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 6 - 49 Dinosaur Caravan.ogg",
+      "kind": "ambience",
+      "tags": [
+        "dinosaur"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": true,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-02",
+      "title": "Campfire on the Shore",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 2,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 02 Campfire on the Shore.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-27",
+      "title": "Dry Prairie",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 27,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 27 Dry Prairie.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-32",
+      "title": "Plains Distant Thunder",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 32,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 32 Plains Distant Thunder.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert",
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-35",
+      "title": "Light Rain",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 35,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 35 Light Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "rain"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-36",
+      "title": "Rain (Interior Perspective)",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 36,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 36 Rain (Interior Perspective).ogg",
+      "kind": "ambience",
+      "tags": [
+        "interior",
+        "rain"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-37",
+      "title": "Tent During Rain",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 37,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 37 Tent During Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "interior",
+        "rain"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v7-38",
+      "title": "Shelter From The Rain",
+      "album": "RPG Ambiences Vol. 7",
+      "trackNumber": 38,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 7 - 38 Shelter From The Rain.ogg",
+      "kind": "ambience",
+      "tags": [
+        "interior",
+        "rain"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-01",
+      "title": "Rocky Coast",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 1,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 01 Rocky Coast.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-03",
+      "title": "Rocky Coast Campfire",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 3,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 03 Rocky Coast Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-04",
+      "title": "Tropical Coast",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 4,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 04 Tropical Coast.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-05",
+      "title": "Tropical Coast Campfire during Night",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 5,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 05 Tropical Coast Campfire during Night.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "camp",
+        "night",
+        "fire",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-06",
+      "title": "Lake Shore",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 6,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 06 Lake Shore.ogg",
+      "kind": "ambience",
+      "tags": [
+        "coast",
+        "meadow"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-07",
+      "title": "Meadow",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 7,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 07 Meadow.ogg",
+      "kind": "ambience",
+      "tags": [
+        "meadow"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-08",
+      "title": "Meadow Campfire",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 8,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 08 Meadow Campfire.ogg",
+      "kind": "ambience",
+      "tags": [
+        "meadow",
+        "camp",
+        "fire"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-27",
+      "title": "Desert",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 27,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 27 Desert.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-28",
+      "title": "Lively Desert",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 28,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 28 Lively Desert.ogg",
+      "kind": "ambience",
+      "tags": [
+        "desert"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-43",
+      "title": "Tropical Swamp During Night",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 43,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 43 Tropical Swamp During Night.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp",
+        "night",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-44",
+      "title": "Tropical Swamp",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 44,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 44 Tropical Swamp.ogg",
+      "kind": "ambience",
+      "tags": [
+        "swamp",
+        "island"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-45",
+      "title": "Calm Sea",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 45,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 45 Calm Sea.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea"
+      ],
+      "intensity": "low",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-46",
+      "title": "Rough Sea",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 46,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 46 Rough Sea.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea"
+      ],
+      "intensity": "medium",
+      "loop": "unchecked",
+      "gainDb": -14,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-47",
+      "title": "Stormy Sea",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 47,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 47 Stormy Sea.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea",
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    },
+    {
+      "id": "amb-v8-48",
+      "title": "Ship in Storms Interior",
+      "album": "RPG Ambiences Vol. 8",
+      "trackNumber": 48,
+      "filename": "Michael Ghelfi - RPG Ambiences Vol. 8 - 48 Ship in Storms Interior.ogg",
+      "kind": "ambience",
+      "tags": [
+        "sea",
+        "interior",
+        "rain",
+        "storm"
+      ],
+      "intensity": "high",
+      "loop": "unchecked",
+      "gainDb": -18,
+      "fadeMs": 3500,
+      "requiresAudibleCreatureCue": false,
+      "approved": true
+    }
+  ]
+}
