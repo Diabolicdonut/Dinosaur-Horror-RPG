@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#070c0b">
+  <meta name="description" content="Dinosaur Horror RPG Adventure Operations Terminal: browse authored survival adventures, configure your party and return to the game.">
+  <title>Adventure Operations Terminal — Dinosaur Horror RPG</title>
+  <link rel="stylesheet" href="./src/hub.css">
+  <script type="module" src="./src/hub-app.mjs"></script>
+</head>
+<body>
+  <a class="skip" href="#hub-main">Skip to content</a>
+  <header class="sitehead">
+    <div class="head-inner">
+      <a class="brand" href="./hub.html" aria-label="Dinosaur Horror RPG Adventure Hub home">
+        <span class="emblem" aria-hidden="true">D</span>
+        <span><span class="brand-name">Dinosaur Horror <b>RPG</b></span><span class="brand-sub">Adventure Operations Terminal</span></span>
+      </a>
+      <nav class="nav" aria-label="Hub sections">
+        <button type="button" data-nav="home" aria-current="page">Home / Continue</button>
+        <button type="button" data-nav="adventures">Adventures</button>
+        <button type="button" data-nav="campaigns">Campaigns</button>
+        <button type="button" data-nav="saves">Saved Games</button>
+        <button type="button" data-nav="characters">Character Manager</button>
+        <button type="button" data-nav="settings">Settings</button>
+      </nav>
+      <div class="headmeta"><span class="led" aria-hidden="true"></span><span>System ready</span></div>
+    </div>
+  </header>
+  <main class="page" id="hub-main">
+    <section data-view="home" id="hub-home">
+      <div class="shell-title">
+        <div><p class="eyebrow">FIELD OPERATIONS / ORIGINAL DINOSAUR HORROR</p><h1>CHOOSE YOUR NEXT <span>EXPEDITION</span></h1><p>Browse authored incidents, inspect concept previews, and return to your surviving party.</p></div>
+        <div class="title-right">Approved cinematic interface<br><strong>UI-01 / production shell</strong></div>
+      </div>
+      <section aria-label="Scenario selection">
+        <div class="section-head">
+          <h2 class="section-title">Adventure archive</h2>
+          <div class="row"><span class="section-meta" id="catalog-status">Loading validated adventures…</span><button class="scroll-btn" type="button" id="carousel-prev" aria-label="Previous adventures">‹</button><button class="scroll-btn" type="button" id="carousel-next" aria-label="Next adventures">›</button></div>
+        </div>
+        <div class="carousel" id="hub-carousel" aria-label="Available adventures and concept previews"></div>
+      </section>
+      <div class="main-grid">
+        <div class="main-left">
+          <article class="feature panel" aria-label="Selected adventure">
+            <div class="hero-art"><img id="featured-art" src="./assets/hub/storm.jpg" alt="Dinosaur adventure cinematic still"><span class="hero-tint"></span><span class="hero-slug" id="hero-slug">DOSSIER // 001</span></div>
+            <div class="feature-copy">
+              <p class="eyebrow" id="feature-status">AUTHORED ADVENTURE</p>
+              <h2 id="feature-title">After the Storm</h2>
+              <p class="hero-subtitle" id="feature-subtitle">The evacuation is over. You remain.</p>
+              <div class="meta-line"><span id="feature-kind">CINEMATIC ADVENTURE</span><span id="feature-tone">SURVIVAL · SUSPENSE</span></div>
+              <p class="feature-teaser" id="feature-teaser">Select an adventure dossier above.</p>
+              <p class="availability" id="feature-availability" role="status">Checking the current game catalog…</p>
+              <div class="feature-actions"><a class="btn btn-primary" id="enter-engine" href="./party.html">OPEN PARTY ENGINE</a><a class="btn" href="./prototypes/Dinosaur_Horror_Adventure_Hub_Cinematic.html">VIEW ORIGINAL DESIGN DEMO</a></div>
+            </div>
+          </article>
+          <section class="panel roster-panel" aria-label="Party preparation">
+            <div class="section-head"><h2 class="section-title">Expedition team</h2><span class="section-meta">Four visible slots · roster managed by game</span></div>
+            <div class="roster-grid">
+              <div class="roster-slot"><span class="portrait-symbol" aria-hidden="true">01</span><div><b>Survivor 01</b><small>Roster preview slot</small></div></div>
+              <div class="roster-slot"><span class="portrait-symbol" aria-hidden="true">02</span><div><b>Survivor 02</b><small>Roster preview slot</small></div></div>
+              <div class="roster-slot"><span class="portrait-symbol" aria-hidden="true">03</span><div><b>Survivor 03</b><small>Roster preview slot</small></div></div>
+              <div class="roster-slot"><span class="portrait-symbol" aria-hidden="true">04</span><div><b>Survivor 04</b><small>Roster preview slot</small></div></div>
+            </div>
+            <p class="muted">Illustrative layout only. Actual Evolved survivor statistics, equipment, party size (1–8), and ownership remain in the existing game and Character Lab.</p>
+            <a class="btn" href="./characters.html">OPEN CHARACTER MANAGER</a>
+          </section>
+        </div>
+        <aside class="panel config-panel" aria-label="Adventure configuration preview">
+          <p class="eyebrow">OPERATION PARAMETERS</p>
+          <h2>Configure expedition</h2>
+          <p class="muted">These controls preview the intended launch options. Until UI-02 is complete they do not change game state or its rules.</p>
+          <form id="hub-settings-form">
+            <label>Player control <select id="hub-mode"><option value="party">Entire party</option><option value="focus">One character + AI teammates</option><option value="spectator">Spectator</option></select></label>
+            <label>Adventure length <select id="hub-length"><option value="standard">Standard cinematic adventure</option><option value="short">Short session (planned)</option><option value="long">Extended session (planned)</option></select></label>
+            <label>Seed <input id="hub-seed" type="number" inputmode="numeric" min="0" max="2147483647" value="1993"></label>
+            <label>Atmosphere <select id="hub-tone"><option value="balanced">Balanced · wonder and dread</option><option value="wonder">Emphasize wonder (planned)</option><option value="horror">Emphasize horror (planned)</option></select></label>
+            <label>Conditions <select id="hub-weather"><option value="scenario">Author-defined weather</option><option value="rain">Rain (planned)</option><option value="clear">Clear (planned)</option></select></label>
+          </form>
+          <div class="config-divider"></div>
+          <div class="status-brief"><span class="led" aria-hidden="true"></span><b>Engine-bound launch pending</b><p>Opening the Party Engine does not start or overwrite a save. Choose the desired real adventure there and use its explicit Start/Load controls.</p></div>
+          <a class="btn btn-primary full" href="./party.html">CONTINUE TO GAME CONTROLS</a>
+          <a class="btn full" href="./docs/PRESENTATION-AND-HUB-ROADMAP.md">VIEW IMPLEMENTATION PLAN</a>
+        </aside>
+      </div>
+    </section>
+    <section data-view="campaigns" class="secondary-view" hidden>
+      <p class="eyebrow">CAMPAIGN ARCHIVE</p><h1>CONTINUING <span>STORIES</span></h1>
+      <div class="panel message-panel"><h2>Persistent campaigns are in development</h2><p>Campaigns will carry injuries, relationships, discoveries, resources, and world consequences across new episodes. No campaign is launchable until its validated engine exists.</p><img class="secondary-art" src="./assets/hub/convoy.jpg" alt="Cinematic concept art showing a jungle convoy"><p class="availability">CONCEPT PREVIEW ONLY · NO GENERATED CAMPAIGN CAN BE STARTED YET</p><a class="btn" href="./party.html">PLAY A CURRENT AUTHORED ADVENTURE</a></div>
+    </section>
+    <section data-view="saves" class="secondary-view" hidden>
+      <p class="eyebrow">FIELD ARCHIVE</p><h1>SAVED <span>INCIDENTS</span></h1>
+      <div class="panel message-panel"><h2>Return to your surviving party</h2><p id="save-detection" role="status">Checking this browser for a Party save…</p><p>Existing incident saves are still loaded and validated in the Party Engine. The Hub will not import its demonstration saves or silently overwrite gameplay. Multiple slots and compatible import/export are planned for UI-03.</p><a class="btn btn-primary" href="./party.html">OPEN PARTY SAVE CONTROLS</a></div>
+    </section>
+    <section data-view="characters" class="secondary-view" hidden>
+      <p class="eyebrow">PERSONNEL REGISTRY</p><h1>CHARACTER <span>MANAGER</span></h1>
+      <div class="panel message-panel"><h2>Prepare your survivors</h2><p>Use the existing Character Lab for rules-validated survivors, equipment, and party generation. The Hub's four silhouettes are visual placeholders, not editable Evolved sheets.</p><a class="btn btn-primary" href="./characters.html">OPEN CHARACTER LAB</a><a class="btn" href="./party.html">OPEN PARTY ENGINE</a></div>
+    </section>
+    <section data-view="settings" class="secondary-view" hidden>
+      <p class="eyebrow">TERMINAL PREFERENCES</p><h1>DISPLAY <span>SETTINGS</span></h1>
+      <div class="panel message-panel"><h2>Interface behavior</h2><label class="checkbox-row"><input type="checkbox" id="reduce-motion"> Reduce animated movement on this page</label><p>Audio, character generation, cinematic scene controls and persistent gameplay preferences are not connected here yet. No gameplay state is written by this page.</p><a class="btn" href="./party.html">OPEN GAME CONTROLS</a></div>
+    </section>
+  </main>
+  <footer class="sitefoot">DINOSAUR HORROR RPG · AUTHORED SCENARIOS ONLY · <a href="./index.html?legacy=1">LEGACY SOLO TERMINAL</a> · <a href="./party.html">PARTY ENGINE</a> · <a href="./docs/ROADMAP-COVERAGE.md">ROADMAP</a></footer>
+  <script defer src="./site-progress.js" data-site-progress></script>
+</body>
+</html>

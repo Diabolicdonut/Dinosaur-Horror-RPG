@@ -4,6 +4,16 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#09130f"/>
+  <!-- The new Adventure Hub is the test entrance. The exact legacy solo game
+       remains available at index.html?legacy=1 with its original storage key. -->
+  <script>
+    if (!new URLSearchParams(window.location.search).has('legacy')) {
+      const hub = new URL('./hub.html', window.location.href);
+      hub.search = window.location.search;
+      hub.hash = window.location.hash;
+      window.location.replace(hub.href);
+    }
+  </script>
   <meta name="description" content="Dinosaur Horror RPG: a deterministic Jurassic Park survival-horror browser prototype."/>
   <title>Containment Lost — Dinosaur Horror RPG</title>
   <link rel="stylesheet" href="./src/style.css?v=006.2"/>
@@ -13,7 +23,7 @@
     <header class="masthead">
       <div class="brand">
         <span class="brand-sigil" aria-hidden="true">JP</span>
-        <div><p class="overline">FIELD INCIDENT TERMINAL / 1993</p><h1>CONTAINMENT <strong>LOST</strong></h1><p class="subtitle">A Dinosaur Horror RPG proof of concept</p><p class="subtitle"><a href="./characters.html" style="color:var(--amber)">OPEN PERSONNEL REGISTRY 007 →</a> · Create and export park survivor parties (preview)</p></div>
+        <div><p class="overline">FIELD INCIDENT TERMINAL / 1993</p><h1>CONTAINMENT <strong>LOST</strong></h1><p class="subtitle">A Dinosaur Horror RPG proof of concept</p><p class="subtitle"><a href="./hub.html" style="color:var(--amber)">OPEN ADVENTURE HUB →</a> · <a href="./characters.html" style="color:var(--amber)">OPEN PERSONNEL REGISTRY 007 →</a> · Create and export park survivor parties (preview)</p></div>
       </div>
       <div class="system-label">ISLA NUBLAR <small>SIMULATION ONLINE</small><span id="ai-status-top" class="ai-status-top">AI: DISABLED</span></div>
     </header>
