@@ -118,11 +118,11 @@ test('Progress: no queue / no reliable denominator withholds estimate without al
 test('Progress: main page widget distinguishes implemented from accepted and pending review',()=>{
   const widget=readFileSync(new URL('../site-progress.js',import.meta.url),'utf8');
   assert(widget.includes('Built ~'));
-  assert(widget.includes('Accepted '));
+  assert(widget.includes("'Roadmap ' + roadmap.percent"));
   assert(widget.includes('Estimated from completed queue assignments'));
   assert(widget.includes('See pending pull requests (not counted)'));
   assert(widget.includes("import(new URL('src/implementation-progress.mjs', root).href)"));
   assert(widget.includes('estimate withheld'));
-  assert(widget.includes('return {execution:null, implementation:null}'));
+  assert(widget.includes('return {execution, implementation:null}'));
   assert(!widget.includes('Promise.allSettled(['));
 });
