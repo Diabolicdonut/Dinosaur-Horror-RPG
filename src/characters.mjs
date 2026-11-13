@@ -201,9 +201,9 @@ export function editCharacter(character, patch) {
 }
 export function makeParty({seed=1993,size=3,careers=[]}={}) {
   if (!Number.isInteger(size) || size<1 || size>8) throw new RangeError('Party size must be between 1 and 8.');
-  if (!Array.isArray(careers) || careers.length>size ||
-      careers.some(id => id !== null && id !== undefined && !has(CAREERS,id)))
-    throw new RangeError('Party contains an unknown or surplus career selection.');
+  if (!Array.isArray(careers) ||
+      careers.slice(0,size).some(id => id !== null && id !== undefined && !has(CAREERS,id)))
+    throw new RangeError('Party contains an unknown career selection.');
   return Array.from({length:size},(_,i)=>generateCharacter({seed,index:i,career:careers[i]??null}));
 }
 export function validateParty(roster) {
