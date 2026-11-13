@@ -24,9 +24,10 @@ test('Progress: 21 roadmap gates total 100 points and preserve exactly 38 accept
 test('Progress: complete authoritative queue is required and all assignments have unique IDs',()=>{
   assert(real);
   assert.equal(real.counts.total,79);
-  assert.equal(real.counts.done,20);
-  assert.equal(real.counts.ready,12);
+  assert.equal(real.counts.done,24);
+  assert.equal(real.counts.ready,8);
   assert.equal(real.counts.blocked,47);
+  for(const id of ['DHR-026','DHR-027','DHR-028','DHR-077']) assert.equal(real.tasks[id].status,'done');
   assert.equal(Object.keys(real.tasks).length,79);
   assert.equal(real.counts.ready+real.counts.blocked+real.counts.done,79);
   assert.equal(executionFor(site,queue.replace('| DHR-079 |','| DHR-099 |'),roadmap),null);
@@ -36,11 +37,11 @@ test('Progress: complete authoritative queue is required and all assignments hav
 
 test('Progress: shows actual merged groundwork instead of frozen 38 percent',()=>{
   assert(built);
-  assert.equal(built.points,53,
-    'Current audited 20/79 main execution ledger should yield 53.0 modeled points');
-  assert.equal(built.percent,53);
+  assert.equal(built.points,56.7,
+    'Wave 1 accepted 24/79 main execution ledger should yield 56.7 modeled points');
+  assert.equal(built.percent,57);
   assert.equal(built.acceptedPoints,38);
-  assert.equal(built.completeAssignments,20);
+  assert.equal(built.completeAssignments,24);
   assert.equal(built.totalAssignments,79);
   assert.equal(built.partialAssignments.length,3);
   assert(built.percent>roadmap.done);
@@ -181,9 +182,9 @@ test('Progress: production widget renders the live queue, modeled percentage and
     assert(frame,'progress widget should mount with a readable local queue');
     const summary=frame.children[0]?.children[0];
     const labels=(summary?.children||[]).map(el=>el.textContent);
-    assert(labels.includes('Built ~53%'),'implementation estimate should render from current merged queue');
+    assert(labels.includes('Built ~57%'),'implementation estimate should render from current merged queue');
     assert(labels.includes('Roadmap 38%'),'formal acceptance must remain exactly 38%');
-    assert(labels.includes('Work 20/79'),'completed assignments must follow current merged queue');
+    assert(labels.includes('Work 24/79'),'completed assignments must follow current merged queue');
     assert(labels.includes('Rev v0.7.39'),'do not promote historical gameplay checkpoint');
   }finally{
     if(documentBefore===undefined)delete globalThis.document;
