@@ -305,3 +305,11 @@ test('DHR-026: past Nublar saves and source bindings are not rewritten or upgrad
  assert.deepEqual(legacy,old);
  assert.equal(Object.hasOwn(legacy,'storyPointsSpent'),false);
 });
+
+import {spawnSync} from 'node:child_process';
+test('DHR-026: dedicated resolver and regression file pass Node syntax validation',()=>{
+ for(const file of ['../src/story-point-spending.mjs','./story-point-spending-dhr026.test.mjs']){
+  const result=spawnSync(process.execPath,['--check',new URL(file,import.meta.url).pathname],{encoding:'utf8'});
+  assert.equal(result.status,0,file+': '+result.stderr);
+ }
+});
