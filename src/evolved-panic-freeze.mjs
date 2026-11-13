@@ -48,9 +48,10 @@ export function validateFreezeLedger(ledger) {
 }
 
 function activeLedger(ledger) {
-  const current = ledger === undefined || ledger === null ? createFreezeLedger() : ledger;
-  validateFreezeLedger(current);
-  return current;
+  // An absent ledger is not an empty ledger: otherwise a caller can replay
+  // a spent panic event by omitting its history.
+  validateFreezeLedger(ledger);
+  return ledger;
 }
 
 function validWitnessedBreak(character, encounter, eventId) {
@@ -58,7 +59,8 @@ function validWitnessedBreak(character, encounter, eventId) {
       !encounter.turn || !integer(encounter.turn.sequence, 0, Number.MAX_SAFE_INTEGER) ||
       !named(encounter.turn.actorId) ||
       !Array.isArray(encounter.actors) || !Array.isArray(encounter.events) ||
-      !named(eventId) || encounter.events.length > 1024)
+      !named(eventId) || encounter.events.length > 1024 ||
+      new Set(encounter.events.map(e => e?.id)).size !== encounter.events.length)
     return false;
   const actors = encounter.actors;
   if (actors.length < 2 || actors.length > 32 ||
@@ -103,7 +105,7 @@ export function applyFreezeConsequence({character, encounter, eventId, seed, led
   if (current.entries.some(e => e.eventId === eventId))
     return rejected('event_already_applied', current);
   if (current.entries.some(e => e.actorId === character.id && e.skippedAt === null) ||
-      (character.panicResponses || []).includes('freeze'))
+      (character.panicResponses || []).length > 0)
     return rejected('panic_overlap_requires_escalation', current);
   const panic = resolvePanic(character, {seed});
   if (panic.kind !== 'freeze' || panic.value !== 7)
