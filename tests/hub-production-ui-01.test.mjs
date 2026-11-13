@@ -78,3 +78,20 @@ test('UI-01: Hub logic cannot mutate Party save state or expose hidden adventure
     assert(!Object.hasOwn(card,'privateAgenda'));
   }
 });
+
+
+test('UI-01 preview: project root opens Hub while preserving explicit legacy gameplay and stable saves',async()=>{
+  const index=await read('../index.html');
+  const hub=await read('../hub.html');
+  const party=await read('../party.html');
+  const characters=await read('../characters.html');
+  assert(index.includes("new URLSearchParams(window.location.search).has('legacy')"));
+  assert(index.includes("window.location.replace(hub.href)"));
+  assert(index.includes('src="./src/app.mjs?v=006.2"'),'legacy engine remains in the original entrypoint');
+  assert(index.includes('site-progress.js'));
+  assert(hub.includes('src="./site-progress.js" data-site-progress'),'Hub retains public completion badge');
+  for(const p of [hub,party,characters])assert(p.includes('index.html?legacy=1'));
+  assert(hub.includes('href="./party.html"'),'Hub must retain playable Party link');
+  assert(hub.includes('href="./characters.html"'),'Hub must retain Character Lab link');
+  assert(!hub.includes('GAME_TOKEN'));
+});
