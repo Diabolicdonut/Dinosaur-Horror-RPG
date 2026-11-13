@@ -312,3 +312,12 @@ test('DHR-026: dedicated resolver and regression file pass Node syntax validatio
   assert.equal(result.status,0,file+': '+result.stderr);
  }
 });
+
+test('DHR-026: a historical Cinematic incident with no earning/check/spend sidecars replays as empty',()=>{
+ const f=fixture(),world=structuredClone(f.state);
+ const replayed=replayStoryPointSpends(f.compiled,f.state,null,null,null);
+ assert.deepEqual(replayed,{valid:true,balances:{[f.actorId]:0},spentCount:0});
+ assert.equal(resolveStoryPointSpend(f.compiled,f.state,null,null,
+  request(receipt(f))).accepted,false);
+ assert.deepEqual(f.state,world);
+});
