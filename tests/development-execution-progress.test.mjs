@@ -69,8 +69,10 @@ test('completed work is derived from the actual queue, never the accepted whole-
   assert.equal(done+ready+blocked,total);
   assert(total>0&&done>0,'queue has actual completed work');
   const ui=await render();
-  assert(spans(ui).includes('Roadmap '+accepted+'%'));
+  assert(spans(ui).includes('Overall —'));
   assert(spans(ui).includes('Work '+done+'/'+total));
+  assert(!spans(ui).some(s=>s.startsWith('Roadmap ')));
+  assert(texts(ui).includes(accepted+' of 100 weighted delivery points accepted'));
   assert(texts(ui).includes(accepted+' of 100 weighted delivery points accepted'));
   assert(texts(ui).includes(done+' of '+total+' assignments complete ('+percent(done)+'%)'));
   assert(texts(ui).includes(ready+' ready · '+blocked+' dependency-blocked'));
@@ -108,7 +110,7 @@ test('newly accepted assignment changes linked gate counts but not whole-game ac
   assert.notEqual(changed,queue);
   const ui=await render({q:changed});
   assert(spans(ui).includes('Work '+(done+1)+'/'+total));
-  assert(spans(ui).includes('Roadmap '+accepted+'%'));
+  assert(spans(ui).includes('Overall —'));
   assert(texts(ui).includes((done+1)+' of '+total+
     ' assignments complete ('+percent(done+1)+'%)'));
   assert(texts(ui).includes((ready-1)+' ready · '+blocked+' dependency-blocked'));
@@ -137,12 +139,12 @@ test('invalid or truncated live queue fails closed without changing weighted sco
     const next=mutate(queue);
     assert.notEqual(next,queue);
     const ui=await render({q:next});
-    assert(spans(ui).includes('Roadmap '+accepted+'%'));
+    assert(spans(ui).includes('Overall —'));
     assert(spans(ui).includes('Work —'));
     assert(texts(ui).some(t=>t.includes('Assignment status unavailable or invalid')));
   }
   const missing=await render({unavailable:true});
-  assert(spans(missing).includes('Roadmap '+accepted+'%'));
+  assert(spans(missing).includes('Overall —'));
   assert(spans(missing).includes('Work —'));
 });
 
@@ -150,7 +152,7 @@ test('invalid overall roadmap cannot be masked by apparently valid task counts',
   const broken=structuredClone(manifest);
   broken.roadmap.gates[6].weight++;
   const ui=await render({m:broken});
-  assert(spans(ui).includes('Roadmap —'));
+  assert(spans(ui).includes('Overall —'));
   assert(spans(ui).includes('Work —'));
   assert(!spans(ui).includes('Roadmap '+accepted+'%'));
   assert(!spans(ui).includes('Work '+done+'/'+total));
