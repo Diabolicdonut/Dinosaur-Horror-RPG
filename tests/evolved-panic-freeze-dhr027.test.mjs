@@ -113,11 +113,13 @@ test('unwitnessed, remote, invented, already-dead or retroactive break events ca
 
 test('invalid seed, malformed character and phantom response status fail closed',()=>{
   const c=survivor(),e=scene(c);
-  assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:-1}).reason,'invalid_seed');
-  assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:1.4}).reason,'invalid_seed');
+  assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:-1,ledger:createFreezeLedger()}).reason,'invalid_seed');
+  assert.equal(applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:1.4,ledger:createFreezeLedger()}).reason,'invalid_seed');
   assert.equal(apply({...c,resolve:999},e).reason,'invalid_character');
   assert.equal(apply({...c,panicResponses:'freeze'},e).reason,'invalid_panic_state');
   assert.equal(apply({...c,panicResponses:['freeze']},e).reason,'panic_overlap_requires_escalation');
+  assert.equal(apply({...c,panicResponses:['flee']},e).reason,'panic_overlap_requires_escalation');
+  assert.throws(()=>applyFreezeConsequence({character:c,encounter:e,eventId:'broken-12',seed:seedFor(c)}),RangeError);
 });
 
 test('repeated event IDs and concurrent Freeze attempts cannot change an already-applied result',()=>{
@@ -206,7 +208,7 @@ test('replay tampering or double-pending ledger is rejected before state can be 
   for (const change of [
     l=>{l.entries[0].value=8;},
     l=>{l.entries[0].d6=1;},
-    l=>{l.entries[0].seed=0xffffffff;},
+    l=>{l.entries[0].seed=-1;},
     l=>{l.entries[0].resolve=999;},
     l=>{l.entries[0].skippedAt=12;},
     l=>{l.entries.push({...l.entries[0]});},
