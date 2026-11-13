@@ -75,9 +75,8 @@
     if (total !== 100) return null;
     return {data, done, total, percent: done, gates: data.gates};
   }
-  // A separate, explicitly non-acceptance tracker: completed bounded worker
-  // assignments in the authoritative Markdown queue. Never award gate weight
-  // based on these fractions; one task can contribute to multiple gates.
+  // Maintain backward-compatible queue counts when module loading is absent.
+  // The optional engineering metric is withheld if its estimator is unavailable.
   function executionFor(config, markdown, roadmap) {
     const e = config.execution;
     if (!e || !roadmap || typeof markdown !== 'string' ||
@@ -89,6 +88,7 @@
     const perGate = roadmap.gates.map(() => ({done: 0, ready: 0, blocked: 0, total: 0}));
     const counts = {done: 0, ready: 0, blocked: 0, total: e.total};
     const seen = new Set();
+    const tasks = Object.create(null);
     for (const line of lines) {
       const cells = line.split('|').slice(1, -1).map(x => x.trim());
       if (cells.length !== 6) return null;
@@ -107,6 +107,7 @@
           n < 1 || n > perGate.length) || new Set(parsed).size !== parsed.length)
         return null;
       counts[status]++;
+      tasks[id[0]] = {status, gates:parsed};
       for (const n of parsed) {
         const bucket = perGate[n - 1];
         bucket[status]++; bucket.total++;
@@ -114,7 +115,14 @@
     }
     if (seen.size !== e.total || counts.done + counts.ready + counts.blocked !== e.total)
       return null;
-    return {counts, perGate, percent: Math.round(1000 * counts.done / e.total) / 10};
+    return {counts, perGate, tasks, percent: Math.round(1000 * counts.done / e.total) / 10};
+  }
+  async function developmentFor(config, markdown, roadmap) {
+    const execution = executionFor(config, markdown, roadmap);
+    try {
+      const helpers = await import(new URL('src/implementation-progress.mjs', root).href);
+      return {execution, implementation: helpers.implementationFor(config, execution, roadmap)};
+    } catch (_) { return {execution, implementation:null}; }
   }
   function make(tagName, className, value) {
     const e = document.createElement(tagName);
@@ -133,7 +141,7 @@
       revisionFor(config), countFor(config),
       config.execution?.source ? getText(config.execution.source).catch(() => null) : Promise.resolve(null)
     ]);
-    const execution = executionFor(config, queueText, roadmap);
+    const {execution, implementation} = await developmentFor(config, queueText, roadmap);
     const style = document.createElement('style');
     style.textContent = `
 #project-progress-status{position:fixed;bottom:12px;right:12px;z-index:2147483000;
@@ -142,11 +150,13 @@
 #project-progress-status details{background:rgba(18,26,29,.96);border:1px solid #5c6b70;
   border-radius:11px;box-shadow:0 6px 22px #0005;overflow:hidden;backdrop-filter:blur(8px)}
 #project-progress-status summary{display:flex;gap:10px;align-items:center;
-  list-style:none;cursor:pointer;padding:8px 10px;white-space:normal;font-weight:650}
+  list-style:none;cursor:pointer;padding:8px 10px;white-space:normal;flex-wrap:wrap;font-weight:650}
 #project-progress-status summary::-webkit-details-marker{display:none}
 #project-progress-status summary:focus-visible{outline:2px solid #d9c080;outline-offset:-2px}
 #project-progress-status .p-revision{opacity:.85;font-variant-numeric:tabular-nums}
 #project-progress-status .p-pct{border-left:1px solid #637074;padding-left:10px;
+  color:#c9d4d5;font-variant-numeric:tabular-nums}
+#project-progress-status .p-built{border-left:1px solid #637074;padding-left:10px;
   color:#e5ce8d;font-variant-numeric:tabular-nums}
 #project-progress-status .p-work{border-left:1px solid #637074;padding-left:10px;
   color:#bcded8;font-variant-numeric:tabular-nums}
@@ -181,6 +191,8 @@
     const summary = make('summary');
     summary.setAttribute('aria-label', 'Show project revision and progress basis');
     summary.append(make('span', 'p-revision', 'Rev ' + revision));
+    if (config.implementation) summary.append(make('span', 'p-built', implementation ?
+      'Built ~' + implementation.percent + '%' : 'Built —'));
     summary.append(make('span', 'p-pct', roadmap ?
       'Roadmap ' + roadmap.percent + '%' :
       (config.roadmap ? 'Roadmap —' :
@@ -190,6 +202,31 @@
     summary.append(make('span', 'p-more', '▾'));
     details.append(summary);
     const body = make('div', 'p-detail');
+    if (config.implementation) {
+      const built = make('section');
+      built.append(make('div', 'p-title', 'Implemented work · evidence-based estimate'));
+      if (implementation) {
+        const bar = make('progress');
+        bar.value = implementation.points; bar.max = 100;
+        bar.setAttribute('aria-label', 'Estimated implemented work across the full roadmap');
+        built.append(bar);
+        built.append(make('p', '', '~' + implementation.points +
+          ' of 100 roadmap-weighted points represented by merged work'));
+        built.append(make('p', 'p-task-note',
+          'Estimated from completed queue assignments plus audited partial work already merged to main. Each incomplete gate is normalized by its linked tasks and capped below full completion. Unmerged PRs, deployment checks and unverified gameplay earn no credit.'));
+        if (implementation.partialAssignments.length) {
+          const label = implementation.partialAssignments.map(x=>
+            x.taskId + ' (' + Math.round(x.fraction*100) + '% of its assignment)').join(' · ');
+          built.append(make('p', 'p-task-note', 'Audited merged foundations: ' + label));
+        }
+        const pending = make('a', '', 'See pending pull requests (not counted)');
+        pending.href = 'https://github.com/Diabolicdonut/Dinosaur-Horror-RPG/pulls';
+        pending.target = '_blank'; pending.rel = 'noopener noreferrer';
+        built.append(pending);
+      } else built.append(make('p', '',
+        'Implementation estimate withheld: work queue or evidence could not be verified.'));
+      body.append(built);
+    }
     if (roadmap) {
       body.append(make('div', 'p-title', String(roadmap.data.label || 'Approved overall delivery roadmap')));
       const bar = make('progress');
@@ -207,8 +244,10 @@
         gateSummary.setAttribute('aria-label', gate.label + ': view acceptance requirements');
         gateSummary.append(make('span', '', gate.label));
         const sub = execution?.perGate[index];
+        const builtGate = implementation?.perGate[index];
         gateSummary.append(make('span', '', gate.status + ' · ' + gate.weight + 'pt' +
-          (sub?.total ? ' · ' + sub.done + '/' + sub.total + ' tasks' : '')));
+          (sub?.total ? ' · ' + sub.done + '/' + sub.total + ' tasks' : '') +
+          (builtGate ? ' · ~' + builtGate.percent + '% built' : '')));
         gateDetail.append(gateSummary);
         gateDetail.append(make('p', 'p-criteria', gate.acceptance));
         if (sub?.total) {
@@ -249,7 +288,7 @@
         work.append(make('p', '', execution.counts.ready + ' ready · ' +
           execution.counts.blocked + ' dependency-blocked'));
         work.append(make('p', 'p-task-note',
-          'Each roadmap gate shows completed linked tasks when expanded. A task can support multiple gates; task counts are not weighted points and do not award partial acceptance.'));
+          'Each roadmap gate shows completed linked tasks when expanded. A task can support multiple gates; task counts are not weighted points and do not award partial acceptance. The new built estimate uses audited merged-main evidence; review PRs do not count.'));
         const link = make('a', '', 'View development assignments');
         link.href = new URL(config.execution.source, root).href;
         link.target = '_blank'; link.rel = 'noopener noreferrer';
