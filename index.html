@@ -4,6 +4,16 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="theme-color" content="#09130f"/>
+  <!-- The new Adventure Hub is the test entrance. The exact legacy solo game
+       remains available at index.html?legacy=1 with its original storage key. -->
+  <script>
+    if (!new URLSearchParams(window.location.search).has('legacy')) {
+      const hub = new URL('./hub.html', window.location.href);
+      hub.search = window.location.search;
+      hub.hash = window.location.hash;
+      window.location.replace(hub.href);
+    }
+  </script>
   <meta name="description" content="Dinosaur Horror RPG: a deterministic Jurassic Park survival-horror browser prototype."/>
   <title>Containment Lost — Dinosaur Horror RPG</title>
   <link rel="stylesheet" href="./src/style.css?v=006.2"/>
