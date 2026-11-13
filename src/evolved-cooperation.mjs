@@ -46,7 +46,7 @@ function currentSheet(actor,original){
  // A locally edited but still character-valid sheet is not proof of earned
  // advancement. Compare game-owned starting stats until advancement is integrated.
  return actor&&original&&actor.id===original.id&&
-  !validateCharacter(actor)&&!validateCharacter(original)&&
+  validateCharacter(actor).length===0&&validateCharacter(original).length===0&&
   ['career','attributes','skills','talent','gear'].every(k=>same(actor[k],original[k]));
 }
 function able(a){
