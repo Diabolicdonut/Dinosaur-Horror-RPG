@@ -11,7 +11,7 @@ import {authorizeTalentActivation,replayTalentActivations,AUTHORIZED_TALENT_TRIG
  from '../src/evolved-talent-authorization.mjs';
 
 const copy=x=>structuredClone(x);
-const src=(state)=>compileSelectedAdventure(state.scenario,state.scenario==='nublar-after-the-storm'?0:state.initialSeed);
+const src=(state)=>compileSelectedAdventure(state.scenario,state.initialSeed);
 const source=c=>({adventureId:c.adventureId,revision:c.revision,
  fingerprint:c.fingerprint,seed:c.seed});
 const principal=(id='seat-1',kind='human')=>({kind,id});
