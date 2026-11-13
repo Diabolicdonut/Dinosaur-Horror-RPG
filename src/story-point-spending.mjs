@@ -153,7 +153,7 @@ function makeEntry(check,request,token,tokens,spent){
 function auditSpends(compiled,state,awardJournal,checkJournal,spendJournal){
  if(!validWorld(compiled,state))return null;
  const tokens=earnedTokens(compiled,state,awardJournal);
- const checks=validateChecks(compiled,state,checkJournal);
+ const checks=validateChecks(compiled,state,checkJournal??emptyJournal(compiled));
  if(!tokens||!checks||!exact(spendJournal,JOURNAL_KEYS)||
     spendJournal.schemaVersion!==1||!matchesSource(spendJournal.source,compiled)||
     !Array.isArray(spendJournal.entries)||spendJournal.entries.length>tokens.length||
